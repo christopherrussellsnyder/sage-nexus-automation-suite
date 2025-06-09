@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,7 @@ import {
   Star,
   DollarSign,
   BarChart3,
-  Refresh
+  RefreshCw
 } from "lucide-react";
 
 const EcommerceDashboard = () => {
@@ -296,7 +295,7 @@ const EcommerceDashboard = () => {
               <p className="text-muted-foreground">Top 30 trending products updated weekly from Shopify stores</p>
             </div>
             <Button className="flex items-center space-x-2">
-              <Refresh className="h-4 w-4" />
+              <RefreshCw className="h-4 w-4" />
               <span>Refresh Data</span>
             </Button>
           </div>
