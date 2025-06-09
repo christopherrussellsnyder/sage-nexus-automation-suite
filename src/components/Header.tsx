@@ -1,12 +1,13 @@
 
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Brain, Menu, User, LogOut } from 'lucide-react';
+import { Brain, Menu, User, LogOut, ChevronDown, PenTool, Globe, Megaphone, Mail, Share2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -34,6 +35,36 @@ const Header = ({ user }: HeaderProps) => {
           <a href="/features" className="text-gray-600 hover:text-gray-900">Features</a>
           <a href="/pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
           <a href="/about" className="text-gray-600 hover:text-gray-900">About</a>
+          
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center space-x-1">
+                  <PenTool className="h-4 w-4" />
+                  <span>Copywriting Tools</span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={() => navigate('/website-copy')}>
+                  <Globe className="h-4 w-4 mr-2" />
+                  Website Copy
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/ad-copy')}>
+                  <Megaphone className="h-4 w-4 mr-2" />
+                  Ad Copy
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/email-sequences')}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email Sequences
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/social-content')}>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Social Content
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </nav>
 
         <div className="flex items-center space-x-4">
@@ -49,6 +80,7 @@ const Header = ({ user }: HeaderProps) => {
                 <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                   Dashboard
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Sign Out

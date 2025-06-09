@@ -17,11 +17,12 @@ import {
   ArrowRight,
   Zap,
   Target,
-  Rocket
+  Rocket,
+  PenTool
 } from "lucide-react";
 
 interface DashboardProps {
-  setActiveSection: (section: 'overview' | 'ecommerce' | 'agency' | 'sales') => void;
+  setActiveSection: (section: 'overview' | 'ecommerce' | 'agency' | 'sales' | 'copywriting') => void;
 }
 
 const Dashboard = ({ setActiveSection }: DashboardProps) => {
@@ -52,6 +53,15 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
       color: 'bg-purple-500',
       features: ['Prospect Research', 'Sales Sequences', 'Meeting Intelligence', 'Deal Progression'],
       stats: { prospects: 340, deals: 89 }
+    },
+    {
+      section: 'copywriting' as const,
+      title: 'AI Copywriting Suite',
+      description: 'High-converting copy for websites, ads, emails, and social media',
+      icon: PenTool,
+      color: 'bg-orange-500',
+      features: ['Website Copy', 'Ad Copy', 'Email Sequences', 'Social Content'],
+      stats: { templates: 150, conversions: '400%' }
     }
   ];
 
@@ -66,7 +76,7 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
           </h1>
         </div>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          The ultimate AI-powered business automation suite for e-commerce, marketing agencies, and sales operations. 
+          The ultimate AI-powered business automation suite for e-commerce, marketing agencies, sales operations, and copywriting. 
           Streamline your workflow with intelligent automation and data-driven insights.
         </p>
         <div className="flex items-center justify-center space-x-4 pt-4">
@@ -123,10 +133,10 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center space-x-2">
-              <TrendingUp className="h-8 w-8 text-orange-500" />
+              <PenTool className="h-8 w-8 text-orange-500" />
               <div>
-                <p className="text-2xl font-bold">+127%</p>
-                <p className="text-sm text-muted-foreground">Growth Rate</p>
+                <p className="text-2xl font-bold">150</p>
+                <p className="text-sm text-muted-foreground">Copy Templates</p>
               </div>
             </div>
           </CardContent>
@@ -134,7 +144,7 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
       </div>
 
       {/* Feature Cards */}
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-2 gap-8">
         {features.map((feature) => (
           <Card key={feature.section} className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
             <div className={`absolute top-0 left-0 w-full h-2 ${feature.color}`} />
@@ -213,6 +223,14 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
                 <p className="text-sm text-muted-foreground">12 prospects moved to qualified status</p>
               </div>
               <p className="text-sm text-muted-foreground">1 hour ago</p>
+            </div>
+            <div className="flex items-center space-x-4 p-4 rounded-lg bg-muted/50">
+              <div className="h-2 w-2 rounded-full bg-orange-500" />
+              <div className="flex-1">
+                <p className="font-medium">High-converting copy generated</p>
+                <p className="text-sm text-muted-foreground">5 new website templates created for SaaS industry</p>
+              </div>
+              <p className="text-sm text-muted-foreground">3 hours ago</p>
             </div>
           </div>
         </CardContent>
