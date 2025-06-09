@@ -44,17 +44,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation Header */}
+      {/* Main Platform Navigation */}
       <nav className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Brain className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  Sage.ai
-                </h1>
-              </div>
               <Badge variant="secondary" className="hidden sm:inline-flex">
                 AI Business Automation Suite
               </Badge>

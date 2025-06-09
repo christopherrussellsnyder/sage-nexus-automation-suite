@@ -1,7 +1,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Brain, Menu, User, LogOut, ChevronDown, PenTool, Globe, Megaphone, Mail, Share2 } from 'lucide-react';
+import { Brain, User, LogOut, ChevronDown, PenTool, Globe, Megaphone, Mail, Share2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
