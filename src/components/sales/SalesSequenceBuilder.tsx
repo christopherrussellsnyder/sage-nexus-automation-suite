@@ -46,42 +46,42 @@ const SalesSequenceBuilder = ({ onSaveSequence, onDeploySequence }: SalesSequenc
   ];
 
   const emailTemplates = {
-    introduction: `Hi {{firstName}},
+    introduction: `Hi there,
 
-I hope this email finds you well. I came across {{companyName}} and was impressed by {{companyDescription}}.
+I hope this email finds you well. I came across your company and was impressed by your work.
 
-I'd love to learn more about your current challenges with {{painPoint}} and share how we've helped similar companies in {{industry}}.
+I'd love to learn more about your current challenges and share how we've helped similar companies.
 
 Would you be open to a brief 15-minute conversation next week?
 
 Best regards,
-{{senderName}}`,
+[Your Name]`,
     
-    followUp: `Hi {{firstName}},
+    followUp: `Hi there,
 
-I wanted to follow up on my previous email about {{subject}}.
+I wanted to follow up on my previous email about our conversation.
 
-I noticed that {{companyName}} recently {{recentNews}}. This actually reminded me of a similar situation we helped {{similarCompany}} with.
+I noticed that your company recently made some updates. This actually reminded me of a similar situation we helped another company with.
 
-The results? {{result}}.
+The results were impressive.
 
 Would you have 10 minutes for a quick call this week?
 
 Best,
-{{senderName}}`,
+[Your Name]`,
     
-    valueProposition: `Hi {{firstName}},
+    valueProposition: `Hi there,
 
-Quick question: How much time does your team spend on {{process}} each week?
+Quick question: How much time does your team spend on manual processes each week?
 
-We recently helped {{similarCompany}} reduce this by {{percentage}}% while improving {{metric}}.
+We recently helped a similar company reduce this by 50% while improving efficiency.
 
-Here's a 2-minute case study: {{link}}
+Here's a 2-minute case study link.
 
 Worth a brief conversation?
 
 Best,
-{{senderName}}`
+[Your Name]`
   };
 
   const addStep = () => {
@@ -215,7 +215,7 @@ Best,
                     <Label htmlFor="subject">Email Subject</Label>
                     <Input
                       id="subject"
-                      placeholder="Quick question about {{companyName}}"
+                      placeholder="Quick question about your company"
                       value={currentStep.subject || ''}
                       onChange={(e) => updateCurrentStep('subject', e.target.value)}
                     />
@@ -257,13 +257,13 @@ Best,
                   <Label htmlFor="content">Content</Label>
                   <Textarea
                     id="content"
-                    placeholder="Enter your message content... Use {{firstName}}, {{companyName}}, etc. for personalization"
+                    placeholder="Enter your message content... Use placeholders like [First Name], [Company Name], etc. for personalization"
                     value={currentStep.content}
                     onChange={(e) => updateCurrentStep('content', e.target.value)}
                     rows={8}
                   />
                   <div className="text-xs text-muted-foreground">
-                    Use variables like {{firstName}}, {{companyName}}, {{industry}} for AI personalization
+                    Use variables like [First Name], [Company Name], [Industry] for AI personalization
                   </div>
                 </div>
               </TabsContent>
