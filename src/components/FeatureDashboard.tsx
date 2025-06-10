@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,8 +25,14 @@ const FeatureDashboard = () => {
   const navigate = useNavigate();
   const { usage, subscription, getRemainingUsage } = useUsageTracking();
   const { templates, getFavoriteTemplates } = useTemplateManager();
+  const [debugInfo, setDebugInfo] = useState<any>(null);
 
   const isPremium = subscription?.subscription_type === 'premium';
+
+  // Add debugging to see what's happening
+  console.log('FeatureDashboard - Usage data:', usage);
+  console.log('FeatureDashboard - Subscription data:', subscription);
+  console.log('FeatureDashboard - Templates data:', templates);
 
   const features = [
     {
@@ -37,7 +42,7 @@ const FeatureDashboard = () => {
       color: 'bg-blue-500',
       path: '/website-copy',
       remaining: getRemainingUsage('website'),
-      used: usage.website
+      used: usage.website || 0
     },
     {
       title: 'Ad Copy',
@@ -46,7 +51,7 @@ const FeatureDashboard = () => {
       color: 'bg-green-500',
       path: '/ad-copy',
       remaining: getRemainingUsage('advertising'),
-      used: usage.advertising
+      used: usage.advertising || 0
     },
     {
       title: 'Email Sequences',
@@ -55,7 +60,7 @@ const FeatureDashboard = () => {
       color: 'bg-purple-500',
       path: '/email-sequences',
       remaining: getRemainingUsage('email'),
-      used: usage.email
+      used: usage.email || 0
     },
     {
       title: 'Social Content',
@@ -64,9 +69,26 @@ const FeatureDashboard = () => {
       color: 'bg-orange-500',
       path: '/social-content',
       remaining: getRemainingUsage('social'),
-      used: usage.social
+      used: usage.social || 0
     }
   ];
+
+  // Add debugging button to see what's happening
+  const handleDebug = () => {
+    const debugData = {
+      usage,
+      subscription,
+      templates,
+      isPremium,
+      features: features.map(f => ({
+        title: f.title,
+        remaining: f.remaining,
+        used: f.used
+      }))
+    };
+    setDebugInfo(debugData);
+    console.log('Debug Info:', debugData);
+  };
 
   const stats = [
     {
@@ -116,6 +138,18 @@ const FeatureDashboard = () => {
             <span>Free trial: 5 generations per feature • Upgrade for unlimited access</span>
           </div>
         )}
+        
+        {/* Debug Section - Remove this after fixing */}
+        <div className="p-4 bg-yellow-50 border rounded-lg">
+          <Button onClick={handleDebug} variant="outline" size="sm">
+            Debug Feature Data
+          </Button>
+          {debugInfo && (
+            <pre className="mt-2 text-xs text-left overflow-auto max-h-40">
+              {JSON.stringify(debugInfo, null, 2)}
+            </pre>
+          )}
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -169,7 +203,10 @@ const FeatureDashboard = () => {
                       )}
                       <Button 
                         className="w-full group"
-                        onClick={() => navigate(feature.path)}
+                        onClick={() => {
+                          console.log(`Navigating to: ${feature.path}`);
+                          navigate(feature.path);
+                        }}
                         disabled={!isPremium && feature.remaining === 0}
                       >
                         {!isPremium && feature.remaining === 0 ? (
