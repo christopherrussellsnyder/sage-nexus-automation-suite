@@ -15,13 +15,16 @@ import {
 } from "lucide-react";
 import CampaignWizard from './agency/CampaignWizard';
 import LeadScoringDashboard from './agency/LeadScoringDashboard';
+import CampaignResults from './agency/CampaignResults';
 
 const AgencyDashboard = () => {
   const [activeTab, setActiveTab] = useState<'campaigns' | 'leads' | 'social' | 'reports'>('campaigns');
   const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
   const [campaignProgress, setCampaignProgress] = useState(0);
+  const [campaignData, setCampaignData] = useState(null);
+  const [showResults, setShowResults] = useState(false);
 
-  const handleCreateCampaign = async (campaignData: any) => {
+  const handleCreateCampaign = async (data: any) => {
     setIsCreatingCampaign(true);
     setCampaignProgress(0);
 
@@ -39,7 +42,9 @@ const AgencyDashboard = () => {
     }
 
     setIsCreatingCampaign(false);
-    console.log('Campaign created with data:', campaignData);
+    setCampaignData(data);
+    setShowResults(true);
+    console.log('Campaign created with data:', data);
   };
 
   const handleNurtureLead = (lead: any) => {
@@ -97,58 +102,69 @@ const AgencyDashboard = () => {
       {/* Campaign Tab */}
       {activeTab === 'campaigns' && (
         <div className="space-y-6">
-          <div className="grid md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <Target className="h-6 w-6 text-blue-500" />
-                  <div>
-                    <p className="text-2xl font-bold">24</p>
-                    <p className="text-sm text-muted-foreground">Active Campaigns</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="h-6 w-6 text-green-500" />
-                  <div>
-                    <p className="text-2xl font-bold">+285%</p>
-                    <p className="text-sm text-muted-foreground">Avg ROI</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <Users className="h-6 w-6 text-purple-500" />
-                  <div>
-                    <p className="text-2xl font-bold">156K</p>
-                    <p className="text-sm text-muted-foreground">Reach</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <Megaphone className="h-6 w-6 text-orange-500" />
-                  <div>
-                    <p className="text-2xl font-bold">12.4%</p>
-                    <p className="text-sm text-muted-foreground">Conversion Rate</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {!showResults && (
+            <>
+              <div className="grid md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Target className="h-6 w-6 text-blue-500" />
+                      <div>
+                        <p className="text-2xl font-bold">24</p>
+                        <p className="text-sm text-muted-foreground">Active Campaigns</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="h-6 w-6 text-green-500" />
+                      <div>
+                        <p className="text-2xl font-bold">+285%</p>
+                        <p className="text-sm text-muted-foreground">Avg ROI</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Users className="h-6 w-6 text-purple-500" />
+                      <div>
+                        <p className="text-2xl font-bold">156K</p>
+                        <p className="text-sm text-muted-foreground">Reach</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Megaphone className="h-6 w-6 text-orange-500" />
+                      <div>
+                        <p className="text-2xl font-bold">12.4%</p>
+                        <p className="text-sm text-muted-foreground">Conversion Rate</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-          <CampaignWizard 
-            onCreateCampaign={handleCreateCampaign}
-            isCreating={isCreatingCampaign}
-            progress={campaignProgress}
-          />
+              <CampaignWizard 
+                onCreateCampaign={handleCreateCampaign}
+                isCreating={isCreatingCampaign}
+                progress={campaignProgress}
+              />
+            </>
+          )}
+
+          {showResults && campaignData && (
+            <CampaignResults 
+              campaignData={campaignData}
+              onClose={() => setShowResults(false)}
+            />
+          )}
         </div>
       )}
 

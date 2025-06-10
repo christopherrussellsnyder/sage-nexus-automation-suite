@@ -15,16 +15,20 @@ import {
 } from "lucide-react";
 import ProspectResearcher from './sales/ProspectResearcher';
 import SalesSequenceBuilder from './sales/SalesSequenceBuilder';
+import ProspectResults from './sales/ProspectResults';
 
 const SalesDashboard = () => {
   const [activeTab, setActiveTab] = useState<'research' | 'sequences' | 'meetings' | 'deals'>('research');
   const [isResearching, setIsResearching] = useState(false);
   const [researchProgress, setResearchProgress] = useState(0);
   const [prospectInsights, setProspectInsights] = useState(null);
+  const [prospectData, setProspectData] = useState(null);
+  const [showResults, setShowResults] = useState(false);
 
-  const handleProspectResearch = async (prospectData: any) => {
+  const handleProspectResearch = async (data: any) => {
     setIsResearching(true);
     setResearchProgress(0);
+    setProspectData(data);
 
     // Simulate research process
     const steps = [
@@ -71,7 +75,8 @@ const SalesDashboard = () => {
 
     setProspectInsights(mockInsights);
     setIsResearching(false);
-    console.log('Research completed for:', prospectData);
+    setShowResults(true);
+    console.log('Research completed for:', data);
   };
 
   const handleSaveSequence = (sequence: any) => {
@@ -129,59 +134,71 @@ const SalesDashboard = () => {
       {/* Research Tab */}
       {activeTab === 'research' && (
         <div className="space-y-6">
-          <div className="grid md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <Users className="h-6 w-6 text-blue-500" />
-                  <div>
-                    <p className="text-2xl font-bold">340</p>
-                    <p className="text-sm text-muted-foreground">Prospects</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="h-6 w-6 text-green-500" />
-                  <div>
-                    <p className="text-2xl font-bold">89</p>
-                    <p className="text-sm text-muted-foreground">Qualified Leads</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <Phone className="h-6 w-6 text-purple-500" />
-                  <div>
-                    <p className="text-2xl font-bold">45</p>
-                    <p className="text-sm text-muted-foreground">Meetings Booked</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="h-6 w-6 text-orange-500" />
-                  <div>
-                    <p className="text-2xl font-bold">$2.3M</p>
-                    <p className="text-sm text-muted-foreground">Pipeline Value</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {!showResults && (
+            <>
+              <div className="grid md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Users className="h-6 w-6 text-blue-500" />
+                      <div>
+                        <p className="text-2xl font-bold">340</p>
+                        <p className="text-sm text-muted-foreground">Prospects</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <TrendingUp className="h-6 w-6 text-green-500" />
+                      <div>
+                        <p className="text-2xl font-bold">89</p>
+                        <p className="text-sm text-muted-foreground">Qualified Leads</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Phone className="h-6 w-6 text-purple-500" />
+                      <div>
+                        <p className="text-2xl font-bold">45</p>
+                        <p className="text-sm text-muted-foreground">Meetings Booked</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <DollarSign className="h-6 w-6 text-orange-500" />
+                      <div>
+                        <p className="text-2xl font-bold">$2.3M</p>
+                        <p className="text-sm text-muted-foreground">Pipeline Value</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-          <ProspectResearcher 
-            onResearch={handleProspectResearch}
-            isResearching={isResearching}
-            progress={researchProgress}
-            insights={prospectInsights}
-          />
+              <ProspectResearcher 
+                onResearch={handleProspectResearch}
+                isResearching={isResearching}
+                progress={researchProgress}
+                insights={prospectInsights}
+              />
+            </>
+          )}
+
+          {showResults && prospectInsights && prospectData && (
+            <ProspectResults 
+              insights={prospectInsights}
+              prospectData={prospectData}
+              onClose={() => setShowResults(false)}
+            />
+          )}
         </div>
       )}
 
