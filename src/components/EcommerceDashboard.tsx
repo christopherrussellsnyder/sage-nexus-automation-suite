@@ -17,21 +17,34 @@ import WebsiteBuilderForm from './ecommerce/WebsiteBuilderForm';
 import WebsiteTemplates from './ecommerce/WebsiteTemplates';
 import ProductResearchTable from './ecommerce/ProductResearchTable';
 
+interface WebsiteData {
+  businessName: string;
+  businessDescription: string;
+  industry: string;
+  targetAudience: string;
+  colorScheme: string;
+  businessGoals: string;
+  existingWebsite: string;
+}
+
 const EcommerceDashboard = () => {
   const [activeTab, setActiveTab] = useState<'builder' | 'research'>('builder');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
+  const [websiteData, setWebsiteData] = useState<WebsiteData | null>(null);
+  const [templatesGenerated, setTemplatesGenerated] = useState(false);
 
-  const handleWebsiteGeneration = async (websiteData: any) => {
+  const handleWebsiteGeneration = async (data: WebsiteData) => {
     setIsGenerating(true);
     setGenerationProgress(0);
+    setWebsiteData(data);
 
     // Simulate website generation process
     const steps = [
-      { message: 'Analyzing business requirements', duration: 2000 },
-      { message: 'Generating page structure', duration: 3000 },
-      { message: 'Creating content & copy', duration: 4000 },
-      { message: 'Optimizing design', duration: 2000 }
+      { message: 'Analyzing business requirements', duration: 1500 },
+      { message: 'Generating personalized templates', duration: 2000 },
+      { message: 'Creating page structure', duration: 1500 },
+      { message: 'Optimizing design and content', duration: 1000 }
     ];
 
     for (let i = 0; i < steps.length; i++) {
@@ -40,7 +53,8 @@ const EcommerceDashboard = () => {
     }
 
     setIsGenerating(false);
-    console.log('Website generated with data:', websiteData);
+    setTemplatesGenerated(true);
+    console.log('Website generated with data:', data);
   };
 
   const handleTemplateSelect = (template: any) => {
@@ -104,6 +118,8 @@ const EcommerceDashboard = () => {
               templates={[]}
               onSelectTemplate={handleTemplateSelect}
               onPreviewTemplate={handleTemplatePreview}
+              websiteData={websiteData}
+              isGenerated={templatesGenerated}
             />
           </div>
         </div>

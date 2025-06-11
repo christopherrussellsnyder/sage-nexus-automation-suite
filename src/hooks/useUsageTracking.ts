@@ -30,6 +30,21 @@ export const useUsageTracking = () => {
 
   const fetchUsageData = async () => {
     try {
+      // Check localStorage for demo authentication first
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        if (user.isAuthenticated) {
+          // For demo mode, just use localStorage
+          const storedUsage = localStorage.getItem('demo_usage');
+          if (storedUsage) {
+            setUsage(JSON.parse(storedUsage));
+          }
+          setLoading(false);
+          return;
+        }
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -55,6 +70,20 @@ export const useUsageTracking = () => {
 
   const fetchSubscriptionData = async () => {
     try {
+      // Check localStorage for demo authentication first
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        if (user.isAuthenticated) {
+          // For demo mode, assume premium subscription
+          setSubscription({
+            subscription_type: 'premium',
+            subscription_status: 'active'
+          });
+          return;
+        }
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -78,6 +107,19 @@ export const useUsageTracking = () => {
 
   const incrementUsage = async (featureType: keyof UsageData): Promise<boolean> => {
     try {
+      // Check localStorage for demo authentication first
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        const user = JSON.parse(userData);
+        if (user.isAuthenticated) {
+          // For demo mode, just increment in localStorage
+          const newUsage = { ...usage, [featureType]: usage[featureType] + 1 };
+          setUsage(newUsage);
+          localStorage.setItem('demo_usage', JSON.stringify(newUsage));
+          return true;
+        }
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
