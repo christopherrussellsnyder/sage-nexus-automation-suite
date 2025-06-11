@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import AdCopyGenerator from '@/components/copy-generation/AdCopyGenerator';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -13,9 +13,21 @@ const AdCopy = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
       navigate('/login');
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    if (!user.isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    if (!user.onboardingCompleted) {
+      navigate('/survey');
+      return;
     }
   };
 
@@ -35,14 +47,12 @@ const AdCopy = () => {
           <div>
             <h1 className="text-3xl font-bold">Ad Copy Generator</h1>
             <p className="text-muted-foreground">
-              Create high-converting ad copy for all social media platforms
+              Create compelling ad copy for all major social media platforms
             </p>
           </div>
         </div>
         
-        <div className="text-center py-12">
-          <p className="text-lg text-muted-foreground">Ad copy generator coming soon...</p>
-        </div>
+        <AdCopyGenerator />
       </div>
     </div>
   );

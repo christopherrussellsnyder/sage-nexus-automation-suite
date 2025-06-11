@@ -1,8 +1,7 @@
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import EmailCopyGenerator from '@/components/copy-generation/EmailCopyGenerator';
+import EmailSequenceGenerator from '@/components/copy-generation/EmailSequenceGenerator';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -14,9 +13,21 @@ const EmailSequences = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
       navigate('/login');
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    if (!user.isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    if (!user.onboardingCompleted) {
+      navigate('/survey');
+      return;
     }
   };
 
@@ -36,12 +47,12 @@ const EmailSequences = () => {
           <div>
             <h1 className="text-3xl font-bold">Email Sequence Generator</h1>
             <p className="text-muted-foreground">
-              Create 7 different types of high-converting email templates
+              7 different email types optimized for maximum engagement
             </p>
           </div>
         </div>
         
-        <EmailCopyGenerator />
+        <EmailSequenceGenerator />
       </div>
     </div>
   );

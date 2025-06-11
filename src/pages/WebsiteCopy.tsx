@@ -1,7 +1,6 @@
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import WebsiteCopyGenerator from '@/components/copy-generation/WebsiteCopyGenerator';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,9 +13,23 @@ const WebsiteCopy = () => {
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    // Check localStorage for demo authentication
+    const userData = localStorage.getItem('user');
+    if (!userData) {
       navigate('/login');
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    if (!user.isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    // If user hasn't completed onboarding, redirect to survey
+    if (!user.onboardingCompleted) {
+      navigate('/survey');
+      return;
     }
   };
 

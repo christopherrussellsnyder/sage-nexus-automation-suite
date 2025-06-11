@@ -1,21 +1,33 @@
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import SocialContentGenerator from '@/components/copy-generation/SocialContentGenerator';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const SocialContent = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect() => {
     checkAuth();
   }, []);
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
       navigate('/login');
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    if (!user.isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    if (!user.onboardingCompleted) {
+      navigate('/survey');
+      return;
     }
   };
 
@@ -35,14 +47,12 @@ const SocialContent = () => {
           <div>
             <h1 className="text-3xl font-bold">Social Content Generator</h1>
             <p className="text-muted-foreground">
-              Create engaging social media content with captions and hashtags
+              Viral-worthy social media content with complete captions
             </p>
           </div>
         </div>
         
-        <div className="text-center py-12">
-          <p className="text-lg text-muted-foreground">Social content generator coming soon...</p>
-        </div>
+        <SocialContentGenerator />
       </div>
     </div>
   );
