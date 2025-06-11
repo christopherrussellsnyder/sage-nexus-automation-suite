@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 const SocialContent = () => {
   const navigate = useNavigate();
 
-  useEffect() => {
+  useEffect(() => {
     checkAuth();
   }, []);
 
