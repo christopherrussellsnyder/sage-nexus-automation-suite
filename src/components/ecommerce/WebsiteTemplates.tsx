@@ -204,10 +204,10 @@ Built with modern web standards and fully responsive design.
                     <CardTitle className="text-lg">{template.name}</CardTitle>
                     <div className="flex space-x-1">
                       {template.isMobileOptimized && (
-                        <Smartphone className="h-4 w-4 text-green-600" title="Mobile Optimized" />
+                        <Smartphone className="h-4 w-4 text-green-600" />
                       )}
                       {template.hasEcommerce && (
-                        <Zap className="h-4 w-4 text-blue-600" title="E-commerce Ready" />
+                        <Zap className="h-4 w-4 text-blue-600" />
                       )}
                     </div>
                   </div>
