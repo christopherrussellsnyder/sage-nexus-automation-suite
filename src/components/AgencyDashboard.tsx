@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,9 +15,10 @@ import {
 import CampaignWizard from './agency/CampaignWizard';
 import LeadScoringDashboard from './agency/LeadScoringDashboard';
 import CampaignResults from './agency/CampaignResults';
+import LeadManagement from './agency/LeadManagement';
 
 const AgencyDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'campaigns' | 'leads' | 'social' | 'reports'>('campaigns');
+  const [activeTab, setActiveTab] = useState<'campaigns' | 'leads' | 'management' | 'social' | 'reports'>('campaigns');
   const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
   const [campaignProgress, setCampaignProgress] = useState(0);
   const [campaignData, setCampaignData] = useState(null);
@@ -79,6 +79,14 @@ const AgencyDashboard = () => {
           >
             <UserCheck className="h-4 w-4" />
             <span>Lead Scoring</span>
+          </Button>
+          <Button
+            variant={activeTab === 'management' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('management')}
+            className="flex items-center space-x-2"
+          >
+            <Users className="h-4 w-4" />
+            <span>Lead Management</span>
           </Button>
           <Button
             variant={activeTab === 'social' ? 'default' : 'outline'}
@@ -175,6 +183,11 @@ const AgencyDashboard = () => {
           onNurtureLead={handleNurtureLead}
           onScheduleMeeting={handleScheduleMeeting}
         />
+      )}
+
+      {/* Lead Management Tab */}
+      {activeTab === 'management' && (
+        <LeadManagement />
       )}
 
       {/* Social Media Tab */}
