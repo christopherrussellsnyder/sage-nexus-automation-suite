@@ -2,13 +2,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import FeatureDashboard from '@/components/FeatureDashboard';
+import CopywritingDashboard from '@/components/CopywritingDashboard';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     checkAuth();
@@ -16,31 +15,26 @@ const Dashboard = () => {
 
   const checkAuth = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      // Check localStorage for demo authentication
+      const userData = localStorage.getItem('user');
+      if (!userData) {
         navigate('/login');
         return;
       }
 
-      setUser(session.user);
-
-      // Check if user has completed onboarding
-      const { data: profileData, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching profile:', error);
+      const user = JSON.parse(userData);
+      if (!user.isAuthenticated) {
+        navigate('/login');
+        return;
       }
 
-      if (!profileData || !profileData.onboarding_completed) {
+      // If user hasn't completed onboarding, redirect to survey
+      if (!user.onboardingCompleted) {
         navigate('/survey');
         return;
       }
 
-      setProfile(profileData);
+      setUser(user);
       setLoading(false);
     } catch (error) {
       console.error('Error checking auth:', error);
@@ -62,7 +56,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <FeatureDashboard />
+        <CopywritingDashboard />
       </div>
     </div>
   );

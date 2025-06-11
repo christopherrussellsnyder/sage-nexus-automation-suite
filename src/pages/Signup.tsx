@@ -20,21 +20,23 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      // For demo purposes, we'll simulate a successful signup without actually calling Supabase
-      // This prevents the "failed to fetch" error while maintaining the UI flow
-      
       // Simulate loading time
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Store user data in localStorage for demo purposes
-      localStorage.setItem('user', JSON.stringify({ email, isAuthenticated: true }));
+      // Store user data in localStorage for demo purposes (new user = no onboarding completed)
+      localStorage.setItem('user', JSON.stringify({ 
+        email, 
+        isAuthenticated: true,
+        onboardingCompleted: false
+      }));
 
       toast({
         title: "Success!",
-        description: "Account created successfully! You can now access all features.",
+        description: "Account created successfully! Let's get you set up.",
       });
 
-      navigate('/dashboard');
+      // Always redirect to survey for new users
+      navigate('/survey');
     } catch (error: any) {
       toast({
         title: "Error",
@@ -67,7 +69,7 @@ const Signup = () => {
         <Card>
           <CardHeader>
             <CardTitle>Get started</CardTitle>
-            <CardDescription>Create your account to start using all features</CardDescription>
+            <CardDescription>Create your account to start using AI automation tools</CardDescription>
           </CardHeader>
           <CardContent>
             <form className="space-y-4" onSubmit={handleSignup}>

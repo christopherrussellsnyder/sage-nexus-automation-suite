@@ -20,21 +20,32 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // For demo purposes, we'll simulate a successful login without actually calling Supabase
-      // This prevents the "failed to fetch" error while maintaining the UI flow
-      
       // Simulate loading time
       await new Promise(resolve => setTimeout(resolve, 1500));
       
+      // Check if user has completed onboarding
+      const existingUser = localStorage.getItem('user');
+      const userData = existingUser ? JSON.parse(existingUser) : null;
+      
       // Store user data in localStorage for demo purposes
-      localStorage.setItem('user', JSON.stringify({ email, isAuthenticated: true }));
+      const newUserData = { 
+        email, 
+        isAuthenticated: true,
+        onboardingCompleted: userData?.onboardingCompleted || false
+      };
+      localStorage.setItem('user', JSON.stringify(newUserData));
 
       toast({
         title: "Welcome back!",
         description: "You've been successfully logged in.",
       });
 
-      navigate('/dashboard');
+      // Redirect based on onboarding status
+      if (!newUserData.onboardingCompleted) {
+        navigate('/survey');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       toast({
         title: "Error",
