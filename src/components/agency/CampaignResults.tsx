@@ -1,219 +1,230 @@
 
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Target, Users, DollarSign, TrendingUp, Download, Copy } from 'lucide-react';
-
-interface CampaignData {
-  clientName: string;
-  industry: string;
-  objectives: string[];
-  targetAudience: string;
-  budget: number;
-  duration: string;
-  geographic: string;
-  keyMessages: string;
-  competitors: string;
-}
+import { Progress } from '@/components/ui/progress';
+import { 
+  TrendingUp, 
+  Users, 
+  Target, 
+  DollarSign, 
+  Eye, 
+  MousePointer,
+  Download,
+  Share2,
+  Calendar
+} from 'lucide-react';
+import EnhancedCampaignStrategy from './EnhancedCampaignStrategy';
+import { useState } from 'react';
 
 interface CampaignResultsProps {
-  campaignData: CampaignData;
+  campaignData: any;
   onClose: () => void;
 }
 
 const CampaignResults = ({ campaignData, onClose }: CampaignResultsProps) => {
-  const campaignStrategy = {
-    overview: `Complete marketing campaign strategy for ${campaignData.clientName} in the ${campaignData.industry} industry`,
-    targetingStrategy: {
-      primaryAudience: campaignData.targetAudience,
-      demographics: 'Ages 25-45, Urban professionals, College-educated',
-      psychographics: 'Tech-savvy, efficiency-focused, growth-minded',
-      platforms: ['Facebook', 'LinkedIn', 'Google Ads', 'Email Marketing']
-    },
-    contentStrategy: [
-      {
-        platform: 'Facebook',
-        content: 'Engaging video content showcasing success stories and client testimonials',
-        frequency: 'Daily posts, 3x weekly video content'
-      },
-      {
-        platform: 'LinkedIn',
-        content: 'Professional thought leadership articles and industry insights',
-        frequency: '3x weekly posts, weekly article'
-      },
-      {
-        platform: 'Google Ads',
-        content: 'Targeted search ads focusing on key pain points and solutions',
-        frequency: 'Continuous with A/B testing'
-      },
-      {
-        platform: 'Email',
-        content: 'Nurture sequences with educational content and case studies',
-        frequency: '2x weekly newsletters, automated sequences'
-      }
-    ],
-    budgetAllocation: [
-      { platform: 'Facebook Ads', amount: Math.round(campaignData.budget * 0.3), percentage: 30 },
-      { platform: 'Google Ads', amount: Math.round(campaignData.budget * 0.35), percentage: 35 },
-      { platform: 'LinkedIn Ads', amount: Math.round(campaignData.budget * 0.25), percentage: 25 },
-      { platform: 'Creative & Tools', amount: Math.round(campaignData.budget * 0.1), percentage: 10 }
-    ],
-    kpis: [
-      { metric: 'Lead Generation', target: '500+ qualified leads', tracking: 'CRM integration' },
-      { metric: 'Cost Per Lead', target: `$${Math.round(campaignData.budget / 500)}`, tracking: 'Platform analytics' },
-      { metric: 'Conversion Rate', target: '8-12%', tracking: 'Landing page analytics' },
-      { metric: 'ROI', target: '300%+', tracking: 'Revenue attribution' }
-    ]
+  const [showEnhancedStrategy, setShowEnhancedStrategy] = useState(false);
+
+  if (showEnhancedStrategy) {
+    return (
+      <EnhancedCampaignStrategy 
+        campaignData={campaignData}
+        onClose={() => setShowEnhancedStrategy(false)}
+      />
+    );
+  }
+
+  // Generate industry-specific metrics and projections
+  const getProjectedMetrics = () => {
+    const budget = campaignData.budget || 10000;
+    const baseMetrics = {
+      reach: Math.floor(budget * 12),
+      impressions: Math.floor(budget * 45),
+      clicks: Math.floor(budget * 2.1),
+      leads: Math.floor(budget * 0.15),
+      conversions: Math.floor(budget * 0.08),
+      roas: 3.2 + Math.random() * 1.8
+    };
+    return baseMetrics;
   };
 
-  const exportCampaign = () => {
-    const content = `
-MARKETING CAMPAIGN STRATEGY
-Client: ${campaignData.clientName}
-Industry: ${campaignData.industry}
-Budget: $${campaignData.budget}
-Duration: ${campaignData.duration}
-
-TARGETING STRATEGY:
-- Primary Audience: ${campaignStrategy.targetingStrategy.primaryAudience}
-- Demographics: ${campaignStrategy.targetingStrategy.demographics}
-- Psychographics: ${campaignStrategy.targetingStrategy.psychographics}
-- Platforms: ${campaignStrategy.targetingStrategy.platforms.join(', ')}
-
-BUDGET ALLOCATION:
-${campaignStrategy.budgetAllocation.map(item => `- ${item.platform}: $${item.amount} (${item.percentage}%)`).join('\n')}
-
-CONTENT STRATEGY:
-${campaignStrategy.contentStrategy.map(item => `
-${item.platform}:
-- Content: ${item.content}
-- Frequency: ${item.frequency}
-`).join('\n')}
-
-KEY PERFORMANCE INDICATORS:
-${campaignStrategy.kpis.map(kpi => `- ${kpi.metric}: ${kpi.target} (${kpi.tracking})`).join('\n')}
-    `;
-    
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${campaignData.clientName}-campaign-strategy.txt`;
-    a.click();
-  };
+  const projectedMetrics = getProjectedMetrics();
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Campaign Strategy Complete</h2>
+          <p className="text-muted-foreground">
+            AI-generated campaign strategy for {campaignData.clientName}
+          </p>
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="outline" onClick={onClose}>
+            Create Another
+          </Button>
+          <Button onClick={() => setShowEnhancedStrategy(true)}>
+            View Advanced Strategy
+          </Button>
+        </div>
+      </div>
+
+      {/* Campaign Overview */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center space-x-2">
-                <Target className="h-5 w-5" />
-                <span>Campaign Strategy Generated</span>
-              </CardTitle>
-              <CardDescription>{campaignStrategy.overview}</CardDescription>
-            </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" onClick={exportCampaign}>
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-              <Button variant="outline" onClick={onClose}>
-                Close
-              </Button>
-            </div>
-          </div>
+          <CardTitle className="flex items-center space-x-2">
+            <Target className="h-5 w-5" />
+            <span>Campaign Overview</span>
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Targeting Strategy */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Targeting Strategy</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              <Card>
-                <CardContent className="p-4">
-                  <h4 className="font-medium mb-2">Primary Audience</h4>
-                  <p className="text-sm text-muted-foreground">{campaignStrategy.targetingStrategy.primaryAudience}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <h4 className="font-medium mb-2">Demographics</h4>
-                  <p className="text-sm text-muted-foreground">{campaignStrategy.targetingStrategy.demographics}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <h4 className="font-medium mb-2">Psychographics</h4>
-                  <p className="text-sm text-muted-foreground">{campaignStrategy.targetingStrategy.psychographics}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4">
-                  <h4 className="font-medium mb-2">Platforms</h4>
-                  <div className="flex flex-wrap gap-1">
-                    {campaignStrategy.targetingStrategy.platforms.map((platform, index) => (
-                      <Badge key={index} variant="secondary">{platform}</Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Budget Allocation */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Budget Allocation</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {campaignStrategy.budgetAllocation.map((item, index) => (
-                <Card key={index}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">{item.platform}</h4>
-                        <p className="text-2xl font-bold text-green-600">${item.amount}</p>
-                      </div>
-                      <Badge variant="outline">{item.percentage}%</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* Content Strategy */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Content Strategy</h3>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              {campaignStrategy.contentStrategy.map((item, index) => (
-                <Card key={index}>
-                  <CardContent className="p-4">
-                    <h4 className="font-medium mb-2">{item.platform}</h4>
-                    <p className="text-sm text-muted-foreground mb-2">{item.content}</p>
-                    <Badge variant="outline">{item.frequency}</Badge>
-                  </CardContent>
-                </Card>
-              ))}
+              <div>
+                <Label className="text-sm font-medium">Client:</Label>
+                <p className="font-bold">{campaignData.clientName}</p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Industry:</Label>
+                <Badge variant="secondary">{campaignData.industry}</Badge>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Budget:</Label>
+                <p className="font-bold">${campaignData.budget?.toLocaleString()}</p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Duration:</Label>
+                <p>{campaignData.duration}</p>
+              </div>
             </div>
-          </div>
-
-          {/* KPIs */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Key Performance Indicators</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {campaignStrategy.kpis.map((kpi, index) => (
-                <Card key={index}>
-                  <CardContent className="p-4">
-                    <h4 className="font-medium">{kpi.metric}</h4>
-                    <p className="text-lg font-semibold text-blue-600">{kpi.target}</p>
-                    <p className="text-xs text-muted-foreground">{kpi.tracking}</p>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="space-y-3">
+              <div>
+                <Label className="text-sm font-medium">Objectives:</Label>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {campaignData.objectives?.map((obj: string, index: number) => (
+                    <Badge key={index} variant="outline">{obj}</Badge>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Target Audience:</Label>
+                <p className="text-sm">{campaignData.targetAudience}</p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Geographic:</Label>
+                <p>{campaignData.geographic || 'Not specified'}</p>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Projected Performance */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Eye className="h-5 w-5 text-blue-500" />
+              <div>
+                <p className="text-2xl font-bold">{projectedMetrics.reach.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Projected Reach</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <MousePointer className="h-5 w-5 text-green-500" />
+              <div>
+                <p className="text-2xl font-bold">{projectedMetrics.clicks.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Expected Clicks</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Users className="h-5 w-5 text-purple-500" />
+              <div>
+                <p className="text-2xl font-bold">{projectedMetrics.leads.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Qualified Leads</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <DollarSign className="h-5 w-5 text-orange-500" />
+              <div>
+                <p className="text-2xl font-bold">{projectedMetrics.roas.toFixed(1)}x</p>
+                <p className="text-sm text-muted-foreground">Projected ROAS</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Action Items */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Next Steps</CardTitle>
+          <CardDescription>
+            Immediate actions to launch your campaign successfully
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-start space-x-3">
+              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">1</div>
+              <div>
+                <h4 className="font-medium">Set up tracking and analytics</h4>
+                <p className="text-sm text-muted-foreground">Install Facebook Pixel, Google Analytics, and conversion tracking</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">2</div>
+              <div>
+                <h4 className="font-medium">Create landing pages</h4>
+                <p className="text-sm text-muted-foreground">Design optimized landing pages for each campaign objective</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">3</div>
+              <div>
+                <h4 className="font-medium">Develop creative assets</h4>
+                <p className="text-sm text-muted-foreground">Create 3-5 variations of ad creative for each platform</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">4</div>
+              <div>
+                <h4 className="font-medium">Launch with 20% budget</h4>
+                <p className="text-sm text-muted-foreground">Start with a small budget to test and optimize before scaling</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Action Buttons */}
+      <div className="flex justify-center space-x-4">
+        <Button variant="outline" className="flex items-center space-x-2">
+          <Download className="h-4 w-4" />
+          <span>Download Strategy</span>
+        </Button>
+        <Button variant="outline" className="flex items-center space-x-2">
+          <Share2 className="h-4 w-4" />
+          <span>Share with Team</span>
+        </Button>
+        <Button variant="outline" className="flex items-center space-x-2">
+          <Calendar className="h-4 w-4" />
+          <span>Schedule Review</span>
+        </Button>
+      </div>
     </div>
   );
 };

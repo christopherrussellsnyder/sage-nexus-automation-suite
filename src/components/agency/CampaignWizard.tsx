@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Rocket, Target, DollarSign, Calendar, Users, Sparkles } from 'lucide-react';
+import { Rocket, Target, DollarSign, Calendar, Users, Sparkles, Brain, TrendingUp } from 'lucide-react';
 
 interface CampaignData {
   clientName: string;
@@ -21,6 +20,10 @@ interface CampaignData {
   geographic: string;
   keyMessages: string;
   competitors: string;
+  businessModel: string;
+  currentChallenges: string;
+  successMetrics: string;
+  brandPersonality: string;
 }
 
 interface CampaignWizardProps {
@@ -40,21 +43,38 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
     duration: '',
     geographic: '',
     keyMessages: '',
-    competitors: ''
+    competitors: '',
+    businessModel: '',
+    currentChallenges: '',
+    successMetrics: '',
+    brandPersonality: ''
   });
 
   const industries = [
     'Technology', 'Healthcare', 'Finance', 'E-commerce', 'Education', 'Real Estate',
-    'Food & Beverage', 'Fashion', 'Automotive', 'Travel', 'Professional Services', 'Other'
+    'Food & Beverage', 'Fashion', 'Automotive', 'Travel', 'Professional Services', 
+    'Legal Services', 'Insurance', 'Fitness & Wellness', 'Home Services', 'SaaS', 'Other'
   ];
 
   const objectives = [
     'Brand Awareness', 'Lead Generation', 'Sales Conversion', 'Customer Engagement',
-    'Website Traffic', 'App Downloads', 'Event Promotion', 'Customer Retention'
+    'Website Traffic', 'App Downloads', 'Event Promotion', 'Customer Retention',
+    'Market Penetration', 'Thought Leadership', 'Community Building', 'Product Launch'
   ];
 
-  const durations = ['1 week', '2 weeks', '1 month', '3 months', '6 months', '1 year'];
-  const budgetRanges = [1000, 5000, 10000, 25000, 50000, 100000];
+  const durations = ['2 weeks', '1 month', '2 months', '3 months', '6 months', '1 year', 'Ongoing'];
+  const budgetRanges = [5000, 10000, 25000, 50000, 100000, 250000];
+
+  const businessModels = [
+    'B2B Services', 'B2C Products', 'E-commerce', 'SaaS', 'Marketplace', 
+    'Subscription', 'Consulting', 'Agency', 'Local Business', 'Enterprise'
+  ];
+
+  const brandPersonalities = [
+    'Professional & Authoritative', 'Friendly & Approachable', 'Innovative & Cutting-edge',
+    'Trustworthy & Reliable', 'Creative & Artistic', 'Bold & Disruptive',
+    'Warm & Community-focused', 'Premium & Luxury', 'Fun & Energetic'
+  ];
 
   const handleObjectiveToggle = (objective: string) => {
     setFormData(prev => ({
@@ -70,7 +90,7 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
   };
 
   const nextStep = () => {
-    if (step < 4) setStep(step + 1);
+    if (step < 5) setStep(step + 1);
   };
 
   const prevStep = () => {
@@ -84,13 +104,15 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
   const isStepValid = () => {
     switch (step) {
       case 1:
-        return formData.clientName && formData.industry;
+        return formData.clientName && formData.industry && formData.businessModel;
       case 2:
         return formData.objectives.length > 0 && formData.targetAudience;
       case 3:
         return formData.budget > 0 && formData.duration;
       case 4:
-        return formData.keyMessages;
+        return formData.keyMessages && formData.currentChallenges;
+      case 5:
+        return formData.successMetrics && formData.brandPersonality;
       default:
         return false;
     }
@@ -100,42 +122,66 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Rocket className="h-5 w-5" />
-          <span>Campaign Creation Wizard</span>
+          <Brain className="h-5 w-5" />
+          <span>Advanced Campaign Strategy Builder</span>
         </CardTitle>
         <CardDescription>
-          Create AI-powered multi-platform campaigns in 4 simple steps
+          Create comprehensive, data-driven campaigns with platform-specific optimization strategies
         </CardDescription>
-        <Progress value={(step / 4) * 100} className="mt-4" />
+        <Progress value={(step / 5) * 100} className="mt-4" />
+        <div className="flex justify-between text-sm text-muted-foreground">
+          <span>Step {step} of 5</span>
+          <span>{Math.round((step / 5) * 100)}% Complete</span>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         {step === 1 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Step 1: Client Information</h3>
+            <h3 className="text-lg font-semibold flex items-center space-x-2">
+              <Target className="h-5 w-5" />
+              <span>Client & Business Information</span>
+            </h3>
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="clientName">Client Name *</Label>
                 <Input
                   id="clientName"
-                  placeholder="Enter client name"
+                  placeholder="Enter client/business name"
                   value={formData.clientName}
                   onChange={(e) => updateField('clientName', e.target.value)}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="industry">Industry *</Label>
-                <Select value={formData.industry} onValueChange={(value) => updateField('industry', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {industries.map((industry) => (
-                      <SelectItem key={industry} value={industry}>
-                        {industry}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="industry">Industry *</Label>
+                  <Select value={formData.industry} onValueChange={(value) => updateField('industry', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select industry" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {industries.map((industry) => (
+                        <SelectItem key={industry} value={industry}>
+                          {industry}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="businessModel">Business Model *</Label>
+                  <Select value={formData.businessModel} onValueChange={(value) => updateField('businessModel', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select business model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {businessModels.map((model) => (
+                        <SelectItem key={model} value={model}>
+                          {model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </div>
@@ -143,10 +189,13 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
 
         {step === 2 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Step 2: Campaign Objectives & Audience</h3>
+            <h3 className="text-lg font-semibold flex items-center space-x-2">
+              <Users className="h-5 w-5" />
+              <span>Campaign Objectives & Target Audience</span>
+            </h3>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Campaign Objectives *</Label>
+                <Label>Campaign Objectives * (Select multiple)</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {objectives.map((objective) => (
                     <div key={objective} className="flex items-center space-x-2">
@@ -170,12 +219,13 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="targetAudience">Target Audience Description *</Label>
+                <Label htmlFor="targetAudience">Detailed Target Audience Description *</Label>
                 <Textarea
                   id="targetAudience"
-                  placeholder="Describe your target audience (demographics, interests, behaviors, etc.)"
+                  placeholder="Describe your ideal customer: demographics, psychographics, pain points, behaviors, interests, and where they spend time online..."
                   value={formData.targetAudience}
                   onChange={(e) => updateField('targetAudience', e.target.value)}
+                  rows={4}
                 />
               </div>
             </div>
@@ -184,10 +234,13 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
 
         {step === 3 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Step 3: Budget & Timeline</h3>
+            <h3 className="text-lg font-semibold flex items-center space-x-2">
+              <DollarSign className="h-5 w-5" />
+              <span>Budget & Timeline Planning</span>
+            </h3>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="budget">Campaign Budget *</Label>
+                <Label htmlFor="budget">Monthly Campaign Budget *</Label>
                 <div className="grid grid-cols-3 gap-2 mb-2">
                   {budgetRanges.map((budget) => (
                     <Button
@@ -208,29 +261,31 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
                   onChange={(e) => updateField('budget', parseInt(e.target.value) || 0)}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="duration">Campaign Duration *</Label>
-                <Select value={formData.duration} onValueChange={(value) => updateField('duration', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select duration" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {durations.map((duration) => (
-                      <SelectItem key={duration} value={duration}>
-                        {duration}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="geographic">Geographic Targeting</Label>
-                <Input
-                  id="geographic"
-                  placeholder="e.g., United States, California, San Francisco"
-                  value={formData.geographic}
-                  onChange={(e) => updateField('geographic', e.target.value)}
-                />
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="duration">Campaign Duration *</Label>
+                  <Select value={formData.duration} onValueChange={(value) => updateField('duration', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {durations.map((duration) => (
+                        <SelectItem key={duration} value={duration}>
+                          {duration}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="geographic">Geographic Targeting</Label>
+                  <Input
+                    id="geographic"
+                    placeholder="e.g., United States, California, San Francisco Bay Area"
+                    value={formData.geographic}
+                    onChange={(e) => updateField('geographic', e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -238,25 +293,76 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
 
         {step === 4 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Step 4: Messaging & Competition</h3>
+            <h3 className="text-lg font-semibold flex items-center space-x-2">
+              <Sparkles className="h-5 w-5" />
+              <span>Brand Messaging & Market Position</span>
+            </h3>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="keyMessages">Key Messages & USPs *</Label>
+                <Label htmlFor="keyMessages">Key Messages & Value Propositions *</Label>
                 <Textarea
                   id="keyMessages"
-                  placeholder="What are your key messages, unique selling propositions, and value propositions?"
+                  placeholder="What are your core value propositions? What makes you different? What specific benefits do you provide? Include any taglines or key messaging..."
                   value={formData.keyMessages}
                   onChange={(e) => updateField('keyMessages', e.target.value)}
+                  rows={4}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="competitors">Competitor Information</Label>
+                <Label htmlFor="currentChallenges">Current Marketing Challenges *</Label>
+                <Textarea
+                  id="currentChallenges"
+                  placeholder="What specific challenges are you facing? What hasn't worked in the past? What obstacles need to be overcome?"
+                  value={formData.currentChallenges}
+                  onChange={(e) => updateField('currentChallenges', e.target.value)}
+                  rows={3}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="competitors">Competitor Analysis</Label>
                 <Textarea
                   id="competitors"
-                  placeholder="List main competitors and what differentiates your client from them"
+                  placeholder="Who are your main competitors? What are they doing well/poorly? How do you differentiate from them?"
                   value={formData.competitors}
                   onChange={(e) => updateField('competitors', e.target.value)}
+                  rows={3}
                 />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 5 && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center space-x-2">
+              <TrendingUp className="h-5 w-5" />
+              <span>Success Metrics & Brand Personality</span>
+            </h3>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="successMetrics">Success Metrics & Goals *</Label>
+                <Textarea
+                  id="successMetrics"
+                  placeholder="What specific metrics will define success? Include numbers where possible (e.g., 50 qualified leads per month, 3:1 ROAS, 25% increase in brand awareness)..."
+                  value={formData.successMetrics}
+                  onChange={(e) => updateField('successMetrics', e.target.value)}
+                  rows={3}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="brandPersonality">Brand Personality & Voice *</Label>
+                <Select value={formData.brandPersonality} onValueChange={(value) => updateField('brandPersonality', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select brand personality" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brandPersonalities.map((personality) => (
+                      <SelectItem key={personality} value={personality}>
+                        {personality}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -264,11 +370,17 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
 
         {isCreating && (
           <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Creating your campaign strategy...</span>
+            <div className="flex justify-between items-center text-sm">
+              <span>Analyzing your business and creating comprehensive strategy...</span>
               <span>{progress}%</span>
             </div>
             <Progress value={progress} />
+            <div className="text-center text-sm text-muted-foreground">
+              {progress < 25 && "Analyzing industry trends and competitive landscape..."}
+              {progress >= 25 && progress < 50 && "Generating audience insights and persona mapping..."}
+              {progress >= 50 && progress < 75 && "Creating platform-specific campaign strategies..."}
+              {progress >= 75 && "Finalizing optimization recommendations and success metrics..."}
+            </div>
           </div>
         )}
 
@@ -281,7 +393,7 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
             Previous
           </Button>
           
-          {step < 4 ? (
+          {step < 5 ? (
             <Button
               onClick={nextStep}
               disabled={!isStepValid() || isCreating}
@@ -292,9 +404,10 @@ const CampaignWizard = ({ onCreateCampaign, isCreating, progress }: CampaignWiza
             <Button
               onClick={handleSubmit}
               disabled={!isStepValid() || isCreating}
+              size="lg"
             >
-              <Sparkles className="h-4 w-4 mr-2" />
-              {isCreating ? 'Creating Campaign...' : 'Create Campaign'}
+              <Brain className="h-4 w-4 mr-2" />
+              {isCreating ? 'Creating Advanced Strategy...' : 'Generate Comprehensive Campaign Strategy'}
             </Button>
           )}
         </div>
