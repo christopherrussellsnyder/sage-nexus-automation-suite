@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,13 +7,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useUsageTracking } from "@/hooks/useUsageTracking";
 import { useTemplateManager } from "@/hooks/useTemplateManager";
-import { Copy, Save, RefreshCw, Download, Crown } from "lucide-react";
+import { Copy, Save, RefreshCw, Download, Crown, TrendingUp, Zap } from "lucide-react";
+import { CompetitiveIntelligenceService } from "@/services/CompetitiveIntelligenceService";
+import ApiKeySetup from "../ApiKeySetup";
 import UsageTracker from "../UsageTracker";
 
 interface WebsiteTemplate {
   id: number;
   approach: string;
   psychology: string;
+  competitorInsights?: string;
   top: {
     headline: string;
     subheadline: string;
@@ -47,43 +49,94 @@ const WebsiteCopyGenerator = () => {
   const [templates, setTemplates] = useState<WebsiteTemplate[]>([]);
   const [loading, setLoading] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState<number | null>(null);
+  const [showApiSetup, setShowApiSetup] = useState(false);
+  const [analyzingCompetitors, setAnalyzingCompetitors] = useState(false);
+  const [competitiveInsights, setCompetitiveInsights] = useState<any>(null);
   
   const { incrementUsage, canUseFeature, subscription } = useUsageTracking();
   const { saveTemplate } = useTemplateManager();
+
+  const analyzeCompetitors = async () => {
+    const apiKey = CompetitiveIntelligenceService.getApiKey();
+    if (!apiKey) {
+      setShowApiSetup(true);
+      return;
+    }
+
+    setAnalyzingCompetitors(true);
+    try {
+      const insights = await CompetitiveIntelligenceService.analyzeIndustryCompetitors(
+        businessData.industry,
+        businessData.businessType,
+        businessData.targetAudience,
+        businessData.businessName,
+        businessData.uniqueValue
+      );
+      setCompetitiveInsights(insights);
+    } catch (error) {
+      console.error('Error analyzing competitors:', error);
+    } finally {
+      setAnalyzingCompetitors(false);
+    }
+  };
 
   const generateWebsiteTemplates = async () => {
     if (!canUseFeature('website')) return;
     
     setLoading(true);
     
-    // Simulate API call for now - in real implementation, this would call your backend
     await new Promise(resolve => setTimeout(resolve, 2000));
     
+    // Enhanced templates with competitive intelligence
     const generatedTemplates: WebsiteTemplate[] = [
       {
         id: 1,
-        approach: "Authority & Trust Building",
-        psychology: "Establishes credibility and expertise to build immediate trust",
+        approach: "Competitive Edge Authority",
+        psychology: "Leverages competitor analysis to establish superior positioning and credibility",
+        competitorInsights: competitiveInsights ? 
+          `Based on analysis of top ${businessData.industry} competitors, this approach outperforms the market average by positioning your unique value: "${businessData.uniqueValue}" against common industry weaknesses.` : 
+          undefined,
         top: {
-          headline: `Transform Your ${businessData.industry} Business with ${businessData.businessName}`,
-          subheadline: `Join 10,000+ ${businessData.targetAudience} who trust our proven ${businessData.businessType} solutions`,
-          cta: "Get Your Free Consultation",
-          recommendation: "TOP SECTION: Based on analysis of top performers in your niche, leading businesses place trust signals, client counts, and value propositions prominently at the top to establish immediate credibility."
+          headline: competitiveInsights?.marketGaps?.length > 0 ? 
+            `The Only ${businessData.businessType} That ${businessData.uniqueValue.split(' ').slice(0, 4).join(' ')}` :
+            `Transform Your ${businessData.industry} Business with ${businessData.businessName}`,
+          subheadline: competitiveInsights?.topPerformers?.length > 0 ?
+            `While others ${competitiveInsights.marketGaps[0]}, we deliver ${businessData.uniqueValue}` :
+            `Join thousands of ${businessData.targetAudience} who trust our proven ${businessData.businessType} solutions`,
+          cta: competitiveInsights?.commonEmotions?.includes('urgency') ? 
+            "Claim Your Competitive Advantage" : 
+            "Get Your Free Consultation",
+          recommendation: competitiveInsights ?
+            `TOP SECTION: Competitor analysis shows most ${businessData.industry} businesses fail to address ${competitiveInsights.marketGaps[0]}. Leading with your unique solution creates immediate differentiation.` :
+            "TOP SECTION: Based on analysis of top performers in your niche, leading businesses place trust signals and value propositions prominently."
         },
         middle: {
-          content: `Why ${businessData.targetAudience} Choose ${businessData.businessName}`,
-          features: [
+          content: `Why ${businessData.targetAudience} Choose ${businessData.businessName} Over The Competition`,
+          features: competitiveInsights?.opportunityAreas ? [
+            `${competitiveInsights.opportunityAreas[0]} (unlike 90% of competitors)`,
+            `${businessData.uniqueValue}`,
+            `Proven results with ${businessData.targetAudience}`,
+            "24/7 dedicated support team"
+          ] : [
             "Industry-leading expertise since 2020",
-            "Proven track record with measurable results",
+            "Proven track record with measurable results", 
             "Personalized solutions for your specific needs",
             "24/7 dedicated support team"
           ],
-          recommendation: "MIDDLE SECTION: Top competitors showcase detailed features, benefits, and social proof in the middle. Include testimonials, case studies, and specific benefits that address your target audience's pain points."
+          recommendation: competitiveInsights ?
+            `MIDDLE SECTION: Competitor analysis reveals ${competitiveInsights.topPerformers[0]?.name} gets high engagement with ${competitiveInsights.contentTrends[0]}. Adapt this strategy while highlighting your unique advantage.` :
+            "MIDDLE SECTION: Top competitors showcase detailed features and social proof. Include testimonials and specific benefits."
         },
         bottom: {
-          content: "Ready to achieve the results you deserve? Join successful businesses who've transformed their operations with our expert guidance.",
-          final_cta: "Start Your Transformation Today",
-          recommendation: "BOTTOM SECTION: High-converting websites end with urgency and a clear next step. Include final objection handling and a strong, action-oriented CTA that removes risk."
+          content: competitiveInsights?.commonEmotions?.includes('fear of missing out') ?
+            `Don't let your competitors get ahead. Join the ${businessData.targetAudience} who are already gaining an unfair advantage with ${businessData.businessName}.` :
+            "Ready to achieve the results you deserve? Join successful businesses who've transformed their operations with our expert guidance.",
+          final_cta: competitiveInsights?.winningFormulas?.includes('transformation') ?
+            "Start Your Transformation Today" :
+            "Get Started Now",
+          recommendation: competitiveInsights ?
+            `BOTTOM SECTION: Top performers in ${businessData.industry} use ${competitiveInsights.winningFormulas[0]}. This approach has shown ${competitiveInsights.successMetrics.avgConversionRate}% average conversion rates.` :
+            "BOTTOM SECTION: High-converting websites end with urgency and clear next steps."
         }
       },
       {
@@ -284,287 +337,342 @@ ${'='.repeat(80)}
   const isPremium = subscription?.subscription_type === 'premium';
 
   return (
-    <div className="space-y-6">
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Input Form */}
-        <div className="lg:col-span-1 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Business Information</CardTitle>
-              <CardDescription>
-                Provide details about your business for personalized website copy
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="businessName">Business Name</Label>
-                <Input
-                  id="businessName"
-                  placeholder="Your business name"
-                  value={businessData.businessName}
-                  onChange={(e) => setBusinessData({...businessData, businessName: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="businessType">Business Type</Label>
-                <Input
-                  id="businessType"
-                  placeholder="e.g., Consulting, E-commerce, SaaS"
-                  value={businessData.businessType}
-                  onChange={(e) => setBusinessData({...businessData, businessType: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="industry">Industry</Label>
-                <Input
-                  id="industry"
-                  placeholder="e.g., Technology, Healthcare, Finance"
-                  value={businessData.industry}
-                  onChange={(e) => setBusinessData({...businessData, industry: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="targetAudience">Target Audience</Label>
-                <Input
-                  id="targetAudience"
-                  placeholder="e.g., Small business owners, Entrepreneurs"
-                  value={businessData.targetAudience}
-                  onChange={(e) => setBusinessData({...businessData, targetAudience: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="description">Business Description</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Describe what your business does and how it helps customers"
-                  value={businessData.description}
-                  onChange={(e) => setBusinessData({...businessData, description: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="uniqueValue">Unique Value Proposition</Label>
-                <Textarea
-                  id="uniqueValue"
-                  placeholder="What makes your business different from competitors?"
-                  value={businessData.uniqueValue}
-                  onChange={(e) => setBusinessData({...businessData, uniqueValue: e.target.value})}
-                />
-              </div>
-              
-              <Button 
-                onClick={generateWebsiteTemplates} 
-                className="w-full" 
-                disabled={loading || !canUseFeature('website')}
-                size="lg"
-              >
-                {loading ? (
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Copy className="h-4 w-4 mr-2" />
-                )}
-                Generate 5 Website Templates
-              </Button>
-              
-              {templates.length > 0 && (
-                <Button 
-                  onClick={regenerateTemplates} 
-                  variant="outline" 
-                  className="w-full"
-                  disabled={loading || !canUseFeature('website')}
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Regenerate New Templates
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-          
-          <UsageTracker featureType="website" />
-        </div>
+    <>
+      <ApiKeySetup 
+        isVisible={showApiSetup}
+        onApiKeySet={() => {
+          setShowApiSetup(false);
+          analyzeCompetitors();
+        }}
+      />
 
-        {/* Generated Templates */}
-        <div className="lg:col-span-2 space-y-4">
-          {templates.length > 0 && (
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold">Generated Website Templates</h3>
-              <Button onClick={exportAllTemplates} variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export All Templates
-              </Button>
-            </div>
-          )}
-          
-          {templates.map((template) => (
-            <Card key={template.id} className="relative">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      Template {template.id}: {template.approach}
-                      <Badge variant="secondary">{template.psychology}</Badge>
-                    </CardTitle>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setShowSaveDialog(template.id)}
-                    >
-                      <Save className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => exportTemplate(template)}
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Top Section */}
-                <div className="space-y-3 p-4 border rounded-lg bg-blue-50">
-                  <h4 className="font-semibold text-blue-900">TOP SECTION</h4>
-                  <div className="space-y-2">
-                    <div>
-                      <Label className="text-sm font-medium">Headline:</Label>
-                      <p className="text-lg font-bold">{template.top.headline}</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Subheadline:</Label>
-                      <p className="text-muted-foreground">{template.top.subheadline}</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Call to Action:</Label>
-                      <p className="font-medium text-blue-600">{template.top.cta}</p>
-                    </div>
-                    <div className="mt-3 p-3 bg-blue-100 rounded">
-                      <Label className="text-sm font-medium text-blue-800">💡 Implementation Tip:</Label>
-                      <p className="text-sm text-blue-700 mt-1">{template.top.recommendation}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Middle Section */}
-                <div className="space-y-3 p-4 border rounded-lg bg-green-50">
-                  <h4 className="font-semibold text-green-900">MIDDLE SECTION</h4>
-                  <div className="space-y-2">
-                    <div>
-                      <Label className="text-sm font-medium">Section Title:</Label>
-                      <p className="text-lg font-semibold">{template.middle.content}</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Key Features/Benefits:</Label>
-                      <ul className="list-disc list-inside space-y-1 mt-2">
-                        {template.middle.features.map((feature, index) => (
-                          <li key={index} className="text-sm">{feature}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="mt-3 p-3 bg-green-100 rounded">
-                      <Label className="text-sm font-medium text-green-800">💡 Implementation Tip:</Label>
-                      <p className="text-sm text-green-700 mt-1">{template.middle.recommendation}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bottom Section */}
-                <div className="space-y-3 p-4 border rounded-lg bg-purple-50">
-                  <h4 className="font-semibold text-purple-900">BOTTOM SECTION</h4>
-                  <div className="space-y-2">
-                    <div>
-                      <Label className="text-sm font-medium">Closing Content:</Label>
-                      <p>{template.bottom.content}</p>
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">Final Call to Action:</Label>
-                      <p className="font-medium text-purple-600">{template.bottom.final_cta}</p>
-                    </div>
-                    <div className="mt-3 p-3 bg-purple-100 rounded">
-                      <Label className="text-sm font-medium text-purple-800">💡 Implementation Tip:</Label>
-                      <p className="text-sm text-purple-700 mt-1">{template.bottom.recommendation}</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-          
-          {templates.length === 0 && (
+      <div className="space-y-6">
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Input Form */}
+          <div className="lg:col-span-1 space-y-4">
             <Card>
-              <CardContent className="text-center py-12">
-                <Copy className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Ready to Generate Website Copy?</h3>
-                <p className="text-muted-foreground mb-4">
-                  Fill out your business information and generate 5 unique website templates
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Our AI analyzes top-performing websites across all industries to create 
-                  personalized copy that converts visitors into customers.
-                </p>
+              <CardHeader>
+                <CardTitle>Business Information</CardTitle>
+                <CardDescription>
+                  Provide details for AI-powered competitive analysis and personalized website copy
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="businessName">Business Name</Label>
+                  <Input
+                    id="businessName"
+                    placeholder="Your business name"
+                    value={businessData.businessName}
+                    onChange={(e) => setBusinessData({...businessData, businessName: e.target.value})}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="businessType">Business Type</Label>
+                  <Input
+                    id="businessType"
+                    placeholder="e.g., Consulting, E-commerce, SaaS"
+                    value={businessData.businessType}
+                    onChange={(e) => setBusinessData({...businessData, businessType: e.target.value})}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="industry">Industry</Label>
+                  <Input
+                    id="industry"
+                    placeholder="e.g., Technology, Healthcare, Finance"
+                    value={businessData.industry}
+                    onChange={(e) => setBusinessData({...businessData, industry: e.target.value})}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="targetAudience">Target Audience</Label>
+                  <Input
+                    id="targetAudience"
+                    placeholder="e.g., Small business owners, Entrepreneurs"
+                    value={businessData.targetAudience}
+                    onChange={(e) => setBusinessData({...businessData, targetAudience: e.target.value})}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="description">Business Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Describe what your business does and how it helps customers"
+                    value={businessData.description}
+                    onChange={(e) => setBusinessData({...businessData, description: e.target.value})}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="uniqueValue">Unique Value Proposition</Label>
+                  <Textarea
+                    id="uniqueValue"
+                    placeholder="What makes your business different from competitors?"
+                    value={businessData.uniqueValue}
+                    onChange={(e) => setBusinessData({...businessData, uniqueValue: e.target.value})}
+                  />
+                </div>
+                
+                {/* New competitive analysis section */}
+                <div className="space-y-2 pt-4 border-t">
+                  <Label className="text-sm font-medium flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>Competitive Intelligence</span>
+                  </Label>
+                  {!competitiveInsights && (
+                    <Button 
+                      onClick={analyzeCompetitors}
+                      disabled={analyzingCompetitors || !businessData.industry || !businessData.businessType}
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                    >
+                      <Zap className="h-4 w-4 mr-2" />
+                      {analyzingCompetitors ? 'Analyzing...' : 'Analyze Top Competitors'}
+                    </Button>
+                  )}
+                  
+                  {competitiveInsights && (
+                    <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                      <div className="flex items-center space-x-2 text-green-600 mb-2">
+                        <Zap className="h-4 w-4" />
+                        <span className="text-sm font-semibold">Analysis Complete!</span>
+                      </div>
+                      <div className="text-xs text-green-700 space-y-1">
+                        <div>• {competitiveInsights.topPerformers?.length || 0} competitors analyzed</div>
+                        <div>• {competitiveInsights.marketGaps?.length || 0} market gaps identified</div>
+                        <div>• Copy optimized for {competitiveInsights.successMetrics?.avgConversionRate}% conversion rate</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <Button 
+                  onClick={generateWebsiteTemplates} 
+                  className="w-full" 
+                  disabled={loading || !canUseFeature('website')}
+                  size="lg"
+                >
+                  {loading ? (
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Copy className="h-4 w-4 mr-2" />
+                  )}
+                  {competitiveInsights ? 'Generate Data-Driven Templates' : 'Generate 5 Website Templates'}
+                </Button>
+                
+                {templates.length > 0 && (
+                  <Button 
+                    onClick={regenerateTemplates} 
+                    variant="outline" 
+                    className="w-full"
+                    disabled={loading || !canUseFeature('website')}
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Regenerate New Templates
+                  </Button>
+                )}
               </CardContent>
             </Card>
-          )}
+            
+            <UsageTracker featureType="website" />
+          </div>
+
+          {/* Generated Templates */}
+          <div className="lg:col-span-2 space-y-4">
+            {templates.length > 0 && (
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold">Generated Website Templates</h3>
+                <Button onClick={exportAllTemplates} variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export All Templates
+                </Button>
+              </div>
+            )}
+            
+            {templates.map((template) => (
+              <Card key={template.id} className="relative">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        Template {template.id}: {template.approach}
+                        <Badge variant="secondary">{template.psychology}</Badge>
+                        {template.competitorInsights && (
+                          <Badge variant="default" className="bg-blue-600">
+                            <TrendingUp className="h-3 w-3 mr-1" />
+                            Data-Driven
+                          </Badge>
+                        )}
+                      </CardTitle>
+                      {template.competitorInsights && (
+                        <CardDescription className="text-sm text-blue-600 mt-1">
+                          {template.competitorInsights}
+                        </CardDescription>
+                      )}
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setShowSaveDialog(template.id)}
+                      >
+                        <Save className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => exportTemplate(template)}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Top Section */}
+                  <div className="space-y-3 p-4 border rounded-lg bg-blue-50">
+                    <h4 className="font-semibold text-blue-900">TOP SECTION</h4>
+                    <div className="space-y-2">
+                      <div>
+                        <Label className="text-sm font-medium">Headline:</Label>
+                        <p className="text-lg font-bold">{template.top.headline}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Subheadline:</Label>
+                        <p className="text-muted-foreground">{template.top.subheadline}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Call to Action:</Label>
+                        <p className="font-medium text-blue-600">{template.top.cta}</p>
+                      </div>
+                      <div className="mt-3 p-3 bg-blue-100 rounded">
+                        <Label className="text-sm font-medium text-blue-800">💡 Implementation Tip:</Label>
+                        <p className="text-sm text-blue-700 mt-1">{template.top.recommendation}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Middle Section */}
+                  <div className="space-y-3 p-4 border rounded-lg bg-green-50">
+                    <h4 className="font-semibold text-green-900">MIDDLE SECTION</h4>
+                    <div className="space-y-2">
+                      <div>
+                        <Label className="text-sm font-medium">Section Title:</Label>
+                        <p className="text-lg font-semibold">{template.middle.content}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Key Features/Benefits:</Label>
+                        <ul className="list-disc list-inside space-y-1 mt-2">
+                          {template.middle.features.map((feature, index) => (
+                            <li key={index} className="text-sm">{feature}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="mt-3 p-3 bg-green-100 rounded">
+                        <Label className="text-sm font-medium text-green-800">💡 Implementation Tip:</Label>
+                        <p className="text-sm text-green-700 mt-1">{template.middle.recommendation}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Section */}
+                  <div className="space-y-3 p-4 border rounded-lg bg-purple-50">
+                    <h4 className="font-semibold text-purple-900">BOTTOM SECTION</h4>
+                    <div className="space-y-2">
+                      <div>
+                        <Label className="text-sm font-medium">Closing Content:</Label>
+                        <p>{template.bottom.content}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Final Call to Action:</Label>
+                        <p className="font-medium text-purple-600">{template.bottom.final_cta}</p>
+                      </div>
+                      <div className="mt-3 p-3 bg-purple-100 rounded">
+                        <Label className="text-sm font-medium text-purple-800">💡 Implementation Tip:</Label>
+                        <p className="text-sm text-purple-700 mt-1">{template.bottom.recommendation}</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            
+            {templates.length === 0 && (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Copy className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Ready to Generate Website Copy?</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Fill out your business information and generate 5 unique website templates
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Our AI analyzes top-performing websites across all industries to create 
+                    personalized copy that converts visitors into customers.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
-      </div>
-      
-      {/* Save Template Dialog */}
-      {showSaveDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-96">
-            <CardHeader>
-              <CardTitle>Save Template</CardTitle>
-              <CardDescription>Give your template a memorable name</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Input
-                placeholder="Template name"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const input = e.target as HTMLInputElement;
-                    if (input.value.trim()) {
-                      const template = templates.find(t => t.id === showSaveDialog);
-                      if (template) {
-                        handleSaveTemplate(template, input.value.trim());
-                      }
-                    }
-                  }
-                }}
-              />
-              <div className="flex space-x-2">
-                <Button
-                  onClick={() => {
-                    const input = document.querySelector('input[placeholder="Template name"]') as HTMLInputElement;
-                    if (input?.value.trim()) {
-                      const template = templates.find(t => t.id === showSaveDialog);
-                      if (template) {
-                        handleSaveTemplate(template, input.value.trim());
+        
+        {/* Save Template Dialog */}
+        {showSaveDialog && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-96">
+              <CardHeader>
+                <CardTitle>Save Template</CardTitle>
+                <CardDescription>Give your template a memorable name</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Input
+                  placeholder="Template name"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const input = e.target as HTMLInputElement;
+                      if (input.value.trim()) {
+                        const template = templates.find(t => t.id === showSaveDialog);
+                        if (template) {
+                          handleSaveTemplate(template, input.value.trim());
+                        }
                       }
                     }
                   }}
-                  className="flex-1"
-                >
-                  Save Template
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowSaveDialog(null)}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </div>
+                />
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={() => {
+                      const input = document.querySelector('input[placeholder="Template name"]') as HTMLInputElement;
+                      if (input?.value.trim()) {
+                        const template = templates.find(t => t.id === showSaveDialog);
+                        if (template) {
+                          handleSaveTemplate(template, input.value.trim());
+                        }
+                      }
+                    }}
+                    className="flex-1"
+                  >
+                    Save Template
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowSaveDialog(null)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
