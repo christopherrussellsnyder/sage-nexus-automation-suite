@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { UserCheck, TrendingUp, Mail, Phone, MessageSquare, Calendar } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Lead {
   id: string;
@@ -30,6 +34,12 @@ interface LeadScoringDashboardProps {
 
 const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadScoringDashboardProps) => {
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'hot' | 'warm' | 'cold'>('all');
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [emailDialog, setEmailDialog] = useState(false);
+  const [meetingDialog, setMeetingDialog] = useState(false);
+  const [emailData, setEmailData] = useState({ subject: '', message: '' });
+  const [meetingData, setMeetingData] = useState({ date: '', time: '', agenda: '' });
+  const { toast } = useToast();
 
   const sampleLeads: Lead[] = [
     {
@@ -104,6 +114,51 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
     ? leadsToShow 
     : leadsToShow.filter(lead => lead.status === selectedStatus);
 
+  const handleSendEmail = () => {
+    if (!selectedLead || !emailData.subject || !emailData.message) {
+      toast({
+        title: "Error",
+        description: "Please fill in all email fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create mailto link with pre-filled content
+    const subject = encodeURIComponent(emailData.subject);
+    const body = encodeURIComponent(emailData.message);
+    window.open(`mailto:${selectedLead.email}?subject=${subject}&body=${body}`);
+    
+    onNurtureLead(selectedLead);
+    setEmailDialog(false);
+    setEmailData({ subject: '', message: '' });
+    
+    toast({
+      title: "Email Prepared",
+      description: `Email draft opened for ${selectedLead.name}`,
+    });
+  };
+
+  const handleScheduleMeeting = () => {
+    if (!selectedLead || !meetingData.date || !meetingData.time) {
+      toast({
+        title: "Error",
+        description: "Please fill in meeting date and time",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    onScheduleMeeting(selectedLead);
+    setMeetingDialog(false);
+    setMeetingData({ date: '', time: '', agenda: '' });
+    
+    toast({
+      title: "Meeting Scheduled",
+      description: `Meeting scheduled with ${selectedLead.name} for ${meetingData.date} at ${meetingData.time}`,
+    });
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
@@ -133,6 +188,89 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
 
   return (
     <div className="space-y-6">
+      {/* Email Dialog */}
+      <Dialog open={emailDialog} onOpenChange={setEmailDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send Email to {selectedLead?.name}</DialogTitle>
+            <DialogDescription>
+              Compose an email to nurture this lead
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="subject">Subject</Label>
+              <Input
+                id="subject"
+                value={emailData.subject}
+                onChange={(e) => setEmailData({...emailData, subject: e.target.value})}
+                placeholder="Email subject"
+              />
+            </div>
+            <div>
+              <Label htmlFor="message">Message</Label>
+              <Textarea
+                id="message"
+                value={emailData.message}
+                onChange={(e) => setEmailData({...emailData, message: e.target.value})}
+                placeholder="Your email message..."
+                rows={5}
+              />
+            </div>
+            <div className="flex space-x-2">
+              <Button onClick={handleSendEmail} className="flex-1">Send Email</Button>
+              <Button variant="outline" onClick={() => setEmailDialog(false)}>Cancel</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Meeting Dialog */}
+      <Dialog open={meetingDialog} onOpenChange={setMeetingDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Schedule Meeting with {selectedLead?.name}</DialogTitle>
+            <DialogDescription>
+              Set up a meeting with this lead
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="date">Date</Label>
+              <Input
+                id="date"
+                type="date"
+                value={meetingData.date}
+                onChange={(e) => setMeetingData({...meetingData, date: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label htmlFor="time">Time</Label>
+              <Input
+                id="time"
+                type="time"
+                value={meetingData.time}
+                onChange={(e) => setMeetingData({...meetingData, time: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label htmlFor="agenda">Agenda (Optional)</Label>
+              <Textarea
+                id="agenda"
+                value={meetingData.agenda}
+                onChange={(e) => setMeetingData({...meetingData, agenda: e.target.value})}
+                placeholder="Meeting agenda..."
+                rows={3}
+              />
+            </div>
+            <div className="flex space-x-2">
+              <Button onClick={handleScheduleMeeting} className="flex-1">Schedule Meeting</Button>
+              <Button variant="outline" onClick={() => setMeetingDialog(false)}>Cancel</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Stats Cards */}
       <div className="grid md:grid-cols-5 gap-4">
         <Card>
@@ -278,14 +416,24 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
                         <Button 
                           size="sm" 
                           variant="outline"
-                          onClick={() => onNurtureLead(lead)}
+                          onClick={() => {
+                            setSelectedLead(lead);
+                            setEmailData({
+                              subject: `Following up - ${lead.company}`,
+                              message: `Hi ${lead.name},\n\nI hope this email finds you well. I wanted to follow up on our previous conversation...\n\nBest regards`
+                            });
+                            setEmailDialog(true);
+                          }}
                         >
                           <Mail className="h-3 w-3" />
                         </Button>
                         <Button 
                           size="sm" 
                           variant="outline"
-                          onClick={() => onScheduleMeeting(lead)}
+                          onClick={() => {
+                            setSelectedLead(lead);
+                            setMeetingDialog(true);
+                          }}
                         >
                           <Calendar className="h-3 w-3" />
                         </Button>

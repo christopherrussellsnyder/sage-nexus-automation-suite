@@ -5,495 +5,432 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageSquare, Send, Save, Eye, Copy, Plus, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { MessageSquare, Plus, Edit, Trash2, Play, Save } from 'lucide-react';
 
-interface EmailTemplate {
-  id: number;
-  name: string;
-  subject: string;
-  content: string;
+interface SequenceStep {
+  id: string;
+  type: 'email' | 'call' | 'linkedin' | 'sms';
   delay: number;
-  category: string;
+  subject?: string;
+  content: string;
+  isEditable: boolean;
+}
+
+interface SalesSequence {
+  id: string;
+  name: string;
+  description: string;
+  steps: SequenceStep[];
+  isActive: boolean;
 }
 
 interface SalesSequenceBuilderProps {
-  onSaveSequence: (sequence: any) => void;
-  onDeploySequence: (sequence: any) => void;
+  onSaveSequence: (sequence: SalesSequence) => void;
+  onDeploySequence: (sequence: SalesSequence) => void;
 }
 
 const SalesSequenceBuilder = ({ onSaveSequence, onDeploySequence }: SalesSequenceBuilderProps) => {
+  const [sequences, setSequences] = useState<SalesSequence[]>([]);
+  const [selectedSequence, setSelectedSequence] = useState<SalesSequence | null>(null);
+  const [editingStep, setEditingStep] = useState<SequenceStep | null>(null);
+  const [showStepDialog, setShowStepDialog] = useState(false);
   const [sequenceName, setSequenceName] = useState('');
-  const [selectedTemplates, setSelectedTemplates] = useState<EmailTemplate[]>([]);
-  const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
+  const [sequenceDescription, setSequenceDescription] = useState('');
 
-  const emailTemplates: EmailTemplate[] = [
+  const prebuiltTemplates: SalesSequence[] = [
     {
-      id: 1,
-      name: 'Initial Outreach - Problem Focused',
-      subject: 'Quick question about {{companyName}}\'s sales process',
-      content: `Hi {{firstName}},
-
-I noticed {{companyName}} has been growing rapidly in the {{industry}} space - congratulations on your recent success!
-
-I'm reaching out because I've been working with similar companies who've been struggling with:
-• Manual lead qualification taking up too much sales time
-• Difficulty tracking prospect engagement across multiple touchpoints
-• Low response rates on outreach campaigns
-
-I'd love to share how companies like yours have solved these challenges and increased their qualified leads by 40% in just 90 days.
-
-Would you be open to a 15-minute conversation this week?
-
-Best regards,
-[Your Name]`,
-      delay: 0,
-      category: 'Initial Outreach'
+      id: 'cold-outreach',
+      name: 'Cold Outreach Sequence',
+      description: 'Professional cold outreach sequence for new prospects',
+      isActive: false,
+      steps: [
+        {
+          id: '1',
+          type: 'email',
+          delay: 0,
+          subject: 'Quick question about [Company Name]',
+          content: 'Hi [First Name],\n\nI noticed [Company Name] is [specific observation]. I help companies like yours [value proposition].\n\nWould you be open to a quick 15-minute call to discuss how we could help [Company Name] [specific benefit]?\n\nBest regards,\n[Your Name]',
+          isEditable: true
+        },
+        {
+          id: '2',
+          type: 'email',
+          delay: 3,
+          subject: 'Following up on my previous email',
+          content: 'Hi [First Name],\n\nI wanted to follow up on my previous email about helping [Company Name] [specific benefit].\n\nI understand you\'re busy, but I have some ideas that could [specific value] for your team.\n\nWould you be available for a brief call this week?\n\nBest,\n[Your Name]',
+          isEditable: true
+        },
+        {
+          id: '3',
+          type: 'linkedin',
+          delay: 7,
+          content: 'Hi [First Name], I sent you a couple of emails about helping [Company Name] with [specific solution]. Would love to connect and share some insights that could be valuable for your business.',
+          isEditable: true
+        }
+      ]
     },
     {
-      id: 2,
-      name: 'Follow-up - Value Proposition',
-      subject: 'Re: {{companyName}}\'s sales efficiency',
-      content: `Hi {{firstName}},
-
-I wanted to follow up on my previous email about helping {{companyName}} streamline your sales process.
-
-Just this month, I helped a {{industry}} company similar to yours:
-✓ Reduce lead qualification time by 60%
-✓ Increase email response rates by 3x
-✓ Generate $500K in additional pipeline in 90 days
-
-I have a few time slots open this week if you'd like to see exactly how this could work for {{companyName}}.
-
-Are you available for a brief call on Tuesday or Wednesday?
-
-Best,
-[Your Name]`,
-      delay: 3,
-      category: 'Follow-up'
-    },
-    {
-      id: 3,
-      name: 'Social Proof - Case Study',
-      subject: 'How [Similar Company] increased sales by 40%',
-      content: `Hi {{firstName}},
-
-I thought you might find this case study interesting.
-
-[Similar Company], a {{industry}} business like {{companyName}}, was struggling with the same challenges many growing companies face:
-- Sales team spending 70% of time on research instead of selling
-- Inconsistent follow-up leading to lost opportunities
-- Difficulty scaling their outreach efforts
-
-In just 90 days, we helped them:
-→ Automate their lead research process
-→ Implement personalized outreach sequences
-→ Increase qualified meetings by 40%
-
-The CEO told me it was "the best investment we've made in our sales team."
-
-I'd love to show you exactly how we did it. Are you free for a 15-minute call this week?
-
-Best regards,
-[Your Name]`,
-      delay: 7,
-      category: 'Social Proof'
-    },
-    {
-      id: 4,
-      name: 'Urgency - Limited Availability',
-      subject: 'Last call - {{companyName}}',
-      content: `Hi {{firstName}},
-
-I've reached out a couple of times about helping {{companyName}} streamline your sales process, but haven't heard back.
-
-I completely understand - I know how busy things can get when you're scaling a {{industry}} business.
-
-I only take on 3 new clients per quarter, and I have one spot left for Q4. Given {{companyName}}'s growth trajectory, I think we could achieve some incredible results together.
-
-If you're interested in learning more, I'm available for a quick call on Friday. After that, I'll likely be booked until next quarter.
-
-No pressure at all - just wanted to give you the opportunity before I move on.
-
-Best,
-[Your Name]`,
-      delay: 14,
-      category: 'Urgency'
-    },
-    {
-      id: 5,
-      name: 'Breakup Email - Last Touch',
-      subject: 'Closing the loop',
-      content: `Hi {{firstName}},
-
-I've reached out a few times about helping {{companyName}} optimize your sales process, but it seems like the timing isn't right.
-
-No worries at all - I know these decisions take time and need to align with your priorities.
-
-I'll stop reaching out for now, but if anything changes in the future, feel free to reach out. I'll be here.
-
-In the meantime, I thought you might find this free resource helpful: [Link to valuable resource]
-
-Wishing you and the {{companyName}} team continued success!
-
-Best regards,
-[Your Name]
-
-P.S. If I've misunderstood and you are interested in discussing this, just reply to this email. I'd be happy to chat.`,
-      delay: 21,
-      category: 'Breakup'
-    },
-    {
-      id: 6,
-      name: 'Re-engagement - New Angle',
-      subject: 'New approach for {{companyName}}',
-      content: `Hi {{firstName}},
-
-Hope you've been well! I know I reached out a few months ago about sales automation for {{companyName}}.
-
-Since then, I've been working with several {{industry}} companies and discovered a new approach that's been getting incredible results - specifically for businesses in your space.
-
-Instead of focusing just on automation, we're now helping companies like yours:
-• Identify and prioritize high-value prospects using AI
-• Create hyper-personalized outreach that feels genuinely human
-• Build systems that scale without losing the personal touch
-
-The results have been phenomenal - one client saw a 200% increase in qualified meetings in just 60 days.
-
-Would you be interested in a brief overview of this new methodology? I think {{companyName}} could be a perfect fit.
-
-Best,
-[Your Name]`,
-      delay: 90,
-      category: 'Re-engagement'
-    },
-    {
-      id: 7,
-      name: 'LinkedIn Connection Follow-up',
-      subject: 'Thanks for connecting on LinkedIn',
-      content: `Hi {{firstName}},
-
-Thanks for connecting with me on LinkedIn! I see you're leading sales at {{companyName}} - that's exciting work you're doing in the {{industry}} space.
-
-I've been helping sales leaders like yourself build more predictable pipeline and scale their outreach without sacrificing personalization.
-
-I'd love to learn more about {{companyName}}'s current sales process and see if there might be some opportunities to help you hit your targets more consistently.
-
-Would you be open to a brief conversation? I have some time slots available this week.
-
-Looking forward to connecting!
-
-Best,
-[Your Name]`,
-      delay: 1,
-      category: 'LinkedIn Follow-up'
-    },
-    {
-      id: 8,
-      name: 'Event Follow-up',
-      subject: 'Great meeting you at [Event Name]',
-      content: `Hi {{firstName}},
-
-It was great meeting you at [Event Name] yesterday! I really enjoyed our conversation about the challenges {{companyName}} is facing with lead qualification.
-
-As I mentioned, I've been helping {{industry}} companies solve exactly these types of issues. The approach I shared about using AI for prospect research has helped several companies reduce their sales cycle by 30%.
-
-I'd love to continue our conversation and show you some specific examples of how this could work for {{companyName}}.
-
-Are you available for a 20-minute call next week? I'm free Tuesday afternoon or Thursday morning.
-
-Looking forward to speaking with you again!
-
-Best regards,
-[Your Name]`,
-      delay: 1,
-      category: 'Event Follow-up'
-    },
-    {
-      id: 9,
-      name: 'Referral Introduction',
-      subject: '[Mutual Contact] suggested I reach out',
-      content: `Hi {{firstName}},
-
-[Mutual Contact] suggested I reach out to you. I've been working with them to help streamline their sales process, and they thought {{companyName}} might benefit from a similar approach.
-
-I specialize in helping {{industry}} companies like yours:
-• Reduce time spent on manual prospect research
-• Increase response rates through better personalization
-• Build scalable systems that maintain quality
-
-[Mutual Contact] saw a 50% increase in qualified meetings after implementing our methodology.
-
-Would you be interested in a brief conversation to explore how this might work for {{companyName}}? I could share some specific examples from [Mutual Contact]'s implementation.
-
-Best,
-[Your Name]`,
-      delay: 0,
-      category: 'Referral'
-    },
-    {
-      id: 10,
-      name: 'Content Sharing - Educational',
-      subject: 'Thought this might interest you',
-      content: `Hi {{firstName}},
-
-I came across this article about sales automation trends in the {{industry}} industry and thought you might find it interesting given your role at {{companyName}}.
-
-[Link to valuable article/resource]
-
-The section about "scaling personalized outreach" particularly resonated with me, as it's something I've been helping companies like yours implement successfully.
-
-If you find the article useful and want to discuss how some of these concepts might apply to {{companyName}}, I'd be happy to share some practical examples.
-
-No agenda here - just thought you might enjoy the read!
-
-Best,
-[Your Name]`,
-      delay: 0,
-      category: 'Content Sharing'
+      id: 'warm-follow-up',
+      name: 'Warm Lead Follow-up',
+      description: 'Follow-up sequence for leads who showed interest',
+      isActive: false,
+      steps: [
+        {
+          id: '1',
+          type: 'email',
+          delay: 0,
+          subject: 'Thanks for your interest in [Product/Service]',
+          content: 'Hi [First Name],\n\nThank you for your interest in [Product/Service]. I wanted to personally reach out to see how we can best help [Company Name].\n\nBased on what you shared, I think [specific solution] would be perfect for your needs.\n\nWould you like to schedule a demo to see it in action?\n\nBest regards,\n[Your Name]',
+          isEditable: true
+        },
+        {
+          id: '2',
+          type: 'call',
+          delay: 2,
+          content: 'Follow-up call to discuss their specific needs and answer any questions about the demo.',
+          isEditable: true
+        },
+        {
+          id: '3',
+          type: 'email',
+          delay: 5,
+          subject: 'Checking in - any questions about [Product/Service]?',
+          content: 'Hi [First Name],\n\nI wanted to check in and see if you had any questions about [Product/Service] after our conversation.\n\nI\'m here to help with any concerns or to provide additional information you might need.\n\nLooking forward to hearing from you!\n\nBest,\n[Your Name]',
+          isEditable: true
+        }
+      ]
     }
   ];
 
-  const addTemplate = (template: EmailTemplate) => {
-    if (!selectedTemplates.find(t => t.id === template.id)) {
-      setSelectedTemplates([...selectedTemplates, template]);
-    }
+  const handleCreateFromTemplate = (template: SalesSequence) => {
+    const newSequence = {
+      ...template,
+      id: Date.now().toString(),
+      name: `${template.name} - Copy`,
+      steps: template.steps.map(step => ({ ...step, id: Date.now().toString() + Math.random() }))
+    };
+    setSelectedSequence(newSequence);
+    setSequenceName(newSequence.name);
+    setSequenceDescription(newSequence.description);
   };
 
-  const removeTemplate = (templateId: number) => {
-    setSelectedTemplates(selectedTemplates.filter(t => t.id !== templateId));
+  const handleEditStep = (step: SequenceStep) => {
+    setEditingStep({ ...step });
+    setShowStepDialog(true);
   };
 
-  const copyTemplate = (content: string) => {
-    navigator.clipboard.writeText(content);
+  const handleSaveStep = () => {
+    if (!editingStep || !selectedSequence) return;
+
+    const updatedSteps = selectedSequence.steps.map(step =>
+      step.id === editingStep.id ? editingStep : step
+    );
+
+    setSelectedSequence({
+      ...selectedSequence,
+      steps: updatedSteps
+    });
+
+    setShowStepDialog(false);
+    setEditingStep(null);
+  };
+
+  const handleDeleteStep = (stepId: string) => {
+    if (!selectedSequence) return;
+
+    const updatedSteps = selectedSequence.steps.filter(step => step.id !== stepId);
+    setSelectedSequence({
+      ...selectedSequence,
+      steps: updatedSteps
+    });
+  };
+
+  const handleAddStep = () => {
+    const newStep: SequenceStep = {
+      id: Date.now().toString(),
+      type: 'email',
+      delay: 1,
+      subject: '',
+      content: '',
+      isEditable: true
+    };
+    setEditingStep(newStep);
+    setShowStepDialog(true);
   };
 
   const handleSaveSequence = () => {
-    const sequence = {
+    if (!selectedSequence) return;
+
+    const updatedSequence = {
+      ...selectedSequence,
       name: sequenceName,
-      templates: selectedTemplates,
-      totalEmails: selectedTemplates.length,
-      duration: Math.max(...selectedTemplates.map(t => t.delay)) + 1
+      description: sequenceDescription
     };
-    onSaveSequence(sequence);
+
+    setSequences([...sequences, updatedSequence]);
+    onSaveSequence(updatedSequence);
+    
+    // Reset form
+    setSelectedSequence(null);
+    setSequenceName('');
+    setSequenceDescription('');
   };
 
-  const handleDeploySequence = () => {
-    const sequence = {
-      name: sequenceName,
-      templates: selectedTemplates,
-      totalEmails: selectedTemplates.length,
-      duration: Math.max(...selectedTemplates.map(t => t.delay)) + 1
-    };
-    onDeploySequence(sequence);
+  const getStepIcon = (type: string) => {
+    switch (type) {
+      case 'email': return '📧';
+      case 'call': return '📞';
+      case 'linkedin': return '💼';
+      case 'sms': return '💬';
+      default: return '📧';
+    }
   };
 
-  const categories = [...new Set(emailTemplates.map(t => t.category))];
+  const getDelayText = (delay: number) => {
+    if (delay === 0) return 'Immediately';
+    if (delay === 1) return '1 day later';
+    return `${delay} days later`;
+  };
 
   return (
     <div className="space-y-6">
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Email Template Library */}
-        <div className="lg:col-span-1 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5" />
-                <span>Email Templates</span>
-              </CardTitle>
-              <CardDescription>
-                Choose from proven email templates
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {categories.map((category) => (
-                <div key={category} className="space-y-2">
-                  <h4 className="font-medium text-sm">{category}</h4>
-                  {emailTemplates.filter(t => t.category === category).map((template) => (
-                    <Card key={template.id} className="p-3 hover:shadow-md transition-shadow cursor-pointer">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h5 className="font-medium text-sm">{template.name}</h5>
-                          <Badge variant="outline" className="text-xs">
-                            Day {template.delay}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {template.subject}
-                        </p>
-                        <div className="flex space-x-1">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setPreviewTemplate(template)}
-                            className="text-xs h-6"
-                          >
-                            <Eye className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => addTemplate(template)}
-                            className="text-xs h-6"
-                            disabled={selectedTemplates.some(t => t.id === template.id)}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
+      {/* Step Editing Dialog */}
+      <Dialog open={showStepDialog} onOpenChange={setShowStepDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Sequence Step</DialogTitle>
+            <DialogDescription>
+              Customize this step in your sales sequence
+            </DialogDescription>
+          </DialogHeader>
+          {editingStep && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="stepType">Step Type</Label>
+                  <Select
+                    value={editingStep.type}
+                    onValueChange={(value: any) => setEditingStep({ ...editingStep, type: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="email">Email</SelectItem>
+                      <SelectItem value="call">Phone Call</SelectItem>
+                      <SelectItem value="linkedin">LinkedIn Message</SelectItem>
+                      <SelectItem value="sms">SMS</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sequence Builder */}
-        <div className="lg:col-span-2 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Build Your Sequence</CardTitle>
-              <CardDescription>
-                Create a multi-step email sequence for your prospects
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="sequenceName">Sequence Name</Label>
-                <Input
-                  id="sequenceName"
-                  placeholder="Enter sequence name"
-                  value={sequenceName}
-                  onChange={(e) => setSequenceName(e.target.value)}
-                />
+                <div>
+                  <Label htmlFor="delay">Delay (days)</Label>
+                  <Input
+                    id="delay"
+                    type="number"
+                    value={editingStep.delay}
+                    onChange={(e) => setEditingStep({ ...editingStep, delay: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
               </div>
-
-              <div className="space-y-4">
-                <h4 className="font-medium">Selected Templates ({selectedTemplates.length})</h4>
-                {selectedTemplates.length === 0 && (
-                  <div className="text-center py-8 border-2 border-dashed rounded-lg">
-                    <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-muted-foreground">No templates selected</p>
-                    <p className="text-sm text-muted-foreground">Choose templates from the library to build your sequence</p>
-                  </div>
-                )}
-                
-                {selectedTemplates
-                  .sort((a, b) => a.delay - b.delay)
-                  .map((template, index) => (
-                    <Card key={template.id}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-2">
-                              <Badge variant="outline">Day {template.delay}</Badge>
-                              <h5 className="font-medium">{template.name}</h5>
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              <strong>Subject:</strong> {template.subject}
-                            </p>
-                            <p className="text-sm line-clamp-3">{template.content}</p>
-                          </div>
-                          <div className="flex space-x-1 ml-4">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setPreviewTemplate(template)}
-                            >
-                              <Eye className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => copyTemplate(template.content)}
-                            >
-                              <Copy className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => removeTemplate(template.id)}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-              </div>
-
-              {selectedTemplates.length > 0 && (
-                <div className="flex space-x-4 pt-4">
-                  <Button
-                    onClick={handleSaveSequence}
-                    disabled={!sequenceName || selectedTemplates.length === 0}
-                    className="flex-1"
-                  >
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Sequence
-                  </Button>
-                  <Button
-                    onClick={handleDeploySequence}
-                    disabled={!sequenceName || selectedTemplates.length === 0}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    <Send className="h-4 w-4 mr-2" />
-                    Deploy Sequence
-                  </Button>
+              
+              {editingStep.type === 'email' && (
+                <div>
+                  <Label htmlFor="subject">Email Subject</Label>
+                  <Input
+                    id="subject"
+                    value={editingStep.subject || ''}
+                    onChange={(e) => setEditingStep({ ...editingStep, subject: e.target.value })}
+                    placeholder="Email subject line"
+                  />
                 </div>
               )}
+              
+              <div>
+                <Label htmlFor="content">Content</Label>
+                <Textarea
+                  id="content"
+                  value={editingStep.content}
+                  onChange={(e) => setEditingStep({ ...editingStep, content: e.target.value })}
+                  placeholder="Step content..."
+                  rows={6}
+                />
+              </div>
+              
+              <div className="flex space-x-2">
+                <Button onClick={handleSaveStep} className="flex-1">Save Step</Button>
+                <Button variant="outline" onClick={() => setShowStepDialog(false)}>Cancel</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {!selectedSequence ? (
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Sales Sequence Templates</CardTitle>
+              <CardDescription>Choose from pre-built templates or create your own sequence</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                {prebuiltTemplates.map((template) => (
+                  <Card key={template.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="text-lg">{template.name}</CardTitle>
+                      <CardDescription>{template.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 mb-4">
+                        <p className="text-sm text-muted-foreground">{template.steps.length} steps</p>
+                        <div className="flex flex-wrap gap-1">
+                          {template.steps.slice(0, 3).map((step, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {getStepIcon(step.type)} {step.type}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={() => handleCreateFromTemplate(template)}
+                        className="w-full"
+                      >
+                        Use This Template
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
 
-      {/* Template Preview Modal */}
-      {previewTemplate && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-2xl max-h-[80vh] overflow-auto">
+          {sequences.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Sequences</CardTitle>
+                <CardDescription>Manage your created sequences</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {sequences.map((sequence) => (
+                    <div key={sequence.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <h3 className="font-semibold">{sequence.name}</h3>
+                        <p className="text-sm text-muted-foreground">{sequence.description}</p>
+                        <p className="text-xs text-muted-foreground">{sequence.steps.length} steps</p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button size="sm" variant="outline" onClick={() => setSelectedSequence(sequence)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" onClick={() => onDeploySequence(sequence)}>
+                          <Play className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>{previewTemplate.name}</CardTitle>
-                <Button variant="outline" onClick={() => setPreviewTemplate(null)}>
-                  Close
+                <div>
+                  <CardTitle>Build Your Sequence</CardTitle>
+                  <CardDescription>Customize your sales sequence steps</CardDescription>
+                </div>
+                <Button variant="outline" onClick={() => setSelectedSequence(null)}>
+                  Back to Templates
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label className="text-sm font-medium">Subject Line:</Label>
-                <p className="text-lg font-medium">{previewTemplate.subject}</p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Email Content:</Label>
-                <div className="bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
-                  {previewTemplate.content}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="sequenceName">Sequence Name</Label>
+                  <Input
+                    id="sequenceName"
+                    value={sequenceName}
+                    onChange={(e) => setSequenceName(e.target.value)}
+                    placeholder="My Custom Sequence"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sequenceDescription">Description</Label>
+                  <Input
+                    id="sequenceDescription"
+                    value={sequenceDescription}
+                    onChange={(e) => setSequenceDescription(e.target.value)}
+                    placeholder="Sequence description"
+                  />
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <Badge variant="outline">Day {previewTemplate.delay}</Badge>
-                <Badge>{previewTemplate.category}</Badge>
-              </div>
-              <div className="flex space-x-4">
-                <Button
-                  onClick={() => {
-                    addTemplate(previewTemplate);
-                    setPreviewTemplate(null);
-                  }}
-                  disabled={selectedTemplates.some(t => t.id === previewTemplate.id)}
-                  className="flex-1"
-                >
-                  Add to Sequence
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Sequence Steps</CardTitle>
+                <Button onClick={handleAddStep}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Step
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => copyTemplate(previewTemplate.content)}
-                  className="flex-1"
-                >
-                  Copy Content
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {selectedSequence.steps.map((step, index) => (
+                  <div key={step.id} className="flex items-start space-x-4 p-4 border rounded-lg">
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-semibold">
+                        {index + 1}
+                      </div>
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline">
+                          {getStepIcon(step.type)} {step.type}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {getDelayText(step.delay)}
+                        </span>
+                      </div>
+                      {step.subject && (
+                        <p className="font-medium">{step.subject}</p>
+                      )}
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {step.content}
+                      </p>
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button size="sm" variant="outline" onClick={() => handleEditStep(step)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => handleDeleteStep(step.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex space-x-4 pt-4">
+                <Button onClick={handleSaveSequence} className="flex-1">
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Sequence
+                </Button>
+                <Button variant="outline" onClick={() => onDeploySequence(selectedSequence)} className="flex-1">
+                  <Play className="h-4 w-4 mr-2" />
+                  Deploy Sequence
                 </Button>
               </div>
             </CardContent>

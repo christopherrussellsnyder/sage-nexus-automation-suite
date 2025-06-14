@@ -23,6 +23,7 @@ const AgencyDashboard = () => {
   const [campaignProgress, setCampaignProgress] = useState(0);
   const [campaignData, setCampaignData] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [managedLeads, setManagedLeads] = useState<any[]>([]);
 
   const handleCreateCampaign = async (data: any) => {
     setIsCreatingCampaign(true);
@@ -53,6 +54,10 @@ const AgencyDashboard = () => {
 
   const handleScheduleMeeting = (lead: any) => {
     console.log('Scheduling meeting with lead:', lead);
+  };
+
+  const handleLeadAdded = (lead: any) => {
+    setManagedLeads(prev => [...prev, lead]);
   };
 
   return (
@@ -179,7 +184,7 @@ const AgencyDashboard = () => {
       {/* Lead Scoring Tab */}
       {activeTab === 'leads' && (
         <LeadScoringDashboard 
-          leads={[]}
+          leads={managedLeads}
           onNurtureLead={handleNurtureLead}
           onScheduleMeeting={handleScheduleMeeting}
         />
@@ -187,7 +192,7 @@ const AgencyDashboard = () => {
 
       {/* Lead Management Tab */}
       {activeTab === 'management' && (
-        <LeadManagement />
+        <LeadManagement onLeadAdded={handleLeadAdded} />
       )}
 
       {/* Social Media Tab */}

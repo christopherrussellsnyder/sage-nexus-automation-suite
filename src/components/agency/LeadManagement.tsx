@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +27,11 @@ interface Lead {
   createdAt: string;
 }
 
-const LeadManagement = () => {
+interface LeadManagementProps {
+  onLeadAdded?: (lead: Lead) => void;
+}
+
+const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isAddingLead, setIsAddingLead] = useState(false);
   const [newLead, setNewLead] = useState({
@@ -40,6 +44,19 @@ const LeadManagement = () => {
     notes: ''
   });
   const { toast } = useToast();
+
+  // Load leads from localStorage on component mount
+  useEffect(() => {
+    const savedLeads = localStorage.getItem('leadManagementLeads');
+    if (savedLeads) {
+      setLeads(JSON.parse(savedLeads));
+    }
+  }, []);
+
+  // Save leads to localStorage whenever leads change
+  useEffect(()=> {
+    localStorage.setItem('leadManagementLeads', JSON.stringify(leads));
+  }, [leads]);
 
   const calculateLeadScore = (lead: any): { score: number; status: 'hot' | 'warm' | 'cold' } => {
     let score = 0;
@@ -101,7 +118,14 @@ const LeadManagement = () => {
       createdAt: new Date().toISOString()
     };
 
-    setLeads([...leads, lead]);
+    const updatedLeads = [...leads, lead];
+    setLeads(updatedLeads);
+    
+    // Notify parent component if callback is provided
+    if (onLeadAdded) {
+      onLeadAdded(lead);
+    }
+
     setNewLead({
       name: '',
       email: '',
@@ -115,7 +139,7 @@ const LeadManagement = () => {
 
     toast({
       title: "Lead Added",
-      description: `${lead.name} has been added with a ${status} score of ${score}`,
+      description: `${lead.name} has been added with a ${status} score of ${score} and synced to Lead Scoring`,
     });
   };
 
@@ -157,7 +181,7 @@ const LeadManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Lead Management</CardTitle>
-              <CardDescription>Add and manage your incoming leads with AI-powered scoring</CardDescription>
+              <CardDescription>Add and manage your incoming leads with AI-powered scoring. Leads automatically sync to Lead Scoring dashboard.</CardDescription>
             </div>
             <Dialog open={isAddingLead} onOpenChange={setIsAddingLead}>
               <DialogTrigger asChild>

@@ -73,13 +73,13 @@ const AdCopyGenerator = () => {
       {
         id: 1,
         platform: adData.platform,
-        approach: "Competitive Advantage",
+        approach: "Competitive Advantage Hook",
         headline: competitiveInsights?.topPerformers?.length > 0 ?
           `${adData.product}: ${competitiveInsights.topPerformers[0].adCopy.headlines[0].replace(/their|they/gi, 'your')}` :
           `Stop struggling with ${adData.product}!`,
         body: competitiveInsights ? 
-          `While ${competitiveInsights.topPerformers[0]?.name || 'others'} ${competitiveInsights.marketGaps[0]}, ${adData.businessName} ${adData.uniqueValue}. Join ${adData.targetAudience} who are getting ${competitiveInsights.successMetrics?.avgConversionRate}% better results.` :
-          `${adData.businessName} helps ${adData.targetAudience} solve their biggest challenges with our proven ${adData.product} solution.`,
+          `While ${competitiveInsights.topPerformers[0]?.name || 'others'} ${competitiveInsights.marketGaps[0]}, ${adData.businessName} ${adData.uniqueValue}.\n\nHere's what makes us different:\n✅ ${competitiveInsights.successMetrics?.avgConversionRate}% better results than industry average\n✅ Proven track record with ${adData.targetAudience}\n✅ Unique approach that competitors can't match\n\nJoin the ${Math.floor(Math.random() * 5000) + 1000}+ businesses who chose us over the competition. See why industry leaders trust ${adData.businessName} for guaranteed results that actually move the needle.\n\nDon't settle for average when you can have exceptional. Your competitors are already falling behind - make sure you're not one of them.` :
+          `${adData.businessName} helps ${adData.targetAudience} solve their biggest challenges with our proven ${adData.product} solution. Transform your business with industry-leading results that speak for themselves.`,
         cta: competitiveInsights?.commonEmotions?.includes('urgency') ? 
           "Get Your Competitive Edge Now" : 
           "Get Started Today",
@@ -94,23 +94,52 @@ const AdCopyGenerator = () => {
       {
         id: 2,
         platform: adData.platform,
-        approach: "Data-Driven Social Proof",
+        approach: "Data-Driven Social Proof Story",
         headline: competitiveInsights?.topPerformers?.length > 0 ?
           `Join ${Math.floor(Math.random() * 5000) + 1000}+ ${adData.targetAudience} Who Chose ${adData.businessName} Over ${competitiveInsights.topPerformers[0].name}` :
           `Join 10,000+ ${adData.targetAudience} who trust ${adData.businessName}`,
         body: competitiveInsights ?
-          `Our ${adData.product} delivers ${competitiveInsights.successMetrics?.avgConversionRate}% better results than industry average. While competitors ${competitiveInsights.marketGaps[0]}, we guarantee ${adData.uniqueValue}.` :
-          `See why industry leaders choose our ${adData.product} for guaranteed results. Don't miss out on what everyone's talking about.`,
-        cta: "Join the Winners",
+          `Here's the truth about ${adData.industry}: Most companies promise the world but deliver mediocre results.\n\nThat's exactly why Sarah J., CEO of TechStartup Inc., made the switch to ${adData.businessName}:\n\n"We tried ${competitiveInsights.topPerformers[0]?.name || 'other solutions'} first, but they ${competitiveInsights.marketGaps[0]}. Within 30 days of switching to ${adData.businessName}, we saw ${competitiveInsights.successMetrics?.avgConversionRate}% better results."\n\nSarah isn't alone. We've helped hundreds of ${adData.targetAudience} overcome the exact challenges you're facing right now.\n\nWhile competitors ${competitiveInsights.marketGaps[0]}, we guarantee ${adData.uniqueValue}. The results speak for themselves - and so do our clients.` :
+          `Discover why industry leaders choose ${adData.businessName}. Our clients consistently see remarkable results that transform their business. Don't take our word for it - let the success stories speak for themselves.`,
+        cta: "Join the Winners Today",
         psychology: competitiveInsights ?
-          `Leverages competitor comparison + industry benchmarks (${competitiveInsights.successMetrics?.avgConversionRate}% conversion rate) for maximum credibility` :
+          `Leverages competitor comparison + industry benchmarks (${competitiveInsights.successMetrics?.avgConversionRate}% conversion rate) + customer testimonial for maximum credibility` :
           "Uses social validation and FOMO to drive action",
         competitorInsights: competitiveInsights ?
-          `Specifically targets weakness in ${competitiveInsights.topPerformers[0]?.name || 'top competitor'}'s positioning` :
+          `Specifically targets weakness in ${competitiveInsights.topPerformers[0]?.name || 'top competitor'}'s positioning with real customer story` :
           undefined,
         emotionalTriggers: ['social proof', 'superiority', 'exclusivity']
       },
-      // ... additional enhanced templates
+      {
+        id: 3,
+        platform: adData.platform,
+        approach: "Problem-Agitation-Solution Framework",
+        headline: `${adData.targetAudience}: Stop Wasting Money on Solutions That Don't Work`,
+        body: `Let me guess...\n\nYou've tried multiple ${adData.product} solutions, spent thousands of dollars, and you're STILL not getting the results you were promised.\n\nSound familiar?\n\nHere's what's really happening: Most ${adData.industry} companies are selling you outdated strategies that worked 5 years ago. They're stuck in the past while your competitors are moving ahead.\n\nBut what if I told you there's a better way?\n\n${adData.businessName} has cracked the code that others haven't. We've helped over ${Math.floor(Math.random() * 3000) + 500} businesses like yours achieve breakthrough results using our proprietary system.\n\nNo more wasted time. No more empty promises. Just real results that impact your bottom line.\n\nReady to finally get the success you deserve?`,
+        cta: "Stop Struggling - Get Results Now",
+        psychology: "Problem-Agitation-Solution framework that builds emotional tension before presenting the solution",
+        emotionalTriggers: ['frustration', 'hope', 'urgency']
+      },
+      {
+        id: 4,
+        platform: adData.platform,
+        approach: "Behind-the-Scenes Authority",
+        headline: `The ${adData.industry} Secret That ${adData.targetAudience} Don't Want You to Know`,
+        body: `I'm about to share something that might upset some people in the ${adData.industry} industry...\n\nFor years, I've been watching companies like yours struggle with ${adData.product}, trying solution after solution without getting real results.\n\nMeanwhile, a small group of insiders has been using a completely different approach - one that delivers ${Math.floor(Math.random() * 300) + 200}% better results than traditional methods.\n\nI should know - I developed this system after 10+ years of studying what actually works (and what doesn't).\n\nHere's what we discovered:\n\n🔍 Most ${adData.industry} solutions focus on the wrong metrics\n🔍 The "best practices" everyone teaches are actually outdated\n🔍 There's a hidden pattern that top performers use (but never talk about)\n\nToday, I'm pulling back the curtain and sharing this system with ${adData.targetAudience} who are serious about getting real results.\n\nThis isn't theory - it's the exact blueprint we've used to help ${Math.floor(Math.random() * 1000) + 200} businesses transform their results.`,
+        cta: "Get the Inside System Now",
+        psychology: "Authority positioning with 'insider secret' appeal and social proof through specific numbers",
+        emotionalTriggers: ['curiosity', 'exclusivity', 'authority']
+      },
+      {
+        id: 5,
+        platform: adData.platform,
+        approach: "Transformation Story with Proof",
+        headline: `How ${adData.businessName} Helped [Client Name] Go From Struggling to $1M+ Revenue`,
+        body: `12 months ago, Marcus T. was exactly where you might be right now...\n\nHis ${adData.industry} business was stuck. Despite trying every ${adData.product} solution on the market, he was barely breaking even.\n\nFrustrated and ready to give up, Marcus discovered ${adData.businessName}.\n\nHere's what happened next:\n\n✅ Month 1: We identified the 3 critical gaps holding him back\n✅ Month 3: Revenue increased by 180% using our proven system\n✅ Month 6: Expanded to 2 new markets with confidence\n✅ Month 12: Crossed the $1M revenue milestone\n\nMarcus isn't special. He didn't have any secret advantages.\n\nHe simply applied the same system we've used to help hundreds of ${adData.targetAudience} break through their growth barriers.\n\nThe difference? Our approach focuses on ${adData.uniqueValue}, something most competitors completely ignore.\n\nWhile others are still using outdated strategies, our clients are seeing results that seemed impossible just months ago.\n\nYour transformation could be next.`,
+        cta: "Start Your Transformation Today",
+        psychology: "Complete transformation story with specific timeline and proof points that make success feel achievable",
+        emotionalTriggers: ['hope', 'possibility', 'social proof']
+      }
     ];
     
     setTemplates(generatedTemplates);
@@ -259,7 +288,7 @@ const AdCopyGenerator = () => {
                   ) : (
                     <Copy className="h-4 w-4 mr-2" />
                   )}
-                  {competitiveInsights ? 'Generate Data-Driven Ad Templates' : 'Generate 5 Ad Templates'}
+                  {competitiveInsights ? 'Generate 5 Data-Driven Ad Templates' : 'Generate 5 Ad Templates'}
                 </Button>
               </CardContent>
             </Card>
@@ -314,7 +343,7 @@ const AdCopyGenerator = () => {
                     </div>
                     <div>
                       <Label className="text-sm font-medium">Body Copy:</Label>
-                      <p className="text-muted-foreground">{template.body}</p>
+                      <div className="text-muted-foreground whitespace-pre-line">{template.body}</div>
                     </div>
                     <div>
                       <Label className="text-sm font-medium">Call to Action:</Label>
@@ -344,7 +373,7 @@ const AdCopyGenerator = () => {
                   <Copy className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Ready to Generate Ad Copy?</h3>
                   <p className="text-muted-foreground mb-4">
-                    Fill out your campaign information and generate 5 unique ad templates
+                    Fill out your campaign information and generate 5 unique ad templates with engaging, video-style content
                   </p>
                 </CardContent>
               </Card>
