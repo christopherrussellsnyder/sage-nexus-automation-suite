@@ -44,9 +44,54 @@ const WebsiteTemplates = ({
   const [generatedTemplates, setGeneratedTemplates] = useState<Template[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Generate professional templates that match your Sage.ai design
-  const generateProfessionalTemplates = (data: WebsiteData): Template[] => {
-    const baseStyles = `
+  // Generate professional templates using Lovable's design philosophy
+  const generateLovableStyleTemplates = (data: WebsiteData): Template[] => {
+    // Modern, clean CSS following Lovable's principles
+    const modernBaseStyles = `
+      /* Lovable-inspired Design System */
+      :root {
+        /* Clean color palette */
+        --primary: 222.2 47.4% 11.2%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+        --border: 214.3 31.8% 91.4%;
+        --accent: 210 40% 96.1%;
+        --accent-foreground: 222.2 47.4% 11.2%;
+        
+        /* Typography system */
+        --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        --font-size-xs: 0.75rem;
+        --font-size-sm: 0.875rem;
+        --font-size-base: 1rem;
+        --font-size-lg: 1.125rem;
+        --font-size-xl: 1.25rem;
+        --font-size-2xl: 1.5rem;
+        --font-size-3xl: 1.875rem;
+        --font-size-4xl: 2.25rem;
+        --font-size-5xl: 3rem;
+        
+        /* Spacing system */
+        --spacing-1: 0.25rem;
+        --spacing-2: 0.5rem;
+        --spacing-3: 0.75rem;
+        --spacing-4: 1rem;
+        --spacing-6: 1.5rem;
+        --spacing-8: 2rem;
+        --spacing-12: 3rem;
+        --spacing-16: 4rem;
+        --spacing-24: 6rem;
+        
+        /* Border radius */
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -54,26 +99,39 @@ const WebsiteTemplates = ({
       }
       
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-family: var(--font-family);
         line-height: 1.6;
-        color: hsl(222.2, 84%, 4.9%);
-        background: hsl(0, 0%, 100%);
+        color: hsl(var(--foreground));
+        background: hsl(var(--background));
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       
+      /* Container system with strategic whitespace */
       .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 1rem;
+        padding: 0 var(--spacing-4);
       }
       
+      @media (min-width: 640px) {
+        .container { padding: 0 var(--spacing-6); }
+      }
+      
+      @media (min-width: 1024px) {
+        .container { padding: 0 var(--spacing-8); }
+      }
+      
+      /* Modern header with clean design */
       .header {
-        background: hsl(0, 0%, 100%);
-        border-bottom: 1px solid hsl(214.3, 31.8%, 91.4%);
-        padding: 1rem 0;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid hsl(var(--border));
+        padding: var(--spacing-4) 0;
         position: sticky;
         top: 0;
         z-index: 50;
-        backdrop-filter: blur(8px);
+        transition: all 0.3s ease;
       }
       
       .nav {
@@ -83,171 +141,356 @@ const WebsiteTemplates = ({
       }
       
       .logo {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: hsl(222.2, 47.4%, 11.2%);
+        font-size: var(--font-size-2xl);
+        font-weight: 700;
+        color: hsl(var(--primary));
+        letter-spacing: -0.025em;
       }
       
       .nav-links {
-        display: flex;
-        gap: 2rem;
+        display: none;
+        gap: var(--spacing-8);
         list-style: none;
+      }
+      
+      @media (min-width: 768px) {
+        .nav-links { display: flex; }
       }
       
       .nav-links a {
         text-decoration: none;
-        color: hsl(215.4, 16.3%, 46.9%);
+        color: hsl(var(--muted-foreground));
         font-weight: 500;
-        transition: color 0.2s;
+        font-size: var(--font-size-sm);
+        transition: all 0.2s ease;
+        position: relative;
+      }
+      
+      .nav-links a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background: hsl(var(--primary));
+        transition: width 0.3s ease;
       }
       
       .nav-links a:hover {
-        color: hsl(222.2, 47.4%, 11.2%);
+        color: hsl(var(--primary));
       }
       
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+      
+      /* Modern button system */
       .btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
+        border-radius: var(--radius);
+        font-size: var(--font-size-sm);
         font-weight: 500;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
         cursor: pointer;
         border: none;
         text-decoration: none;
+        outline: none;
+        white-space: nowrap;
       }
       
       .btn-primary {
-        background: hsl(222.2, 47.4%, 11.2%);
-        color: hsl(210, 40%, 98%);
-        padding: 0.5rem 1rem;
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        padding: var(--spacing-3) var(--spacing-6);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
       
       .btn-primary:hover {
-        background: hsl(222.2, 47.4%, 8%);
+        background: hsl(var(--primary) / 0.9);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
       
       .btn-secondary {
-        background: hsl(210, 40%, 96.1%);
-        color: hsl(222.2, 47.4%, 11.2%);
-        padding: 0.5rem 1rem;
-        border: 1px solid hsl(214.3, 31.8%, 91.4%);
+        background: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
+        padding: var(--spacing-3) var(--spacing-6);
+        border: 1px solid hsl(var(--border));
       }
       
       .btn-secondary:hover {
-        background: hsl(210, 40%, 94%);
+        background: hsl(var(--secondary) / 0.8);
+        transform: translateY(-1px);
       }
       
+      /* Hero section with modern typography */
       .hero {
-        padding: 6rem 0;
+        padding: var(--spacing-24) 0;
         text-align: center;
-        background: linear-gradient(to bottom right, hsl(210, 40%, 98%), hsl(220, 13%, 95%));
+        background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--secondary) / 0.3));
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 20%, hsl(var(--primary) / 0.05), transparent 50%);
+        pointer-events: none;
+      }
+      
+      .hero-content {
+        position: relative;
+        z-index: 1;
       }
       
       .hero h1 {
-        font-size: 3rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-        background: linear-gradient(to right, hsl(222.2, 47.4%, 11.2%), hsl(222.2, 47.4%, 25%));
+        font-size: var(--font-size-4xl);
+        font-weight: 800;
+        margin-bottom: var(--spacing-6);
+        background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.7));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        letter-spacing: -0.025em;
+        line-height: 1.1;
+      }
+      
+      @media (min-width: 768px) {
+        .hero h1 { font-size: var(--font-size-5xl); }
       }
       
       .hero p {
-        font-size: 1.25rem;
-        color: hsl(215.4, 16.3%, 46.9%);
-        margin-bottom: 2rem;
+        font-size: var(--font-size-xl);
+        color: hsl(var(--muted-foreground));
+        margin-bottom: var(--spacing-8);
         max-width: 600px;
         margin-left: auto;
         margin-right: auto;
+        line-height: 1.6;
       }
       
+      .hero-actions {
+        display: flex;
+        gap: var(--spacing-4);
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: var(--spacing-12);
+      }
+      
+      /* Modern section layouts */
       .section {
-        padding: 4rem 0;
+        padding: var(--spacing-24) 0;
       }
       
+      .section-header {
+        text-align: center;
+        margin-bottom: var(--spacing-16);
+      }
+      
+      .section-title {
+        font-size: var(--font-size-4xl);
+        font-weight: 700;
+        margin-bottom: var(--spacing-4);
+        color: hsl(var(--primary));
+        letter-spacing: -0.025em;
+      }
+      
+      .section-description {
+        font-size: var(--font-size-lg);
+        color: hsl(var(--muted-foreground));
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+      
+      /* Modern grid system */
       .grid {
         display: grid;
-        gap: 2rem;
+        gap: var(--spacing-8);
+      }
+      
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      
+      @media (min-width: 768px) {
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
       }
       
       .grid-3 {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: 1fr;
       }
       
+      @media (min-width: 640px) {
+        .grid-3 { grid-template-columns: repeat(2, 1fr); }
+      }
+      
+      @media (min-width: 1024px) {
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+      }
+      
+      /* Modern card component */
       .card {
-        background: hsl(0, 0%, 100%);
-        border: 1px solid hsl(214.3, 31.8%, 91.4%);
-        border-radius: 0.75rem;
-        padding: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        transition: all 0.2s;
+        background: hsl(var(--background));
+        border: 1px solid hsl(var(--border));
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-8);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.5));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
       }
       
       .card:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        transform: translateY(-2px);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+      
+      .card:hover::before {
+        transform: scaleX(1);
       }
       
       .card h3 {
-        font-size: 1.5rem;
+        font-size: var(--font-size-2xl);
         font-weight: 600;
-        margin-bottom: 1rem;
+        margin-bottom: var(--spacing-4);
+        color: hsl(var(--primary));
       }
       
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        padding: 0.25rem 0.75rem;
-        background: hsl(210, 40%, 96.1%);
-        color: hsl(222.2, 47.4%, 11.2%);
+      .card p {
+        color: hsl(var(--muted-foreground));
+        line-height: 1.6;
+        margin-bottom: var(--spacing-6);
       }
       
-      .footer {
-        background: hsl(222.2, 47.4%, 11.2%);
-        color: hsl(210, 40%, 98%);
-        padding: 3rem 0;
-        text-align: center;
-      }
-      
+      /* Modern stats section */
       .stats {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 2rem;
-        margin: 2rem 0;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-6);
+        margin: var(--spacing-12) 0;
+      }
+      
+      @media (min-width: 768px) {
+        .stats { grid-template-columns: repeat(4, 1fr); }
       }
       
       .stat {
         text-align: center;
+        padding: var(--spacing-6);
+        background: hsl(var(--secondary) / 0.5);
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(10px);
       }
       
       .stat-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: hsl(222.2, 47.4%, 11.2%);
+        font-size: var(--font-size-4xl);
+        font-weight: 800;
+        color: hsl(var(--primary));
+        line-height: 1;
+        margin-bottom: var(--spacing-2);
       }
       
       .stat-label {
-        color: hsl(215.4, 16.3%, 46.9%);
-        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
       
-      @media (max-width: 768px) {
-        .hero h1 {
-          font-size: 2rem;
+      /* Modern badge component */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 9999px;
+        font-size: var(--font-size-xs);
+        font-weight: 500;
+        padding: var(--spacing-1) var(--spacing-3);
+        background: hsl(var(--accent));
+        color: hsl(var(--accent-foreground));
+        margin-top: var(--spacing-4);
+      }
+      
+      /* Modern footer */
+      .footer {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        padding: var(--spacing-16) 0 var(--spacing-8);
+        text-align: center;
+        position: relative;
+      }
+      
+      .footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, hsl(var(--primary-foreground) / 0.2), transparent);
+      }
+      
+      /* Smooth animations */
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeIn 0.6s ease forwards;
+      }
+      
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      /* Mobile optimizations */
+      @media (max-width: 767px) {
+        .hero {
+          padding: var(--spacing-16) 0;
         }
         
-        .nav-links {
-          display: none;
+        .hero h1 {
+          font-size: var(--font-size-3xl);
+        }
+        
+        .hero-actions {
+          flex-direction: column;
+          align-items: center;
+        }
+        
+        .btn {
+          width: 100%;
+          max-width: 280px;
         }
         
         .container {
-          padding: 0 0.5rem;
+          padding: 0 var(--spacing-4);
+        }
+        
+        .section {
+          padding: var(--spacing-16) 0;
         }
       }
     `;
@@ -255,9 +498,9 @@ const WebsiteTemplates = ({
     const businessType = determineBusinessType(data);
     const templates: Template[] = [];
 
-    // Generate 5 different professional templates based on business type
+    // Generate 5 different modern templates using Lovable's design philosophy
     for (let i = 1; i <= 5; i++) {
-      const template = generateTemplate(data, businessType, i, baseStyles);
+      const template = generateModernTemplate(data, businessType, i, modernBaseStyles);
       templates.push(template);
     }
 
@@ -283,44 +526,70 @@ const WebsiteTemplates = ({
     }
   };
 
-  const generateTemplate = (data: WebsiteData, businessType: string, templateId: number, baseStyles: string): Template => {
-    const templateVariations = {
-      1: 'Modern & Minimalist',
-      2: 'Bold & Dynamic',
-      3: 'Professional & Clean',
-      4: 'Creative & Engaging',
-      5: 'Elegant & Sophisticated'
+  const generateModernTemplate = (data: WebsiteData, businessType: string, templateId: number, baseStyles: string): Template => {
+    const templateStyles = {
+      1: { name: 'Clean Minimalist', accent: 'Modern & sophisticated with strategic whitespace' },
+      2: { name: 'Bold Professional', accent: 'Strong typography with purposeful color use' },
+      3: { name: 'Elegant Corporate', accent: 'Professional elegance with subtle animations' },
+      4: { name: 'Creative Modern', accent: 'Creative layouts with engaging interactions' },
+      5: { name: 'Premium Luxury', accent: 'Luxurious feel with premium design elements' }
     };
+
+    const currentStyle = templateStyles[templateId as keyof typeof templateStyles];
 
     const getBusinessSpecificContent = () => {
       switch (businessType) {
         case 'ecommerce':
           return {
-            heroTitle: `${data.businessName} - Premium Products Online`,
-            heroSubtitle: `Discover our curated collection of high-quality products. ${data.businessDescription}`,
-            sections: ['Featured Products', 'Categories', 'Customer Reviews', 'Why Choose Us'],
-            cta: 'Shop Now'
+            heroTitle: `${data.businessName}`,
+            heroSubtitle: `Discover premium products crafted for discerning customers. ${data.businessDescription}`,
+            sections: ['Featured Collections', 'Why Choose Us', 'Customer Stories', 'Experience'],
+            cta: 'Shop Collection',
+            features: [
+              'Curated premium products',
+              'Exceptional customer service',
+              'Fast, secure shipping',
+              'Satisfaction guaranteed'
+            ]
           };
         case 'services':
           return {
-            heroTitle: `${data.businessName} - Expert ${data.industry} Services`,
-            heroSubtitle: `Professional solutions tailored for your success. ${data.businessDescription}`,
-            sections: ['Our Services', 'Process', 'Success Stories', 'Get Started'],
-            cta: 'Get Quote'
+            heroTitle: `${data.businessName}`,
+            heroSubtitle: `Professional ${data.industry.toLowerCase()} solutions that drive real results. ${data.businessDescription}`,
+            sections: ['Our Approach', 'Success Stories', 'Why Partner With Us', 'Get Started'],
+            cta: 'Schedule Consultation',
+            features: [
+              'Expert strategy development',
+              'Proven track record',
+              'Personalized approach',
+              'Ongoing support'
+            ]
           };
         case 'tech':
           return {
-            heroTitle: `${data.businessName} - Innovation Powered Solutions`,
-            heroSubtitle: `Cutting-edge technology that transforms your business. ${data.businessDescription}`,
-            sections: ['Solutions', 'Technology', 'Case Studies', 'Integration'],
-            cta: 'Start Free Trial'
+            heroTitle: `${data.businessName}`,
+            heroSubtitle: `Next-generation technology solutions that transform how you work. ${data.businessDescription}`,
+            sections: ['Innovation', 'Solutions', 'Success Stories', 'Integration'],
+            cta: 'Start Free Trial',
+            features: [
+              'Cutting-edge technology',
+              'Seamless integration',
+              'Scalable solutions',
+              '24/7 technical support'
+            ]
           };
         default:
           return {
-            heroTitle: `Welcome to ${data.businessName}`,
-            heroSubtitle: `${data.businessDescription} Serving ${data.targetAudience} with excellence.`,
-            sections: ['About Us', 'Services', 'Testimonials', 'Contact'],
-            cta: 'Learn More'
+            heroTitle: `${data.businessName}`,
+            heroSubtitle: `${data.businessDescription} Exceptional service for ${data.targetAudience}.`,
+            sections: ['About Us', 'Our Services', 'Success Stories', 'Contact'],
+            cta: 'Get Started',
+            features: [
+              'Professional excellence',
+              'Proven results',
+              'Personal attention',
+              'Trusted expertise'
+            ]
           };
       }
     };
@@ -333,7 +602,8 @@ const WebsiteTemplates = ({
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${data.businessName} - ${templateVariations[templateId as keyof typeof templateVariations]}</title>
+    <title>${data.businessName} - ${currentStyle.name}</title>
+    <meta name="description" content="${data.businessDescription}">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -357,28 +627,30 @@ const WebsiteTemplates = ({
     <main>
         <section class="hero" id="home">
             <div class="container">
-                <h1>${content.heroTitle}</h1>
-                <p>${content.heroSubtitle}</p>
-                <div>
-                    <a href="#services" class="btn btn-primary">${content.cta}</a>
-                    <a href="#about" class="btn btn-secondary">Learn More</a>
-                </div>
-                <div class="stats">
-                    <div class="stat">
-                        <div class="stat-number">500+</div>
-                        <div class="stat-label">Happy Clients</div>
+                <div class="hero-content fade-in">
+                    <h1>${content.heroTitle}</h1>
+                    <p>${content.heroSubtitle}</p>
+                    <div class="hero-actions">
+                        <a href="#services" class="btn btn-primary">${content.cta}</a>
+                        <a href="#about" class="btn btn-secondary">Learn More</a>
                     </div>
-                    <div class="stat">
-                        <div class="stat-number">99%</div>
-                        <div class="stat-label">Success Rate</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">24/7</div>
-                        <div class="stat-label">Support</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">5+</div>
-                        <div class="stat-label">Years Experience</div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Happy Clients</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">99%</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Support</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">5+</div>
+                            <div class="stat-label">Years Experience</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -386,50 +658,57 @@ const WebsiteTemplates = ({
 
         <section class="section" id="about">
             <div class="container">
-                <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem;">About ${data.businessName}</h2>
+                <div class="section-header fade-in">
+                    <h2 class="section-title">Why Choose ${data.businessName}?</h2>
+                    <p class="section-description">
+                        We deliver exceptional results through innovation, expertise, and unwavering commitment to your success.
+                    </p>
+                </div>
                 <div class="grid grid-3">
-                    ${content.sections.map(section => `
-                        <div class="card">
-                            <h3>${section}</h3>
-                            <p>Our ${section.toLowerCase()} are designed specifically for ${data.targetAudience}. We understand your unique needs and deliver exceptional results that exceed expectations.</p>
-                            <div style="margin-top: 1rem;">
-                                <span class="badge">Premium Quality</span>
-                            </div>
+                    ${content.features.map((feature, index) => `
+                        <div class="card fade-in" style="animation-delay: ${index * 0.1}s">
+                            <h3>${feature}</h3>
+                            <p>Our ${feature.toLowerCase()} ensures you receive the highest quality service tailored specifically for ${data.targetAudience}.</p>
+                            <span class="badge">Premium Quality</span>
                         </div>
                     `).join('')}
                 </div>
             </div>
         </section>
 
-        <section class="section" style="background: hsl(210, 40%, 98%);" id="services">
+        <section class="section" style="background: hsl(var(--secondary) / 0.3);" id="services">
             <div class="container">
-                <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem;">Why Choose ${data.businessName}?</h2>
-                <div class="grid grid-3">
-                    <div class="card">
-                        <h3>🚀 Fast & Reliable</h3>
-                        <p>We deliver high-quality results quickly and efficiently, ensuring your ${data.businessGoals || 'business goals'} are met on time.</p>
-                    </div>
-                    <div class="card">
-                        <h3>💎 Premium Quality</h3>
-                        <p>Our commitment to excellence means you get the best possible service tailored for ${data.targetAudience}.</p>
-                    </div>
-                    <div class="card">
-                        <h3>🎯 Results Focused</h3>
-                        <p>Every solution is designed to help you achieve your specific business objectives in the ${data.industry} industry.</p>
-                    </div>
+                <div class="section-header fade-in">
+                    <h2 class="section-title">Our ${content.sections[0]}</h2>
+                    <p class="section-description">
+                        Comprehensive solutions designed to help you achieve your ${data.businessGoals || 'business objectives'}.
+                    </p>
+                </div>
+                <div class="grid grid-2">
+                    ${content.sections.slice(1, 3).map((section, index) => `
+                        <div class="card fade-in" style="animation-delay: ${index * 0.2}s">
+                            <h3>${section}</h3>
+                            <p>Our comprehensive approach to ${section.toLowerCase()} ensures sustainable growth and measurable results for your ${data.industry} business.</p>
+                            <a href="#contact" class="btn btn-primary" style="margin-top: var(--spacing-4);">Learn More</a>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
         </section>
 
         <section class="section" id="contact">
-            <div class="container" style="text-align: center;">
-                <h2 style="margin-bottom: 2rem; font-size: 2.5rem;">Ready to Get Started?</h2>
-                <p style="font-size: 1.25rem; color: hsl(215.4, 16.3%, 46.9%); margin-bottom: 2rem;">
-                    Join thousands of satisfied customers who trust ${data.businessName} for their ${data.industry.toLowerCase()} needs.
-                </p>
-                <div>
-                    <a href="#" class="btn btn-primary" style="margin-right: 1rem;">${content.cta}</a>
-                    <a href="#" class="btn btn-secondary">Contact Us</a>
+            <div class="container">
+                <div class="section-header fade-in">
+                    <h2 class="section-title">Ready to Transform Your Business?</h2>
+                    <p class="section-description">
+                        Join hundreds of successful ${data.targetAudience} who have achieved remarkable results with ${data.businessName}.
+                    </p>
+                </div>
+                <div style="text-align: center;" class="fade-in">
+                    <div style="margin-bottom: var(--spacing-8);">
+                        <a href="#" class="btn btn-primary" style="margin-right: var(--spacing-4);">${content.cta}</a>
+                        <a href="#" class="btn btn-secondary">Contact Us</a>
+                    </div>
                 </div>
             </div>
         </section>
@@ -437,8 +716,8 @@ const WebsiteTemplates = ({
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 ${data.businessName}. All rights reserved.</p>
-            <p style="margin-top: 0.5rem; opacity: 0.8;">Serving ${data.targetAudience} with premium ${data.industry.toLowerCase()} solutions.</p>
+            <p style="font-size: var(--font-size-lg); margin-bottom: var(--spacing-2);">&copy; 2024 ${data.businessName}. All rights reserved.</p>
+            <p style="opacity: 0.8;">Empowering ${data.targetAudience} with premium ${data.industry.toLowerCase()} solutions.</p>
         </div>
     </footer>
 
@@ -447,9 +726,9 @@ const WebsiteTemplates = ({
 </html>`;
 
     const js = `
-// Professional interactive features
+// Modern JavaScript with performance optimization
 document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scrolling for navigation links
+    // Smooth scrolling for navigation
     const navLinks = document.querySelectorAll('a[href^="#"]');
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -465,24 +744,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add scroll effect to header
+    // Progressive header effect
     const header = document.querySelector('.header');
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 100) {
+    let lastScrollY = window.scrollY;
+    
+    const updateHeader = () => {
+        const currentScrollY = window.scrollY;
+        
+        if (currentScrollY > 100) {
+            header.style.background = 'rgba(255, 255, 255, 0.95)';
             header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
         } else {
+            header.style.background = 'rgba(255, 255, 255, 0.8)';
             header.style.boxShadow = 'none';
+        }
+        
+        lastScrollY = currentScrollY;
+    };
+    
+    // Throttled scroll listener for performance
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                updateHeader();
+                ticking = false;
+            });
+            ticking = true;
         }
     });
 
-    // Animate cards on scroll
-    const cards = document.querySelectorAll('.card');
+    // Intersection Observer for animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
     };
 
-    const observer = new IntersectionObserver(function(entries) {
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '1';
@@ -491,14 +789,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, observerOptions);
 
-    cards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'all 0.6s ease';
-        observer.observe(card);
+    // Observe all fade-in elements
+    const fadeElements = document.querySelectorAll('.fade-in');
+    fadeElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'all 0.6s ease';
+        observer.observe(el);
     });
 
-    // Button hover effects
+    // Enhanced button interactions
     const buttons = document.querySelectorAll('.btn');
     buttons.forEach(button => {
         button.addEventListener('mouseenter', function() {
@@ -508,13 +808,48 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('mouseleave', function() {
             this.style.transform = 'translateY(0)';
         });
+        
+        button.addEventListener('mousedown', function() {
+            this.style.transform = 'translateY(0)';
+        });
     });
+
+    // Progressive stats counter (if visible)
+    const statsNumbers = document.querySelectorAll('.stat-number');
+    const animateValue = (element, start, end, duration) => {
+        const startTimestamp = performance.now();
+        const step = (timestamp) => {
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const current = Math.floor(progress * (end - start) + start);
+            element.textContent = current + (element.textContent.includes('%') ? '%' : '+');
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            }
+        };
+        requestAnimationFrame(step);
+    };
+
+    // Animate stats when they come into view
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const finalValue = parseInt(target.textContent);
+                if (!isNaN(finalValue)) {
+                    animateValue(target, 0, finalValue, 2000);
+                }
+                statsObserver.unobserve(target);
+            }
+        });
+    });
+
+    statsNumbers.forEach(stat => statsObserver.observe(stat));
 });`;
 
     return {
       id: templateId,
-      name: `${templateVariations[templateId as keyof typeof templateVariations]} Template`,
-      description: `A ${templateVariations[templateId as keyof typeof templateVariations].toLowerCase()} design perfectly tailored for ${data.businessName}`,
+      name: `${currentStyle.name} Template`,
+      description: `${currentStyle.accent} - Professionally designed for ${data.businessName}`,
       preview: html,
       files: {
         'index.html': html,
@@ -529,7 +864,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (websiteData && isGenerated && generatedTemplates.length === 0) {
       setIsGenerating(true);
       setTimeout(() => {
-        const newTemplates = generateProfessionalTemplates(websiteData);
+        const newTemplates = generateLovableStyleTemplates(websiteData);
         setGeneratedTemplates(newTemplates);
         setIsGenerating(false);
       }, 1000);
