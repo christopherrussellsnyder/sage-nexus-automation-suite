@@ -8,7 +8,8 @@ import {
   Monitor, Tablet, Smartphone, Wand2, Save, Download, 
   Eye, Palette, Type, Layout, Sparkles, Brain, Zap,
   Plus, Trash2, Copy, ArrowUp, ArrowDown, Settings,
-  ShoppingBag, Users, MessageSquare, Star, Globe
+  ShoppingBag, Users, MessageSquare, Star, Globe,
+  Package, FileText, DollarSign, BarChart3
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import SectionEditor from './SectionEditor';

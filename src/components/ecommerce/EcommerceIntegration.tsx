@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Package, 
-  ShoppingCart, 
+  ShoppingCart as CartIcon, 
   FileText, 
   BarChart3, 
   Settings,
@@ -281,7 +281,7 @@ const EcommerceIntegration = () => {
                 <span>Orders</span>
               </TabsTrigger>
               <TabsTrigger value="cart" className="flex items-center space-x-2">
-                <ShoppingCart className="h-4 w-4" />
+                <CartIcon className="h-4 w-4" />
                 <span>Cart Preview</span>
               </TabsTrigger>
               <TabsTrigger value="analytics" className="flex items-center space-x-2">
