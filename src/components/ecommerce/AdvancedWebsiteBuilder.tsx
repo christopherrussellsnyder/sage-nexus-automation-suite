@@ -9,11 +9,16 @@ import {
   Eye, Palette, Type, Layout, Sparkles, Brain, Zap,
   Plus, Trash2, Copy, ArrowUp, ArrowDown, Settings,
   ShoppingBag, Users, MessageSquare, Star, Globe,
-  Package, FileText, DollarSign, BarChart3
+  Package, FileText, DollarSign, BarChart3,
+  Search, Gauge, Store
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import SectionEditor from './SectionEditor';
 import PreviewFrame from './PreviewFrame';
+import SEOOptimizer from './SEOOptimizer';
+import PerformanceMonitor from './PerformanceMonitor';
+import AdvancedAnalytics from './AdvancedAnalytics';
+import MarketplaceIntegrations from './MarketplaceIntegrations';
 import { EnhancedWebsiteData } from './EnhancedTemplateGenerator';
 
 interface Section {
@@ -38,7 +43,18 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
   const [generationProgress, setGenerationProgress] = useState(0);
   const [showAISuggestions, setShowAISuggestions] = useState(false);
   const [livePreviewHtml, setLivePreviewHtml] = useState('');
-  const [activeTab, setActiveTab] = useState<'builder' | 'design' | 'preview'>('builder');
+  const [activeTab, setActiveTab] = useState<'builder' | 'design' | 'ecommerce' | 'seo' | 'performance' | 'analytics' | 'integrations'>('builder');
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
+
+  // SEO Data State
+  const [seoData, setSeoData] = useState({
+    title: `${websiteData.businessName} - ${websiteData.businessDescription}`,
+    description: websiteData.businessDescription,
+    keywords: websiteData.tags || [],
+    ogImage: websiteData.logoUrl || '',
+    canonicalUrl: '',
+    structuredData: {}
+  });
 
   // Creative AI-powered section suggestions based on business type
   const getAISectionSuggestions = useCallback(() => {
@@ -360,6 +376,19 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
     }
   };
 
+  // Integration handlers
+  const handleIntegrationToggle = (integrationId: string, enabled: boolean) => {
+    console.log(`Integration ${integrationId} ${enabled ? 'enabled' : 'disabled'}`);
+  };
+
+  const handleConfigureIntegration = (integrationId: string) => {
+    console.log(`Configure integration: ${integrationId}`);
+  };
+
+  const handlePerformanceOptimize = (optimizations: string[]) => {
+    console.log('Applying optimizations:', optimizations);
+  };
+
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Top Toolbar */}
@@ -368,7 +397,7 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
           <h2 className="text-xl font-bold flex items-center space-x-2">
             <Brain className="h-5 w-5" />
             <span>Advanced Website Builder</span>
-            <Badge variant="secondary">AI-Powered + E-commerce</Badge>
+            <Badge variant="secondary">AI-Powered + E-commerce + Phase 3</Badge>
           </h2>
           
           <div className="flex items-center space-x-2">
@@ -419,7 +448,7 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
       {isGenerating && (
         <div className="bg-blue-50 border-b p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Generating AI-powered website with e-commerce...</span>
+            <span className="text-sm font-medium">Generating AI-powered website with advanced features...</span>
             <span className="text-sm">{Math.round(generationProgress)}%</span>
           </div>
           <Progress value={generationProgress} className="h-2" />
@@ -434,9 +463,17 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
             <TabsList className="grid w-full grid-cols-4 p-1 m-4">
               <TabsTrigger value="builder">Builder</TabsTrigger>
               <TabsTrigger value="design">Design</TabsTrigger>
-              <TabsTrigger value="ecommerce">E-commerce</TabsTrigger>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
+              <TabsTrigger value="ecommerce">Store</TabsTrigger>
+              <TabsTrigger value="seo">SEO</TabsTrigger>
             </TabsList>
+            
+            <div className="px-4 mb-2">
+              <TabsList className="grid w-full grid-cols-3 p-1">
+                <TabsTrigger value="performance">Speed</TabsTrigger>
+                <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                <TabsTrigger value="integrations">Apps</TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="builder" className="flex-1 overflow-auto p-4">
               <div className="space-y-4">
@@ -598,24 +635,34 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
               </div>
             </TabsContent>
 
-            <TabsContent value="preview" className="flex-1 overflow-auto p-4">
-              <div className="space-y-4">
-                <h3 className="font-semibold">Preview Settings</h3>
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-2">
-                    <input type="checkbox" />
-                    <span className="text-sm">Show navigation</span>
-                  </label>
-                  <label className="flex items-center space-x-2">
-                    <input type="checkbox" />
-                    <span className="text-sm">Show footer</span>
-                  </label>
-                  <label className="flex items-center space-x-2">
-                    <input type="checkbox" />
-                    <span className="text-sm">Enable interactions</span>
-                  </label>
-                </div>
-              </div>
+            <TabsContent value="seo" className="flex-1 overflow-auto p-4">
+              <SEOOptimizer
+                seoData={seoData}
+                onUpdate={setSeoData}
+                websiteName={websiteData.businessName}
+              />
+            </TabsContent>
+
+            <TabsContent value="performance" className="flex-1 overflow-auto p-4">
+              <PerformanceMonitor
+                websiteUrl={window.location.origin}
+                onOptimize={handlePerformanceOptimize}
+              />
+            </TabsContent>
+
+            <TabsContent value="analytics" className="flex-1 overflow-auto p-4">
+              <AdvancedAnalytics
+                websiteName={websiteData.businessName}
+                timeRange={timeRange}
+                onTimeRangeChange={setTimeRange}
+              />
+            </TabsContent>
+
+            <TabsContent value="integrations" className="flex-1 overflow-auto p-4">
+              <MarketplaceIntegrations
+                onIntegrationToggle={handleIntegrationToggle}
+                onConfigureIntegration={handleConfigureIntegration}
+              />
             </TabsContent>
           </Tabs>
         </div>
