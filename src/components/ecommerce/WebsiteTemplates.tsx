@@ -7,7 +7,8 @@ import TemplateEmptyState from './TemplateEmptyState';
 import TemplateLoadingState from './TemplateLoadingState';
 import EnhancedAITemplateGenerator from './EnhancedAITemplateGenerator';
 import AIGeneratedTemplates from './AIGeneratedTemplates';
-import { Wand2, FileText, Brain } from 'lucide-react';
+import AdvancedWebsiteBuilder from './AdvancedWebsiteBuilder';
+import { Wand2, FileText, Brain, Settings } from 'lucide-react';
 
 interface WebsiteTemplatesProps {
   templates: any[];
@@ -29,7 +30,7 @@ const WebsiteTemplates = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAIGenerating, setIsAIGenerating] = useState(false);
   const [aiProgress, setAIProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState<'ai' | 'enhanced'>('enhanced');
+  const [activeTab, setActiveTab] = useState<'builder' | 'ai' | 'enhanced'>('builder');
 
   // Generate enhanced templates when websiteData is available - optimized for speed
   useEffect(() => {
@@ -251,22 +252,57 @@ const WebsiteTemplates = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Enhanced AI Website Templates</CardTitle>
+        <CardTitle>Advanced Website Builder Suite</CardTitle>
         <CardDescription>
-          Next-generation AI combining Framer's design intelligence with Shopify's business optimization
+          Next-generation AI combining visual builder, Framer's design intelligence with Shopify's business optimization
         </CardDescription>
         
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'ai' | 'enhanced')}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="enhanced" className="flex items-center space-x-2">
-              <FileText className="h-4 w-4" />
-              <span>Business Templates ({generatedTemplates.length})</span>
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="builder" className="flex items-center space-x-2">
+              <Settings className="h-4 w-4" />
+              <span>Visual Builder</span>
             </TabsTrigger>
             <TabsTrigger value="ai" className="flex items-center space-x-2">
               <Brain className="h-4 w-4" />
-              <span>Enhanced AI Generator ({aiTemplates.length})</span>
+              <span>AI Generator ({aiTemplates.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="enhanced" className="flex items-center space-x-2">
+              <FileText className="h-4 w-4" />
+              <span>Templates ({generatedTemplates.length})</span>
             </TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="builder" className="mt-6">
+            <AdvancedWebsiteBuilder
+              websiteData={websiteData}
+              onSave={(sections, devicePreviews) => {
+                console.log('Advanced builder saved:', sections, devicePreviews);
+              }}
+            />
+          </TabsContent>
+          
+          <TabsContent value="ai" className="mt-6">
+            <div className="grid lg:grid-cols-5 gap-6">
+              <div className="lg:col-span-2">
+                <EnhancedAITemplateGenerator
+                  onGenerate={handleEnhancedAIGeneration}
+                  isGenerating={isAIGenerating}
+                  progress={aiProgress}
+                />
+              </div>
+              <div className="lg:col-span-3">
+                <AIGeneratedTemplates
+                  templates={aiTemplates}
+                  onPreview={handleAIPreview}
+                  onDownload={handleAIDownload}
+                  onRegenerate={handleAIRegenerate}
+                  onCustomizeStyle={handleAICustomizeStyle}
+                  onEditContent={handleAIEditContent}
+                />
+              </div>
+            </div>
+          </TabsContent>
           
           <TabsContent value="enhanced" className="mt-6">
             <div className="space-y-6">
@@ -371,28 +407,6 @@ const WebsiteTemplates = ({
                 </div>
               </div>
             )}
-          </TabsContent>
-          
-          <TabsContent value="ai" className="mt-6">
-            <div className="grid lg:grid-cols-5 gap-6">
-              <div className="lg:col-span-2">
-                <EnhancedAITemplateGenerator
-                  onGenerate={handleEnhancedAIGeneration}
-                  isGenerating={isAIGenerating}
-                  progress={aiProgress}
-                />
-              </div>
-              <div className="lg:col-span-3">
-                <AIGeneratedTemplates
-                  templates={aiTemplates}
-                  onPreview={handleAIPreview}
-                  onDownload={handleAIDownload}
-                  onRegenerate={handleAIRegenerate}
-                  onCustomizeStyle={handleAICustomizeStyle}
-                  onEditContent={handleAIEditContent}
-                />
-              </div>
-            </div>
           </TabsContent>
         </Tabs>
       </CardHeader>
