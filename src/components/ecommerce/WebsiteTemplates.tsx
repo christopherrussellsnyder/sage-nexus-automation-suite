@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -139,7 +138,7 @@ const WebsiteTemplates = ({
         setAIProgress(((i + 1) / steps.length) * 100);
       }
       
-      // Generate AI template based on prompt and options
+      // Generate AI template based on prompt and options - using the correct function names
       const aiTemplate = {
         id: Date.now().toString(),
         name: `AI Generated - ${options.layoutStyle || 'Modern'} Style`,
@@ -148,8 +147,8 @@ const WebsiteTemplates = ({
         colorPalette: options.colorPalette || 'modern-blue',
         fontStyle: options.fontStyle || 'clean-sans',
         layoutStyle: options.layoutStyle || 'modern',
-        preview: generateAITemplatePreview(prompt, options),
-        files: generateAITemplateFiles(prompt, options),
+        preview: generateEnhancedAIPreview(prompt, options, websiteData),
+        files: generateEnhancedAIFiles(prompt, options, websiteData),
         responsive: {
           desktop: 'Desktop preview HTML',
           tablet: 'Tablet preview HTML',
