@@ -24,15 +24,20 @@ const WebsiteTemplates = ({
   const [generatedTemplates, setGeneratedTemplates] = useState<EnhancedTemplate[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Generate enhanced templates when websiteData is available
+  // Generate enhanced templates when websiteData is available - optimized for speed
   useEffect(() => {
     if (websiteData && isGenerated && generatedTemplates.length === 0) {
       setIsGenerating(true);
-      setTimeout(() => {
+      
+      // Generate templates immediately without delay
+      try {
         const newTemplates = generateEnhancedTemplates(websiteData);
         setGeneratedTemplates(newTemplates);
         setIsGenerating(false);
-      }, 2000);
+      } catch (error) {
+        console.error('Error generating templates:', error);
+        setIsGenerating(false);
+      }
     }
   }, [websiteData, isGenerated, generatedTemplates.length]);
 

@@ -1,4 +1,3 @@
-
 // Enhanced Website Data Interface
 export interface EnhancedWebsiteData {
   businessName: string;
@@ -104,13 +103,13 @@ interface ContentStructure {
   closingContent: string;
 }
 
-// Generate enhanced templates based on business data
+// Generate enhanced templates based on business data - optimized for performance
 export const generateEnhancedTemplates = (data: EnhancedWebsiteData): EnhancedTemplate[] => {
   console.log('Generating enhanced templates for:', data.businessName);
   
   const templates: EnhancedTemplate[] = [];
   
-  // Generate 3 different template styles
+  // Generate 3 different template styles quickly
   for (let i = 1; i <= 3; i++) {
     const template = createEnhancedTemplate(data, i);
     templates.push(template);
@@ -119,7 +118,7 @@ export const generateEnhancedTemplates = (data: EnhancedWebsiteData): EnhancedTe
   return templates;
 };
 
-// Create individual enhanced template
+// Create individual enhanced template - streamlined version
 const createEnhancedTemplate = (data: EnhancedWebsiteData, templateId: number): EnhancedTemplate => {
   const templateStyles = {
     1: { name: 'Modern Business', description: 'Clean, professional design focused on conversions' },
@@ -130,9 +129,8 @@ const createEnhancedTemplate = (data: EnhancedWebsiteData, templateId: number): 
   const style = templateStyles[templateId as keyof typeof templateStyles];
   const content = generateContentStructure(data, templateId);
   
-  // Enhanced modern CSS with Lovable design principles
+  // Optimized modern CSS - streamlined version
   const modernCSS = `
-    /* Lovable Design System - Clean & Modern */
     :root {
       --primary: #1a1a1a;
       --primary-foreground: #ffffff;
@@ -143,35 +141,19 @@ const createEnhancedTemplate = (data: EnhancedWebsiteData, templateId: number): 
       --foreground: #0f172a;
       --border: #e2e8f0;
       --radius: 0.75rem;
-      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
     }
     
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       line-height: 1.6;
       color: var(--foreground);
       background: var(--background);
-      -webkit-font-smoothing: antialiased;
     }
     
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1rem;
-    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
     
-    @media (min-width: 640px) {
-      .container { padding: 0 2rem; }
-    }
-    
-    /* Header */
     .header {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
@@ -184,46 +166,17 @@ const createEnhancedTemplate = (data: EnhancedWebsiteData, templateId: number): 
       z-index: 1000;
     }
     
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .nav { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--muted); font-weight: 500; }
+    .nav-links a:hover { color: var(--primary); }
     
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    
-    .nav-links {
-      display: none;
-      gap: 2rem;
-      list-style: none;
-    }
-    
-    @media (min-width: 768px) {
-      .nav-links { display: flex; }
-    }
-    
-    .nav-links a {
-      text-decoration: none;
-      color: var(--muted);
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-    
-    .nav-links a:hover {
-      color: var(--primary);
-    }
-    
-    /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       border-radius: var(--radius);
-      font-size: 0.875rem;
       font-weight: 600;
       transition: all 0.2s ease;
       cursor: pointer;
@@ -235,26 +188,10 @@ const createEnhancedTemplate = (data: EnhancedWebsiteData, templateId: number): 
     .btn-primary {
       background: var(--primary);
       color: var(--primary-foreground);
-      box-shadow: var(--shadow);
     }
     
-    .btn-primary:hover {
-      background: rgba(26, 26, 26, 0.9);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-    }
+    .btn-primary:hover { background: rgba(26, 26, 26, 0.9); }
     
-    .btn-secondary {
-      background: transparent;
-      color: var(--primary);
-      border: 1px solid var(--border);
-    }
-    
-    .btn-secondary:hover {
-      background: var(--secondary);
-    }
-    
-    /* Hero Section */
     .hero {
       padding: 8rem 0 4rem;
       text-align: center;
@@ -266,11 +203,6 @@ const createEnhancedTemplate = (data: EnhancedWebsiteData, templateId: number): 
       font-weight: 800;
       margin-bottom: 1.5rem;
       color: var(--primary);
-      line-height: 1.1;
-    }
-    
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 2rem; }
     }
     
     .hero p {
@@ -290,80 +222,27 @@ const createEnhancedTemplate = (data: EnhancedWebsiteData, templateId: number): 
       margin-bottom: 3rem;
     }
     
-    /* Sections */
-    .section {
-      padding: 4rem 0;
-    }
+    .section { padding: 4rem 0; }
+    .section-alternate { background: var(--secondary); }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary); }
+    .section-description { font-size: 1.125rem; color: var(--muted); max-width: 600px; margin: 0 auto; }
     
-    .section-alternate {
-      background: var(--secondary);
-    }
+    .grid { display: grid; gap: 2rem; }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
     
-    .section-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-    
-    .section-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: var(--primary);
-    }
-    
-    .section-description {
-      font-size: 1.125rem;
-      color: var(--muted);
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    
-    /* Grid */
-    .grid {
-      display: grid;
-      gap: 2rem;
-    }
-    
-    .grid-3 {
-      grid-template-columns: 1fr;
-    }
-    
-    @media (min-width: 640px) {
-      .grid-3 { grid-template-columns: repeat(2, 1fr); }
-    }
-    
-    @media (min-width: 1024px) {
-      .grid-3 { grid-template-columns: repeat(3, 1fr); }
-    }
-    
-    /* Cards */
     .card {
       background: var(--background);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 2rem;
-      box-shadow: var(--shadow);
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease;
     }
     
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-    }
+    .card:hover { transform: translateY(-4px); }
+    .card h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--primary); }
+    .card p { color: var(--muted); margin-bottom: 1.5rem; }
     
-    .card h3 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: var(--primary);
-    }
-    
-    .card p {
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-    }
-    
-    /* Footer */
     .footer {
       background: var(--primary);
       color: var(--primary-foreground);
@@ -371,29 +250,16 @@ const createEnhancedTemplate = (data: EnhancedWebsiteData, templateId: number): 
       text-align: center;
     }
     
-    /* Animations */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.6s ease;
-    }
-    
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    
-    /* Mobile responsiveness */
-    @media (max-width: 767px) {
+    @media (max-width: 768px) {
       .hero { padding: 6rem 0 3rem; }
+      .hero h1 { font-size: 2rem; }
       .section { padding: 3rem 0; }
       .section-title { font-size: 2rem; }
-      .hero-actions { flex-direction: column; align-items: center; }
-      .btn { width: 100%; max-width: 280px; }
+      .nav-links { display: none; }
     }
   `;
   
-  // Generate complete HTML with integrated business data
+  // Generate streamlined HTML with integrated business data
   const completeHTML = generateCompleteHTML(data, content, modernCSS, style.name);
   
   return {
@@ -447,7 +313,7 @@ const generateContentStructure = (data: EnhancedWebsiteData, templateId: number)
   };
 };
 
-// Generate complete HTML document
+// Generate streamlined HTML document
 const generateCompleteHTML = (data: EnhancedWebsiteData, content: ContentStructure, css: string, templateName: string): string => {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -462,21 +328,14 @@ const generateCompleteHTML = (data: EnhancedWebsiteData, content: ContentStructu
     <header class="header">
         <div class="container">
             <nav class="nav">
-                <div class="logo">
-                    ${data.logoUrl ? `<img src="${data.logoUrl}" alt="${data.businessName}" style="height: 40px;">` : data.businessName}
-                </div>
+                <div class="logo">${data.businessName}</div>
                 <ul class="nav-links">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#about">About</a></li>
-                    ${data.businessType === 'ecommerce' && data.products.length > 0 ? '<li><a href="#products">Products</a></li>' : ''}
-                    ${(data.businessType === 'service' || data.businessType === 'agency') && data.services.length > 0 ? '<li><a href="#services">Services</a></li>' : ''}
-                    ${data.reviews.length > 0 ? '<li><a href="#reviews">Reviews</a></li>' : ''}
-                    ${data.faqs.length > 0 ? '<li><a href="#faq">FAQ</a></li>' : ''}
+                    ${data.services.length > 0 ? '<li><a href="#services">Services</a></li>' : ''}
                     <li><a href="#contact">Contact</a></li>
                 </ul>
-                <div>
-                    <a href="#contact" class="btn btn-primary">${content.ctaPrimary}</a>
-                </div>
+                <div><a href="#contact" class="btn btn-primary">${content.ctaPrimary}</a></div>
             </nav>
         </div>
     </header>
@@ -484,26 +343,23 @@ const generateCompleteHTML = (data: EnhancedWebsiteData, content: ContentStructu
     <main>
         <section class="hero" id="home">
             <div class="container">
-                <div class="fade-in">
-                    <h1>${content.headline}</h1>
-                    <p>${content.subheadline}</p>
-                    <div class="hero-actions">
-                        <a href="#contact" class="btn btn-primary">${content.ctaPrimary}</a>
-                        <a href="#about" class="btn btn-secondary">${content.ctaSecondary}</a>
-                    </div>
+                <h1>${content.headline}</h1>
+                <p>${content.subheadline}</p>
+                <div class="hero-actions">
+                    <a href="#contact" class="btn btn-primary">${content.ctaPrimary}</a>
                 </div>
             </div>
         </section>
 
         <section class="section" id="about">
             <div class="container">
-                <div class="section-header fade-in">
+                <div class="section-header">
                     <h2 class="section-title">${content.aboutTitle}</h2>
                     <p class="section-description">${content.aboutContent}</p>
                 </div>
                 <div class="grid grid-3">
                     ${content.features.map(feature => `
-                        <div class="card fade-in">
+                        <div class="card">
                             <h3>${feature.title}</h3>
                             <p>${feature.description}</p>
                             <div style="color: var(--accent); font-weight: 600;">✓ ${feature.benefit}</div>
@@ -513,32 +369,26 @@ const generateCompleteHTML = (data: EnhancedWebsiteData, content: ContentStructu
             </div>
         </section>
 
-        ${data.businessType === 'ecommerce' && data.products.length > 0 ? generateProductsSection(data.products) : ''}
-        ${(data.businessType === 'service' || data.businessType === 'agency') && data.services.length > 0 ? generateServicesSection(data.services, data.calendlyLink) : ''}
+        ${data.services.length > 0 ? generateServicesSection(data.services, data.calendlyLink) : ''}
         ${data.reviews.length > 0 ? generateReviewsSection(data.reviews) : ''}
-        ${data.faqs.length > 0 ? generateFAQSection(data.faqs) : ''}
 
         <section class="section section-alternate" id="contact">
             <div class="container">
-                <div class="section-header fade-in">
+                <div class="section-header">
                     <h2 class="section-title">Get In Touch</h2>
                     <p class="section-description">${content.closingContent}</p>
                 </div>
-                <div class="grid" style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto;">
-                    <div class="card fade-in">
-                        <h3>Contact Information</h3>
-                        <div style="space-y: 1rem;">
-                            ${data.contactInfo.email ? `<p><strong>Email:</strong> ${data.contactInfo.email}</p>` : ''}
-                            ${data.contactInfo.phone ? `<p><strong>Phone:</strong> ${data.contactInfo.phone}</p>` : ''}
-                            ${data.contactInfo.address ? `<p><strong>Address:</strong> ${data.contactInfo.address}</p>` : ''}
-                            ${data.contactInfo.businessHours ? `<p><strong>Hours:</strong> ${data.contactInfo.businessHours}</p>` : ''}
+                <div class="card" style="max-width: 600px; margin: 0 auto;">
+                    <h3>Contact Information</h3>
+                    ${data.contactInfo.email ? `<p><strong>Email:</strong> ${data.contactInfo.email}</p>` : ''}
+                    ${data.contactInfo.phone ? `<p><strong>Phone:</strong> ${data.contactInfo.phone}</p>` : ''}
+                    ${data.contactInfo.address ? `<p><strong>Address:</strong> ${data.contactInfo.address}</p>` : ''}
+                    ${data.contactInfo.businessHours ? `<p><strong>Hours:</strong> ${data.contactInfo.businessHours}</p>` : ''}
+                    ${data.calendlyLink ? `
+                        <div style="margin-top: 1.5rem;">
+                            <a href="${data.calendlyLink}" class="btn btn-primary" target="_blank">Schedule Meeting</a>
                         </div>
-                        ${data.calendlyLink ? `
-                            <div style="margin-top: 1.5rem;">
-                                <a href="${data.calendlyLink}" class="btn btn-primary" target="_blank">Schedule Meeting</a>
-                            </div>
-                        ` : ''}
-                    </div>
+                    ` : ''}
                 </div>
             </div>
         </section>
@@ -547,12 +397,6 @@ const generateCompleteHTML = (data: EnhancedWebsiteData, content: ContentStructu
     <footer class="footer">
         <div class="container">
             <p>&copy; 2024 ${data.businessName}. All rights reserved.</p>
-            <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-                ${data.needsPrivacyPolicy ? '<a href="#privacy" style="color: var(--primary-foreground); opacity: 0.8;">Privacy Policy</a>' : ''}
-                ${data.needsTermsOfService ? '<a href="#terms" style="color: var(--primary-foreground); opacity: 0.8;">Terms of Service</a>' : ''}
-                ${data.needsRefundPolicy ? '<a href="#refund" style="color: var(--primary-foreground); opacity: 0.8;">Refund Policy</a>' : ''}
-                ${data.needsShippingPolicy ? '<a href="#shipping" style="color: var(--primary-foreground); opacity: 0.8;">Shipping Policy</a>' : ''}
-            </div>
         </div>
     </footer>
 
@@ -561,61 +405,22 @@ const generateCompleteHTML = (data: EnhancedWebsiteData, content: ContentStructu
 </html>`;
 };
 
-// Generate products section for ecommerce
-const generateProductsSection = (products: EnhancedWebsiteData['products']): string => {
-  return `
-    <section class="section" id="products">
-        <div class="container">
-            <div class="section-header fade-in">
-                <h2 class="section-title">Our Products</h2>
-                <p class="section-description">Discover our premium product collection</p>
-            </div>
-            <div class="grid grid-3">
-                ${products.slice(0, 6).map(product => `
-                    <div class="card fade-in">
-                        ${product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name}" style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius); margin-bottom: 1rem;">` : ''}
-                        <h3>${product.name}</h3>
-                        <p>${product.description}</p>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
-                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--accent);">$${product.price}</span>
-                            <button class="btn btn-primary" onclick="addToCart('${product.name}', ${product.price})">Add to Cart</button>
-                        </div>
-                        ${product.variants.length > 0 ? `
-                            <div style="margin-top: 1rem;">
-                                <select style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius);">
-                                    ${product.variants.map(variant => `<option value="${variant.name}">${variant.name} - $${variant.price}</option>`).join('')}
-                                </select>
-                            </div>
-                        ` : ''}
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    </section>
-  `;
-};
-
-// Generate services section for service/agency businesses
+// Generate services section - simplified
 const generateServicesSection = (services: EnhancedWebsiteData['services'], calendlyLink?: string): string => {
   return `
     <section class="section" id="services">
         <div class="container">
-            <div class="section-header fade-in">
+            <div class="section-header">
                 <h2 class="section-title">Our Services</h2>
                 <p class="section-description">Professional services tailored to your needs</p>
             </div>
             <div class="grid grid-3">
                 ${services.map(service => `
-                    <div class="card fade-in">
+                    <div class="card">
                         <h3>${service.name}</h3>
                         <p>${service.description}</p>
-                        ${service.features.length > 0 ? `
-                            <ul style="margin: 1rem 0; padding-left: 1rem;">
-                                ${service.features.map(feature => `<li>${feature}</li>`).join('')}
-                            </ul>
-                        ` : ''}
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
-                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--accent);">$${service.price}</span>
+                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--accent);">${service.price}</span>
                             ${calendlyLink ? 
                                 `<a href="${calendlyLink}" class="btn btn-primary" target="_blank">Book Now</a>` :
                                 '<button class="btn btn-primary">Get Started</button>'
@@ -630,26 +435,22 @@ const generateServicesSection = (services: EnhancedWebsiteData['services'], cale
   `;
 };
 
-// Generate reviews section
+// Generate reviews section - simplified
 const generateReviewsSection = (reviews: EnhancedWebsiteData['reviews']): string => {
   return `
     <section class="section section-alternate" id="reviews">
         <div class="container">
-            <div class="section-header fade-in">
+            <div class="section-header">
                 <h2 class="section-title">What Our Customers Say</h2>
-                <p class="section-description">Real feedback from real customers</p>
             </div>
             <div class="grid grid-3">
-                ${reviews.slice(0, 6).map(review => `
-                    <div class="card fade-in">
+                ${reviews.slice(0, 3).map(review => `
+                    <div class="card">
                         <div style="display: flex; margin-bottom: 1rem;">
                             ${Array.from({length: review.rating}, () => '⭐').join('')}
                         </div>
                         <p style="font-style: italic; margin-bottom: 1rem;">"${review.review}"</p>
-                        <div>
-                            <strong>${review.customerName}</strong>
-                            ${review.businessName ? `<br><small style="color: var(--muted);">${review.businessName}</small>` : ''}
-                        </div>
+                        <strong>${review.customerName}</strong>
                     </div>
                 `).join('')}
             </div>
@@ -658,86 +459,18 @@ const generateReviewsSection = (reviews: EnhancedWebsiteData['reviews']): string
   `;
 };
 
-// Generate FAQ section
-const generateFAQSection = (faqs: EnhancedWebsiteData['faqs']): string => {
-  return `
-    <section class="section" id="faq">
-        <div class="container">
-            <div class="section-header fade-in">
-                <h2 class="section-title">Frequently Asked Questions</h2>
-                <p class="section-description">Find answers to common questions</p>
-            </div>
-            <div style="max-width: 800px; margin: 0 auto;">
-                ${faqs.map((faq, index) => `
-                    <div class="card fade-in" style="margin-bottom: 1rem;">
-                        <h3 style="cursor: pointer;" onclick="toggleFAQ(${index})">${faq.question} <span id="faq-icon-${index}">+</span></h3>
-                        <div id="faq-answer-${index}" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-                            <p>${faq.answer}</p>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    </section>
-  `;
-};
-
-// Generate JavaScript for interactivity
+// Simplified JavaScript
 const generateJavaScript = (): string => {
   return `
-    // Smooth scrolling
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fade in animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        });
-        
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-        
-        // Smooth scroll for nav links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
         });
     });
-    
-    // Shopping cart functionality
-    let cart = [];
-    
-    function addToCart(productName, price) {
-        cart.push({ name: productName, price: price });
-        alert(productName + ' added to cart! Total items: ' + cart.length);
-        updateCartDisplay();
-    }
-    
-    function updateCartDisplay() {
-        const total = cart.reduce((sum, item) => sum + item.price, 0);
-        console.log('Cart total: $' + total.toFixed(2));
-    }
-    
-    // FAQ toggle functionality
-    function toggleFAQ(index) {
-        const answer = document.getElementById('faq-answer-' + index);
-        const icon = document.getElementById('faq-icon-' + index);
-        
-        if (answer.style.display === 'none' || answer.style.display === '') {
-            answer.style.display = 'block';
-            icon.textContent = '-';
-        } else {
-            answer.style.display = 'none';
-            icon.textContent = '+';
-        }
-    }
   `;
 };
