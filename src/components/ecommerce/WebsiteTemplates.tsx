@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,7 @@ const WebsiteTemplates = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAIGenerating, setIsAIGenerating] = useState(false);
   const [aiProgress, setAIProgress] = useState(0);
-  const [activeTab, setActiveTab] = useState<'ai' | 'enhanced'>('ai');
+  const [activeTab, setActiveTab] = useState<'ai' | 'enhanced'>('enhanced');
 
   // Generate enhanced templates when websiteData is available - optimized for speed
   useEffect(() => {
@@ -48,7 +49,7 @@ const WebsiteTemplates = ({
     }
   }, [websiteData, isGenerated, generatedTemplates.length]);
 
-  // Enhanced AI generation handler with Shopify + Framer intelligence
+  // Enhanced AI generation handler with Shopify + Framer intelligence + Business Data Integration
   const handleEnhancedAIGeneration = async (businessDescription: string, options: any) => {
     setIsAIGenerating(true);
     setAIProgress(0);
@@ -57,6 +58,7 @@ const WebsiteTemplates = ({
       // Enhanced AI generation process with business intelligence
       const enhancedSteps = [
         'Analyzing business requirements and target audience...',
+        'Integrating existing business data (products, services, reviews)...',
         'Applying Shopify commerce intelligence...',
         'Integrating Framer design algorithms...',
         'Generating responsive breakpoints (mobile, tablet, desktop)...',
@@ -72,7 +74,7 @@ const WebsiteTemplates = ({
         setAIProgress(((i + 1) / enhancedSteps.length) * 100);
       }
       
-      // Generate enhanced AI template with business intelligence
+      // Generate enhanced AI template with business intelligence + existing data
       const enhancedTemplate = {
         id: Date.now().toString(),
         name: `${options.businessType === 'ecommerce' ? 'E-commerce' : 'Business'} - ${options.layoutStyle || 'Enhanced'} AI`,
@@ -81,12 +83,12 @@ const WebsiteTemplates = ({
         colorPalette: options.colorPalette || 'modern-blue',
         fontStyle: options.fontStyle || 'clean-sans',
         layoutStyle: options.layoutStyle || 'modern',
-        preview: generateEnhancedAIPreview(businessDescription, options),
-        files: generateEnhancedAIFiles(businessDescription, options),
+        preview: generateEnhancedAIPreview(businessDescription, options, websiteData),
+        files: generateEnhancedAIFiles(businessDescription, options, websiteData),
         responsive: {
-          desktop: generateResponsiveHTML('desktop', options),
-          tablet: generateResponsiveHTML('tablet', options),
-          mobile: generateResponsiveHTML('mobile', options)
+          desktop: generateResponsiveHTML('desktop', options, websiteData),
+          tablet: generateResponsiveHTML('tablet', options, websiteData),
+          mobile: generateResponsiveHTML('mobile', options, websiteData)
         },
         features: [
           'Business Intelligence Analysis',
@@ -97,6 +99,10 @@ const WebsiteTemplates = ({
           'Accessibility Compliant',
           ...(options.ecommerceFeatures ? ['E-commerce Ready', 'Payment Integration'] : []),
           ...(options.multiLanguage ? ['Multi-language Support'] : []),
+          ...(websiteData?.products.length > 0 ? [`${websiteData.products.length} Products Integrated`] : []),
+          ...(websiteData?.services.length > 0 ? [`${websiteData.services.length} Services Integrated`] : []),
+          ...(websiteData?.reviews.length > 0 ? [`${websiteData.reviews.length} Customer Reviews`] : []),
+          ...(websiteData?.faqs.length > 0 ? [`${websiteData.faqs.length} FAQ Items`] : []),
           ...(options.features || [])
         ]
       };
@@ -194,7 +200,7 @@ const WebsiteTemplates = ({
   const handleAIRegenerate = (templateId: string) => {
     const template = aiTemplates.find(t => t.id === templateId);
     if (template) {
-      handleAIGeneration(template.prompt, {
+      handleEnhancedAIGeneration(template.prompt, {
         colorPalette: template.colorPalette,
         fontStyle: template.fontStyle,
         layoutStyle: template.layoutStyle,
@@ -214,7 +220,11 @@ const WebsiteTemplates = ({
   };
 
   const handleEnhancedPreview = (template: EnhancedTemplate) => {
-    onPreviewTemplate(template);
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+      newWindow.document.write(template.preview);
+      newWindow.document.close();
+    }
   };
 
   const handleEnhancedDownload = (template: EnhancedTemplate) => {
@@ -249,37 +259,15 @@ const WebsiteTemplates = ({
         
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'ai' | 'enhanced')}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="ai" className="flex items-center space-x-2">
-              <Brain className="h-4 w-4" />
-              <span>Enhanced AI Generator</span>
-            </TabsTrigger>
             <TabsTrigger value="enhanced" className="flex items-center space-x-2">
               <FileText className="h-4 w-4" />
-              <span>Business Templates</span>
+              <span>Business Templates ({generatedTemplates.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="ai" className="flex items-center space-x-2">
+              <Brain className="h-4 w-4" />
+              <span>Enhanced AI Generator ({aiTemplates.length})</span>
             </TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="ai" className="mt-6">
-            <div className="grid lg:grid-cols-5 gap-6">
-              <div className="lg:col-span-2">
-                <EnhancedAITemplateGenerator
-                  onGenerate={handleEnhancedAIGeneration}
-                  isGenerating={isAIGenerating}
-                  progress={aiProgress}
-                />
-              </div>
-              <div className="lg:col-span-3">
-                <AIGeneratedTemplates
-                  templates={aiTemplates}
-                  onPreview={handleAIPreview}
-                  onDownload={handleAIDownload}
-                  onRegenerate={handleAIRegenerate}
-                  onCustomizeStyle={handleAICustomizeStyle}
-                  onEditContent={handleAIEditContent}
-                />
-              </div>
-            </div>
-          </TabsContent>
           
           <TabsContent value="enhanced" className="mt-6">
             <div className="space-y-6">
@@ -327,8 +315,8 @@ const WebsiteTemplates = ({
                               <li>Contact information integrated</li>
                               <li>Business hours display</li>
                               {websiteData?.logoUrl && <li>Logo integration</li>}
-                              {websiteData?.reviews.length > 0 && <li>Customer reviews section</li>}
-                              {websiteData?.faqs.length > 0 && <li>FAQ section</li>}
+                              {websiteData?.reviews.length > 0 && <li>{websiteData.reviews.length} customer reviews</li>}
+                              {websiteData?.faqs.length > 0 && <li>{websiteData.faqs.length} FAQ items</li>}
                               {websiteData?.calendlyLink && <li>Calendly booking integration</li>}
                               {websiteData?.businessType === 'ecommerce' && <li>Shopping cart functionality</li>}
                               <li>Mobile responsive design</li>
@@ -385,144 +373,439 @@ const WebsiteTemplates = ({
               </div>
             )}
           </TabsContent>
+          
+          <TabsContent value="ai" className="mt-6">
+            <div className="grid lg:grid-cols-5 gap-6">
+              <div className="lg:col-span-2">
+                <EnhancedAITemplateGenerator
+                  onGenerate={handleEnhancedAIGeneration}
+                  isGenerating={isAIGenerating}
+                  progress={aiProgress}
+                />
+              </div>
+              <div className="lg:col-span-3">
+                <AIGeneratedTemplates
+                  templates={aiTemplates}
+                  onPreview={handleAIPreview}
+                  onDownload={handleAIDownload}
+                  onRegenerate={handleAIRegenerate}
+                  onCustomizeStyle={handleAICustomizeStyle}
+                  onEditContent={handleAIEditContent}
+                />
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </CardHeader>
     </Card>
   );
 };
 
-// Enhanced AI template generation helpers with Shopify + Framer intelligence
-const generateEnhancedAIPreview = (businessDescription: string, options: any): string => {
+// Enhanced AI template generation helpers with Shopify + Framer intelligence + Business Data Integration
+const generateEnhancedAIPreview = (businessDescription: string, options: any, websiteData?: EnhancedWebsiteData | null): string => {
   const businessType = options.businessType || 'general';
   const tone = options.contentTone || 'professional';
   const industry = options.industry || 'business';
+  
+  // Generate rich content based on business data
+  const businessName = websiteData?.businessName || 'Your Business';
+  const businessInfo = websiteData?.businessDescription || businessDescription;
+  const contactInfo = websiteData?.contactInfo;
+  const products = websiteData?.products || [];
+  const services = websiteData?.services || [];
+  const reviews = websiteData?.reviews || [];
+  const faqs = websiteData?.faqs || [];
   
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced AI Website - ${businessType} | ${industry}</title>
+    <title>${businessName} - Enhanced AI Website | ${industry}</title>
     <meta name="description" content="AI-generated ${businessType} website with ${tone} tone for ${industry} industry">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            color: #1a202c;
         }
+        .nav { 
+            background: white; 
+            padding: 1rem 2rem; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        .nav-content { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #2d3748; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { 
+            text-decoration: none; 
+            color: #4a5568; 
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: #2d3748; }
         .container { 
             max-width: 1200px; 
             margin: 0 auto; 
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            margin-top: 2rem;
+            padding: 0 2rem;
         }
-        .hero { text-align: center; padding: 4rem 2rem; }
+        .hero { 
+            padding: 8rem 0 4rem; 
+            text-align: center; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-top: 60px;
+        }
         .hero h1 { 
             font-size: 3rem; 
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
         }
-        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; padding: 2rem; }
-        .feature { padding: 2rem; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; }
-        .ai-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
+        .hero p {
+            font-size: 1.25rem;
             margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .business-info {
-            background: #f8fafc;
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: white;
+            color: #2d3748;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: transform 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .section { padding: 4rem 0; }
+        .section-alt { background: #f7fafc; }
+        .section-title { 
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            color: #2d3748;
+        }
+        .grid { display: grid; gap: 2rem; }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .card {
+            background: white;
             padding: 2rem;
-            border-radius: 8px;
-            margin: 2rem 0;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
+        .card:hover { transform: translateY(-4px); }
+        .page-content { display: none; padding: 2rem 0; min-height: 60vh; }
+        .page-content.active { display: block; }
+        .review-stars { color: #f6ad55; margin-bottom: 0.5rem; }
+        .faq-item { margin-bottom: 1.5rem; }
+        .faq-question { 
+            font-weight: 600; 
+            margin-bottom: 0.5rem; 
+            color: #2d3748;
+            cursor: pointer;
+        }
+        .faq-answer { color: #4a5568; padding-left: 1rem; }
+        .contact-info { background: #edf2f7; padding: 2rem; border-radius: 0.5rem; }
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
-            .features { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .container { padding: 0 1rem; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="ai-badge">🧠 Enhanced AI Generated - Framer + Shopify Intelligence</div>
-        <div class="hero">
-            <h1>Your ${businessType.charAt(0).toUpperCase() + businessType.slice(1)} Website</h1>
-            <p>Intelligently crafted for the ${industry} industry with ${tone} tone</p>
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="logo">${businessName}</div>
+            <ul class="nav-links">
+                <li><a onclick="showPage('home')">Home</a></li>
+                <li><a onclick="showPage('about')">About</a></li>
+                ${products.length > 0 ? '<li><a onclick="showPage(\'products\')">Products</a></li>' : ''}
+                ${services.length > 0 ? '<li><a onclick="showPage(\'services\')">Services</a></li>' : ''}
+                ${reviews.length > 0 ? '<li><a onclick="showPage(\'reviews\')">Reviews</a></li>' : ''}
+                ${faqs.length > 0 ? '<li><a onclick="showPage(\'faq\')">FAQ</a></li>' : ''}
+                <li><a onclick="showPage('contact')">Contact</a></li>
+            </ul>
         </div>
-        
-        <div class="business-info">
-            <h3>Business Analysis</h3>
-            <p>"${businessDescription.slice(0, 200)}..."</p>
-        </div>
-        
-        <div class="features">
-            <div class="feature">
-                <h3>🎯 Business Intelligence</h3>
-                <p>AI analyzed your business requirements and optimized accordingly</p>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="home-page" class="page-content active">
+        <section class="hero">
+            <div class="container">
+                <h1>${businessName}</h1>
+                <p>${businessInfo.slice(0, 200)}...</p>
+                <button class="btn" onclick="showPage('contact')">Get Started Today</button>
             </div>
-            <div class="feature">
-                <h3>📱 Responsive Design</h3>
-                <p>Framer-quality responsive breakpoints for all devices</p>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2 class="section-title">Why Choose ${businessName}?</h2>
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h3>Quality Guaranteed</h3>
+                        <p>Professional service delivery with attention to detail</p>
+                    </div>
+                    <div class="card">
+                        <h3>Expert Support</h3>
+                        <p>24/7 customer service from experienced professionals</p>
+                    </div>
+                    <div class="card">  
+                        <h3>Fast Results</h3>
+                        <p>Quick turnaround times without compromising quality</p>
+                    </div>
+                </div>
             </div>
-            <div class="feature">
-                <h3>🚀 Performance Optimized</h3>
-                <p>Shopify-grade performance and loading optimization</p>
-            </div>
-            ${options.ecommerceFeatures ? `
-            <div class="feature">
-                <h3>🛒 E-commerce Ready</h3>
-                <p>Built-in shopping cart and payment integration</p>
-            </div>
-            ` : ''}
-            ${options.seoFocused ? `
-            <div class="feature">
-                <h3>🔍 SEO Optimized</h3>
-                <p>Search engine optimized with proper meta tags</p>
-            </div>
-            ` : ''}
-        </div>
+        </section>
     </div>
+
+    <!-- About Page -->
+    <div id="about-page" class="page-content">
+        <section class="section" style="margin-top: 60px;">
+            <div class="container">
+                <h2 class="section-title">About ${businessName}</h2>
+                <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                    <p style="font-size: 1.125rem; margin-bottom: 2rem;">${businessInfo}</p>
+                    <p>We specialize in serving ${websiteData?.targetAudience || 'businesses'} in the ${industry} industry with ${tone} approach to service delivery.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    ${products.length > 0 ? `
+    <!-- Products Page -->
+    <div id="products-page" class="page-content">
+        <section class="section" style="margin-top: 60px;">
+            <div class="container">
+                <h2 class="section-title">Our Products</h2>
+                <div class="grid grid-3">
+                    ${products.map(product => `
+                        <div class="card">
+                            ${product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name}" style="width: 100%; height: 200px; object-fit: cover; margin-bottom: 1rem; border-radius: 0.25rem;">` : ''}
+                            <h3>${product.name}</h3>
+                            <p>${product.description}</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                                <span style="font-size: 1.25rem; font-weight: 700; color: #667eea;">${product.price}</span>
+                                <button class="btn" style="padding: 0.5rem 1rem;">Add to Cart</button>
+                            </div>
+                            ${product.variations.length > 0 ? `
+                                <div style="margin-top: 1rem;">
+                                    <small>Available in: ${product.variations.map(v => v.value).join(', ')}</small>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </section>
+    </div>
+    ` : ''}
+
+    ${services.length > 0 ? `
+    <!-- Services Page -->
+    <div id="services-page" class="page-content">
+        <section class="section" style="margin-top: 60px;">
+            <div class="container">
+                <h2 class="section-title">Our Services</h2>
+                <div class="grid grid-3">
+                    ${services.map(service => `
+                        <div class="card">
+                            <h3>${service.name}</h3>
+                            <p>${service.description}</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                                <span style="font-size: 1.25rem; font-weight: 700; color: #667eea;">${service.price}</span>
+                                <button class="btn" style="padding: 0.5rem 1rem;">Book Now</button>
+                            </div>
+                            ${service.duration ? `<p style="margin-top: 0.5rem; color: #4a5568; font-size: 0.875rem;">Duration: ${service.duration}</p>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </section>
+    </div>
+    ` : ''}
+
+    ${reviews.length > 0 ? `
+    <!-- Reviews Page -->
+    <div id="reviews-page" class="page-content">
+        <section class="section" style="margin-top: 60px;">
+            <div class="container">
+                <h2 class="section-title">Customer Reviews</h2>
+                <div class="grid grid-3">
+                    ${reviews.map(review => `
+                        <div class="card">
+                            <div class="review-stars">${'⭐'.repeat(review.rating)}</div>
+                            <p style="font-style: italic; margin-bottom: 1rem;">"${review.review}"</p>
+                            <strong>${review.customerName}</strong>
+                            ${review.date ? `<p style="color: #4a5568; font-size: 0.875rem; margin-top: 0.5rem;">${review.date}</p>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </section>
+    </div>
+    ` : ''}
+
+    ${faqs.length > 0 ? `
+    <!-- FAQ Page -->
+    <div id="faq-page" class="page-content">
+        <section class="section" style="margin-top: 60px;">
+            <div class="container">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <div style="max-width: 800px; margin: 0 auto;">
+                    ${faqs.map(faq => `
+                        <div class="faq-item">
+                            <div class="faq-question">${faq.question}</div>
+                            <div class="faq-answer">${faq.answer}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </section>
+    </div>
+    ` : ''}
+
+    <!-- Contact Page -->
+    <div id="contact-page" class="page-content">
+        <section class="section" style="margin-top: 60px;">
+            <div class="container">
+                <h2 class="section-title">Contact Us</h2>
+                <div style="max-width: 600px; margin: 0 auto;">
+                    <div class="contact-info">
+                        ${contactInfo?.email ? `<p><strong>Email:</strong> ${contactInfo.email}</p>` : ''}
+                        ${contactInfo?.phone ? `<p><strong>Phone:</strong> ${contactInfo.phone}</p>` : ''}
+                        ${contactInfo?.address ? `<p><strong>Address:</strong> ${contactInfo.address}</p>` : ''}
+                        ${contactInfo?.businessHours ? `<p><strong>Hours:</strong> ${contactInfo.businessHours}</p>` : ''}
+                        ${websiteData?.calendlyLink ? `<p><a href="${websiteData.calendlyLink}" target="_blank" class="btn" style="margin-top: 1rem;">Schedule Meeting</a></p>` : ''}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            const targetPage = document.getElementById(pageId + '-page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Update URL without page reload
+            window.history.pushState({}, '', '#' + pageId);
+        }
+        
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function() {
+            const hash = window.location.hash.slice(1) || 'home';
+            showPage(hash);
+        });
+        
+        // Initialize page based on URL hash
+        document.addEventListener('DOMContentLoaded', function() {
+            const hash = window.location.hash.slice(1) || 'home';
+            showPage(hash);
+        });
+    </script>
 </body>
 </html>`;
 };
 
-const generateEnhancedAIFiles = (businessDescription: string, options: any) => {
+const generateEnhancedAIFiles = (businessDescription: string, options: any, websiteData?: EnhancedWebsiteData | null) => {
   return {
-    'index.html': generateEnhancedAIPreview(businessDescription, options),
-    'styles.css': generateEnhancedCSS(options),
-    'script.js': generateEnhancedJS(options),
-    'README.md': generateEnhancedREADME(businessDescription, options)
+    'index.html': generateEnhancedAIPreview(businessDescription, options, websiteData),
+    'styles.css': generateEnhancedCSS(options, websiteData),
+    'script.js': generateEnhancedJS(options, websiteData),
+    'README.md': generateEnhancedREADME(businessDescription, options, websiteData)
   };
 };
 
-const generateResponsiveHTML = (device: string, options: any): string => {
+const generateResponsiveHTML = (device: string, options: any, websiteData?: EnhancedWebsiteData | null): string => {
+  const businessName = websiteData?.businessName || 'Your Business';
   return `<div class="responsive-preview ${device}">
-    <h3>${device.charAt(0).toUpperCase() + device.slice(1)} Preview</h3>
+    <h3>${device.charAt(0).toUpperCase() + device.slice(1)} Preview - ${businessName}</h3>
     <p>Optimized layout for ${device} viewing with ${options.layoutStyle} design</p>
+    <p>Includes: ${websiteData?.products.length || 0} products, ${websiteData?.services.length || 0} services, ${websiteData?.reviews.length || 0} reviews</p>
   </div>`;
 };
 
-const generateEnhancedCSS = (options: any): string => {
+const generateEnhancedCSS = (options: any, websiteData?: EnhancedWebsiteData | null): string => {
   return `/* Enhanced AI Generated CSS - Framer + Shopify Intelligence */
 :root {
   --primary-color: ${options.colorPalette === 'modern-blue' ? '#3B82F6' : '#8B5CF6'};
   --font-family: ${options.fontStyle === 'clean-sans' ? 'Inter, sans-serif' : 'Georgia, serif'};
+  --business-name: '${websiteData?.businessName || 'Your Business'}';
+}
+
+/* Business-specific styling */
+.business-logo {
+  background-image: url('${websiteData?.logoUrl || ''}');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Product grid optimizations */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* Service cards */
+.service-card {
+  transition: transform 0.3s ease;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Review styling */
+.review-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Responsive breakpoints */
-@media (max-width: 768px) { /* Mobile */ }
-@media (min-width: 769px) and (max-width: 1024px) { /* Tablet */ }
-@media (min-width: 1025px) { /* Desktop */ }
+@media (max-width: 768px) { 
+  .product-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+}
+@media (min-width: 769px) and (max-width: 1024px) { 
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1025px) { 
+  .product-grid { grid-template-columns: repeat(3, 1fr); }
+}
 
 /* Performance optimizations */
 * { box-sizing: border-box; }
@@ -533,10 +816,20 @@ img { max-width: 100%; height: auto; }
 `;
 };
 
-const generateEnhancedJS = (options: any): string => {
+const generateEnhancedJS = (options: any, websiteData?: EnhancedWebsiteData | null): string => {
   return `// Enhanced AI Generated JavaScript - Framer + Shopify Intelligence
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Enhanced AI Website Loaded');
+  console.log('Enhanced AI Website Loaded for ${websiteData?.businessName || 'Business'}');
+  
+  // Business data
+  const businessData = {
+    name: '${websiteData?.businessName || ''}',
+    type: '${websiteData?.businessType || 'general'}',
+    products: ${JSON.stringify(websiteData?.products || [])},
+    services: ${JSON.stringify(websiteData?.services || [])},
+    reviews: ${JSON.stringify(websiteData?.reviews || [])},
+    faqs: ${JSON.stringify(websiteData?.faqs || [])}
+  };
   
   // Performance monitoring
   if ('performance' in window) {
@@ -546,63 +839,141 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  ${options.ecommerceFeatures ? `
+  ${options.ecommerceFeatures || websiteData?.businessType === 'ecommerce' ? `
   // E-commerce functionality
   const cart = {
     items: [],
-    add: function(item) { this.items.push(item); },
-    getTotal: function() { return this.items.reduce((sum, item) => sum + item.price, 0); }
+    add: function(item) { 
+      this.items.push(item); 
+      this.updateCartDisplay();
+    },
+    getTotal: function() { 
+      return this.items.reduce((sum, item) => sum + parseFloat(item.price.replace('$', '')), 0); 
+    },
+    updateCartDisplay: function() {
+      console.log('Cart updated:', this.items.length, 'items, Total: $' + this.getTotal());
+    }
   };
+  
+  // Add click handlers for add to cart buttons
+  document.querySelectorAll('.btn').forEach(btn => {
+    if (btn.textContent.includes('Add to Cart')) {
+      btn.addEventListener('click', function() {
+        const productCard = this.closest('.card');
+        const productName = productCard.querySelector('h3').textContent;
+        const productPrice = productCard.querySelector('[style*="color: #667eea"]').textContent;
+        cart.add({ name: productName, price: productPrice });
+      });
+    }
+  });
   ` : ''}
   
   ${options.seoFocused ? `
   // SEO enhancements
   const seo = {
     updateMetaDescription: function(desc) {
-      document.querySelector('meta[name="description"]').content = desc;
+      let meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.content = desc;
+    },
+    addStructuredData: function() {
+      const structuredData = {
+        "@context": "https://schema.org",
+        "@type": "${websiteData?.businessType === 'ecommerce' ? 'OnlineStore' : 'Organization'}",
+        "name": "${websiteData?.businessName || ''}",
+        "description": "${websiteData?.businessDescription || ''}",
+        ${websiteData?.contactInfo?.email ? `"email": "${websiteData.contactInfo.email}",` : ''}
+        ${websiteData?.contactInfo?.phone ? `"telephone": "${websiteData.contactInfo.phone}",` : ''}
+        ${websiteData?.contactInfo?.address ? `"address": "${websiteData.contactInfo.address}"` : ''}
+      };
+      
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(structuredData);
+      document.head.appendChild(script);
     }
   };
+  
+  seo.addStructuredData();
   ` : ''}
+  
+  // Page navigation functionality
+  window.showPage = function(pageId) {
+    document.querySelectorAll('.page-content').forEach(page => {
+      page.classList.remove('active');
+    });
+    
+    const targetPage = document.getElementById(pageId + '-page');
+    if (targetPage) {
+      targetPage.classList.add('active');
+      // Update page title
+      document.title = '${websiteData?.businessName || 'Business'} - ' + pageId.charAt(0).toUpperCase() + pageId.slice(1);
+    }
+  };
+  
+  // Initialize based on hash
+  const currentHash = window.location.hash.slice(1) || 'home';
+  showPage(currentHash);
 });`;
 };
 
-const generateEnhancedREADME = (businessDescription: string, options: any): string => {
-  return `# Enhanced AI Generated Website
+const generateEnhancedREADME = (businessDescription: string, options: any, websiteData?: EnhancedWebsiteData | null): string => {
+  return `# Enhanced AI Generated Website - ${websiteData?.businessName || 'Your Business'}
   
-## Business Analysis
+## Business Information
+**Business Name:** ${websiteData?.businessName || 'Not specified'}
+**Business Type:** ${websiteData?.businessType || 'General'}
+**Industry:** ${websiteData?.industry || 'Not specified'}
+**Target Audience:** ${websiteData?.targetAudience || 'General'}
+
+## Business Description
 ${businessDescription}
 
 ## AI Features Applied
-- Business Type: ${options.businessType}
-- Industry: ${options.industry}
-- Content Tone: ${options.contentTone}
-- Layout Style: ${options.layoutStyle}
+- Business Type: ${options.businessType || 'general'}
+- Industry: ${options.industry || 'general'}
+- Content Tone: ${options.contentTone || 'professional'}
+- Layout Style: ${options.layoutStyle || 'modern'}
+
+## Content Integration
+- **Products:** ${websiteData?.products.length || 0} products integrated
+- **Services:** ${websiteData?.services.length || 0} services integrated  
+- **Reviews:** ${websiteData?.reviews.length || 0} customer reviews
+- **FAQs:** ${websiteData?.faqs.length || 0} FAQ items
+- **Contact Info:** ${websiteData?.contactInfo?.email ? 'Complete' : 'Basic'}
+
+## Pages Included
+- Home page with business overview
+- About page with detailed business information
+${websiteData?.products.length > 0 ? '- Products page with shopping functionality' : ''}
+${websiteData?.services.length > 0 ? '- Services page with booking capabilities' : ''}
+${websiteData?.reviews.length > 0 ? '- Reviews page showcasing customer testimonials' : ''}
+${websiteData?.faqs.length > 0 ? '- FAQ page with common questions' : ''}
+- Contact page with business information
 
 ## Technologies Used
 - Framer-inspired responsive design
 - Shopify-grade performance optimization
 - Modern CSS Grid and Flexbox
 - Accessibility-first approach
+- JavaScript navigation system
+- SEO optimization
+- Structured data markup
 
 ## Features Included
 ${options.features?.map((f: string) => `- ${f}`).join('\n') || '- Standard responsive design'}
+- Multi-page navigation system
+- Business data integration
+- Contact information display
+- ${websiteData?.businessType === 'ecommerce' ? 'E-commerce functionality' : 'Service booking system'}
 
-Generated by Enhanced AI combining Framer and Shopify intelligence.
+## Setup Instructions
+1. Extract all files to your web server
+2. Open index.html in a web browser
+3. Navigate between pages using the navigation menu
+4. Customize content as needed for your business
+
+Generated by Enhanced AI combining Framer and Shopify intelligence with complete business data integration.
 `;
-};
-
-const generateAITemplatePreview = (prompt: string, options: any): string => {
-  // Basic implementation for AI template preview generation
-  return `<div>AI Template Preview for prompt: ${prompt}</div>`;
-};
-
-const generateAITemplateFiles = (prompt: string, options: any): { [filename: string]: string } => {
-  // Basic implementation for AI template files generation
-  return {
-    'index.html': `<div>AI Template HTML for prompt: ${prompt}</div>`,
-    'styles.css': `/* AI Template CSS */`,
-    'script.js': `// AI Template JS`
-  };
 };
 
 export default WebsiteTemplates;

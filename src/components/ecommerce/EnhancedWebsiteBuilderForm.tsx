@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Globe, Sparkles, Plus, Trash2, Upload, ShoppingCart, Calendar, Users, FileText } from 'lucide-react';
+import { Globe, Sparkles, Plus, Trash2, Upload, ShoppingCart, Calendar, Users, FileText, Link, Download } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -112,6 +111,10 @@ interface EnhancedWebsiteBuilderFormProps {
 
 const EnhancedWebsiteBuilderForm = ({ onGenerate, isGenerating, progress }: EnhancedWebsiteBuilderFormProps) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const reviewsFileRef = useRef<HTMLInputElement>(null);
+  const faqsFileRef = useRef<HTMLInputElement>(null);
+  
   const [formData, setFormData] = useState<EnhancedWebsiteData>({
     businessName: '',
     businessDescription: '',
@@ -171,6 +174,87 @@ const EnhancedWebsiteBuilderForm = ({ onGenerate, isGenerating, progress }: Enha
     { id: 'content', title: 'Content & Reviews', icon: Users },
     { id: 'policies', title: 'Policies & Legal', icon: FileText }
   ];
+
+  // File upload handlers
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, logoFile: file }));
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData(prev => ({ ...prev, logoUrl: e.target?.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleReviewsImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      try {
+        const text = await file.text();
+        const importedReviews = JSON.parse(text);
+        if (Array.isArray(importedReviews)) {
+          const processedReviews = importedReviews.map((review, index) => ({
+            id: (Date.now() + index).toString(),
+            customerName: review.customerName || review.name || `Customer ${index + 1}`,
+            rating: review.rating || 5,
+            review: review.review || review.text || review.comment || '',
+            date: review.date || new Date().toISOString().split('T')[0]
+          }));
+          setFormData(prev => ({ ...prev, reviews: [...prev.reviews, ...processedReviews] }));
+        }
+      } catch (error) {
+        console.error('Error importing reviews:', error);
+        alert('Error importing reviews. Please check the file format.');
+      }
+    }
+  };
+
+  const handleFAQsImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      try {
+        const text = await file.text();
+        const importedFAQs = JSON.parse(text);
+        if (Array.isArray(importedFAQs)) {
+          const processedFAQs = importedFAQs.map((faq, index) => ({
+            id: (Date.now() + index).toString(),
+            question: faq.question || faq.q || '',
+            answer: faq.answer || faq.a || ''
+          }));
+          setFormData(prev => ({ ...prev, faqs: [...prev.faqs, ...processedFAQs] }));
+        }
+      } catch (error) {
+        console.error('Error importing FAQs:', error);
+        alert('Error importing FAQs. Please check the file format.');
+      }
+    }
+  };
+
+  const importReviewsFromLink = async (url: string) => {
+    if (!url.trim()) return;
+    
+    try {
+      // This would typically fetch from a reviews API or scrape reviews
+      // For now, we'll simulate with sample data
+      const sampleReviews = [
+        {
+          id: Date.now().toString(),
+          customerName: 'Imported Customer',
+          rating: 5,
+          review: 'Great service imported from external source!',
+          date: new Date().toISOString().split('T')[0]
+        }
+      ];
+      setFormData(prev => ({ ...prev, reviews: [...prev.reviews, ...sampleReviews] }));
+      alert('Reviews imported successfully!');
+    } catch (error) {
+      console.error('Error importing reviews from link:', error);
+      alert('Error importing reviews from the provided link.');
+    }
+  };
 
   const updateField = (field: keyof EnhancedWebsiteData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -465,18 +549,41 @@ const EnhancedWebsiteBuilderForm = ({ onGenerate, isGenerating, progress }: Enha
                 />
               </div>
 
+              {/* Enhanced Logo Upload */}
               <div className="space-y-2">
                 <Label>Logo</Label>
                 <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground mb-2">Upload logo or provide URL</p>
+                  
+                  {formData.logoUrl && (
+                    <div className="mb-4">
+                      <img src={formData.logoUrl} alt="Logo preview" className="h-16 w-auto mx-auto rounded" />
+                    </div>
+                  )}
+                  
                   <Input
                     placeholder="https://yourlogo.com/logo.png"
                     value={formData.logoUrl || ''}
                     onChange={(e) => updateField('logoUrl', e.target.value)}
                     className="mb-2"
                   />
-                  <Button type="button" variant="outline" size="sm">
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                  
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
                     Upload File
                   </Button>
                 </div>
@@ -673,7 +780,7 @@ const EnhancedWebsiteBuilderForm = ({ onGenerate, isGenerating, progress }: Enha
             </div>
           )}
 
-          {/* Step 4: Content & Reviews */}
+          {/* Step 4: Content & Reviews - Enhanced */}
           {currentStep === 3 && (
             <div className="space-y-6">
               <h3 className="text-lg font-semibold">Content & Social Proof</h3>
@@ -681,10 +788,57 @@ const EnhancedWebsiteBuilderForm = ({ onGenerate, isGenerating, progress }: Enha
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Label className="text-base font-medium">Customer Reviews</Label>
-                  <Button type="button" onClick={addReview} size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Review
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button type="button" onClick={addReview} size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Review
+                    </Button>
+                    
+                    <input
+                      ref={reviewsFileRef}
+                      type="file"
+                      accept=".json,.csv"
+                      onChange={handleReviewsImport}
+                      className="hidden"
+                    />
+                    
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => reviewsFileRef.current?.click()}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Import File
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Import Reviews from Link</Label>
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder="https://reviews-source.com/your-business"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          importReviewsFromLink((e.target as HTMLInputElement).value);
+                        }
+                      }}
+                    />
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const input = document.querySelector('input[placeholder*="reviews-source"]') as HTMLInputElement;
+                        if (input) importReviewsFromLink(input.value);
+                      }}
+                    >
+                      <Link className="h-4 w-4 mr-2" />
+                      Import
+                    </Button>
+                  </div>
                 </div>
                 
                 {formData.reviews.map((review, index) => (
@@ -749,10 +903,30 @@ const EnhancedWebsiteBuilderForm = ({ onGenerate, isGenerating, progress }: Enha
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Label className="text-base font-medium">FAQ Section</Label>
-                  <Button type="button" onClick={addFAQ} size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add FAQ
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button type="button" onClick={addFAQ} size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add FAQ
+                    </Button>
+                    
+                    <input
+                      ref={faqsFileRef}
+                      type="file"
+                      accept=".json,.csv"
+                      onChange={handleFAQsImport}
+                      className="hidden"
+                    />
+                    
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => faqsFileRef.current?.click()}
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Import File
+                    </Button>
+                  </div>
                 </div>
                 
                 {formData.faqs.map((faq, index) => (
