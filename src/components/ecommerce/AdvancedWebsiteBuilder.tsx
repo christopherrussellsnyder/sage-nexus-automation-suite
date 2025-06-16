@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,11 +47,11 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
   const [activeTab, setActiveTab] = useState<'builder' | 'design' | 'ecommerce' | 'seo' | 'performance' | 'analytics' | 'integrations'>('builder');
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
 
-  // SEO Data State
+  // SEO Data State - Fixed the tags property issue
   const [seoData, setSeoData] = useState({
     title: `${websiteData.businessName} - ${websiteData.businessDescription}`,
     description: websiteData.businessDescription,
-    keywords: websiteData.tags || [],
+    keywords: [], // Use empty array instead of websiteData.tags
     ogImage: websiteData.logoUrl || '',
     canonicalUrl: '',
     structuredData: {}
