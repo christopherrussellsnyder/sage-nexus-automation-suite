@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -368,7 +367,7 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
           <h2 className="text-xl font-bold flex items-center space-x-2">
             <Brain className="h-5 w-5" />
             <span>Advanced Website Builder</span>
-            <Badge variant="secondary">AI-Powered</Badge>
+            <Badge variant="secondary">AI-Powered + E-commerce</Badge>
           </h2>
           
           <div className="flex items-center space-x-2">
@@ -419,7 +418,7 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
       {isGenerating && (
         <div className="bg-blue-50 border-b p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Generating AI-powered website...</span>
+            <span className="text-sm font-medium">Generating AI-powered website with e-commerce...</span>
             <span className="text-sm">{Math.round(generationProgress)}%</span>
           </div>
           <Progress value={generationProgress} className="h-2" />
@@ -431,9 +430,10 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
         {/* Left Sidebar */}
         <div className="w-80 bg-white border-r flex flex-col">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="flex-1">
-            <TabsList className="grid w-full grid-cols-3 p-1 m-4">
+            <TabsList className="grid w-full grid-cols-4 p-1 m-4">
               <TabsTrigger value="builder">Builder</TabsTrigger>
               <TabsTrigger value="design">Design</TabsTrigger>
+              <TabsTrigger value="ecommerce">E-commerce</TabsTrigger>
               <TabsTrigger value="preview">Preview</TabsTrigger>
             </TabsList>
 
@@ -521,6 +521,79 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
                 {!selectedSection && (
                   <p className="text-muted-foreground text-sm">Select a section to edit its design</p>
                 )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="ecommerce" className="flex-1 overflow-auto p-4">
+              <div className="space-y-4">
+                <h3 className="font-semibold flex items-center space-x-2">
+                  <ShoppingBag className="h-4 w-4" />
+                  <span>E-commerce Setup</span>
+                </h3>
+                
+                <div className="space-y-3">
+                  <div className="p-3 border rounded-lg">
+                    <h4 className="font-medium text-sm mb-2">Product Management</h4>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Manage your product catalog, pricing, and inventory
+                    </p>
+                    <Button size="sm" className="w-full">
+                      <Package className="h-3 w-3 mr-1" />
+                      Manage Products
+                    </Button>
+                  </div>
+
+                  <div className="p-3 border rounded-lg">
+                    <h4 className="font-medium text-sm mb-2">Order Processing</h4>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Handle orders, shipping, and customer communications
+                    </p>
+                    <Button size="sm" className="w-full">
+                      <FileText className="h-3 w-3 mr-1" />
+                      View Orders
+                    </Button>
+                  </div>
+
+                  <div className="p-3 border rounded-lg">
+                    <h4 className="font-medium text-sm mb-2">Payment Setup</h4>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Configure payment processors and checkout flow
+                    </p>
+                    <Button size="sm" className="w-full" variant="outline">
+                      <DollarSign className="h-3 w-3 mr-1" />
+                      Setup Payments
+                    </Button>
+                  </div>
+
+                  <div className="p-3 border rounded-lg">
+                    <h4 className="font-medium text-sm mb-2">Analytics & Reports</h4>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Track sales performance and customer behavior
+                    </p>
+                    <Button size="sm" className="w-full" variant="outline">
+                      <BarChart3 className="h-3 w-3 mr-1" />
+                      View Analytics
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-sm mb-3">Quick Add Products</h4>
+                  <div className="space-y-2">
+                    <Button size="sm" variant="outline" className="w-full justify-start">
+                      <Plus className="h-3 w-3 mr-2" />
+                      Add Physical Product
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start">
+                      <Plus className="h-3 w-3 mr-2" />
+                      Add Digital Product
+                    </Button>
+                    <Button size="sm" variant="outline" className="w-full justify-start">
+                      <Plus className="h-3 w-3 mr-2" />
+                      Add Service
+                    </Button>
+                  </div>
+                </div>
               </div>
             </TabsContent>
 

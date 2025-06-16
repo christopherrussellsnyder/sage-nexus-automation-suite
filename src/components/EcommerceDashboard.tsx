@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,9 +15,10 @@ import {
 import EnhancedWebsiteBuilderForm from './ecommerce/EnhancedWebsiteBuilderForm';
 import WebsiteTemplates from './ecommerce/WebsiteTemplates';
 import ProductResearchTable from './ecommerce/ProductResearchTable';
+import EcommerceIntegration from './ecommerce/EcommerceIntegration';
 
 const EcommerceDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'builder' | 'research'>('builder');
+  const [activeTab, setActiveTab] = useState<'builder' | 'research' | 'store'>('builder');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [websiteData, setWebsiteData] = useState<any>(null);
@@ -70,7 +70,7 @@ const EcommerceDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">E-commerce Suite</h2>
-          <p className="text-muted-foreground">Enhanced AI-powered website building and product research</p>
+          <p className="text-muted-foreground">Enhanced AI-powered website building, product research, and store management</p>
         </div>
         <div className="flex space-x-2">
           <Button
@@ -79,7 +79,15 @@ const EcommerceDashboard = () => {
             className="flex items-center space-x-2"
           >
             <Globe className="h-4 w-4" />
-            <span>Enhanced Website Builder</span>
+            <span>Website Builder</span>
+          </Button>
+          <Button
+            variant={activeTab === 'store' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('store')}
+            className="flex items-center space-x-2"
+          >
+            <ShoppingBag className="h-4 w-4" />
+            <span>Store Management</span>
           </Button>
           <Button
             variant={activeTab === 'research' ? 'default' : 'outline'}
@@ -114,6 +122,8 @@ const EcommerceDashboard = () => {
             />
           </div>
         </div>
+      ) : activeTab === 'store' ? (
+        <EcommerceIntegration />
       ) : (
         <div className="space-y-6">
           {/* Product Research Header */}
