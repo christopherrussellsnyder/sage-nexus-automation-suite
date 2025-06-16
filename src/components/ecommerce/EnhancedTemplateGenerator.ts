@@ -1,4 +1,3 @@
-
 interface EnhancedWebsiteData {
   businessName: string;
   businessDescription: string;
@@ -1399,4 +1398,3 @@ document.head.appendChild(style);
 };
 
 export type { EnhancedWebsiteData, EnhancedTemplate };
-export { generateEnhancedTemplates };
