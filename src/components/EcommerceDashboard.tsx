@@ -13,48 +13,39 @@ import {
   Star,
   DollarSign
 } from "lucide-react";
-import WebsiteBuilderForm from './ecommerce/WebsiteBuilderForm';
+import EnhancedWebsiteBuilderForm from './ecommerce/EnhancedWebsiteBuilderForm';
 import WebsiteTemplates from './ecommerce/WebsiteTemplates';
 import ProductResearchTable from './ecommerce/ProductResearchTable';
-
-interface WebsiteData {
-  businessName: string;
-  businessDescription: string;
-  industry: string;
-  targetAudience: string;
-  colorScheme: string;
-  businessGoals: string;
-  existingWebsite: string;
-}
 
 const EcommerceDashboard = () => {
   const [activeTab, setActiveTab] = useState<'builder' | 'research'>('builder');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
-  const [websiteData, setWebsiteData] = useState<WebsiteData | null>(null);
+  const [websiteData, setWebsiteData] = useState<any>(null);
   const [templatesGenerated, setTemplatesGenerated] = useState(false);
 
-  const handleWebsiteGeneration = async (data: WebsiteData) => {
+  const handleWebsiteGeneration = async (data: any) => {
     setIsGenerating(true);
     setGenerationProgress(0);
     setWebsiteData(data);
 
-    // Simulate website generation process
+    // Simulate enhanced website generation process
     const steps = [
-      { message: 'Analyzing business requirements', duration: 1500 },
-      { message: 'Generating personalized templates', duration: 2000 },
-      { message: 'Creating page structure', duration: 1500 },
-      { message: 'Optimizing design and content', duration: 1000 }
+      { message: 'Analyzing enhanced business requirements', duration: 2000 },
+      { message: 'Processing products/services data', duration: 2000 },
+      { message: 'Generating personalized templates with full content', duration: 3000 },
+      { message: 'Creating policy pages and legal content', duration: 1500 },
+      { message: 'Optimizing for business type and industry', duration: 1500 }
     ];
 
     for (let i = 0; i < steps.length; i++) {
       await new Promise(resolve => setTimeout(resolve, steps[i].duration));
-      setGenerationProgress((i + 1) * 25);
+      setGenerationProgress((i + 1) * 20);
     }
 
     setIsGenerating(false);
     setTemplatesGenerated(true);
-    console.log('Website generated with data:', data);
+    console.log('Enhanced website generated with data:', data);
   };
 
   const handleTemplateSelect = (template: any) => {
@@ -79,7 +70,7 @@ const EcommerceDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">E-commerce Suite</h2>
-          <p className="text-muted-foreground">AI-powered website building and product research</p>
+          <p className="text-muted-foreground">Enhanced AI-powered website building and product research</p>
         </div>
         <div className="flex space-x-2">
           <Button
@@ -88,7 +79,7 @@ const EcommerceDashboard = () => {
             className="flex items-center space-x-2"
           >
             <Globe className="h-4 w-4" />
-            <span>Website Builder</span>
+            <span>Enhanced Website Builder</span>
           </Button>
           <Button
             variant={activeTab === 'research' ? 'default' : 'outline'}
@@ -103,9 +94,9 @@ const EcommerceDashboard = () => {
 
       {activeTab === 'builder' ? (
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Website Builder Form */}
+          {/* Enhanced Website Builder Form */}
           <div className="lg:col-span-1">
-            <WebsiteBuilderForm 
+            <EnhancedWebsiteBuilderForm 
               onGenerate={handleWebsiteGeneration}
               isGenerating={isGenerating}
               progress={generationProgress}
