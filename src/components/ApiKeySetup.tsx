@@ -1,28 +1,32 @@
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Key, CheckCircle, AlertCircle } from 'lucide-react';
-import { CompetitiveIntelligenceService } from '@/services/CompetitiveIntelligenceService';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Key, ExternalLink } from 'lucide-react';
+import { CompetitorAnalysisService } from '@/services/CompetitorAnalysisService';
 
 interface ApiKeySetupProps {
-  onApiKeySet: () => void;
   isVisible: boolean;
+  onApiKeySet: () => void;
 }
 
-const ApiKeySetup = ({ onApiKeySet, isVisible }: ApiKeySetupProps) => {
+const ApiKeySetup = ({ isVisible, onApiKeySet }: ApiKeySetupProps) => {
   const [apiKey, setApiKey] = useState('');
-  const [isTestingKey, setIsTestingKey] = useState(false);
-  const [keyStatus, setKeyStatus] = useState<'none' | 'valid' | 'invalid'>('none');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  if (!isVisible) return null;
+  const handleSaveApiKey = async () => {
+    if (!apiKey.trim()) {
+      setError('Please enter your Perplexity API key');
+      return;
+    }
 
-  const testApiKey = async () => {
-    if (!apiKey.trim()) return;
-    
-    setIsTestingKey(true);
+    setIsLoading(true);
+    setError('');
+
     try {
       // Test the API key with a simple request
       const response = await fetch('https://api.perplexity.ai/chat/completions', {
@@ -33,42 +37,41 @@ const ApiKeySetup = ({ onApiKeySet, isVisible }: ApiKeySetupProps) => {
         },
         body: JSON.stringify({
           model: 'llama-3.1-sonar-small-128k-online',
-          messages: [{ role: 'user', content: 'Test' }],
+          messages: [
+            { role: 'user', content: 'Test connection' }
+          ],
           max_tokens: 10
         }),
       });
 
       if (response.ok) {
-        setKeyStatus('valid');
-        CompetitiveIntelligenceService.saveApiKey(apiKey);
-        setTimeout(() => {
-          onApiKeySet();
-        }, 1000);
+        CompetitorAnalysisService.saveApiKey(apiKey);
+        onApiKeySet();
       } else {
-        setKeyStatus('invalid');
+        setError('Invalid API key. Please check and try again.');
       }
     } catch (error) {
-      setKeyStatus('invalid');
+      setError('Failed to validate API key. Please try again.');
     } finally {
-      setIsTestingKey(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <Card className="w-full max-w-md mx-4">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+    <Dialog open={isVisible} onOpenChange={() => {}}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
             <Key className="h-5 w-5" />
-            <span>Setup Competitive Intelligence</span>
-          </CardTitle>
-          <CardDescription>
-            To provide you with data-driven insights from top performers in your industry, 
-            we need access to real-time web data. Please provide your Perplexity API key.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
+            <span>Setup Perplexity API Key</span>
+          </DialogTitle>
+          <DialogDescription>
+            To use the competitor analysis and marketing intelligence features, you need a Perplexity API key.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <div>
             <Label htmlFor="apiKey">Perplexity API Key</Label>
             <Input
               id="apiKey"
@@ -76,55 +79,48 @@ const ApiKeySetup = ({ onApiKeySet, isVisible }: ApiKeySetupProps) => {
               placeholder="pplx-..."
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && testApiKey()}
+              className="mt-1"
             />
-            <p className="text-xs text-muted-foreground">
-              Get your API key from{' '}
-              <a 
-                href="https://www.perplexity.ai/settings/api" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                perplexity.ai/settings/api
-              </a>
-            </p>
           </div>
 
-          {keyStatus === 'valid' && (
-            <div className="flex items-center space-x-2 text-green-600">
-              <CheckCircle className="h-4 w-4" />
-              <span className="text-sm">API key validated successfully!</span>
-            </div>
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
 
-          {keyStatus === 'invalid' && (
-            <div className="flex items-center space-x-2 text-red-600">
-              <AlertCircle className="h-4 w-4" />
-              <span className="text-sm">Invalid API key. Please check and try again.</span>
-            </div>
-          )}
+          <div className="bg-blue-50 p-3 rounded-lg">
+            <p className="text-sm text-blue-800 mb-2">
+              <strong>How to get your API key:</strong>
+            </p>
+            <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+              <li>Visit the Perplexity API dashboard</li>
+              <li>Create an account or sign in</li>
+              <li>Generate a new API key</li>
+              <li>Copy and paste it above</li>
+            </ol>
+            <Button
+              variant="link"
+              className="p-0 h-auto text-blue-600 mt-2"
+              onClick={() => window.open('https://www.perplexity.ai/settings/api', '_blank')}
+            >
+              <ExternalLink className="h-3 w-3 mr-1" />
+              Get API Key
+            </Button>
+          </div>
+        </div>
 
-          <Button 
-            onClick={testApiKey}
-            disabled={!apiKey.trim() || isTestingKey}
+        <DialogFooter>
+          <Button
+            onClick={handleSaveApiKey}
+            disabled={isLoading || !apiKey.trim()}
             className="w-full"
           >
-            {isTestingKey ? 'Testing API Key...' : 'Validate & Continue'}
+            {isLoading ? 'Validating...' : 'Save & Continue'}
           </Button>
-
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p><strong>Why we need this:</strong></p>
-            <ul className="list-disc pl-4 space-y-1">
-              <li>Analyze your top competitors in real-time</li>
-              <li>Extract winning ad copy and strategies</li>
-              <li>Identify market gaps and opportunities</li>
-              <li>Generate data-driven recommendations</li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

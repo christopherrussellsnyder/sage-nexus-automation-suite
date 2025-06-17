@@ -1,91 +1,51 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Users, 
-  TrendingUp, 
-  BarChart3,
-  MessageSquare,
-  Calendar,
+  BarChart3, 
+  DollarSign,
+  RefreshCw,
   Target,
+  TrendingUp,
+  Briefcase,
+  Calendar,
   Megaphone,
-  UserCheck
+  Brain,
+  Settings
 } from "lucide-react";
-import CampaignWizard from './agency/CampaignWizard';
-import LeadScoringDashboard from './agency/LeadScoringDashboard';
-import CampaignResults from './agency/CampaignResults';
-import LeadManagement from './agency/LeadManagement';
 import EnhancedMarketingWizard from './shared/EnhancedMarketingWizard';
 import MarketingSolutionResults from './shared/MarketingSolutionResults';
 
 const AgencyDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'campaigns' | 'leads' | 'management' | 'social' | 'reports'>('campaigns');
-  const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
-  const [campaignProgress, setCampaignProgress] = useState(0);
-  const [campaignData, setCampaignData] = useState(null);
-  const [showResults, setShowResults] = useState(false);
-  const [managedLeads, setManagedLeads] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'clients' | 'campaigns' | 'reports' | 'intelligence'>('intelligence');
+  const [isCreatingAgency, setIsCreatingAgency] = useState(false);
+  const [agencyProgress, setAgencyProgress] = useState(0);
   const [marketingSolution, setMarketingSolution] = useState(null);
-  const [showMarketingResults, setShowMarketingResults] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
-  const handleCreateCampaign = async (data: any) => {
-    setIsCreatingCampaign(true);
-    setCampaignProgress(0);
+  const handleCreateSolution = async (data: any) => {
+    setIsCreatingAgency(true);
+    setAgencyProgress(0);
 
-    // Simulate campaign creation process
+    // Simulate progress for agency solution generation
     const steps = [
-      { message: 'Analyzing industry trends', duration: 2000 },
-      { message: 'Generating audience insights', duration: 3000 },
-      { message: 'Creating campaign strategy', duration: 3000 },
-      { message: 'Setting up automation', duration: 2000 }
+      { message: 'Analyzing client industry competitors', duration: 3000 },
+      { message: 'Generating multi-client campaign strategies', duration: 4000 },
+      { message: 'Creating white-label reports and dashboards', duration: 4000 },
+      { message: 'Optimizing agency workflow automation', duration: 2000 }
     ];
 
     for (let i = 0; i < steps.length; i++) {
       await new Promise(resolve => setTimeout(resolve, steps[i].duration));
-      setCampaignProgress((i + 1) * 25);
+      setAgencyProgress((i + 1) * 25);
     }
 
-    setIsCreatingCampaign(false);
-    setCampaignData(data);
-    setShowResults(true);
-    console.log('Campaign created with data:', data);
-  };
-
-  const handleCreateAdvancedSolution = async (data: any) => {
-    setIsCreatingCampaign(true);
-    setCampaignProgress(0);
-
-    // Simulate advanced marketing solution generation
-    const steps = [
-      { message: 'Scraping competitor websites and ad libraries', duration: 3000 },
-      { message: 'Analyzing top performing ads and organic content', duration: 4000 },
-      { message: 'Generating personalized 30-day marketing plan', duration: 4000 },
-      { message: 'Creating optimization recommendations', duration: 2000 }
-    ];
-
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, steps[i].duration));
-      setCampaignProgress((i + 1) * 25);
-    }
-
-    setIsCreatingCampaign(false);
+    setIsCreatingAgency(false);
     setMarketingSolution(data);
-    setShowMarketingResults(true);
-    console.log('Advanced marketing solution created:', data);
-  };
-
-  const handleNurtureLead = (lead: any) => {
-    console.log('Nurturing lead:', lead);
-  };
-
-  const handleScheduleMeeting = (lead: any) => {
-    console.log('Scheduling meeting with lead:', lead);
-  };
-
-  const handleLeadAdded = (lead: any) => {
-    setManagedLeads(prev => [...prev, lead]);
+    setShowResults(true);
+    console.log('Complete agency solution created:', data);
   };
 
   return (
@@ -93,41 +53,25 @@ const AgencyDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Marketing Agency Hub</h2>
-          <p className="text-muted-foreground">Advanced campaign management and competitive intelligence</p>
+          <h2 className="text-3xl font-bold">Agency Management Suite</h2>
+          <p className="text-muted-foreground">Comprehensive client management and campaign intelligence</p>
         </div>
         <div className="flex space-x-2">
+          <Button
+            variant={activeTab === 'clients' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('clients')}
+            className="flex items-center space-x-2"
+          >
+            <Users className="h-4 w-4" />
+            <span>Clients</span>
+          </Button>
           <Button
             variant={activeTab === 'campaigns' ? 'default' : 'outline'}
             onClick={() => setActiveTab('campaigns')}
             className="flex items-center space-x-2"
           >
-            <Target className="h-4 w-4" />
+            <Megaphone className="h-4 w-4" />
             <span>Campaigns</span>
-          </Button>
-          <Button
-            variant={activeTab === 'leads' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('leads')}
-            className="flex items-center space-x-2"
-          >
-            <UserCheck className="h-4 w-4" />
-            <span>Lead Scoring</span>
-          </Button>
-          <Button
-            variant={activeTab === 'management' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('management')}
-            className="flex items-center space-x-2"
-          >
-            <Users className="h-4 w-4" />
-            <span>Lead Management</span>
-          </Button>
-          <Button
-            variant={activeTab === 'social' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('social')}
-            className="flex items-center space-x-2"
-          >
-            <MessageSquare className="h-4 w-4" />
-            <span>Social Media</span>
           </Button>
           <Button
             variant={activeTab === 'reports' ? 'default' : 'outline'}
@@ -137,21 +81,44 @@ const AgencyDashboard = () => {
             <BarChart3 className="h-4 w-4" />
             <span>Reports</span>
           </Button>
+          <Button
+            variant={activeTab === 'intelligence' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('intelligence')}
+            className="flex items-center space-x-2"
+          >
+            <Brain className="h-4 w-4" />
+            <span>Intelligence</span>
+          </Button>
+          <Button className="flex items-center space-x-2">
+            <RefreshCw className="h-4 w-4" />
+            <span>Refresh</span>
+          </Button>
         </div>
       </div>
 
-      {/* Campaign Tab */}
-      {activeTab === 'campaigns' && (
+      {/* Intelligence Tab */}
+      {activeTab === 'intelligence' && (
         <div className="space-y-6">
-          {!showResults && !showMarketingResults && (
+          {!showResults && (
             <>
               <div className="grid md:grid-cols-4 gap-4">
                 <Card>
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-2">
-                      <Target className="h-6 w-6 text-blue-500" />
+                      <Users className="h-6 w-6 text-blue-500" />
                       <div>
                         <p className="text-2xl font-bold">24</p>
+                        <p className="text-sm text-muted-foreground">Active Clients</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Megaphone className="h-6 w-6 text-green-500" />
+                      <div>
+                        <p className="text-2xl font-bold">147</p>
                         <p className="text-sm text-muted-foreground">Active Campaigns</p>
                       </div>
                     </div>
@@ -160,10 +127,10 @@ const AgencyDashboard = () => {
                 <Card>
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-2">
-                      <TrendingUp className="h-6 w-6 text-green-500" />
+                      <DollarSign className="h-6 w-6 text-purple-500" />
                       <div>
-                        <p className="text-2xl font-bold">+285%</p>
-                        <p className="text-sm text-muted-foreground">Avg ROI</p>
+                        <p className="text-2xl font-bold">$845k</p>
+                        <p className="text-sm text-muted-foreground">Monthly Ad Spend</p>
                       </div>
                     </div>
                   </CardContent>
@@ -171,133 +138,69 @@ const AgencyDashboard = () => {
                 <Card>
                   <CardContent className="p-4">
                     <div className="flex items-center space-x-2">
-                      <Users className="h-6 w-6 text-purple-500" />
+                      <TrendingUp className="h-6 w-6 text-orange-500" />
                       <div>
-                        <p className="text-2xl font-bold">156K</p>
-                        <p className="text-sm text-muted-foreground">Reach</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <Megaphone className="h-6 w-6 text-orange-500" />
-                      <div>
-                        <p className="text-2xl font-bold">12.4%</p>
-                        <p className="text-sm text-muted-foreground">Conversion Rate</p>
+                        <p className="text-2xl font-bold">4.2x</p>
+                        <p className="text-sm text-muted-foreground">Avg Client ROAS</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Campaign Creation Options */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Quick Campaign Builder</CardTitle>
-                    <CardDescription>Basic campaign setup and strategy</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <CampaignWizard 
-                      onCreateCampaign={handleCreateCampaign}
-                      isCreating={isCreatingCampaign && !showMarketingResults}
-                      progress={campaignProgress}
-                    />
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Advanced Marketing Intelligence</CardTitle>
-                    <CardDescription>Comprehensive competitor analysis with 30-day plan</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <EnhancedMarketingWizard 
-                      onCreateSolution={handleCreateAdvancedSolution}
-                      isCreating={isCreatingCampaign && showMarketingResults}
-                      progress={campaignProgress}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+              <EnhancedMarketingWizard
+                onCreateSolution={handleCreateSolution}
+                isCreating={isCreatingAgency}
+                progress={agencyProgress}
+              />
             </>
           )}
 
-          {showResults && campaignData && !showMarketingResults && (
-            <CampaignResults 
-              campaignData={campaignData}
-              onClose={() => setShowResults(false)}
-            />
-          )}
-
-          {showMarketingResults && marketingSolution && (
-            <MarketingSolutionResults 
+          {showResults && marketingSolution && (
+            <MarketingSolutionResults
               data={marketingSolution}
-              onClose={() => setShowMarketingResults(false)}
+              onClose={() => {
+                setShowResults(false);
+                setMarketingSolution(null);
+              }}
             />
           )}
         </div>
       )}
 
-      {/* Lead Scoring Tab */}
-      {activeTab === 'leads' && (
-        <LeadScoringDashboard 
-          leads={managedLeads}
-          onNurtureLead={handleNurtureLead}
-          onScheduleMeeting={handleScheduleMeeting}
-        />
-      )}
-
-      {activeTab === 'management' && (
-        <LeadManagement onLeadAdded={handleLeadAdded} />
-      )}
-
-      {activeTab === 'social' && (
+      {/* Other Tabs - Placeholder Content */}
+      {activeTab !== 'intelligence' && (
         <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5" />
-                <span>Social Media Content Factory</span>
+                {activeTab === 'clients' && <Users className="h-5 w-5" />}
+                {activeTab === 'campaigns' && <Megaphone className="h-5 w-5" />}
+                {activeTab === 'reports' && <BarChart3 className="h-5 w-5" />}
+                <span>
+                  {activeTab === 'clients' && 'Client Management'}
+                  {activeTab === 'campaigns' && 'Campaign Management'}
+                  {activeTab === 'reports' && 'Reporting & Analytics'}
+                </span>
               </CardTitle>
               <CardDescription>
-                AI-powered content generation and scheduling across all platforms
+                {activeTab === 'clients' && 'Manage client relationships and project timelines'}
+                {activeTab === 'campaigns' && 'Oversee all client campaigns from one dashboard'}
+                {activeTab === 'reports' && 'Generate white-label reports for clients'}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Social Media Factory Coming Soon</h3>
-                <p className="text-muted-foreground">
-                  Generate and schedule content across Facebook, Instagram, Twitter, LinkedIn, and TikTok
+              <div className="text-center py-12">
+                <Settings className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
+                <p className="text-muted-foreground mb-4">
+                  {activeTab === 'clients' && 'Advanced client portal with project management'}
+                  {activeTab === 'campaigns' && 'Multi-client campaign orchestration and automation'}
+                  {activeTab === 'reports' && 'Automated white-label reporting with custom branding'}
                 </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {activeTab === 'reports' && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5" />
-                <span>Client Reporting Automation</span>
-              </CardTitle>
-              <CardDescription>
-                Automated reports with insights from all marketing channels
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Automated Reporting Coming Soon</h3>
-                <p className="text-muted-foreground">
-                  Generate comprehensive reports automatically from all your marketing platforms
-                </p>
+                <Button variant="outline">
+                  Request Early Access
+                </Button>
               </div>
             </CardContent>
           </Card>
