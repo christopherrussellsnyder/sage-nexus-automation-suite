@@ -1,4 +1,3 @@
-
 interface CompetitorMetrics {
   domain: string;
   monthlyVisitors: number;
@@ -159,7 +158,7 @@ interface IndustryBenchmarks {
 }
 
 export class CompetitorAnalysisService {
-  private static API_KEY_STORAGE_KEY = 'perplexity_api_key';
+  private static API_KEY_STORAGE_KEY = 'openai_api_key';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
@@ -184,111 +183,74 @@ export class CompetitorAnalysisService {
   }> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
-      throw new Error('Perplexity API key not found. Please set your API key first.');
+      throw new Error('OpenAI API key not found. Please set your API key first.');
     }
 
-    const prompt = `Conduct a comprehensive competitive analysis for the ${industry} ${businessType} industry targeting ${targetAudience} with products priced around $${productPrice} and a monthly budget of $${budget}.
+    const prompt = `As a competitive intelligence expert, analyze the ${industry} ${businessType} industry targeting ${targetAudience} with products priced around $${productPrice} and a monthly budget of $${budget}.
 
-    ANALYSIS REQUIREMENTS:
+    Provide a comprehensive competitive analysis including:
 
-    1. **WEBSITE ANALYTICS & METRICS:**
-    - Monthly website visitors and traffic sources
-    - Conversion rates and sales funnel performance
-    - Bounce rates and session duration
-    - Top performing pages and content
-    - SEO rankings and keyword performance
+    1. **TOP COMPETITORS ANALYSIS:**
+    - Identify 3-5 leading competitors in this space
+    - Estimate their monthly website visitors, conversion rates, and ad spend
+    - Analyze their most effective advertising strategies
+    - Break down successful ad copy (hooks, body text, CTAs)
+    - Identify emotional triggers they use effectively
 
-    2. **PAID ADVERTISING ANALYSIS:**
-    - Facebook Ad Library scraping: Top performing ads with exact copy (hook, body, CTA)
-    - Google Ads analysis: Search ads, display ads, YouTube ads
-    - TikTok Ad Library: Video ad performance and copy
-    - Instagram advertising: Stories, feed, and reels ads
-    - Detailed metrics for each ad: CPM, CPC, CTR, ROAS, impressions, reach, frequency
-    - Ad targeting strategies: demographics, interests, behaviors
-    - Ad creative analysis: visual elements, video analysis, color schemes
+    2. **PLATFORM PERFORMANCE ANALYSIS:**
+    - Facebook: Average CPM, CPC, CTR, ROAS for this industry
+    - Instagram: Engagement rates, best content types
+    - Google Ads: Search vs Display performance metrics
+    - TikTok: Organic reach and paid advertising effectiveness
+    - Platform-specific audience insights and optimal posting times
 
-    3. **ORGANIC CONTENT PERFORMANCE:**
-    - Facebook organic posts: Top performing content, engagement rates
-    - Instagram content: Feed posts, stories, reels performance
-    - TikTok organic: Viral content analysis, hashtag strategies
-    - LinkedIn business content: B2B engagement metrics
-    - YouTube channel performance: Video content analysis
-    - Posting frequency, optimal timing, and engagement patterns
+    3. **CONTENT STRATEGY ANALYSIS:**
+    - Most effective ad creative types (video, carousel, single image)
+    - High-performing organic content themes and formats
+    - Video content analysis (duration, pacing, visual elements)
+    - Website copy strategies that convert best
 
-    4. **VIDEO CONTENT ANALYSIS:**
-    - Video duration and pacing optimization
-    - Opening hooks and closing CTAs
-    - Visual elements, transitions, and text overlays
-    - Music selection and audio elements
-    - Thumbnail strategies and click-through rates
-    - Video performance metrics across platforms
+    4. **INDUSTRY BENCHMARKS:**
+    - Average conversion rates, CPM, CPC, CTR, ROAS
+    - Customer lifetime value and average order value
+    - Seasonal trends and performance patterns
+    - Best and worst performing months
 
-    5. **WEBSITE COPY & CONVERSION OPTIMIZATION:**
-    - Converting headlines and value propositions
-    - Testimonial strategies and social proof placement
-    - Pricing presentation and offer structures
-    - Trust signals and risk reversal tactics
-    - Call-to-action placement and wording
-    - Landing page optimization strategies
-
-    6. **PLATFORM-SPECIFIC PERFORMANCE METRICS:**
-    - Facebook: CPM, CPC, CTR, ROAS, frequency, engagement
-    - Instagram: Engagement rate, reach, saves, story completion
-    - TikTok: View rate, completion rate, shares, comments
-    - Google: Quality score, impression share, conversion rate
-    - YouTube: Watch time, subscriber growth, click-through rate
-
-    7. **EMOTIONAL TRIGGERS & PSYCHOLOGY:**
+    5. **EMOTIONAL TRIGGERS & PSYCHOLOGY:**
     - Primary emotions that drive conversions in this industry
     - Secondary support emotions and psychological triggers
     - Industry-specific urgency, trust, desire, and fear triggers
-    - Emotional triggers to avoid based on audience psychology
-    - Best converting emotional combinations
+    - Emotional combinations that work best for ${targetAudience}
 
-    8. **COMPETITIVE PLATFORM PRIORITIES:**
-    - Platform ranking by ROI and conversion performance
-    - Budget allocation recommendations with reasoning
+    6. **PLATFORM PRIORITIES & BUDGET ALLOCATION:**
+    - Rank platforms by ROI potential for this industry
+    - Recommended budget allocation percentages
     - Expected results and performance metrics per platform
-    - Competitor market share and performance on each platform
-    - Optimal content mix and posting strategies
+    - Reasoning for platform priorities
 
-    9. **INDUSTRY BENCHMARKS:**
-    - Average conversion rates, CPM, CPC, CTR, ROAS
-    - Engagement rates and reach metrics
-    - Customer lifetime value and average order value
-    - Seasonal performance trends and optimization opportunities
-
-    10. **CONTENT CALENDAR INSIGHTS:**
-    - Optimal posting frequency per platform
-    - Best performing content types and formats
-    - Seasonal content strategies and campaign timing
-    - Cross-platform content optimization strategies
-
-    Provide specific, actionable data with real numbers, examples, and detailed analysis. Focus on ${marketingType} marketing strategies.`;
+    Focus on ${marketingType} marketing strategies and provide specific, actionable insights with realistic performance metrics.`;
 
     try {
-      const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'lluma-3.1-sonar-large-128k-online',
+          model: 'gpt-4',
           messages: [
             {
               role: 'system',
-              content: 'You are a competitive intelligence expert with access to ad libraries, website analytics, and social media metrics. Provide comprehensive, data-driven analysis with specific metrics, examples, and actionable insights. Focus on real competitor data and industry benchmarks.'
+              content: 'You are a competitive intelligence expert with deep knowledge of digital marketing, advertising platforms, and industry benchmarks. Provide comprehensive, data-driven analysis with specific metrics and actionable insights.'
             },
             {
               role: 'user',
               content: prompt
             }
           ],
-          temperature: 0.2,
-          top_p: 0.9,
-          max_tokens: 8000,
-          search_recency_filter: 'month'
+          temperature: 0.3,
+          max_tokens: 4000
         }),
       });
 

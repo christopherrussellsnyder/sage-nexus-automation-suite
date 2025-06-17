@@ -1,4 +1,3 @@
-
 interface BusinessData {
   businessName: string;
   industry: string;
@@ -105,7 +104,7 @@ interface CompetitorInsight {
 }
 
 export class MarketingIntelligenceService {
-  private static API_KEY_STORAGE_KEY = 'perplexity_api_key';
+  private static API_KEY_STORAGE_KEY = 'openai_api_key';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
@@ -118,7 +117,7 @@ export class MarketingIntelligenceService {
   static async generateMarketingSolution(businessData: BusinessData): Promise<MarketingSolution> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
-      throw new Error('Perplexity API key not found. Please set your API key first.');
+      throw new Error('OpenAI API key not found. Please set your API key first.');
     }
 
     try {
@@ -136,31 +135,37 @@ export class MarketingIntelligenceService {
   }
 
   private static async analyzeCompetitors(businessData: BusinessData, apiKey: string): Promise<CompetitorMetrics[]> {
-    const prompt = `Analyze the top 10 competitors in the ${businessData.industry} ${businessData.businessType} industry targeting ${businessData.targetAudience}.
+    const prompt = `Analyze the top 5 competitors in the ${businessData.industry} ${businessData.businessType} industry targeting ${businessData.targetAudience}.
 
     For each competitor, provide:
-    1. Website domain and monthly traffic estimates
-    2. Conversion rate estimates
-    3. Top performing ${businessData.marketingType === 'paid' ? 'advertisements from Facebook, Google, TikTok, Instagram ad libraries' : 'organic content from Facebook, TikTok, Instagram'}
-    4. Specific ad copy breakdown (hook, body, CTA) and performance metrics (ROAS, CPM, impressions, reach, CPC, conversion rates)
-    5. Visual descriptions of top performing content
+    1. Website domain and estimated monthly traffic
+    2. Conversion rate estimates based on industry standards
+    3. Top performing ${businessData.marketingType === 'paid' ? 'advertisements' : 'organic content'} strategies
+    4. Specific content breakdown (hook, body, CTA) and estimated performance metrics
+    5. Visual descriptions of effective content
     6. Emotional triggers used effectively
-    7. Platform-specific performance data
+    7. Platform-specific performance insights
 
-    Focus on recent data (last 3 months) and provide specific examples with actual performance metrics where available.`;
+    Focus on actionable insights that can inform a marketing strategy for a business with:
+    - Product Price: $${businessData.productPrice}
+    - Monthly Budget: $${businessData.budget}
+    - Target: ${businessData.campaignGoal}
+    - Marketing Type: ${businessData.marketingType}
 
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    Provide realistic performance estimates and specific examples.`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
-            content: 'You are a marketing intelligence expert analyzing competitor data. Provide detailed, specific metrics and examples.'
+            content: 'You are a marketing intelligence expert analyzing competitor data. Provide detailed, specific metrics and examples for competitive analysis.'
           },
           {
             role: 'user',
@@ -168,8 +173,7 @@ export class MarketingIntelligenceService {
           }
         ],
         temperature: 0.3,
-        max_tokens: 4000,
-        search_recency_filter: 'month'
+        max_tokens: 4000
       }),
     });
 
@@ -200,28 +204,28 @@ export class MarketingIntelligenceService {
     - Campaign Goal: ${businessData.campaignGoal}
     - Marketing Type: ${businessData.marketingType}
 
-    Based on competitor analysis, create:
-    1. Platform priority ranking (Facebook, Google, TikTok, Instagram) with reasoning
+    Based on competitive analysis, create:
+    1. Platform priority ranking (Facebook, Google, TikTok, Instagram) with detailed reasoning
     2. 30-day content calendar with specific ${businessData.marketingType === 'paid' ? 'ad templates' : 'organic content'} for each day
-    3. For each template: hook, body, CTA, visual suggestions, and performance reasoning
+    3. For each template: compelling hook, body, CTA, visual suggestions, and performance reasoning
     4. Industry-specific emotional triggers that convert best
-    5. Optimization recommendations for each metric (ROAS, CPM, CPC, conversion rate, engagement)
-    6. Competitor insights and how to apply them
+    5. Optimization recommendations for improving key metrics
+    6. Actionable competitor insights and how to apply them
 
-    Make recommendations based on the user's current metrics vs competitor benchmarks.`;
+    Focus on practical, implementable strategies that can achieve ${businessData.campaignGoal} within budget constraints.`;
 
-    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-large-128k-online',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
-            content: 'You are a marketing strategist creating detailed, actionable marketing solutions.'
+            content: 'You are a marketing strategist creating detailed, actionable marketing solutions based on competitive intelligence and business goals.'
           },
           {
             role: 'user',
