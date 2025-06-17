@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Brain, Target, DollarSign, Users, Calendar, Zap } from 'lucide-react';
+import { Brain, Target, DollarSign, Users, Calendar, Zap, Eye } from 'lucide-react';
 import { MarketingIntelligenceService } from '@/services/MarketingIntelligenceService';
 import LoadingState from './LoadingState';
 import ApiKeySetup from '../ApiKeySetup';
@@ -21,6 +21,7 @@ interface EnhancedMarketingWizardProps {
 const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: EnhancedMarketingWizardProps) => {
   const [step, setStep] = useState(1);
   const [showApiSetup, setShowApiSetup] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [currentStep, setCurrentStep] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -56,6 +57,10 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
     if (step > 1) {
       setStep(step - 1);
     }
+  };
+
+  const handlePreview = () => {
+    setShowPreview(true);
   };
 
   const handleSubmit = async () => {
@@ -96,6 +101,24 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
     // Wait a moment before submitting to ensure the API key is saved
     setTimeout(handleSubmit, 500);
   };
+
+  if (showPreview) {
+    const MockSolutionPreview = require('./MockSolutionPreview').default;
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Button variant="outline" onClick={() => setShowPreview(false)}>
+            ← Back to Form
+          </Button>
+          <Button onClick={handleSubmit} className="flex items-center space-x-2">
+            <Brain className="h-4 w-4" />
+            <span>Generate Real Solution</span>
+          </Button>
+        </div>
+        <MockSolutionPreview />
+      </div>
+    );
+  }
 
   if (loading || isCreating) {
     return (
@@ -325,14 +348,27 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
             >
               Back
             </Button>
-            <Button
-              onClick={handleNext}
-              disabled={!formData.businessName || !formData.industry}
-              className="flex items-center space-x-2"
-            >
-              <span>{step === 3 ? 'Generate Solution' : 'Next'}</span>
-              {step === 3 && <Brain className="h-4 w-4" />}
-            </Button>
+            <div className="flex space-x-2">
+              {step === 3 && (
+                <Button
+                  variant="outline"
+                  onClick={handlePreview}
+                  disabled={!formData.businessName || !formData.industry}
+                  className="flex items-center space-x-2"
+                >
+                  <Eye className="h-4 w-4" />
+                  <span>Preview Solution</span>
+                </Button>
+              )}
+              <Button
+                onClick={handleNext}
+                disabled={!formData.businessName || !formData.industry}
+                className="flex items-center space-x-2"
+              >
+                <span>{step === 3 ? 'Generate Solution' : 'Next'}</span>
+                {step === 3 && <Brain className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
