@@ -180,7 +180,7 @@ const SalesDashboard = () => {
         </div>
       )}
 
-      {activeTab !== 'deals' && activeTab !== 'overview' && (
+      {(activeTab === 'prospects' || activeTab === 'sequences' || activeTab === 'meetings') && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">

@@ -3,11 +3,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import CopywritingDashboard from '@/components/CopywritingDashboard';
+import SalesDashboard from '@/components/SalesDashboard';
+import AgencyDashboard from '@/components/AgencyDashboard';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [activeDashboard, setActiveDashboard] = useState<'copywriting' | 'sales' | 'agency'>('copywriting');
 
   useEffect(() => {
     checkAuth();
@@ -42,6 +45,17 @@ const Dashboard = () => {
     }
   };
 
+  const renderActiveDashboard = () => {
+    switch (activeDashboard) {
+      case 'sales':
+        return <SalesDashboard />;
+      case 'agency':
+        return <AgencyDashboard />;
+      default:
+        return <CopywritingDashboard />;
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -56,7 +70,27 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <CopywritingDashboard />
+        <div className="flex items-center justify-center space-x-4 mb-8">
+          <button 
+            onClick={() => setActiveDashboard('copywriting')}
+            className={`px-4 py-2 rounded-md ${activeDashboard === 'copywriting' ? 'bg-primary text-white' : 'bg-muted'}`}
+          >
+            Copywriting
+          </button>
+          <button 
+            onClick={() => setActiveDashboard('sales')}
+            className={`px-4 py-2 rounded-md ${activeDashboard === 'sales' ? 'bg-primary text-white' : 'bg-muted'}`}
+          >
+            Sales
+          </button>
+          <button 
+            onClick={() => setActiveDashboard('agency')}
+            className={`px-4 py-2 rounded-md ${activeDashboard === 'agency' ? 'bg-primary text-white' : 'bg-muted'}`}
+          >
+            Agency
+          </button>
+        </div>
+        {renderActiveDashboard()}
       </div>
     </div>
   );
