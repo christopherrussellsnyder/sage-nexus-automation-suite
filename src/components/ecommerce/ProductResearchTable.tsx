@@ -225,8 +225,12 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
                           alt={product.name}
                           className="h-10 w-10 object-cover rounded"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextElementSibling!.style.display = 'flex';
+                            const target = e.currentTarget as HTMLImageElement;
+                            target.style.display = 'none';
+                            const fallback = target.nextElementSibling as HTMLElement;
+                            if (fallback) {
+                              fallback.style.display = 'flex';
+                            }
                           }}
                         />
                         <div className="h-10 w-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500" style={{display: 'none'}}>

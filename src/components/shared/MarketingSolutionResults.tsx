@@ -218,7 +218,7 @@ const MarketingSolutionResults = ({ data, onClose }: MarketingSolutionResultsPro
                       <div className="bg-muted p-3 rounded-lg space-y-2">
                         <p className="text-sm font-medium">{competitor.topAds[0]?.hook}</p>
                         <p className="text-xs text-muted-foreground">{competitor.topAds[0]?.body}</p>
-                        <Badge size="sm">{competitor.topAds[0]?.cta}</Badge>
+                        <Badge variant="outline">{competitor.topAds[0]?.cta}</Badge>
                       </div>
                     </div>
                     <div>
@@ -271,7 +271,7 @@ const MarketingSolutionResults = ({ data, onClose }: MarketingSolutionResultsPro
                     <h4 className="font-semibold text-sm mb-1">{day.hook}</h4>
                     <p className="text-xs text-muted-foreground mb-2">{day.body}</p>
                     <div className="flex items-center justify-between">
-                      <Badge size="sm" variant="outline">{day.cta}</Badge>
+                      <Badge variant="outline">{day.cta}</Badge>
                       <div className="text-xs text-muted-foreground">
                         {day.expectedMetrics.estimatedCost && `$${day.expectedMetrics.estimatedCost}`}
                       </div>
