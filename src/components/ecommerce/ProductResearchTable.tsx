@@ -5,40 +5,36 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
 } from '@/components/ui/table';
 import { 
   Search, 
   ExternalLink, 
   TrendingUp, 
-  Star,
-  DollarSign,
-  Eye,
+  Star, 
+  DollarSign, 
+  BarChart3,
   Filter,
-  SortAsc,
-  BarChart3
+  SortAsc
 } from 'lucide-react';
 
 interface Product {
-  id: string;
-  title: string;
+  name: string;
   price: number;
   rating: number;
   reviews: number;
-  growthRate: number;
+  sales: number;
+  growth: number;
   category: string;
   store: string;
   url: string;
-  imageUrl: string;
-  sales: number;
-  conversionRate: number;
-  adSpend: number;
-  profitMargin: number;
+  description: string;
+  image: string;
 }
 
 interface ProductResearchTableProps {
@@ -47,113 +43,96 @@ interface ProductResearchTableProps {
   onResearchProduct: (product: Product) => void;
 }
 
-const ProductResearchTable = ({ products, onViewProduct, onResearchProduct }: ProductResearchTableProps) => {
+const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResearchTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState<'growth' | 'sales' | 'rating'>('growth');
+  const [sortBy, setSortBy] = useState('growth');
+  const [filterCategory, setFilterCategory] = useState('all');
 
   // Mock data for demonstration
   const mockProducts: Product[] = [
     {
-      id: '1',
-      title: 'Smart Fitness Tracker with Heart Rate Monitor',
+      name: "Smart Fitness Tracker Pro",
       price: 89.99,
       rating: 4.7,
-      reviews: 2456,
-      growthRate: 187,
-      category: 'Health & Fitness',
-      store: 'FitTech Store',
-      url: 'https://example.com/product1',
-      imageUrl: '/placeholder-product.jpg',
+      reviews: 2847,
       sales: 15420,
-      conversionRate: 12.3,
-      adSpend: 2850,
-      profitMargin: 45
+      growth: 234,
+      category: "Electronics",
+      store: "FitnessTech Store",
+      url: "https://example.com/product1",
+      description: "Advanced fitness tracking with heart rate monitoring",
+      image: "/api/placeholder/80/80"
     },
     {
-      id: '2',
-      title: 'Eco-Friendly Bamboo Phone Case',
+      name: "Organic Protein Powder",
+      price: 34.95,
+      rating: 4.8,
+      reviews: 1923,
+      sales: 8750,
+      growth: 189,
+      category: "Health",
+      store: "NutriMax",
+      url: "https://example.com/product2",
+      description: "Plant-based protein powder with natural ingredients",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Wireless Gaming Headset",
+      price: 129.99,
+      rating: 4.6,
+      reviews: 3542,
+      sales: 12300,
+      growth: 167,
+      category: "Gaming",
+      store: "GameZone Pro",
+      url: "https://example.com/product3",
+      description: "High-quality wireless gaming headset with noise cancellation",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Eco-Friendly Water Bottle",
       price: 24.99,
       rating: 4.9,
-      reviews: 1834,
-      growthRate: 245,
-      category: 'Phone Accessories',
-      store: 'Green Tech',
-      url: 'https://example.com/product2',
-      imageUrl: '/placeholder-product.jpg',
-      sales: 8920,
-      conversionRate: 15.7,
-      adSpend: 1200,
-      profitMargin: 62
+      reviews: 4321,
+      sales: 22100,
+      growth: 145,
+      category: "Lifestyle",
+      store: "EcoLiving",
+      url: "https://example.com/product4",
+      description: "Sustainable water bottle made from recycled materials",
+      image: "/api/placeholder/80/80"
     },
     {
-      id: '3',
-      title: 'LED Strip Lights with App Control',
-      price: 34.99,
-      rating: 4.5,
-      reviews: 3421,
-      growthRate: 156,
-      category: 'Home & Garden',
-      store: 'Smart Home Plus',
-      url: 'https://example.com/product3',
-      imageUrl: '/placeholder-product.jpg',
-      sales: 12350,
-      conversionRate: 9.8,
-      adSpend: 3400,
-      profitMargin: 38
-    },
-    {
-      id: '4',
-      title: 'Wireless Charging Pad with Stand',
+      name: "LED Desk Lamp with USB",
       price: 45.99,
-      rating: 4.6,
-      reviews: 1967,
-      growthRate: 203,
-      category: 'Electronics',
-      store: 'Tech Innovators',
-      url: 'https://example.com/product4',
-      imageUrl: '/placeholder-product.jpg',
-      sales: 9870,
-      conversionRate: 11.2,
-      adSpend: 2100,
-      profitMargin: 51
-    },
-    {
-      id: '5',
-      title: 'Portable Coffee Grinder Manual',
-      price: 67.99,
-      rating: 4.8,
-      reviews: 1456,
-      growthRate: 178,
-      category: 'Kitchen & Dining',
-      store: 'Coffee Connoisseur',
-      url: 'https://example.com/product5',
-      imageUrl: '/placeholder-product.jpg',
-      sales: 6540,
-      conversionRate: 14.5,
-      adSpend: 1800,
-      profitMargin: 55
+      rating: 4.5,
+      reviews: 1654,
+      sales: 6890,
+      growth: 198,
+      category: "Home & Office",
+      store: "ModernDesk",
+      url: "https://example.com/product5",
+      description: "Adjustable LED desk lamp with built-in USB charging ports",
+      image: "/api/placeholder/80/80"
     }
   ];
 
-  const displayProducts = products.length > 0 ? products : mockProducts;
-
-  const filteredProducts = displayProducts
+  const filteredProducts = mockProducts
     .filter(product => 
-      product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (filterCategory === 'all' || product.category === filterCategory)
     )
     .sort((a, b) => {
       switch (sortBy) {
-        case 'growth':
-          return b.growthRate - a.growthRate;
-        case 'sales':
-          return b.sales - a.sales;
-        case 'rating':
-          return b.rating - a.rating;
-        default:
-          return 0;
+        case 'growth': return b.growth - a.growth;
+        case 'sales': return b.sales - a.sales;
+        case 'rating': return b.rating - a.rating;
+        case 'price': return a.price - b.price;
+        default: return 0;
       }
     });
+
+  const categories = ['all', ...Array.from(new Set(mockProducts.map(p => p.category)))];
 
   const getGrowthColor = (growth: number) => {
     if (growth >= 200) return 'text-green-600';
@@ -162,7 +141,7 @@ const ProductResearchTable = ({ products, onViewProduct, onResearchProduct }: Pr
     return 'text-gray-600';
   };
 
-  const getGrowthBadgeVariant = (growth: number) => {
+  const getGrowthBadge = (growth: number) => {
     if (growth >= 200) return 'default';
     if (growth >= 150) return 'secondary';
     return 'outline';
@@ -175,119 +154,150 @@ const ProductResearchTable = ({ products, onViewProduct, onResearchProduct }: Pr
           <div>
             <CardTitle>Product Research Results</CardTitle>
             <CardDescription>
-              Trending products from 1000+ Shopify stores, updated weekly
+              Trending products updated weekly from 1000+ Shopify stores
             </CardDescription>
           </div>
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => {
-              const nextSort = sortBy === 'growth' ? 'sales' : sortBy === 'sales' ? 'rating' : 'growth';
-              setSortBy(nextSort);
-            }}>
-              <SortAsc className="h-4 w-4 mr-2" />
-              Sort by {sortBy}
-            </Button>
-          </div>
+          <Badge variant="outline" className="flex items-center space-x-1">
+            <TrendingUp className="h-3 w-3" />
+            <span>Updated Weekly</span>
+          </Badge>
         </div>
-        
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search products or categories..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+
+        {/* Filters */}
+        <div className="flex items-center space-x-4 pt-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="px-3 py-2 border rounded-md text-sm"
+          >
+            {categories.map(category => (
+              <option key={category} value={category}>
+                {category === 'all' ? 'All Categories' : category}
+              </option>
+            ))}
+          </select>
+          
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-2 border rounded-md text-sm"
+          >
+            <option value="growth">Sort by Growth</option>
+            <option value="sales">Sort by Sales</option>
+            <option value="rating">Sort by Rating</option>
+            <option value="price">Sort by Price</option>
+          </select>
         </div>
       </CardHeader>
+
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Rating</TableHead>
-              <TableHead>Growth</TableHead>
-              <TableHead>Sales</TableHead>
-              <TableHead>Metrics</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredProducts.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="h-6 w-6 text-gray-400" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm">{product.title}</p>
-                      <p className="text-xs text-muted-foreground">{product.category}</p>
-                      <p className="text-xs text-blue-600">{product.store}</p>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-1">
-                    <DollarSign className="h-3 w-3 text-green-600" />
-                    <span className="font-medium">{product.price}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                    <span className="font-medium">{product.rating}</span>
-                    <span className="text-xs text-muted-foreground">({product.reviews})</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={getGrowthBadgeVariant(product.growthRate)}>
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    +{product.growthRate}%
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <span className="font-medium">{product.sales.toLocaleString()}</span>
-                  <p className="text-xs text-muted-foreground">{product.conversionRate}% CVR</p>
-                </TableCell>
-                <TableCell>
-                  <div className="text-xs space-y-1">
-                    <div>Ad Spend: ${product.adSpend}</div>
-                    <div>Margin: {product.profitMargin}%</div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onViewProduct(product)}
-                    >
-                      <Eye className="h-3 w-3 mr-1" />
-                      View
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => onResearchProduct(product)}
-                    >
-                      <BarChart3 className="h-3 w-3 mr-1" />
-                      Research
-                    </Button>
-                  </div>
-                </TableCell>
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead>Sales</TableHead>
+                <TableHead>Growth</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        
+            </TableHeader>
+            <TableBody>
+              {filteredProducts.map((product, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <div className="flex items-center space-x-3">
+                      <div className="h-12 w-12 bg-gray-100 rounded-md flex items-center justify-center">
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="h-10 w-10 object-cover rounded"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling!.style.display = 'flex';
+                          }}
+                        />
+                        <div className="h-10 w-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-500" style={{display: 'none'}}>
+                          IMG
+                        </div>
+                      </div>
+                      <div>
+                        <p className="font-medium">{product.name}</p>
+                        <p className="text-sm text-muted-foreground">{product.store}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-1">
+                      <DollarSign className="h-3 w-3 text-green-600" />
+                      <span className="font-medium">{product.price}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-1">
+                      <Star className="h-3 w-3 text-yellow-500 fill-current" />
+                      <span>{product.rating}</span>
+                      <span className="text-xs text-muted-foreground">({product.reviews})</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-1">
+                      <BarChart3 className="h-3 w-3 text-blue-600" />
+                      <span>{product.sales.toLocaleString()}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getGrowthBadge(product.growth)} className={getGrowthColor(product.growth)}>
+                      +{product.growth}%
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{product.category}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onViewProduct(product)}
+                        className="flex items-center space-x-1"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        <span>View</span>
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => onResearchProduct(product)}
+                        className="flex items-center space-x-1"
+                      >
+                        <Search className="h-3 w-3" />
+                        <span>Research</span>
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
         {filteredProducts.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-muted-foreground">No products found matching your search.</p>
+            <Search className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No products found</h3>
+            <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
           </div>
         )}
       </CardContent>
