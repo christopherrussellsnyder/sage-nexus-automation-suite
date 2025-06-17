@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Key, CheckCircle, ExternalLink, Eye, EyeOff } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { MarketingIntelligenceService } from '@/services/MarketingIntelligenceService';
 
 interface ApiKeySetupProps {
   onApiKeySet: () => void;
@@ -15,26 +17,54 @@ interface ApiKeySetupProps {
 }
 
 const ApiKeySetup = ({ onApiKeySet, existingApiKey, isVisible = false }: ApiKeySetupProps) => {
+  const { toast } = useToast();
   const [apiKey, setApiKey] = useState(existingApiKey || '');
   const [showApiKey, setShowApiKey] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
 
   const handleSaveApiKey = async () => {
-    if (!apiKey.trim()) return;
+    if (!apiKey.trim()) {
+      toast({
+        title: "API Key Required",
+        description: "Please enter your OpenAI API key",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!isValidApiKey) {
+      toast({
+        title: "Invalid API Key",
+        description: "Please enter a valid OpenAI API key (starts with 'sk-')",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setIsValidating(true);
     try {
       // Save the API key
-      localStorage.setItem('openai_api_key', apiKey.trim());
+      MarketingIntelligenceService.saveApiKey(apiKey.trim());
+      
+      toast({
+        title: "API Key Saved",
+        description: "Your OpenAI API key has been saved successfully",
+      });
+      
       onApiKeySet();
     } catch (error) {
       console.error('Error saving API key:', error);
+      toast({
+        title: "Error Saving API Key",
+        description: "There was an error saving your API key. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsValidating(false);
     }
   };
 
-  const isValidApiKey = apiKey.startsWith('sk-') && apiKey.length > 20;
+  const isValidApiKey = apiKey.trim().startsWith('sk-') && apiKey.trim().length > 20;
 
   const content = (
     <Card>

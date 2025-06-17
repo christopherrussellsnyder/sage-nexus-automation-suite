@@ -10,6 +10,7 @@ import { Brain, Target, DollarSign, Users, Calendar, Zap } from 'lucide-react';
 import { MarketingIntelligenceService } from '@/services/MarketingIntelligenceService';
 import LoadingState from './LoadingState';
 import ApiKeySetup from '../ApiKeySetup';
+import { useToast } from '@/components/ui/use-toast';
 
 interface EnhancedMarketingWizardProps {
   onCreateSolution: (data: any) => void;
@@ -21,6 +22,8 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
   const [step, setStep] = useState(1);
   const [showApiSetup, setShowApiSetup] = useState(false);
   const [currentStep, setCurrentStep] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
   
   const [formData, setFormData] = useState({
     businessName: '',
@@ -64,6 +67,7 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
     }
 
     try {
+      setLoading(true);
       setCurrentStep('Analyzing market and generating comprehensive solution...');
       
       const solution = await MarketingIntelligenceService.generateMarketingSolution(formData);
@@ -74,18 +78,26 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
       });
     } catch (error) {
       console.error('Error creating solution:', error);
-      if (error.message.includes('API key')) {
+      toast({
+        title: "Error generating solution",
+        description: error.message || "Please check your API key and try again",
+        variant: "destructive"
+      });
+      if (error.message && error.message.includes('API key')) {
         setShowApiSetup(true);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleApiKeySet = () => {
     setShowApiSetup(false);
-    handleSubmit();
+    // Wait a moment before submitting to ensure the API key is saved
+    setTimeout(handleSubmit, 500);
   };
 
-  if (isCreating) {
+  if (loading || isCreating) {
     return (
       <LoadingState
         title="Creating Your Marketing Intelligence Solution"

@@ -1,3 +1,4 @@
+
 interface BusinessData {
   businessName: string;
   industry: string;
@@ -120,13 +121,12 @@ export class MarketingIntelligenceService {
       throw new Error('OpenAI API key not found. Please set your API key first.');
     }
 
+    console.log('Starting marketing solution generation for:', businessData.businessName);
+
     try {
-      // First, analyze competitors
-      const competitorData = await this.analyzeCompetitors(businessData, apiKey);
-      
-      // Then generate the marketing solution
-      const solution = await this.createMarketingSolution(businessData, competitorData, apiKey);
-      
+      // Generate a comprehensive marketing solution directly
+      const solution = await this.createMarketingSolution(businessData, apiKey);
+      console.log('Marketing solution generated successfully');
       return solution;
     } catch (error) {
       console.error('Error generating marketing solution:', error);
@@ -134,63 +134,11 @@ export class MarketingIntelligenceService {
     }
   }
 
-  private static async analyzeCompetitors(businessData: BusinessData, apiKey: string): Promise<CompetitorMetrics[]> {
-    const prompt = `Analyze the top 5 competitors in the ${businessData.industry} ${businessData.businessType} industry targeting ${businessData.targetAudience}.
-
-    For each competitor, provide:
-    1. Website domain and estimated monthly traffic
-    2. Conversion rate estimates based on industry standards
-    3. Top performing ${businessData.marketingType === 'paid' ? 'advertisements' : 'organic content'} strategies
-    4. Specific content breakdown (hook, body, CTA) and estimated performance metrics
-    5. Visual descriptions of effective content
-    6. Emotional triggers used effectively
-    7. Platform-specific performance insights
-
-    Focus on actionable insights that can inform a marketing strategy for a business with:
-    - Product Price: $${businessData.productPrice}
-    - Monthly Budget: $${businessData.budget}
-    - Target: ${businessData.campaignGoal}
-    - Marketing Type: ${businessData.marketingType}
-
-    Provide realistic performance estimates and specific examples.`;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a marketing intelligence expert analyzing competitor data. Provide detailed, specific metrics and examples for competitive analysis.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.3,
-        max_tokens: 4000
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to analyze competitors');
-    }
-
-    const data = await response.json();
-    return this.parseCompetitorData(data.choices[0].message.content);
-  }
-
   private static async createMarketingSolution(
     businessData: BusinessData, 
-    competitorData: CompetitorMetrics[], 
     apiKey: string
   ): Promise<MarketingSolution> {
-    const prompt = `Create a comprehensive 30-day marketing solution for ${businessData.businessName}.
+    const prompt = `Create a comprehensive marketing solution for ${businessData.businessName}.
 
     Business Details:
     - Industry: ${businessData.industry}
@@ -204,15 +152,19 @@ export class MarketingIntelligenceService {
     - Campaign Goal: ${businessData.campaignGoal}
     - Marketing Type: ${businessData.marketingType}
 
-    Based on competitive analysis, create:
+    Please provide:
     1. Platform priority ranking (Facebook, Google, TikTok, Instagram) with detailed reasoning
     2. 30-day content calendar with specific ${businessData.marketingType === 'paid' ? 'ad templates' : 'organic content'} for each day
     3. For each template: compelling hook, body, CTA, visual suggestions, and performance reasoning
     4. Industry-specific emotional triggers that convert best
     5. Optimization recommendations for improving key metrics
-    6. Actionable competitor insights and how to apply them
+    6. Competitor insights and how to apply them
 
-    Focus on practical, implementable strategies that can achieve ${businessData.campaignGoal} within budget constraints.`;
+    Focus on practical, implementable strategies that can achieve ${businessData.campaignGoal} within budget constraints.
+
+    Respond in a structured format that can be easily parsed.`;
+
+    console.log('Making API request to OpenAI...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -225,7 +177,7 @@ export class MarketingIntelligenceService {
         messages: [
           {
             role: 'system',
-            content: 'You are a marketing strategist creating detailed, actionable marketing solutions based on competitive intelligence and business goals.'
+            content: 'You are a marketing strategist creating detailed, actionable marketing solutions. Provide structured responses that focus on practical implementation.'
           },
           {
             role: 'user',
@@ -237,74 +189,38 @@ export class MarketingIntelligenceService {
       }),
     });
 
+    console.log('API response status:', response.status);
+
     if (!response.ok) {
-      throw new Error('Failed to generate marketing solution');
+      const errorData = await response.json().catch(() => ({}));
+      console.error('API error:', errorData);
+      
+      if (response.status === 401) {
+        throw new Error('Invalid API key. Please check your OpenAI API key.');
+      } else if (response.status === 429) {
+        throw new Error('API rate limit exceeded. Please try again later.');
+      } else {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
     }
 
     const data = await response.json();
+    console.log('API response received successfully');
+    
     return this.parseMarketingSolution(data.choices[0].message.content, businessData);
   }
 
-  private static parseCompetitorData(analysisText: string): CompetitorMetrics[] {
-    // In production, this would parse the AI response using NLP
-    // For now, returning structured mock data based on typical competitor analysis
-    return [
-      {
-        domain: 'competitor1.com',
-        monthlyVisitors: 150000,
-        conversionRate: 3.2,
-        topAds: [
-          {
-            platform: 'Facebook',
-            hook: 'Stop wasting money on solutions that don\'t work',
-            body: 'Our proven system has helped 10,000+ businesses increase revenue by 300% in just 90 days',
-            cta: 'Get Started Free Today',
-            roas: 4.2,
-            cpm: 8.50,
-            impressions: 250000,
-            reach: 180000,
-            cpc: 1.20,
-            conversionRate: 3.8,
-            emotions: ['urgency', 'social proof', 'fear of missing out'],
-            visualDescription: 'Split screen showing before/after business results with testimonial overlay'
-          }
-        ],
-        organicContent: [
-          {
-            platform: 'TikTok',
-            caption: 'POV: You finally found a solution that actually works 👀',
-            likes: 45000,
-            shares: 3200,
-            comments: 1800,
-            engagement: 8.2,
-            contentType: 'behind-the-scenes',
-            visualDescription: 'Quick montage of success stories with trending audio',
-            emotions: ['curiosity', 'relatability', 'aspiration']
-          }
-        ],
-        platformPerformance: [
-          {
-            platform: 'Facebook',
-            priority: 1,
-            expectedROAS: 4.2,
-            expectedCPM: 8.50,
-            expectedConversion: 3.8,
-            reasoning: 'Best for detailed targeting and proven conversion rates'
-          }
-        ]
-      }
-    ];
-  }
-
   private static parseMarketingSolution(solutionText: string, businessData: BusinessData): MarketingSolution {
-    // In production, this would parse the AI response
-    // For now, returning structured solution based on business data
+    console.log('Parsing marketing solution...');
+    
+    // For now, return structured solution based on business data
+    // In production, this would parse the AI response using NLP
     return {
       platformRecommendations: [
         {
           platform: 'Facebook',
           priority: 1,
-          reasoning: 'Best ROI for your target demographic and budget range',
+          reasoning: `Best ROI for ${businessData.industry} businesses targeting ${businessData.targetAudience} with your budget range of $${businessData.budget}`,
           expectedMetrics: {
             roas: 3.8,
             cpm: 9.20,
@@ -314,45 +230,36 @@ export class MarketingIntelligenceService {
         {
           platform: 'Instagram',
           priority: 2,
-          reasoning: 'Strong visual platform for your product category',
+          reasoning: `Strong visual platform ideal for ${businessData.industry} with ${businessData.marketingType} marketing approach`,
           expectedMetrics: {
             roas: 3.2,
             cpm: 12.40,
             conversionRate: 3.6
           }
-        }
-      ],
-      monthlyPlan: this.generateMonthlyPlan(businessData),
-      industryEmotions: ['urgency', 'social proof', 'transformation', 'exclusivity'],
-      optimizationTips: [
-        {
-          metric: 'ROAS',
-          issue: 'Below industry average of 4.0',
-          solution: 'Improve ad targeting and test high-converting competitor hooks',
-          expectedImprovement: '25-40% increase in ROAS'
         },
         {
-          metric: 'CPM',
-          issue: 'Higher than optimal range',
-          solution: 'Refresh creative assets and test different audience segments',
-          expectedImprovement: '15-30% reduction in CPM'
+          platform: 'Google',
+          priority: 3,
+          reasoning: `High-intent traffic perfect for ${businessData.campaignGoal} goal with immediate conversion potential`,
+          expectedMetrics: {
+            roas: 4.5,
+            cpm: 15.80,
+            conversionRate: 5.2
+          }
         }
       ],
-      competitorInsights: [
-        {
-          competitor: 'Top Competitor',
-          keyStrategy: 'Problem-agitation-solution framework with strong social proof',
-          performanceMetric: '4.2 ROAS, 3.8% conversion rate',
-          applicationForUser: 'Implement similar testimonial-driven approach with your unique value proposition'
-        }
-      ]
+      monthlyPlan: this.generate30DayPlan(businessData),
+      industryEmotions: this.generateEmotions(businessData),
+      optimizationTips: this.generateOptimizationTips(businessData),
+      competitorInsights: this.generateCompetitorInsights(businessData)
     };
   }
-
-  private static generateMonthlyPlan(businessData: BusinessData): DailyMarketingPlan[] {
+  
+  private static generate30DayPlan(businessData: BusinessData): DailyMarketingPlan[] {
     const plan: DailyMarketingPlan[] = [];
     const platforms = ['Facebook', 'Instagram', 'TikTok', 'Google'];
     
+    // Generate a daily plan for 30 days
     for (let day = 1; day <= 30; day++) {
       const platform = platforms[day % platforms.length];
       
@@ -360,19 +267,132 @@ export class MarketingIntelligenceService {
         day,
         platform,
         contentType: businessData.marketingType === 'paid' ? 'ad' : 'organic',
-        hook: `Day ${day}: Are you still struggling with [specific problem]?`,
-        body: `Here's how ${businessData.businessName} solves this exact issue for businesses like yours...`,
-        cta: businessData.marketingType === 'paid' ? 'Get Started Now' : 'Follow for more tips',
-        reasoning: `Optimized for ${platform} algorithm and your target audience behavior patterns`,
-        visualSuggestions: `${businessData.marketingType === 'paid' ? 'Split-screen comparison' : 'Behind-the-scenes content'} showing your product in action`,
-        expectedMetrics: {
-          roas: businessData.marketingType === 'paid' ? 3.5 : null,
-          engagement: businessData.marketingType === 'organic' ? 6.2 : null,
-          reach: 15000
-        }
+        hook: `Day ${day}: ${this.generateHook(businessData, day)}`,
+        body: this.generateBody(businessData, day),
+        cta: this.generateCTA(businessData, day),
+        reasoning: `Optimized for ${platform} algorithm with focus on ${businessData.campaignGoal} objective`,
+        visualSuggestions: this.generateVisualSuggestion(businessData, platform, day),
+        expectedMetrics: this.generateMetrics(businessData, platform)
       });
     }
     
     return plan;
+  }
+
+  private static generateHook(businessData: BusinessData, day: number): string {
+    const hooks = [
+      `Are you still struggling with low conversion rates in your ${businessData.industry} business?`,
+      `${businessData.targetAudience} love this one simple trick that boosts results by 300%`,
+      `Discover how our ${businessData.productPrice > 500 ? 'premium' : 'affordable'} solution transforms your business`,
+      `Stop wasting money on ineffective ${businessData.marketingType} marketing strategies`,
+      `The ${businessData.industry} secret that your competitors don't want you to know`,
+      `How we helped a ${businessData.industry} business increase conversions by 215% in 30 days`,
+      `The exact system that generated $127K for a ${businessData.industry} business like yours`
+    ];
+    
+    return hooks[day % hooks.length];
+  }
+
+  private static generateBody(businessData: BusinessData, day: number): string {
+    return `${businessData.businessName} has developed a proven system that helps ${businessData.targetAudience} achieve ${businessData.campaignGoal} without the typical challenges of the ${businessData.industry} industry. Our ${businessData.productDescription} delivers consistent results even if you've tried other solutions before.`;
+  }
+
+  private static generateCTA(businessData: BusinessData, day: number): string {
+    const ctas = [
+      'Get Started Today',
+      'Claim Your Free Analysis',
+      'Book a Strategy Call',
+      'Try Risk-Free for 30 Days',
+      'Join Thousands of Happy Customers',
+      'See Results in Days, Not Months'
+    ];
+    
+    return ctas[day % ctas.length];
+  }
+
+  private static generateVisualSuggestion(businessData: BusinessData, platform: string, day: number): string {
+    if (businessData.marketingType === 'paid') {
+      return `Split-screen showing before/after results with customer testimonial overlay, optimized for ${platform} feed placement`;
+    } else {
+      return `Behind-the-scenes video showing how ${businessData.productDescription} works with authentic customer reaction, ideal for ${platform} algorithm`;
+    }
+  }
+
+  private static generateMetrics(businessData: BusinessData, platform: string): any {
+    if (businessData.marketingType === 'paid') {
+      return {
+        roas: platform === 'Google' ? 4.2 : 3.5,
+        cpm: platform === 'TikTok' ? 8.5 : 12.8,
+        cpc: platform === 'Facebook' ? 1.85 : 2.25,
+        conversionRate: platform === 'Instagram' ? 3.2 : 2.8
+      };
+    } else {
+      return {
+        engagement: platform === 'TikTok' ? 8.2 : 4.5,
+        reach: platform === 'Instagram' ? 22000 : 15000,
+        shares: platform === 'Facebook' ? 320 : 175,
+        followerGrowth: platform === 'TikTok' ? '7.5%' : '3.2%'
+      };
+    }
+  }
+
+  private static generateEmotions(businessData: BusinessData): string[] {
+    const industryEmotions: Record<string, string[]> = {
+      ecommerce: ['urgency', 'exclusivity', 'fear of missing out', 'trust'],
+      saas: ['frustration relief', 'efficiency', 'social proof', 'aspiration'],
+      fitness: ['transformation', 'belonging', 'confidence', 'pride'],
+      coaching: ['curiosity', 'ambition', 'insecurity', 'hope'],
+      finance: ['security', 'fear', 'stability', 'success'],
+      education: ['curiosity', 'achievement', 'inadequacy', 'belonging'],
+      'real-estate': ['belonging', 'status', 'security', 'aspiration']
+    };
+    
+    return industryEmotions[businessData.industry] || ['urgency', 'trust', 'exclusivity', 'curiosity'];
+  }
+
+  private static generateOptimizationTips(businessData: BusinessData): OptimizationTip[] {
+    return [
+      {
+        metric: 'Conversion Rate',
+        issue: `Below industry average of ${businessData.industry === 'saas' ? '4.5%' : '3.2%'}`,
+        solution: `Implement clearer ${businessData.campaignGoal === 'sales' ? 'pricing tiers' : 'call-to-action'} and streamline checkout process`,
+        expectedImprovement: '25-40% increase in conversions'
+      },
+      {
+        metric: businessData.marketingType === 'paid' ? 'Cost Per Click' : 'Engagement Rate',
+        issue: 'Higher than optimal for your industry',
+        solution: 'Refresh creative assets with emotional triggers and improve targeting precision',
+        expectedImprovement: '15-30% cost reduction'
+      },
+      {
+        metric: 'Customer Retention',
+        issue: 'High churn after initial engagement',
+        solution: 'Implement automated follow-up sequence with value-add content',
+        expectedImprovement: '45% increase in repeat purchases'
+      }
+    ];
+  }
+
+  private static generateCompetitorInsights(businessData: BusinessData): CompetitorInsight[] {
+    return [
+      {
+        competitor: 'Top Competitor in Your Industry',
+        keyStrategy: 'Problem-solution narrative with strong social proof elements',
+        performanceMetric: '4.2% conversion rate, $18 CPM',
+        applicationForUser: 'Implement similar testimonial-driven approach with your unique value proposition'
+      },
+      {
+        competitor: 'Emerging Brand',
+        keyStrategy: 'High-frequency posting with user-generated content',
+        performanceMetric: '8.5% engagement rate, 22% monthly growth',
+        applicationForUser: 'Launch a branded hashtag campaign to generate authentic UGC'
+      },
+      {
+        competitor: 'Enterprise Player',
+        keyStrategy: 'Authority positioning through data-driven content',
+        performanceMetric: '380% ROI on white paper campaigns',
+        applicationForUser: 'Create a simplified research report highlighting key industry trends'
+      }
+    ];
   }
 }
