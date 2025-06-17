@@ -64,13 +64,14 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
 
       console.log('Analyzing competitors for:', businessData);
       
-      // Step 1: Analyze competitors
+      // Step 1: Analyze competitors - now passing all 6 required arguments
       const competitorData = await CompetitorAnalysisService.analyzeCompetitors(
         businessData.industry,
         businessData.businessType,
         businessData.targetAudience,
         businessData.productPrice,
-        businessData.budget
+        businessData.budget,
+        businessData.marketingType
       );
 
       console.log('Competitor analysis complete:', competitorData);
