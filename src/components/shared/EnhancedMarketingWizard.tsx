@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { Brain, Target, DollarSign, Users, Calendar, Zap, Eye } from 'lucide-rea
 import { MarketingIntelligenceService } from '@/services/MarketingIntelligenceService';
 import LoadingState from './LoadingState';
 import ApiKeySetup from '../ApiKeySetup';
+import MockSolutionPreview from './MockSolutionPreview';
 import { useToast } from '@/components/ui/use-toast';
 
 interface EnhancedMarketingWizardProps {
@@ -103,7 +105,6 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
   };
 
   if (showPreview) {
-    const MockSolutionPreview = require('./MockSolutionPreview').default;
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
