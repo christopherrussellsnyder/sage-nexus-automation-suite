@@ -15,7 +15,6 @@ import {
   Globe,
   MessageSquare
 } from 'lucide-react';
-import LeadManagement from './agency/LeadManagement';
 
 const AgencyDashboard = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'leads' | 'social' | 'clients'>('overview');
@@ -195,9 +194,63 @@ const AgencyDashboard = () => {
         </div>
       )}
 
-      {activeTab === 'leads' && <LeadManagement />}
+      {activeTab === 'leads' && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <UserCheck className="h-5 w-5" />
+              <span>Lead Management & Scoring</span>
+            </CardTitle>
+            <CardDescription>AI-powered lead qualification and nurturing</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="grid md:grid-cols-3 gap-4">
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-green-600">847</p>
+                      <p className="text-sm text-muted-foreground">Hot Leads</p>
+                      <p className="text-xs text-muted-foreground">Score 80+</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-orange-600">1,234</p>
+                      <p className="text-sm text-muted-foreground">Warm Leads</p>
+                      <p className="text-xs text-muted-foreground">Score 50-79</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-blue-600">2,156</p>
+                      <p className="text-sm text-muted-foreground">Cold Leads</p>
+                      <p className="text-xs text-muted-foreground">Score &lt;50</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div className="text-center py-8">
+                <Target className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Advanced Lead Management</h3>
+                <p className="text-muted-foreground mb-4">
+                  AI-powered lead scoring with behavioral tracking and automated nurturing sequences
+                </p>
+                <Button>
+                  View Lead Dashboard
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-      {(activeTab === 'campaigns' || activeTab === 'social' || activeTab === 'clients') && (
+      {activeTab !== 'overview' && activeTab !== 'leads' && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">

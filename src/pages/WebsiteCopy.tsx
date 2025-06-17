@@ -13,6 +13,7 @@ const WebsiteCopy = () => {
   }, []);
 
   const checkAuth = async () => {
+    // Check localStorage for demo authentication
     const userData = localStorage.getItem('user');
     if (!userData) {
       navigate('/login');
@@ -25,6 +26,7 @@ const WebsiteCopy = () => {
       return;
     }
 
+    // If user hasn't completed onboarding, redirect to survey
     if (!user.onboardingCompleted) {
       navigate('/survey');
       return;
@@ -47,7 +49,7 @@ const WebsiteCopy = () => {
           <div>
             <h1 className="text-3xl font-bold">Website Copy Generator</h1>
             <p className="text-muted-foreground">
-              Generate high-converting website copy with section-by-section breakdowns
+              Generate 5 unique website copy templates based on top-performing industry analysis
             </p>
           </div>
         </div>

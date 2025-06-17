@@ -9,10 +9,6 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Survey from "./pages/Survey";
 import Dashboard from "./pages/Dashboard";
-import AdCopy from "./pages/AdCopy";
-import EmailSequences from "./pages/EmailSequences";
-import SocialContent from "./pages/SocialContent";
-import WebsiteCopy from "./pages/WebsiteCopy";
 
 const queryClient = new QueryClient();
 
@@ -28,10 +24,6 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/survey" element={<Survey />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/ad-copy" element={<AdCopy />} />
-          <Route path="/email-sequences" element={<EmailSequences />} />
-          <Route path="/social-content" element={<SocialContent />} />
-          <Route path="/website-copy" element={<WebsiteCopy />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
