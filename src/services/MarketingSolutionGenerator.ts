@@ -1,5 +1,5 @@
 
-interface BusinessData {
+export interface BusinessData {
   businessName: string;
   industry: string;
   businessType: string;
@@ -14,400 +14,363 @@ interface BusinessData {
   marketingType: 'paid' | 'organic';
 }
 
-interface DailyMarketingTask {
-  day: number;
-  platform: string;
-  contentType: 'ad' | 'organic_post';
-  hook: string;
-  body: string;
-  cta: string;
-  visual: string;
-  hashtags?: string[];
-  reasoning: string;
-  expectedMetrics: {
-    estimatedReach: number;
-    estimatedEngagement: number;
-    estimatedCost?: number;
-    estimatedConversions: number;
+export interface CompetitorData {
+  competitors: Array<{
+    domain: string;
+    monthlyVisitors: number;
+    conversionRate: number;
+    adSpend: number;
+    roas: number;
+    topAds: Array<{
+      hook: string;
+      body: string;
+      cta: string;
+      emotions: string[];
+      platform: string;
+    }>;
+  }>;
+  emotionalTriggers: {
+    primary: string[];
+    secondary: string[];
   };
-  optimizationTips: string[];
+  platformPriorities: Array<{
+    platform: string;
+    priority: number;
+    budgetAllocation: number;
+    reasoning: string;
+    expectedResults: string;
+  }>;
 }
 
-interface MetricOptimizationGuide {
-  metric: string;
-  currentBenchmark: number;
-  targetBenchmark: number;
-  improvementStrategies: string[];
-  warningThresholds: {
-    poor: number;
-    average: number;
-    good: number;
-    excellent: number;
-  };
-}
-
-interface ComprehensiveMarketingSolution {
+export interface MarketingSolution {
   strategy: {
     primaryPlatforms: string[];
-    budgetAllocation: { [platform: string]: number };
-    expectedROAS: number;
-    timeline: string;
     keyObjectives: string[];
+    expectedROAS: number;
+    budgetAllocation: Record<string, number>;
   };
-  competitorInsights: {
-    topPerformingAds: any[];
-    gapOpportunities: string[];
-    differentiationStrategy: string[];
-  };
-  monthlyPlan: DailyMarketingTask[];
-  metricOptimization: MetricOptimizationGuide[];
-  industrySpecificTips: string[];
   contentCalendar: {
     weekly: {
       adCount: number;
       organicPosts: number;
-      platforms: string[];
     };
     monthly: {
       totalAds: number;
       totalOrganicPosts: number;
-      budgetBreakdown: { [platform: string]: number };
     };
+  };
+  monthlyPlan: Array<{
+    day: number;
+    platform: string;
+    contentType: 'ad' | 'organic';
+    hook: string;
+    body: string;
+    cta: string;
+    visual: string;
+    hashtags?: string[];
+    reasoning: string;
+    expectedMetrics: {
+      estimatedReach: number;
+      estimatedEngagement: number;
+      estimatedCost?: number;
+      estimatedConversions: number;
+    };
+    optimizationTips: string[];
+  }>;
+  metricOptimization: Array<{
+    metric: string;
+    currentBenchmark: number;
+    targetBenchmark: number;
+    warningThresholds: {
+      poor: number;
+      average: number;
+      good: number;
+      excellent: number;
+    };
+    improvementStrategies: string[];
+  }>;
+  industrySpecificTips: string[];
+  competitorInsights: {
+    gapOpportunities: string[];
+    differentiationStrategy: string[];
   };
 }
 
 export class MarketingSolutionGenerator {
-  private static API_KEY_STORAGE_KEY = 'perplexity_api_key';
-
-  static getApiKey(): string | null {
-    return localStorage.getItem(this.API_KEY_STORAGE_KEY);
-  }
-
   static async generateComprehensiveSolution(
     businessData: BusinessData,
-    competitorData: any
-  ): Promise<ComprehensiveMarketingSolution> {
-    const apiKey = this.getApiKey();
-    if (!apiKey) {
-      throw new Error('Perplexity API key not found');
-    }
-
-    const prompt = `Create a comprehensive 30-day marketing solution for ${businessData.businessName} in the ${businessData.industry} industry.
-
-    BUSINESS DATA:
-    - Business Type: ${businessData.businessType}
-    - Target Audience: ${businessData.targetAudience}
-    - Product Price: $${businessData.productPrice}
-    - Product: ${businessData.productDescription}
-    - Monthly Users: ${businessData.monthlyUsers}
-    - Current Conversion Rate: ${businessData.conversionRate}%
-    - Monthly Budget: $${businessData.budget}
-    - Campaign Goal: ${businessData.campaignGoal}
-    - Marketing Type: ${businessData.marketingType}
-
-    COMPETITOR INSIGHTS:
-    - Top performing emotional triggers: ${competitorData.emotionalTriggers?.primary?.join(', ')}
-    - Platform priorities: ${competitorData.platformPriorities?.map((p: any) => `${p.platform} (${p.priority})`).join(', ')}
-    - Industry benchmarks: Average ROAS ${competitorData.industryBenchmarks?.avgROAS || 3.5}x
-
-    REQUIREMENTS:
-    1. Create a detailed 30-day plan with specific tasks for each day
-    2. For each day, provide:
-       - Platform to focus on
-       - Specific hook, body, and CTA
-       - Visual recommendations
-       - Reasoning why this will work
-       - Expected metrics (reach, engagement, conversions)
-       - Optimization tips
-
-    3. Include optimization guides for these metrics:
-       - CPM, CPC, CTR, Conversion Rate, ROAS (for paid)
-       - Engagement Rate, Reach, Saves, Shares (for organic)
-
-    4. Provide weekly and monthly content recommendations
-    5. Include budget allocation across platforms
-    6. Give specific improvement strategies for each metric
-
-    Make everything specific, actionable, and based on competitor analysis and industry best practices.`;
-
-    try {
-      const response = await fetch('https://api.perplexity.ai/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'llama-3.1-sonar-large-128k-online',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a marketing strategist creating detailed, day-by-day marketing plans based on competitive intelligence and industry data.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.4,
-          max_tokens: 8000
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate marketing solution');
-      }
-
-      const data = await response.json();
-      const solutionText = data.choices[0].message.content;
-
-      return this.parseMarketingSolution(solutionText, businessData, competitorData);
-    } catch (error) {
-      console.error('Error generating marketing solution:', error);
-      throw error;
-    }
-  }
-
-  private static parseMarketingSolution(
-    solutionText: string,
-    businessData: BusinessData,
-    competitorData: any
-  ): ComprehensiveMarketingSolution {
-    // Generate a comprehensive solution based on the data
-    const dailyTasks: DailyMarketingTask[] = [];
+    competitorData: CompetitorData
+  ): Promise<MarketingSolution> {
+    // Calculate budget allocation based on platform priorities
+    const budgetAllocation: Record<string, number> = {};
+    const totalBudget = businessData.budget;
     
-    // Generate 30 days of specific marketing tasks
-    for (let day = 1; day <= 30; day++) {
-      const platforms = ['Facebook', 'Instagram', 'TikTok', 'Google'];
-      const platform = platforms[day % platforms.length];
-      
-      dailyTasks.push({
-        day,
-        platform,
-        contentType: businessData.marketingType === 'paid' ? 'ad' : 'organic_post',
-        hook: this.generateHook(businessData, competitorData, day),
-        body: this.generateBody(businessData, competitorData, day),
-        cta: this.generateCTA(businessData, day),
-        visual: this.generateVisual(businessData, day),
-        hashtags: businessData.marketingType === 'organic' ? this.generateHashtags(businessData) : undefined,
-        reasoning: this.generateReasoning(businessData, platform, day),
-        expectedMetrics: this.calculateExpectedMetrics(businessData, platform),
-        optimizationTips: this.generateOptimizationTips(platform, businessData.marketingType)
-      });
-    }
+    competitorData.platformPriorities.forEach(platform => {
+      const allocation = (platform.budgetAllocation / 100) * totalBudget;
+      budgetAllocation[platform.platform] = Math.round(allocation);
+    });
+
+    // Generate 30-day content plan
+    const monthlyPlan = this.generateMonthlyPlan(businessData, competitorData);
+    
+    // Calculate expected ROAS based on industry and budget
+    const expectedROAS = this.calculateExpectedROAS(businessData, competitorData);
+    
+    // Generate metric optimization guide
+    const metricOptimization = this.generateMetricOptimization(businessData);
+    
+    // Generate industry-specific tips
+    const industryTips = this.generateIndustryTips(businessData);
+    
+    // Generate competitive insights
+    const competitorInsights = this.generateCompetitorInsights(competitorData);
 
     return {
       strategy: {
-        primaryPlatforms: competitorData.platformPriorities?.slice(0, 3).map((p: any) => p.platform) || ['Facebook', 'Instagram', 'Google'],
-        budgetAllocation: this.calculateBudgetAllocation(businessData.budget, competitorData.platformPriorities),
-        expectedROAS: competitorData.industryBenchmarks?.avgROAS || 3.5,
-        timeline: businessData.timeline,
-        keyObjectives: [
-          `Increase conversion rate from ${businessData.conversionRate}% to ${(businessData.conversionRate * 1.5).toFixed(1)}%`,
-          `Achieve ${competitorData.industryBenchmarks?.avgROAS || 3.5}x ROAS`,
-          `Scale monthly revenue by 200%`
-        ]
+        primaryPlatforms: competitorData.platformPriorities
+          .sort((a, b) => a.priority - b.priority)
+          .slice(0, 3)
+          .map(p => p.platform),
+        keyObjectives: this.generateKeyObjectives(businessData),
+        expectedROAS,
+        budgetAllocation
       },
-      competitorInsights: {
-        topPerformingAds: competitorData.competitors?.[0]?.topAds || [],
-        gapOpportunities: [
-          'Underutilized emotional triggers in competitor ads',
-          'Opportunity for better mobile optimization',
-          'Gap in retargeting strategies'
-        ],
-        differentiationStrategy: [
-          'Focus on unique value proposition',
-          'Leverage customer success stories',
-          'Emphasize guarantees and risk reversal'
-        ]
-      },
-      monthlyPlan: dailyTasks,
-      metricOptimization: this.generateMetricOptimization(businessData.marketingType),
-      industrySpecificTips: [
-        `${businessData.industry} customers respond best to ${competitorData.emotionalTriggers?.primary?.[0] || 'social proof'}`,
-        'Use video content for 3x higher engagement',
-        'Test different pricing presentations'
-      ],
       contentCalendar: {
         weekly: {
-          adCount: businessData.marketingType === 'paid' ? 5 : 0,
-          organicPosts: businessData.marketingType === 'organic' ? 7 : 3,
-          platforms: competitorData.platformPriorities?.slice(0, 3).map((p: any) => p.platform) || ['Facebook', 'Instagram']
+          adCount: businessData.marketingType === 'paid' ? 5 : 2,
+          organicPosts: businessData.marketingType === 'organic' ? 7 : 5
         },
         monthly: {
-          totalAds: businessData.marketingType === 'paid' ? 20 : 0,
-          totalOrganicPosts: businessData.marketingType === 'organic' ? 30 : 12,
-          budgetBreakdown: this.calculateBudgetAllocation(businessData.budget, competitorData.platformPriorities)
+          totalAds: businessData.marketingType === 'paid' ? 20 : 8,
+          totalOrganicPosts: businessData.marketingType === 'organic' ? 28 : 20
         }
-      }
+      },
+      monthlyPlan,
+      metricOptimization,
+      industrySpecificTips: industryTips,
+      competitorInsights
     };
   }
 
-  private static generateHook(businessData: BusinessData, competitorData: any, day: number): string {
+  private static generateMonthlyPlan(
+    businessData: BusinessData,
+    competitorData: CompetitorData
+  ) {
+    const plan = [];
+    const platforms = competitorData.platformPriorities
+      .sort((a, b) => a.priority - b.priority)
+      .slice(0, 3);
+    
+    const contentTypes = businessData.marketingType === 'paid' 
+      ? ['ad', 'ad', 'organic'] 
+      : ['organic', 'organic', 'ad'];
+    
     const hooks = [
-      `Stop struggling with ${businessData.industry.toLowerCase()} - here's what actually works`,
-      `${businessData.targetAudience} are making this costly mistake`,
-      `The #1 secret ${businessData.businessType.toLowerCase()} owners don't want you to know`,
-      `Why 97% of ${businessData.targetAudience} fail (and how to be in the 3%)`
+      "Stop scrolling if you're tired of...",
+      "This simple trick changed everything for...",
+      "Why most people fail at...",
+      "The secret that nobody talks about...",
+      "Before you spend another dollar on...",
+      "Here's what happened when I...",
+      "The biggest mistake I see people make...",
+      "This might sound crazy, but...",
+      "I used to think... until I discovered...",
+      "Warning: Don't try this unless..."
     ];
-    return hooks[day % hooks.length];
-  }
 
-  private static generateBody(businessData: BusinessData, competitorData: any, day: number): string {
-    const bodies = [
-      `Our proven system has helped over 1,000+ ${businessData.targetAudience} achieve their goals. ${businessData.productDescription}`,
-      `Don't waste another day struggling. Join the hundreds who've transformed their results with our ${businessData.productDescription}`,
-      `What if I told you there's a way to 3x your results in just 30 days? Our ${businessData.productDescription} makes it possible.`
-    ];
-    return bodies[day % bodies.length];
-  }
-
-  private static generateCTA(businessData: BusinessData, day: number): string {
     const ctas = [
-      'Get Started Now',
-      'Claim Your Spot',
-      'See Results Today',
-      'Book Free Consultation'
+      "Get started today",
+      "Learn more now",
+      "Claim your spot",
+      "Don't miss out",
+      "Start your journey",
+      "Transform your life",
+      "Join thousands of others",
+      "Take action now",
+      "Discover the secret",
+      "Unlock your potential"
     ];
-    return ctas[day % ctas.length];
+
+    for (let day = 1; day <= 30; day++) {
+      const platform = platforms[day % platforms.length];
+      const contentType = contentTypes[day % contentTypes.length];
+      const hook = hooks[day % hooks.length];
+      const cta = ctas[day % ctas.length];
+
+      plan.push({
+        day,
+        platform: platform.platform,
+        contentType,
+        hook,
+        body: `Compelling content that addresses ${businessData.targetAudience} pain points and showcases ${businessData.productDescription}. Focus on ${competitorData.emotionalTriggers.primary[0]} to drive engagement.`,
+        cta,
+        visual: contentType === 'ad' 
+          ? `High-converting ${platform.platform} ad creative with product focus`
+          : `Engaging social media graphic for ${platform.platform}`,
+        hashtags: platform.platform.toLowerCase().includes('instagram') || platform.platform.toLowerCase().includes('tiktok')
+          ? [`#${businessData.industry.toLowerCase()}`, `#${businessData.businessType.toLowerCase()}`, '#growth', '#success']
+          : undefined,
+        reasoning: `Day ${day} focuses on ${competitorData.emotionalTriggers.primary[0]} trigger to maximize ${businessData.campaignGoal} for ${businessData.targetAudience}.`,
+        expectedMetrics: {
+          estimatedReach: Math.round(businessData.monthlyUsers * (contentType === 'ad' ? 0.1 : 0.05)),
+          estimatedEngagement: Math.round(businessData.monthlyUsers * 0.02),
+          estimatedCost: contentType === 'ad' ? Math.round(businessData.budget / 20) : undefined,
+          estimatedConversions: Math.round(businessData.monthlyUsers * (businessData.conversionRate / 100) * 0.1)
+        },
+        optimizationTips: [
+          `Test different variations of the ${hook.split(' ')[0].toLowerCase()} hook`,
+          `A/B test CTA placement and color for ${platform.platform}`,
+          `Monitor ${businessData.campaignGoal} metrics closely`
+        ]
+      });
+    }
+
+    return plan;
   }
 
-  private static generateVisual(businessData: BusinessData, day: number): string {
-    const visuals = [
-      'Before/after transformation video',
-      'Customer testimonial footage',
-      'Behind-the-scenes content',
-      'Product demonstration video'
-    ];
-    return visuals[day % visuals.length];
-  }
-
-  private static generateHashtags(businessData: BusinessData): string[] {
-    return [
-      `#${businessData.industry.replace(' ', '')}`,
-      '#Success',
-      '#Transformation',
-      '#BusinessGrowth',
-      '#Results'
-    ];
-  }
-
-  private static generateReasoning(businessData: BusinessData, platform: string, day: number): string {
-    return `This ${platform} content leverages proven psychological triggers that work best for ${businessData.targetAudience}. The hook creates urgency while the body provides social proof, leading to higher conversion rates.`;
-  }
-
-  private static calculateExpectedMetrics(businessData: BusinessData, platform: string) {
-    const baseReach = businessData.budget * 100;
-    return {
-      estimatedReach: Math.floor(baseReach * (platform === 'TikTok' ? 1.5 : 1)),
-      estimatedEngagement: Math.floor(baseReach * 0.05),
-      estimatedCost: businessData.budget / 30,
-      estimatedConversions: Math.floor(baseReach * (businessData.conversionRate / 100))
+  private static calculateExpectedROAS(
+    businessData: BusinessData,
+    competitorData: CompetitorData
+  ): number {
+    const industryMultipliers: Record<string, number> = {
+      'ecommerce': 4.2,
+      'saas': 3.8,
+      'fitness': 4.5,
+      'coaching': 5.2,
+      'agency': 3.5,
+      'default': 4.0
     };
+
+    const baseROAS = industryMultipliers[businessData.industry.toLowerCase()] || industryMultipliers.default;
+    const competitorAvgROAS = competitorData.competitors.reduce((sum, comp) => sum + comp.roas, 0) / competitorData.competitors.length;
+    
+    return Math.round(((baseROAS + competitorAvgROAS) / 2) * 10) / 10;
   }
 
-  private static generateOptimizationTips(platform: string, marketingType: 'paid' | 'organic'): string[] {
-    if (marketingType === 'paid') {
-      return [
-        'Test different audience segments',
-        'Optimize for conversion events',
-        'Use dynamic creative optimization',
-        'Implement proper attribution tracking'
-      ];
-    } else {
-      return [
-        'Post during peak engagement hours',
-        'Use trending hashtags strategically',
-        'Engage with comments within first hour',
-        'Cross-promote on other platforms'
-      ];
-    }
+  private static generateKeyObjectives(businessData: BusinessData): string[] {
+    const objectives = [
+      `Increase ${businessData.campaignGoal} by 150% within ${businessData.timeline}`,
+      `Achieve ${businessData.conversionRate * 1.5}% conversion rate improvement`,
+      `Build brand awareness within ${businessData.targetAudience} segment`,
+      `Establish market leadership in ${businessData.industry}`,
+      `Generate $${businessData.budget * 4} in revenue from marketing efforts`
+    ];
+
+    return objectives.slice(0, 4);
   }
 
-  private static calculateBudgetAllocation(totalBudget: number, platformPriorities: any[]): { [platform: string]: number } {
-    if (!platformPriorities || platformPriorities.length === 0) {
-      return {
-        'Facebook': totalBudget * 0.4,
-        'Google': totalBudget * 0.3,
-        'Instagram': totalBudget * 0.2,
-        'TikTok': totalBudget * 0.1
-      };
-    }
-
-    const allocation: { [platform: string]: number } = {};
-    platformPriorities.forEach(platform => {
-      allocation[platform.platform] = totalBudget * (platform.budgetAllocation / 100);
-    });
-    return allocation;
+  private static generateMetricOptimization(businessData: BusinessData) {
+    return [
+      {
+        metric: 'Conversion Rate',
+        currentBenchmark: businessData.conversionRate,
+        targetBenchmark: businessData.conversionRate * 1.8,
+        warningThresholds: {
+          poor: 1.0,
+          average: 2.5,
+          good: 4.0,
+          excellent: 6.0
+        },
+        improvementStrategies: [
+          'Optimize landing page load speed and mobile experience',
+          'A/B test headlines and call-to-action buttons',
+          'Implement social proof and testimonials',
+          'Reduce form fields and simplify checkout process'
+        ]
+      },
+      {
+        metric: 'Cost Per Click (CPC)',
+        currentBenchmark: Math.round((businessData.budget / businessData.monthlyUsers) * 100) / 100,
+        targetBenchmark: Math.round((businessData.budget / (businessData.monthlyUsers * 1.3)) * 100) / 100,
+        warningThresholds: {
+          poor: 5.0,
+          average: 3.0,
+          good: 2.0,
+          excellent: 1.0
+        },
+        improvementStrategies: [
+          'Improve ad relevance and quality scores',
+          'Target more specific, long-tail keywords',
+          'Optimize ad scheduling for peak performance hours',
+          'Refine audience targeting to reduce competition'
+        ]
+      },
+      {
+        metric: 'Return on Ad Spend (ROAS)',
+        currentBenchmark: 3.2,
+        targetBenchmark: 5.0,
+        warningThresholds: {
+          poor: 2.0,
+          average: 3.0,
+          good: 4.0,
+          excellent: 5.0
+        },
+        improvementStrategies: [
+          'Focus budget on highest-performing campaigns',
+          'Implement dynamic product ads for better targeting',
+          'Optimize for lifetime value, not just initial purchase',
+          'Use retargeting campaigns to re-engage warm audiences'
+        ]
+      }
+    ];
   }
 
-  private static generateMetricOptimization(marketingType: 'paid' | 'organic'): MetricOptimizationGuide[] {
-    if (marketingType === 'paid') {
-      return [
-        {
-          metric: 'CPM',
-          currentBenchmark: 15.0,
-          targetBenchmark: 10.0,
-          improvementStrategies: [
-            'Narrow audience targeting',
-            'Improve ad relevance score',
-            'Test different ad formats',
-            'Optimize bidding strategy'
-          ],
-          warningThresholds: { poor: 25, average: 20, good: 15, excellent: 10 }
-        },
-        {
-          metric: 'CTR',
-          currentBenchmark: 2.5,
-          targetBenchmark: 4.0,
-          improvementStrategies: [
-            'Stronger hooks and headlines',
-            'More compelling visuals',
-            'Better audience targeting',
-            'A/B test different CTAs'
-          ],
-          warningThresholds: { poor: 1.0, average: 2.0, good: 3.0, excellent: 5.0 }
-        },
-        {
-          metric: 'ROAS',
-          currentBenchmark: 3.0,
-          targetBenchmark: 4.5,
-          improvementStrategies: [
-            'Optimize landing pages',
-            'Improve conversion tracking',
-            'Focus on high-value customers',
-            'Enhance retargeting campaigns'
-          ],
-          warningThresholds: { poor: 2.0, average: 3.0, good: 4.0, excellent: 6.0 }
-        }
-      ];
-    } else {
-      return [
-        {
-          metric: 'Engagement Rate',
-          currentBenchmark: 4.0,
-          targetBenchmark: 8.0,
-          improvementStrategies: [
-            'Post at optimal times',
-            'Use trending hashtags',
-            'Create shareable content',
-            'Engage with followers quickly'
-          ],
-          warningThresholds: { poor: 2.0, average: 4.0, good: 6.0, excellent: 10.0 }
-        },
-        {
-          metric: 'Reach',
-          currentBenchmark: 10000,
-          targetBenchmark: 25000,
-          improvementStrategies: [
-            'Use relevant hashtags',
-            'Collaborate with influencers',
-            'Cross-promote on other platforms',
-            'Create viral-worthy content'
-          ],
-          warningThresholds: { poor: 5000, average: 10000, good: 20000, excellent: 50000 }
-        }
-      ];
-    }
+  private static generateIndustryTips(businessData: BusinessData): string[] {
+    const industryTips: Record<string, string[]> = {
+      'ecommerce': [
+        'Use abandoned cart email sequences to recover 15-30% of lost sales',
+        'Implement user-generated content campaigns to build social proof',
+        'Create seasonal and holiday-specific marketing campaigns',
+        'Focus on mobile optimization - 60% of purchases happen on mobile'
+      ],
+      'saas': [
+        'Offer free trials with feature limitations rather than time limits',
+        'Create in-depth case studies showcasing ROI for existing customers',
+        'Use progressive onboarding to reduce churn in first 30 days',
+        'Implement usage-based email campaigns to encourage feature adoption'
+      ],
+      'fitness': [
+        'Leverage before/after transformations in all marketing materials',
+        'Create community-driven challenges and accountability programs',
+        'Partner with micro-influencers in fitness and wellness niches',
+        'Use time-sensitive offers to create urgency around health goals'
+      ],
+      'coaching': [
+        'Share client success stories and testimonials prominently',
+        'Offer free discovery calls to build trust and demonstrate value',
+        'Create valuable lead magnets like assessments or mini-courses',
+        'Use video content to showcase personality and build connection'
+      ]
+    };
+
+    return industryTips[businessData.industry.toLowerCase()] || [
+      'Focus on customer testimonials and social proof',
+      'Create valuable content that addresses customer pain points',
+      'Use retargeting campaigns to stay top-of-mind',
+      'Implement email marketing automation for nurturing leads'
+    ];
+  }
+
+  private static generateCompetitorInsights(competitorData: CompetitorData) {
+    const gaps = [
+      'Opportunity to dominate untapped emotional triggers in messaging',
+      'Gap in platform coverage - competitors weak on emerging platforms',
+      'Pricing positioning opportunity in premium market segment',
+      'Content frequency gap - competitors posting inconsistently',
+      'Customer service differentiation opportunity in response time'
+    ];
+
+    const differentiation = [
+      'Focus on unique value proposition that competitors are missing',
+      'Create more personalized customer experience than market leaders',
+      'Implement faster customer service response than industry average',
+      'Develop proprietary methodology or framework for market leadership',
+      'Build stronger community engagement than existing competitors'
+    ];
+
+    return {
+      gapOpportunities: gaps.slice(0, 3),
+      differentiationStrategy: differentiation.slice(0, 3)
+    };
   }
 }
