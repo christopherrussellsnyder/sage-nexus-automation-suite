@@ -13,12 +13,18 @@ import {
   UserCheck,
   FileText,
   MessageSquare,
-  BarChart3
+  BarChart3,
+  Mail
 } from 'lucide-react';
 import DealsTracker from './sales/DealsTracker';
+import MeetingScheduler from './sales/MeetingScheduler';
+import EmailSequenceBuilder from './sales/EmailSequenceBuilder';
+import LeadManagement from './agency/LeadManagement';
+import LeadScoringDashboard from './agency/LeadScoringDashboard';
 
 const SalesDashboard = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'prospects' | 'deals' | 'sequences' | 'meetings'>('deals');
+  const [leads, setLeads] = useState<any[]>([]);
 
   const stats = [
     {
@@ -50,6 +56,18 @@ const SalesDashboard = () => {
       color: 'text-orange-600'
     }
   ];
+
+  const handleLeadAdded = (lead: any) => {
+    setLeads(prev => [...prev, lead]);
+  };
+
+  const handleNurtureLead = (lead: any) => {
+    console.log('Nurturing lead:', lead);
+  };
+
+  const handleScheduleMeeting = (lead: any) => {
+    console.log('Scheduling meeting with:', lead);
+  };
 
   return (
     <div className="space-y-6">
@@ -89,8 +107,8 @@ const SalesDashboard = () => {
             onClick={() => setActiveTab('sequences')}
             className="flex items-center space-x-2"
           >
-            <MessageSquare className="h-4 w-4" />
-            <span>Sequences</span>
+            <Mail className="h-4 w-4" />
+            <span>Email Sequences</span>
           </Button>
           <Button
             variant={activeTab === 'meetings' ? 'default' : 'outline'}
@@ -123,6 +141,19 @@ const SalesDashboard = () => {
 
       {/* Tab Content */}
       {activeTab === 'deals' && <DealsTracker />}
+      {activeTab === 'meetings' && <MeetingScheduler />}
+      {activeTab === 'sequences' && <EmailSequenceBuilder />}
+      
+      {activeTab === 'prospects' && (
+        <div className="space-y-6">
+          <LeadManagement onLeadAdded={handleLeadAdded} />
+          <LeadScoringDashboard 
+            leads={leads} 
+            onNurtureLead={handleNurtureLead}
+            onScheduleMeeting={handleScheduleMeeting}
+          />
+        </div>
+      )}
       
       {activeTab === 'overview' && (
         <div className="grid lg:grid-cols-2 gap-6">
@@ -178,36 +209,6 @@ const SalesDashboard = () => {
             </CardContent>
           </Card>
         </div>
-      )}
-
-      {(activeTab === 'prospects' || activeTab === 'sequences' || activeTab === 'meetings') && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <FileText className="h-5 w-5" />
-              <span>{activeTab === 'prospects' ? 'Prospect Research' : activeTab === 'sequences' ? 'Sales Sequences' : 'Meeting Intelligence'}</span>
-            </CardTitle>
-            <CardDescription>
-              {activeTab === 'prospects' && 'AI-powered prospect research and qualification'}
-              {activeTab === 'sequences' && 'Automated email sequences and follow-ups'}
-              {activeTab === 'meetings' && 'Meeting analysis and next-step recommendations'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-12">
-              <Phone className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Feature Coming Soon</h3>
-              <p className="text-muted-foreground mb-4">
-                {activeTab === 'prospects' && 'Advanced prospect research with LinkedIn integration and company intelligence'}
-                {activeTab === 'sequences' && 'Multi-channel sales sequences with performance tracking'}
-                {activeTab === 'meetings' && 'AI meeting transcription and action item extraction'}
-              </p>
-              <Button variant="outline">
-                Get Notified
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       )}
     </div>
   );
