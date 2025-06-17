@@ -5,14 +5,16 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Key, CheckCircle, ExternalLink, Eye, EyeOff } from 'lucide-react';
 
 interface ApiKeySetupProps {
-  onApiKeySet: (apiKey: string) => void;
+  onApiKeySet: () => void;
   existingApiKey?: string | null;
+  isVisible?: boolean;
 }
 
-const ApiKeySetup = ({ onApiKeySet, existingApiKey }: ApiKeySetupProps) => {
+const ApiKeySetup = ({ onApiKeySet, existingApiKey, isVisible = false }: ApiKeySetupProps) => {
   const [apiKey, setApiKey] = useState(existingApiKey || '');
   const [showApiKey, setShowApiKey] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
@@ -24,7 +26,7 @@ const ApiKeySetup = ({ onApiKeySet, existingApiKey }: ApiKeySetupProps) => {
     try {
       // Save the API key
       localStorage.setItem('openai_api_key', apiKey.trim());
-      onApiKeySet(apiKey.trim());
+      onApiKeySet();
     } catch (error) {
       console.error('Error saving API key:', error);
     } finally {
@@ -34,7 +36,7 @@ const ApiKeySetup = ({ onApiKeySet, existingApiKey }: ApiKeySetupProps) => {
 
   const isValidApiKey = apiKey.startsWith('sk-') && apiKey.length > 20;
 
-  return (
+  const content = (
     <Card>
       <CardHeader>
         <div className="flex items-center space-x-2">
@@ -118,6 +120,21 @@ const ApiKeySetup = ({ onApiKeySet, existingApiKey }: ApiKeySetupProps) => {
       </CardContent>
     </Card>
   );
+
+  if (isVisible) {
+    return (
+      <Dialog open={isVisible} onOpenChange={() => {}}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>API Key Setup Required</DialogTitle>
+          </DialogHeader>
+          {content}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return content;
 };
 
 export default ApiKeySetup;
