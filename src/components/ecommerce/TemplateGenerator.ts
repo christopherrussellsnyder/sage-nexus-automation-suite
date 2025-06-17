@@ -1,4 +1,3 @@
-
 interface WebsiteData {
   businessName: string;
   businessDescription: string;
@@ -648,7 +647,7 @@ const generateContentStructure = (data: WebsiteData, businessType: string, templ
       closingContent: 'Your transformation starts today. Join successful businesses who have already achieved remarkable results with our proven system.'
     },
     4: { // Premium/Exclusive
-      headline: `Exclusive ${data.businessType} Services for Elite ${data.targetAudience}`,
+      headline: `Exclusive ${data.industry} Services for Elite ${data.targetAudience}`,
       subheadline: `${data.businessName} - Where excellence meets exclusivity in ${data.industry}. ${data.businessDescription}`,
       ctaPrimary: 'Apply for Access',
       ctaSecondary: 'Learn About Membership',
