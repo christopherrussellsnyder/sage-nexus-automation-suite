@@ -1,25 +1,14 @@
-
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Wand2, Shuffle, RefreshCw, Palette, Type, Globe, Sparkles, 
-  Brain, Store, Users, Target, Languages, Zap, ShoppingBag,
-  TrendingUp, Search, MessageSquare, Camera
-} from 'lucide-react';
-
-interface EnhancedAIGeneratorProps {
-  onGenerate: (prompt: string, options: EnhancedAIOptions) => void;
-  isGenerating: boolean;
-  progress: number;
-}
+import { Wand2, Sparkles, Zap, Target, Palette, Type, Layout } from 'lucide-react';
 
 interface EnhancedAIOptions {
   businessType?: string;
@@ -37,317 +26,329 @@ interface EnhancedAIOptions {
   multiLanguage?: boolean;
 }
 
-const EnhancedAITemplateGenerator = ({ onGenerate, isGenerating, progress }: EnhancedAIGeneratorProps) => {
-  const [activeTab, setActiveTab] = useState<'business' | 'design' | 'content' | 'features'>('business');
-  const [businessDescription, setBusinessDescription] = useState('');
+interface EnhancedAITemplateGeneratorProps {
+  onGenerate: (prompt: string, options: EnhancedAIOptions) => void;
+  isGenerating: boolean;
+  progress: number;
+}
+
+const EnhancedAITemplateGenerator = ({
+  onGenerate,
+  isGenerating,
+  progress
+}: EnhancedAITemplateGeneratorProps) => {
+  const [prompt, setPrompt] = useState('');
   const [options, setOptions] = useState<EnhancedAIOptions>({
     businessType: 'ecommerce',
     targetAudience: 'general',
     contentTone: 'professional',
     industry: 'general',
     colorPalette: 'modern-blue',
-    fontStyle: 'clean-sans',
-    layoutStyle: 'modern',
-    language: 'english',
+    fontStyle: 'modern',
+    layoutStyle: 'clean',
+    language: 'en',
     features: [],
     seoFocused: true,
-    ecommerceFeatures: false,
+    ecommerceFeatures: true,
     multiLanguage: false
   });
 
   const businessTypes = [
-    { id: 'ecommerce', name: 'E-commerce Store', icon: ShoppingBag },
-    { id: 'portfolio', name: 'Portfolio/Personal', icon: Users },
-    { id: 'startup', name: 'Startup Landing', icon: TrendingUp },
-    { id: 'service', name: 'Service Business', icon: Target },
-    { id: 'blog', name: 'Blog/Content', icon: MessageSquare },
-    { id: 'agency', name: 'Creative Agency', icon: Camera }
+    { value: 'ecommerce', label: '🛍️ E-commerce Store' },
+    { value: 'saas', label: '💻 SaaS Platform' },
+    { value: 'agency', label: '🏢 Agency/Services' },
+    { value: 'portfolio', label: '🎨 Portfolio' },
+    { value: 'blog', label: '📝 Blog/Magazine' },
+    { value: 'restaurant', label: '🍽️ Restaurant' },
+    { value: 'fitness', label: '💪 Fitness/Health' },
+    { value: 'education', label: '🎓 Education' },
+    { value: 'nonprofit', label: '❤️ Non-Profit' },
+    { value: 'real-estate', label: '🏠 Real Estate' }
   ];
 
-  const industries = [
-    'Technology', 'Fashion', 'Health & Wellness', 'Food & Beverage',
-    'Real Estate', 'Education', 'Finance', 'Travel', 'Arts & Crafts',
-    'Beauty & Cosmetics', 'Sports & Fitness', 'Home & Garden'
+  const targetAudiences = [
+    { value: 'general', label: 'General Public' },
+    { value: 'millennials', label: 'Millennials (25-40)' },
+    { value: 'gen-z', label: 'Gen Z (18-25)' },
+    { value: 'professionals', label: 'Business Professionals' },
+    { value: 'parents', label: 'Parents & Families' },
+    { value: 'seniors', label: 'Seniors (55+)' },
+    { value: 'students', label: 'Students' },
+    { value: 'entrepreneurs', label: 'Entrepreneurs' }
   ];
 
   const contentTones = [
-    { id: 'professional', name: 'Professional', description: 'Formal, trustworthy, expert' },
-    { id: 'friendly', name: 'Friendly', description: 'Warm, approachable, conversational' },
-    { id: 'bold', name: 'Bold', description: 'Confident, assertive, energetic' },
-    { id: 'luxury', name: 'Luxury', description: 'Elegant, sophisticated, premium' },
-    { id: 'playful', name: 'Playful', description: 'Fun, creative, casual' },
-    { id: 'minimalist', name: 'Minimalist', description: 'Clean, simple, focused' }
+    { value: 'professional', label: '👔 Professional' },
+    { value: 'friendly', label: '😊 Friendly & Casual' },
+    { value: 'luxury', label: '✨ Luxury & Premium' },
+    { value: 'playful', label: '🎉 Playful & Fun' },
+    { value: 'minimalist', label: '🎯 Clean & Minimalist' },
+    { value: 'bold', label: '💥 Bold & Energetic' },
+    { value: 'trustworthy', label: '🤝 Trustworthy & Reliable' },
+    { value: 'innovative', label: '🚀 Innovative & Modern' }
   ];
 
-  const aiFeatures = [
-    { id: 'seo-optimization', name: 'SEO Optimization', description: 'Auto-generated meta tags and descriptions' },
-    { id: 'responsive-design', name: 'Responsive Design', description: 'Mobile, tablet, desktop breakpoints' },
-    { id: 'performance-optimized', name: 'Performance Optimized', description: 'Fast loading and efficient code' },
-    { id: 'accessibility', name: 'Accessibility Ready', description: 'WCAG compliant structure' },
-    { id: 'conversion-focused', name: 'Conversion Focused', description: 'CTA optimization and user flow' },
-    { id: 'brand-consistent', name: 'Brand Consistency', description: 'Cohesive visual identity' }
+  const colorPalettes = [
+    { value: 'modern-blue', label: '🔵 Modern Blue', colors: ['#3b82f6', '#8b5cf6'] },
+    { value: 'warm-orange', label: '🟠 Warm Orange', colors: ['#f59e0b', '#ef4444'] },
+    { value: 'nature-green', label: '🟢 Nature Green', colors: ['#10b981', '#059669'] },
+    { value: 'luxury-purple', label: '🟣 Luxury Purple', colors: ['#8b5cf6', '#7c3aed'] },
+    { value: 'sunset-gradient', label: '🌅 Sunset Gradient', colors: ['#f59e0b', '#ef4444'] },
+    { value: 'ocean-blue', label: '🌊 Ocean Blue', colors: ['#0ea5e9', '#0284c7'] },
+    { value: 'forest-green', label: '🌲 Forest Green', colors: ['#059669', '#047857'] },
+    { value: 'rose-gold', label: '🌹 Rose Gold', colors: ['#f43f5e', '#ec4899'] }
+  ];
+
+  const industries = [
+    { value: 'general', label: 'General Business' },
+    { value: 'technology', label: 'Technology' },
+    { value: 'healthcare', label: 'Healthcare' },
+    { value: 'finance', label: 'Finance' },
+    { value: 'fashion', label: 'Fashion & Beauty' },
+    { value: 'food', label: 'Food & Beverage' },
+    { value: 'travel', label: 'Travel & Tourism' },
+    { value: 'automotive', label: 'Automotive' },
+    { value: 'entertainment', label: 'Entertainment' },
+    { value: 'sports', label: 'Sports & Recreation' }
+  ];
+
+  const features = [
+    { value: 'conversion-focused', label: 'Conversion Optimization' },
+    { value: 'mobile-first', label: 'Mobile-First Design' },
+    { value: 'accessibility', label: 'Accessibility Features' },
+    { value: 'analytics', label: 'Analytics Integration' },
+    { value: 'social-proof', label: 'Social Proof Elements' },
+    { value: 'testimonials', label: 'Customer Testimonials' },
+    { value: 'newsletter', label: 'Newsletter Signup' },
+    { value: 'live-chat', label: 'Live Chat Support' },
+    { value: 'multilingual', label: 'Multi-language Support' },
+    { value: 'dark-mode', label: 'Dark Mode Toggle' }
   ];
 
   const handleGenerate = () => {
-    if (businessDescription.trim()) {
-      onGenerate(businessDescription, options);
+    if (!prompt.trim()) {
+      return;
+    }
+    onGenerate(prompt, options);
+  };
+
+  const updateOptions = (key: keyof EnhancedAIOptions, value: any) => {
+    setOptions(prev => ({ ...prev, [key]: value }));
+  };
+
+  const toggleFeature = (feature: string, checked: boolean) => {
+    const currentFeatures = options.features || [];
+    if (checked) {
+      updateOptions('features', [...currentFeatures, feature]);
+    } else {
+      updateOptions('features', currentFeatures.filter(f => f !== feature));
     }
   };
 
-  const handleFeatureToggle = (featureId: string) => {
-    setOptions(prev => ({
-      ...prev,
-      features: prev.features?.includes(featureId)
-        ? prev.features.filter(f => f !== featureId)
-        : [...(prev.features || []), featureId]
-    }));
-  };
-
   return (
-    <Card className="h-fit">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <Brain className="h-5 w-5" />
-          <span>Enhanced AI Website Generator</span>
-          <Badge variant="secondary" className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
-            Framer + Shopify AI
-          </Badge>
-        </CardTitle>
-        <CardDescription>
-          Advanced AI-powered website generation with business intelligence and design automation
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent className="space-y-6">
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="business" className="text-xs">Business</TabsTrigger>
-            <TabsTrigger value="design" className="text-xs">Design</TabsTrigger>
-            <TabsTrigger value="content" className="text-xs">Content</TabsTrigger>
-            <TabsTrigger value="features" className="text-xs">Features</TabsTrigger>
-          </TabsList>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Wand2 className="h-5 w-5" />
+            <span>AI Website Generator</span>
+            <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+              Advanced AI
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {isGenerating && (
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">Generating your website...</span>
+                <span className="text-sm">{Math.round(progress)}%</span>
+              </div>
+              <Progress value={progress} className="h-2" />
+            </div>
+          )}
 
-          <TabsContent value="business" className="space-y-4">
-            <div className="space-y-3">
-              <Label htmlFor="businessDesc" className="text-base font-medium">
-                Describe Your Business
+          <div>
+            <Label className="text-base font-semibold">Describe Your Website</Label>
+            <Textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Describe what you want your website to be about, your business goals, target customers, and any specific features you need..."
+              className="mt-2 min-h-20"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="flex items-center space-x-2">
+                <Target className="h-4 w-4" />
+                <span>Business Type</span>
               </Label>
-              <Textarea
-                id="businessDesc"
-                placeholder="e.g., I run a sustainable fashion brand that sells eco-friendly clothing for young professionals. We focus on quality, style, and environmental responsibility..."
-                value={businessDescription}
-                onChange={(e) => setBusinessDescription(e.target.value)}
-                className="min-h-[100px]"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Business Type</Label>
-                <div className="grid grid-cols-2 gap-2">
+              <Select value={options.businessType} onValueChange={(value) => updateOptions('businessType', value)}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
                   {businessTypes.map((type) => (
-                    <button
-                      key={type.id}
-                      className={`p-3 rounded-lg border-2 transition-all text-left ${
-                        options.businessType === type.id
-                          ? 'border-primary ring-2 ring-primary/20'
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                      onClick={() => setOptions(prev => ({ ...prev, businessType: type.id }))}
-                    >
-                      <type.icon className="h-4 w-4 mb-1" />
-                      <p className="text-xs font-medium">{type.name}</p>
-                    </button>
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
                   ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Industry</Label>
-                <Select value={options.industry} onValueChange={(value) => setOptions(prev => ({ ...prev, industry: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {industries.map((industry) => (
-                      <SelectItem key={industry} value={industry.toLowerCase()}>
-                        {industry}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                </SelectContent>
+              </Select>
             </div>
-          </TabsContent>
 
-          <TabsContent value="design" className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Layout Style</Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {[
-                    { id: 'modern', name: 'Modern Minimal', desc: 'Clean, spacious, bold typography' },
-                    { id: 'shopify-dawn', name: 'Shopify Dawn Style', desc: 'E-commerce optimized, conversion-focused' },
-                    { id: 'framer-portfolio', name: 'Framer Portfolio', desc: 'Creative, dynamic, interactive' },
-                    { id: 'startup-landing', name: 'Startup Landing', desc: 'High-converting, feature-rich' }
-                  ].map((layout) => (
-                    <button
-                      key={layout.id}
-                      className={`p-3 rounded-lg border-2 transition-all text-left ${
-                        options.layoutStyle === layout.id
-                          ? 'border-primary ring-2 ring-primary/20'
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                      onClick={() => setOptions(prev => ({ ...prev, layoutStyle: layout.id }))}
-                    >
-                      <div className="font-medium text-sm">{layout.name}</div>
-                      <p className="text-xs text-muted-foreground">{layout.desc}</p>
-                    </button>
+            <div>
+              <Label>Target Audience</Label>
+              <Select value={options.targetAudience} onValueChange={(value) => updateOptions('targetAudience', value)}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {targetAudiences.map((audience) => (
+                    <SelectItem key={audience.value} value={audience.value}>
+                      {audience.label}
+                    </SelectItem>
                   ))}
-                </div>
-              </div>
+                </SelectContent>
+              </Select>
             </div>
-          </TabsContent>
 
-          <TabsContent value="content" className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Content Tone & Voice</Label>
-                <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="flex items-center space-x-2">
+                <Sparkles className="h-4 w-4" />
+                <span>Content Tone</span>
+              </Label>
+              <Select value={options.contentTone} onValueChange={(value) => updateOptions('contentTone', value)}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
                   {contentTones.map((tone) => (
-                    <button
-                      key={tone.id}
-                      className={`p-3 rounded-lg border-2 transition-all text-left ${
-                        options.contentTone === tone.id
-                          ? 'border-primary ring-2 ring-primary/20'
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                      onClick={() => setOptions(prev => ({ ...prev, contentTone: tone.id }))}
-                    >
-                      <div className="font-medium text-sm">{tone.name}</div>
-                      <p className="text-xs text-muted-foreground">{tone.description}</p>
-                    </button>
+                    <SelectItem key={tone.value} value={tone.value}>
+                      {tone.label}
+                    </SelectItem>
                   ))}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Custom Tone (Optional)</Label>
-                <Input
-                  placeholder="e.g., witty and informative with a tech-savvy edge"
-                  value={options.customTone || ''}
-                  onChange={(e) => setOptions(prev => ({ ...prev, customTone: e.target.value }))}
-                />
-              </div>
+                </SelectContent>
+              </Select>
             </div>
-          </TabsContent>
 
-          <TabsContent value="features" className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <Label>AI-Powered Features</Label>
-                <div className="space-y-2">
-                  {aiFeatures.map((feature) => (
-                    <button
-                      key={feature.id}
-                      className={`w-full p-3 rounded-lg border-2 transition-all text-left ${
-                        options.features?.includes(feature.id)
-                          ? 'border-primary ring-2 ring-primary/20 bg-primary/5'
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                      onClick={() => handleFeatureToggle(feature.id)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="font-medium text-sm">{feature.name}</div>
-                          <p className="text-xs text-muted-foreground">{feature.description}</p>
+            <div>
+              <Label>Industry</Label>
+              <Select value={options.industry} onValueChange={(value) => updateOptions('industry', value)}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {industries.map((industry) => (
+                    <SelectItem key={industry.value} value={industry.value}>
+                      {industry.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="flex items-center space-x-2">
+                <Palette className="h-4 w-4" />
+                <span>Color Palette</span>
+              </Label>
+              <Select value={options.colorPalette} onValueChange={(value) => updateOptions('colorPalette', value)}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {colorPalettes.map((palette) => (
+                    <SelectItem key={palette.value} value={palette.value}>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex space-x-1">
+                          {palette.colors.map((color, i) => (
+                            <div
+                              key={i}
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
                         </div>
-                        {options.features?.includes(feature.id) && (
-                          <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
-                          </div>
-                        )}
+                        <span>{palette.label}</span>
                       </div>
-                    </button>
+                    </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="flex items-center space-x-2">
+                <Layout className="h-4 w-4" />
+                <span>Layout Style</span>
+              </Label>
+              <Select value={options.layoutStyle} onValueChange={(value) => updateOptions('layoutStyle', value)}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="clean">Clean & Minimal</SelectItem>
+                  <SelectItem value="modern">Modern & Bold</SelectItem>
+                  <SelectItem value="classic">Classic & Traditional</SelectItem>
+                  <SelectItem value="creative">Creative & Artistic</SelectItem>
+                  <SelectItem value="corporate">Corporate & Professional</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-base font-semibold mb-3 block">Advanced Features</Label>
+            <div className="grid grid-cols-2 gap-3">
+              {features.map((feature) => (
+                <div key={feature.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={options.features?.includes(feature.value)}
+                    onCheckedChange={(checked) => toggleFeature(feature.value, checked as boolean)}
+                  />
+                  <Label className="text-sm">{feature.label}</Label>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={options.seoFocused}
-                    onChange={(e) => setOptions(prev => ({ ...prev, seoFocused: e.target.checked }))}
-                    className="rounded"
-                  />
-                  <span className="text-sm">SEO Optimization (meta tags, descriptions)</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={options.ecommerceFeatures}
-                    onChange={(e) => setOptions(prev => ({ ...prev, ecommerceFeatures: e.target.checked }))}
-                    className="rounded"
-                  />
-                  <span className="text-sm">E-commerce Features (cart, checkout, products)</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={options.multiLanguage}
-                    onChange={(e) => setOptions(prev => ({ ...prev, multiLanguage: e.target.checked }))}
-                    className="rounded"
-                  />
-                  <span className="text-sm">Multi-language Support</span>
-                </label>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {/* Generation Progress */}
-        {isGenerating && (
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span>Generating your enhanced AI website...</span>
-              <span>{progress}%</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-            <div className="text-xs text-muted-foreground text-center">
-              🧠 AI is analyzing your business and crafting the perfect design...
+              ))}
             </div>
           </div>
-        )}
 
-        {/* Generate Button */}
-        <Button 
-          onClick={handleGenerate}
-          disabled={!businessDescription.trim() || isGenerating}
-          className="w-full"
-          size="lg"
-        >
-          <Brain className="h-4 w-4 mr-2" />
-          {isGenerating ? 'Generating Enhanced Website...' : 'Generate with Enhanced AI'}
-        </Button>
-
-        {/* AI Capabilities Showcase */}
-        <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-green-50 p-4 rounded-lg border">
-          <h5 className="font-medium mb-2 flex items-center space-x-2">
-            <Sparkles className="h-4 w-4" />
-            <span>Enhanced AI Capabilities</span>
-          </h5>
-          <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-            <div>• Business Intelligence Analysis</div>
-            <div>• Multi-breakpoint Generation</div>
-            <div>• SEO & Performance Optimization</div>
-            <div>• Brand Voice Consistency</div>
-            <div>• Shopify-grade E-commerce</div>
-            <div>• Framer-level Interactivity</div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={options.seoFocused}
+                onCheckedChange={(checked) => updateOptions('seoFocused', checked)}
+              />
+              <Label>SEO Optimized</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={options.ecommerceFeatures}
+                onCheckedChange={(checked) => updateOptions('ecommerceFeatures', checked)}
+              />
+              <Label>E-commerce Ready</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={options.multiLanguage}
+                onCheckedChange={(checked) => updateOptions('multiLanguage', checked)}
+              />
+              <Label>Multi-language</Label>
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+
+          <Button
+            onClick={handleGenerate}
+            disabled={!prompt.trim() || isGenerating}
+            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
+          >
+            <Zap className="h-4 w-4 mr-2" />
+            {isGenerating ? 'Generating Website...' : 'Generate AI Website'}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
