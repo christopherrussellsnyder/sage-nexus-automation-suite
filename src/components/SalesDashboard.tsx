@@ -13,15 +13,9 @@ import {
   UserCheck,
   FileText,
   MessageSquare,
-  BarChart3,
-  Search,
-  Video,
-  Zap
+  BarChart3
 } from 'lucide-react';
 import DealsTracker from './sales/DealsTracker';
-import ProspectResearch from './sales/ProspectResearch';
-import SalesSequences from './sales/SalesSequences';
-import MeetingIntelligence from './sales/MeetingIntelligence';
 
 const SalesDashboard = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'prospects' | 'deals' | 'sequences' | 'meetings'>('deals');
@@ -79,8 +73,8 @@ const SalesDashboard = () => {
             onClick={() => setActiveTab('prospects')}
             className="flex items-center space-x-2"
           >
-            <Search className="h-4 w-4" />
-            <span>Prospect Research</span>
+            <UserCheck className="h-4 w-4" />
+            <span>Prospects</span>
           </Button>
           <Button
             variant={activeTab === 'deals' ? 'default' : 'outline'}
@@ -103,8 +97,8 @@ const SalesDashboard = () => {
             onClick={() => setActiveTab('meetings')}
             className="flex items-center space-x-2"
           >
-            <Video className="h-4 w-4" />
-            <span>Meeting Intelligence</span>
+            <Calendar className="h-4 w-4" />
+            <span>Meetings</span>
           </Button>
         </div>
       </div>
@@ -128,10 +122,7 @@ const SalesDashboard = () => {
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'prospects' && <ProspectResearch />}
       {activeTab === 'deals' && <DealsTracker />}
-      {activeTab === 'sequences' && <SalesSequences />}
-      {activeTab === 'meetings' && <MeetingIntelligence />}
       
       {activeTab === 'overview' && (
         <div className="grid lg:grid-cols-2 gap-6">
@@ -189,28 +180,30 @@ const SalesDashboard = () => {
         </div>
       )}
 
-      {(activeTab === 'sequences' || activeTab === 'meetings') && (
+      {activeTab !== 'deals' && activeTab !== 'overview' && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <FileText className="h-5 w-5" />
-              <span>{activeTab === 'sequences' ? 'Sales Sequences' : 'Meeting Intelligence'}</span>
+              <span>{activeTab === 'prospects' ? 'Prospect Research' : activeTab === 'sequences' ? 'Sales Sequences' : 'Meeting Intelligence'}</span>
             </CardTitle>
             <CardDescription>
-              {activeTab === 'sequences' && 'Automated email sequences and follow-ups with behavioral triggers'}
-              {activeTab === 'meetings' && 'AI meeting transcription, analysis and deal progression tracking'}
+              {activeTab === 'prospects' && 'AI-powered prospect research and qualification'}
+              {activeTab === 'sequences' && 'Automated email sequences and follow-ups'}
+              {activeTab === 'meetings' && 'Meeting analysis and next-step recommendations'}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-12">
               <Phone className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Advanced {activeTab === 'sequences' ? 'Sequence' : 'Meeting'} Tools Available</h3>
+              <h3 className="text-lg font-semibold mb-2">Feature Coming Soon</h3>
               <p className="text-muted-foreground mb-4">
-                {activeTab === 'sequences' && 'Multi-channel sales sequences with real-time behavioral adaptation'}
-                {activeTab === 'meetings' && 'AI-powered call analysis with automatic CRM updates and coaching insights'}
+                {activeTab === 'prospects' && 'Advanced prospect research with LinkedIn integration and company intelligence'}
+                {activeTab === 'sequences' && 'Multi-channel sales sequences with performance tracking'}
+                {activeTab === 'meetings' && 'AI meeting transcription and action item extraction'}
               </p>
               <Button variant="outline">
-                Access {activeTab === 'sequences' ? 'Sequence Builder' : 'Meeting Intelligence'}
+                Get Notified
               </Button>
             </div>
           </CardContent>
