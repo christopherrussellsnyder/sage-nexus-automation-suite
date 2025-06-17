@@ -8,8 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Zap, TrendingUp, Target, BarChart3 } from 'lucide-react';
-import { MarketingIntelligenceService } from '@/services/MarketingIntelligenceService';
+import { Target, BarChart3 } from 'lucide-react';
+import { CompetitorAnalysisService } from '@/services/CompetitorAnalysisService';
+import { MarketingSolutionGenerator } from '@/services/MarketingSolutionGenerator';
 import ApiKeySetup from '../ApiKeySetup';
 
 interface EnhancedMarketingWizardProps {
@@ -38,7 +39,7 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
   const [analyzingData, setAnalyzingData] = useState(false);
 
   const generateSolution = async () => {
-    const apiKey = MarketingIntelligenceService.getApiKey();
+    const apiKey = CompetitorAnalysisService.getApiKey();
     if (!apiKey) {
       setShowApiSetup(true);
       return;
@@ -47,17 +48,45 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
     setAnalyzingData(true);
     try {
       const businessData = {
-        ...formData,
+        businessName: formData.businessName,
+        industry: formData.industry,
+        businessType: formData.businessType,
+        targetAudience: formData.targetAudience,
         productPrice: Number(formData.productPrice),
+        productDescription: formData.productDescription,
         monthlyUsers: Number(formData.monthlyUsers),
         conversionRate: Number(formData.conversionRate),
-        budget: Number(formData.budget)
+        budget: Number(formData.budget),
+        timeline: formData.timeline,
+        campaignGoal: formData.campaignGoal,
+        marketingType: formData.marketingType
       };
 
-      const solution = await MarketingIntelligenceService.generateMarketingSolution(businessData);
+      console.log('Analyzing competitors for:', businessData);
+      
+      // Step 1: Analyze competitors
+      const competitorData = await CompetitorAnalysisService.analyzeCompetitors(
+        businessData.industry,
+        businessData.businessType,
+        businessData.targetAudience,
+        businessData.productPrice,
+        businessData.budget
+      );
+
+      console.log('Competitor analysis complete:', competitorData);
+
+      // Step 2: Generate comprehensive marketing solution
+      const marketingSolution = await MarketingSolutionGenerator.generateComprehensiveSolution(
+        businessData,
+        competitorData
+      );
+
+      console.log('Marketing solution generated:', marketingSolution);
+
       onCreateSolution({
         businessData,
-        solution,
+        competitorData,
+        marketingSolution,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
@@ -95,7 +124,7 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
             <span>Advanced Marketing Intelligence Generator</span>
           </CardTitle>
           <CardDescription>
-            AI-powered marketing solutions with competitor analysis and performance optimization
+            AI-powered marketing solutions with real competitor analysis and 30-day detailed plans
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -105,10 +134,10 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
                 <h3 className="text-lg font-semibold mb-2">Generating Your Marketing Solution...</h3>
                 <Progress value={progress} className="w-full mb-4" />
                 <p className="text-sm text-muted-foreground">
-                  {progress < 25 && "Analyzing competitor strategies..."}
-                  {progress >= 25 && progress < 50 && "Scraping ad performance data..."}
-                  {progress >= 50 && progress < 75 && "Creating personalized campaigns..."}
-                  {progress >= 75 && "Optimizing recommendations..."}
+                  {progress < 25 && "Scraping competitor websites and ad libraries..."}
+                  {progress >= 25 && progress < 50 && "Analyzing top performing ads and organic content..."}
+                  {progress >= 50 && progress < 75 && "Generating personalized 30-day marketing plan..."}
+                  {progress >= 75 && "Creating optimization recommendations..."}
                 </p>
               </div>
             </div>
@@ -288,7 +317,7 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
                 size="lg"
               >
                 <BarChart3 className="h-4 w-4 mr-2" />
-                {analyzingData ? 'Analyzing Competitors...' : 'Generate Advanced Marketing Solution'}
+                {analyzingData ? 'Analyzing Competitors & Generating Solution...' : 'Generate Complete Marketing Solution'}
               </Button>
             </div>
           )}

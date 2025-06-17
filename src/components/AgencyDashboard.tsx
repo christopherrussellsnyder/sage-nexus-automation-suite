@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,8 @@ import CampaignWizard from './agency/CampaignWizard';
 import LeadScoringDashboard from './agency/LeadScoringDashboard';
 import CampaignResults from './agency/CampaignResults';
 import LeadManagement from './agency/LeadManagement';
+import EnhancedMarketingWizard from './shared/EnhancedMarketingWizard';
+import MarketingSolutionResults from './shared/MarketingSolutionResults';
 
 const AgencyDashboard = () => {
   const [activeTab, setActiveTab] = useState<'campaigns' | 'leads' | 'management' | 'social' | 'reports'>('campaigns');
@@ -24,6 +27,8 @@ const AgencyDashboard = () => {
   const [campaignData, setCampaignData] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [managedLeads, setManagedLeads] = useState<any[]>([]);
+  const [marketingSolution, setMarketingSolution] = useState(null);
+  const [showMarketingResults, setShowMarketingResults] = useState(false);
 
   const handleCreateCampaign = async (data: any) => {
     setIsCreatingCampaign(true);
@@ -48,6 +53,29 @@ const AgencyDashboard = () => {
     console.log('Campaign created with data:', data);
   };
 
+  const handleCreateAdvancedSolution = async (data: any) => {
+    setIsCreatingCampaign(true);
+    setCampaignProgress(0);
+
+    // Simulate advanced marketing solution generation
+    const steps = [
+      { message: 'Scraping competitor websites and ad libraries', duration: 3000 },
+      { message: 'Analyzing top performing ads and organic content', duration: 4000 },
+      { message: 'Generating personalized 30-day marketing plan', duration: 4000 },
+      { message: 'Creating optimization recommendations', duration: 2000 }
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, steps[i].duration));
+      setCampaignProgress((i + 1) * 25);
+    }
+
+    setIsCreatingCampaign(false);
+    setMarketingSolution(data);
+    setShowMarketingResults(true);
+    console.log('Advanced marketing solution created:', data);
+  };
+
   const handleNurtureLead = (lead: any) => {
     console.log('Nurturing lead:', lead);
   };
@@ -66,7 +94,7 @@ const AgencyDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">Marketing Agency Hub</h2>
-          <p className="text-muted-foreground">Multi-platform campaign management and optimization</p>
+          <p className="text-muted-foreground">Advanced campaign management and competitive intelligence</p>
         </div>
         <div className="flex space-x-2">
           <Button
@@ -115,7 +143,7 @@ const AgencyDashboard = () => {
       {/* Campaign Tab */}
       {activeTab === 'campaigns' && (
         <div className="space-y-6">
-          {!showResults && (
+          {!showResults && !showMarketingResults && (
             <>
               <div className="grid md:grid-cols-4 gap-4">
                 <Card>
@@ -164,18 +192,50 @@ const AgencyDashboard = () => {
                 </Card>
               </div>
 
-              <CampaignWizard 
-                onCreateCampaign={handleCreateCampaign}
-                isCreating={isCreatingCampaign}
-                progress={campaignProgress}
-              />
+              {/* Campaign Creation Options */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Quick Campaign Builder</CardTitle>
+                    <CardDescription>Basic campaign setup and strategy</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <CampaignWizard 
+                      onCreateCampaign={handleCreateCampaign}
+                      isCreating={isCreatingCampaign && !showMarketingResults}
+                      progress={campaignProgress}
+                    />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Advanced Marketing Intelligence</CardTitle>
+                    <CardDescription>Comprehensive competitor analysis with 30-day plan</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <EnhancedMarketingWizard 
+                      onCreateSolution={handleCreateAdvancedSolution}
+                      isCreating={isCreatingCampaign && showMarketingResults}
+                      progress={campaignProgress}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
             </>
           )}
 
-          {showResults && campaignData && (
+          {showResults && campaignData && !showMarketingResults && (
             <CampaignResults 
               campaignData={campaignData}
               onClose={() => setShowResults(false)}
+            />
+          )}
+
+          {showMarketingResults && marketingSolution && (
+            <MarketingSolutionResults 
+              data={marketingSolution}
+              onClose={() => setShowMarketingResults(false)}
             />
           )}
         </div>
@@ -190,12 +250,10 @@ const AgencyDashboard = () => {
         />
       )}
 
-      {/* Lead Management Tab */}
       {activeTab === 'management' && (
         <LeadManagement onLeadAdded={handleLeadAdded} />
       )}
 
-      {/* Social Media Tab */}
       {activeTab === 'social' && (
         <div className="space-y-6">
           <Card>
@@ -221,7 +279,6 @@ const AgencyDashboard = () => {
         </div>
       )}
 
-      {/* Reports Tab */}
       {activeTab === 'reports' && (
         <div className="space-y-6">
           <Card>
