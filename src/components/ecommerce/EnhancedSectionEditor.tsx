@@ -1,44 +1,24 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Layout, Type, Palette, Image, ShoppingCart, 
-  Settings, Eye, EyeOff, Plus, Trash2, Move
-} from 'lucide-react';
-
-interface Block {
-  id: string;
-  type: string;
-  content: any;
-  settings: any;
-}
-
-interface Section {
-  id: string;
-  type: string;
-  content: any;
-  visible: boolean;
-  mobileVisible: boolean;
-  tabletVisible: boolean;
-  blocks: Block[];
-}
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Plus, Trash2, Settings } from 'lucide-react';
+import { Section, Block, BlockType } from './types';
+import { EnhancedWebsiteData } from './EnhancedTemplateGenerator';
 
 interface EnhancedSectionEditorProps {
   section: Section;
   onUpdate: (updates: any) => void;
-  onAddBlock: (blockType: string) => void;
+  onAddBlock: (blockType: BlockType) => void;
   onUpdateBlock: (blockId: string, updates: any) => void;
   onDeleteBlock: (blockId: string) => void;
-  websiteData: any;
+  websiteData: EnhancedWebsiteData;
 }
 
 const EnhancedSectionEditor = ({
@@ -49,116 +29,131 @@ const EnhancedSectionEditor = ({
   onDeleteBlock,
   websiteData
 }: EnhancedSectionEditorProps) => {
-  const [activeTab, setActiveTab] = useState('content');
+  const blockTypes: { value: BlockType; label: string }[] = [
+    // Text Blocks
+    { value: 'heading', label: 'Heading' },
+    { value: 'text', label: 'Text' },
+    { value: 'rich-text-block', label: 'Rich Text' },
+    { value: 'custom-html', label: 'Custom HTML' },
+    
+    // Media Blocks
+    { value: 'image', label: 'Image' },
+    { value: 'video-block', label: 'Video' },
+    { value: 'image-gallery', label: 'Image Gallery' },
+    { value: 'image-with-text-block', label: 'Image with Text' },
+    
+    // Interactive Blocks
+    { value: 'button', label: 'Button' },
+    { value: 'link', label: 'Link' },
+    { value: 'social-icons', label: 'Social Icons' },
+    { value: 'contact-info', label: 'Contact Info' },
+    
+    // Product Blocks
+    { value: 'product-title', label: 'Product Title' },
+    { value: 'product-price', label: 'Product Price' },
+    { value: 'product-description', label: 'Product Description' },
+    { value: 'product-vendor', label: 'Product Vendor' },
+    { value: 'product-rating', label: 'Product Rating' },
+    { value: 'buy-button', label: 'Buy Button' },
+    { value: 'variant-picker', label: 'Variant Picker' },
+    { value: 'quantity-selector', label: 'Quantity Selector' },
+    
+    // Dynamic Blocks
+    { value: 'collection-list', label: 'Collection List' },
+    { value: 'product-list', label: 'Product List' },
+    { value: 'blog-posts', label: 'Blog Posts' },
+    { value: 'testimonials', label: 'Testimonials' },
+    { value: 'faq-collapsible', label: 'FAQ' }
+  ];
 
-  const blockTypes = {
-    'heading': { name: 'Heading', icon: Type },
-    'text': { name: 'Text/Paragraph', icon: Type },
-    'image': { name: 'Image', icon: Image },
-    'button': { name: 'Button', icon: Layout },
-    'product-price': { name: 'Product Price', icon: ShoppingCart },
-    'add-to-cart': { name: 'Add to Cart Button', icon: ShoppingCart },
-    'product-gallery': { name: 'Product Gallery', icon: Image },
-    'variant-picker': { name: 'Variant Picker', icon: Settings }
-  };
-
-  const renderContentEditor = () => {
+  const renderSectionSettings = () => {
     switch (section.type) {
       case 'hero':
         return (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="headline">Headline</Label>
+              <Label>Headline</Label>
               <Input
-                id="headline"
                 value={section.content.headline || ''}
                 onChange={(e) => onUpdate({ headline: e.target.value })}
-                placeholder="Enter headline"
+                placeholder="Enter headline..."
               />
             </div>
             <div>
-              <Label htmlFor="subheadline">Subheadline</Label>
+              <Label>Subheadline</Label>
               <Textarea
-                id="subheadline"
                 value={section.content.subheadline || ''}
                 onChange={(e) => onUpdate({ subheadline: e.target.value })}
-                placeholder="Enter subheadline"
-                rows={3}
+                placeholder="Enter subheadline..."
               />
             </div>
             <div>
-              <Label htmlFor="ctaText">Call to Action Text</Label>
+              <Label>CTA Text</Label>
               <Input
-                id="ctaText"
                 value={section.content.ctaText || ''}
                 onChange={(e) => onUpdate({ ctaText: e.target.value })}
-                placeholder="Button text"
+                placeholder="Button text..."
               />
             </div>
             <div>
-              <Label htmlFor="ctaLink">Call to Action Link</Label>
+              <Label>CTA Link</Label>
               <Input
-                id="ctaLink"
                 value={section.content.ctaLink || ''}
                 onChange={(e) => onUpdate({ ctaLink: e.target.value })}
-                placeholder="Button link URL"
+                placeholder="Button link..."
               />
             </div>
           </div>
         );
 
       case 'featured-collection':
-      case 'featured-product':
         return (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title">Section Title</Label>
+              <Label>Collection Title</Label>
               <Input
-                id="title"
                 value={section.content.title || ''}
                 onChange={(e) => onUpdate({ title: e.target.value })}
-                placeholder="Section title"
+                placeholder="Collection title..."
               />
             </div>
             <div>
-              <Label>Products to Display</Label>
-              <Slider
-                value={[section.content.productsCount || 6]}
-                onValueChange={(value) => onUpdate({ productsCount: value[0] })}
-                min={1}
-                max={12}
-                step={1}
-                className="w-full"
+              <Label>Products Count</Label>
+              <Input
+                type="number"
+                value={section.content.productsCount || 6}
+                onChange={(e) => onUpdate({ productsCount: parseInt(e.target.value) })}
               />
-              <div className="text-sm text-muted-foreground mt-1">
-                Show {section.content.productsCount || 6} products
-              </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="showPrices">Show Prices</Label>
-                <Switch
-                  id="showPrices"
-                  checked={section.content.showPrices !== false}
-                  onCheckedChange={(checked) => onUpdate({ showPrices: checked })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="showAddToCart">Show Add to Cart</Label>
-                <Switch
-                  id="showAddToCart"
-                  checked={section.content.showAddToCart !== false}
-                  onCheckedChange={(checked) => onUpdate({ showAddToCart: checked })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="showProductImages">Show Product Images</Label>
-                <Switch
-                  id="showProductImages"
-                  checked={section.content.showProductImages !== false}
-                  onCheckedChange={(checked) => onUpdate({ showProductImages: checked })}
-                />
-              </div>
+            <div>
+              <Label>Columns</Label>
+              <Select
+                value={section.content.columns?.toString() || '3'}
+                onValueChange={(value) => onUpdate({ columns: parseInt(value) })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2">2 Columns</SelectItem>
+                  <SelectItem value="3">3 Columns</SelectItem>
+                  <SelectItem value="4">4 Columns</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={section.content.showPrices}
+                onCheckedChange={(checked) => onUpdate({ showPrices: checked })}
+              />
+              <Label>Show Prices</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={section.content.showAddToCart}
+                onCheckedChange={(checked) => onUpdate({ showAddToCart: checked })}
+              />
+              <Label>Show Add to Cart</Label>
             </div>
           </div>
         );
@@ -167,39 +162,33 @@ const EnhancedSectionEditor = ({
         return (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title">Section Title</Label>
+              <Label>Form Title</Label>
               <Input
-                id="title"
                 value={section.content.title || ''}
                 onChange={(e) => onUpdate({ title: e.target.value })}
-                placeholder="Contact section title"
+                placeholder="Contact form title..."
               />
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="showForm">Show Contact Form</Label>
-                <Switch
-                  id="showForm"
-                  checked={section.content.showForm !== false}
-                  onCheckedChange={(checked) => onUpdate({ showForm: checked })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="showContactInfo">Show Contact Info</Label>
-                <Switch
-                  id="showContactInfo"
-                  checked={section.content.showContactInfo !== false}
-                  onCheckedChange={(checked) => onUpdate({ showContactInfo: checked })}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="showMap">Show Map</Label>
-                <Switch
-                  id="showMap"
-                  checked={section.content.showMap === true}
-                  onCheckedChange={(checked) => onUpdate({ showMap: checked })}
-                />
-              </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={section.content.showForm}
+                onCheckedChange={(checked) => onUpdate({ showForm: checked })}
+              />
+              <Label>Show Contact Form</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={section.content.showContactInfo}
+                onCheckedChange={(checked) => onUpdate({ showContactInfo: checked })}
+              />
+              <Label>Show Contact Info</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                checked={section.content.showMap}
+                onCheckedChange={(checked) => onUpdate({ showMap: checked })}
+              />
+              <Label>Show Map</Label>
             </div>
           </div>
         );
@@ -208,22 +197,19 @@ const EnhancedSectionEditor = ({
         return (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title">Section Title</Label>
+              <Label>Section Title</Label>
               <Input
-                id="title"
                 value={section.content.title || ''}
                 onChange={(e) => onUpdate({ title: e.target.value })}
-                placeholder="Section title"
+                placeholder="Section title..."
               />
             </div>
             <div>
-              <Label htmlFor="content">Content</Label>
+              <Label>Content</Label>
               <Textarea
-                id="content"
                 value={section.content.content || ''}
                 onChange={(e) => onUpdate({ content: e.target.value })}
-                placeholder="Section content"
-                rows={4}
+                placeholder="Section content..."
               />
             </div>
           </div>
@@ -231,268 +217,150 @@ const EnhancedSectionEditor = ({
     }
   };
 
-  const renderStyleEditor = () => (
-    <div className="space-y-6">
-      {/* Background */}
-      <div className="space-y-3">
-        <h4 className="font-medium">Background</h4>
-        <div className="space-y-2">
-          <div>
-            <Label htmlFor="backgroundColor">Background Color</Label>
-            <div className="flex items-center space-x-2">
-              <Input
-                id="backgroundColor"
-                type="color"
-                value={section.content.backgroundColor || '#ffffff'}
-                onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
-                className="w-16 h-10"
-              />
-              <Input
-                value={section.content.backgroundColor || '#ffffff'}
-                onChange={(e) => onUpdate({ backgroundColor: e.target.value })}
-                placeholder="#ffffff"
-              />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="backgroundImage">Background Image URL</Label>
+  const renderBlockEditor = (block: Block) => {
+    switch (block.type) {
+      case 'heading':
+        return (
+          <div className="space-y-2">
             <Input
-              id="backgroundImage"
-              value={section.content.backgroundImage || ''}
-              onChange={(e) => onUpdate({ backgroundImage: e.target.value })}
-              placeholder="Image URL"
+              value={block.content.text || ''}
+              onChange={(e) => onUpdateBlock(block.id, { text: e.target.value })}
+              placeholder="Heading text..."
+            />
+            <Select
+              value={block.content.level || 'h2'}
+              onValueChange={(value) => onUpdateBlock(block.id, { level: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="h1">H1</SelectItem>
+                <SelectItem value="h2">H2</SelectItem>
+                <SelectItem value="h3">H3</SelectItem>
+                <SelectItem value="h4">H4</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      
+      case 'text':
+        return (
+          <Textarea
+            value={block.content.text || ''}
+            onChange={(e) => onUpdateBlock(block.id, { text: e.target.value })}
+            placeholder="Text content..."
+          />
+        );
+      
+      case 'button':
+        return (
+          <div className="space-y-2">
+            <Input
+              value={block.content.text || ''}
+              onChange={(e) => onUpdateBlock(block.id, { text: e.target.value })}
+              placeholder="Button text..."
+            />
+            <Input
+              value={block.content.link || ''}
+              onChange={(e) => onUpdateBlock(block.id, { link: e.target.value })}
+              placeholder="Button link..."
             />
           </div>
-        </div>
-      </div>
-
-      {/* Spacing */}
-      <div className="space-y-3">
-        <h4 className="font-medium">Spacing</h4>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label>Padding Top</Label>
-            <Slider
-              value={[section.content.paddingTop || 4]}
-              onValueChange={(value) => onUpdate({ paddingTop: value[0] })}
-              min={0}
-              max={8}
-              step={0.5}
-              className="w-full"
-            />
-            <div className="text-xs text-muted-foreground mt-1">
-              {section.content.paddingTop || 4}rem
-            </div>
+        );
+      
+      default:
+        return (
+          <div className="text-sm text-muted-foreground">
+            {block.type} block settings
           </div>
-          <div>
-            <Label>Padding Bottom</Label>
-            <Slider
-              value={[section.content.paddingBottom || 4]}
-              onValueChange={(value) => onUpdate({ paddingBottom: value[0] })}
-              min={0}
-              max={8}
-              step={0.5}
-              className="w-full"
-            />
-            <div className="text-xs text-muted-foreground mt-1">
-              {section.content.paddingBottom || 4}rem
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Layout */}
-      <div className="space-y-3">
-        <h4 className="font-medium">Layout</h4>
-        <div>
-          <Label>Content Alignment</Label>
-          <Select 
-            value={section.content.textAlign || 'center'} 
-            onValueChange={(value) => onUpdate({ textAlign: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select alignment" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="left">Left</SelectItem>
-              <SelectItem value="center">Center</SelectItem>
-              <SelectItem value="right">Right</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        {(section.type === 'featured-collection' || section.type === 'featured-product') && (
-          <div>
-            <Label>Grid Columns (Desktop)</Label>
-            <Slider
-              value={[section.content.columns || 3]}
-              onValueChange={(value) => onUpdate({ columns: value[0] })}
-              min={1}
-              max={4}
-              step={1}
-              className="w-full"
-            />
-            <div className="text-xs text-muted-foreground mt-1">
-              {section.content.columns || 3} columns
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderBlocksEditor = () => (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h4 className="font-medium">Section Blocks</h4>
-        <Select onValueChange={(value) => onAddBlock(value)}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Add Block" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(blockTypes).map(([key, type]) => (
-              <SelectItem key={key} value={key}>
-                {type.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        {section.blocks?.map((block, index) => (
-          <Card key={block.id} className="p-3">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <Move className="h-4 w-4 text-muted-foreground" />
-                <Badge variant="secondary">
-                  {blockTypes[block.type as keyof typeof blockTypes]?.name || block.type}
-                </Badge>
-              </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => onDeleteBlock(block.id)}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            </div>
-            
-            {/* Block-specific editors */}
-            {block.type === 'heading' && (
-              <div className="space-y-2">
-                <Input
-                  value={block.content.text || ''}
-                  onChange={(e) => onUpdateBlock(block.id, { text: e.target.value })}
-                  placeholder="Heading text"
-                />
-                <Select
-                  value={block.settings.level || 'h2'}
-                  onValueChange={(value) => onUpdateBlock(block.id, { level: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="h1">H1</SelectItem>
-                    <SelectItem value="h2">H2</SelectItem>
-                    <SelectItem value="h3">H3</SelectItem>
-                    <SelectItem value="h4">H4</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-            
-            {block.type === 'text' && (
-              <Textarea
-                value={block.content.text || ''}
-                onChange={(e) => onUpdateBlock(block.id, { text: e.target.value })}
-                placeholder="Text content"
-                rows={2}
-              />
-            )}
-            
-            {block.type === 'button' && (
-              <div className="space-y-2">
-                <Input
-                  value={block.content.text || ''}
-                  onChange={(e) => onUpdateBlock(block.id, { text: e.target.value })}
-                  placeholder="Button text"
-                />
-                <Input
-                  value={block.content.link || ''}
-                  onChange={(e) => onUpdateBlock(block.id, { link: e.target.value })}
-                  placeholder="Button link"
-                />
-              </div>
-            )}
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+        );
+    }
+  };
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle className="flex items-center space-x-2 text-base">
-          <Layout className="h-4 w-4" />
-          <span>Edit {section.type.charAt(0).toUpperCase() + section.type.slice(1)} Section</span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Visibility Controls */}
-        <div className="space-y-3">
-          <h4 className="font-medium">Visibility</h4>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="visible">Desktop</Label>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Section Settings</span>
+            <Badge variant="outline">{section.type}</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {renderSectionSettings()}
+          
+          <div className="mt-4 space-y-2">
+            <div className="flex items-center space-x-2">
               <Switch
-                id="visible"
                 checked={section.visible}
                 onCheckedChange={(checked) => onUpdate({ visible: checked })}
               />
+              <Label>Visible on Desktop</Label>
             </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="tabletVisible">Tablet</Label>
+            <div className="flex items-center space-x-2">
               <Switch
-                id="tabletVisible"
                 checked={section.tabletVisible}
                 onCheckedChange={(checked) => onUpdate({ tabletVisible: checked })}
               />
+              <Label>Visible on Tablet</Label>
             </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="mobileVisible">Mobile</Label>
+            <div className="flex items-center space-x-2">
               <Switch
-                id="mobileVisible"
                 checked={section.mobileVisible}
                 onCheckedChange={(checked) => onUpdate({ mobileVisible: checked })}
               />
+              <Label>Visible on Mobile</Label>
             </div>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        {/* Tabbed Editor */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="content">Content</TabsTrigger>
-            <TabsTrigger value="style">Style</TabsTrigger>
-            <TabsTrigger value="blocks">Blocks</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="content" className="space-y-4">
-            {renderContentEditor()}
-          </TabsContent>
-          
-          <TabsContent value="style" className="space-y-4">
-            {renderStyleEditor()}
-          </TabsContent>
-          
-          <TabsContent value="blocks" className="space-y-4">
-            {renderBlocksEditor()}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Blocks</span>
+            <Select onValueChange={(value) => onAddBlock(value as BlockType)}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Add Block" />
+              </SelectTrigger>
+              <SelectContent>
+                {blockTypes.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {section.blocks?.map((block) => (
+              <Card key={block.id} className="p-3">
+                <div className="flex items-center justify-between mb-3">
+                  <Badge variant="secondary">{block.type}</Badge>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => onDeleteBlock(block.id)}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+                {renderBlockEditor(block)}
+              </Card>
+            ))}
+            
+            {!section.blocks?.length && (
+              <div className="text-center py-8 text-muted-foreground">
+                No blocks yet. Add a block to get started.
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

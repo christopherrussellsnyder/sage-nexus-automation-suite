@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -483,6 +484,18 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
         return { text: 'Click Here', link: '#' };
       case 'image':
         return { src: '/placeholder.svg', alt: 'Image', caption: '' };
+      case 'product-title':
+        return { text: 'Product Title' };
+      case 'product-price':
+        return { price: '$0.00', comparePrice: '' };
+      case 'product-description':
+        return { text: 'Product description...' };
+      case 'buy-button':
+        return { text: 'Add to Cart', style: 'primary' };
+      case 'variant-picker':
+        return { variants: [] };
+      case 'quantity-selector':
+        return { min: 1, max: 10, default: 1 };
       default:
         return { text: `${blockType} content` };
     }
