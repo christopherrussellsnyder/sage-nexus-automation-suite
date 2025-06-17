@@ -1,3 +1,4 @@
+
 interface CompetitorData {
   domain: string;
   name: string;
@@ -52,7 +53,7 @@ interface IndustryInsights {
 }
 
 export class CompetitiveIntelligenceService {
-  private static API_KEY_STORAGE_KEY = 'openai_api_key';
+  private static API_KEY_STORAGE_KEY = 'perplexity_api_key';
 
   static saveApiKey(apiKey: string): void {
     localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
@@ -71,7 +72,7 @@ export class CompetitiveIntelligenceService {
   ): Promise<IndustryInsights> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
-      throw new Error('OpenAI API key not found. Please set your API key first.');
+      throw new Error('Perplexity API key not found. Please set your API key first.');
     }
 
     try {
@@ -95,20 +96,20 @@ export class CompetitiveIntelligenceService {
       - Market gaps and opportunities
       - Success metrics (CTR, conversion rates, CPA)
 
-      Provide detailed analysis with specific examples and actionable insights that ${userBusinessName} can use to differentiate with their unique value: ${userUniqueValue}.`;
+      Format as detailed analysis with specific examples and data points.`;
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://api.perplexity.ai/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4',
+          model: 'llama-3.1-sonar-large-128k-online',
           messages: [
             {
               role: 'system',
-              content: 'You are a competitive intelligence expert analyzing marketing data. Provide detailed, actionable insights with specific examples and realistic metrics.'
+              content: 'You are a competitive intelligence expert analyzing marketing data. Provide detailed, actionable insights with specific examples.'
             },
             {
               role: 'user',
@@ -116,7 +117,9 @@ export class CompetitiveIntelligenceService {
             }
           ],
           temperature: 0.3,
-          max_tokens: 4000
+          top_p: 0.9,
+          max_tokens: 4000,
+          search_recency_filter: 'month'
         }),
       });
 
@@ -239,7 +242,7 @@ export class CompetitiveIntelligenceService {
   ): Promise<string> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
-      throw new Error('OpenAI API key not found');
+      throw new Error('Perplexity API key not found');
     }
 
     const prompt = `Based on the competitive analysis data, create a personalized marketing strategy for ${userBusiness}.
@@ -260,21 +263,21 @@ export class CompetitiveIntelligenceService {
     4. Provides specific ad copy, social content, and campaign recommendations
     5. Includes pricing strategy relative to competitors
     
-    Be specific and actionable with concrete examples.`;
+    Be specific and actionable.`;
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://api.perplexity.ai/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4',
+          model: 'llama-3.1-sonar-large-128k-online',
           messages: [
             {
               role: 'system',
-              content: 'You are a marketing strategist creating personalized campaigns based on competitive intelligence. Focus on actionable recommendations with specific examples.'
+              content: 'You are a marketing strategist creating personalized campaigns based on competitive intelligence.'
             },
             {
               role: 'user',
