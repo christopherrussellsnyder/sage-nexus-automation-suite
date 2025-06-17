@@ -229,7 +229,7 @@ const AgencyDashboard = () => {
                     <div className="text-center">
                       <p className="text-2xl font-bold text-blue-600">2,156</p>
                       <p className="text-sm text-muted-foreground">Cold Leads</p>
-                      <p className="text-xs text-muted-foreground">Score <50</p>
+                      <p className="text-xs text-muted-foreground">Score &lt;50</p>
                     </div>
                   </CardContent>
                 </Card>
