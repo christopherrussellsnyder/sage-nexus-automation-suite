@@ -51,7 +51,7 @@ const ComprehensiveLiveEditor = ({
   onDeleteBlock
 }: ComprehensiveLiveEditorProps) => {
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
-  const [editingElement, setEditingElement: any] = useState<{
+  const [editingElement, setEditingElement] = useState<{
     sectionId: string;
     field: string;
     value: string;
