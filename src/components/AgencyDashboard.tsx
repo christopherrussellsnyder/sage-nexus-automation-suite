@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,15 +12,17 @@ import {
   Calendar,
   DollarSign,
   Globe,
-  MessageSquare
+  MessageSquare,
+  FileText
 } from 'lucide-react';
 import LeadManagement from './agency/LeadManagement';
 import LeadScoringDashboard from './agency/LeadScoringDashboard';
 import CampaignOrchestration from './agency/CampaignOrchestration';
 import SocialMediaFactory from './agency/SocialMediaFactory';
+import ClientReporting from './agency/ClientReporting';
 
 const AgencyDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'leads' | 'scoring' | 'social' | 'clients'>('campaigns');
+  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'leads' | 'scoring' | 'social' | 'reporting'>('campaigns');
   const [leads, setLeads] = useState([]);
 
   const stats = [
@@ -117,12 +118,12 @@ const AgencyDashboard = () => {
             <span>Social Factory</span>
           </Button>
           <Button
-            variant={activeTab === 'clients' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('clients')}
+            variant={activeTab === 'reporting' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('reporting')}
             className="flex items-center space-x-2"
           >
-            <Users className="h-4 w-4" />
-            <span>Clients</span>
+            <FileText className="h-4 w-4" />
+            <span>Client Reports</span>
           </Button>
         </div>
       </div>
@@ -156,6 +157,7 @@ const AgencyDashboard = () => {
         />
       )}
       {activeTab === 'social' && <SocialMediaFactory />}
+      {activeTab === 'reporting' && <ClientReporting />}
 
       {activeTab === 'overview' && (
         <div className="grid lg:grid-cols-2 gap-6">
@@ -257,32 +259,6 @@ const AgencyDashboard = () => {
             </CardContent>
           </Card>
         </div>
-      )}
-
-      {activeTab === 'clients' && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Users className="h-5 w-5" />
-              <span>Client Management &amp; Reporting</span>
-            </CardTitle>
-            <CardDescription>
-              Comprehensive client portals with white-label reporting
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center py-12">
-              <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Client Portal Available</h3>
-              <p className="text-muted-foreground mb-4">
-                Automated client reporting with performance dashboards and insights
-              </p>
-              <Button variant="outline">
-                Access Client Portal
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       )}
     </div>
   );

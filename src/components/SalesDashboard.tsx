@@ -14,13 +14,17 @@ import {
   FileText,
   MessageSquare,
   BarChart3,
-  Search
+  Search,
+  Video,
+  Zap
 } from 'lucide-react';
 import DealsTracker from './sales/DealsTracker';
 import ProspectResearch from './sales/ProspectResearch';
+import SalesSequences from './sales/SalesSequences';
+import MeetingIntelligence from './sales/MeetingIntelligence';
 
 const SalesDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'prospects' | 'deals' | 'sequences' | 'meetings'>('prospects');
+  const [activeTab, setActiveTab] = useState<'overview' | 'prospects' | 'deals' | 'sequences' | 'meetings'>('deals');
 
   const stats = [
     {
@@ -99,8 +103,8 @@ const SalesDashboard = () => {
             onClick={() => setActiveTab('meetings')}
             className="flex items-center space-x-2"
           >
-            <Calendar className="h-4 w-4" />
-            <span>Meetings</span>
+            <Video className="h-4 w-4" />
+            <span>Meeting Intelligence</span>
           </Button>
         </div>
       </div>
@@ -126,6 +130,8 @@ const SalesDashboard = () => {
       {/* Tab Content */}
       {activeTab === 'prospects' && <ProspectResearch />}
       {activeTab === 'deals' && <DealsTracker />}
+      {activeTab === 'sequences' && <SalesSequences />}
+      {activeTab === 'meetings' && <MeetingIntelligence />}
       
       {activeTab === 'overview' && (
         <div className="grid lg:grid-cols-2 gap-6">
