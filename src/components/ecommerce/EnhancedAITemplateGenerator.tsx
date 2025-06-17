@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -255,9 +254,7 @@ const EnhancedAITemplateGenerator = ({
                 <Palette className="h-4 w-4" />
                 <span>Color Palette</span>
               </Label>
-              <Select value={options.colorPalette} onValue
-
-Change={(value) => updateOptions('colorPalette', value)}>
+              <Select value={options.colorPalette} onValueChange={(value) => updateOptions('colorPalette', value)}>
                 <SelectTrigger className="mt-2">
                   <SelectValue />
                 </SelectTrigger>
