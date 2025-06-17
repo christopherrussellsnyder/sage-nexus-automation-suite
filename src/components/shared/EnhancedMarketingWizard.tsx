@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,8 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Brain, Target, DollarSign, Users, Calendar, Zap } from 'lucide-react';
-import { CompetitorAnalysisService } from '@/services/CompetitorAnalysisService';
-import { MarketingSolutionGenerator } from '@/services/MarketingSolutionGenerator';
+import { MarketingIntelligenceService } from '@/services/MarketingIntelligenceService';
 import LoadingState from './LoadingState';
 import ApiKeySetup from '../ApiKeySetup';
 
@@ -59,34 +57,19 @@ const EnhancedMarketingWizard = ({ onCreateSolution, isCreating, progress }: Enh
 
   const handleSubmit = async () => {
     // Check if API key exists
-    const apiKey = CompetitorAnalysisService.getApiKey();
+    const apiKey = MarketingIntelligenceService.getApiKey();
     if (!apiKey) {
       setShowApiSetup(true);
       return;
     }
 
     try {
-      setCurrentStep('Analyzing competitor landscape...');
+      setCurrentStep('Analyzing market and generating comprehensive solution...');
       
-      const competitorData = await CompetitorAnalysisService.analyzeCompetitors(
-        formData.industry,
-        formData.businessType,
-        formData.targetAudience,
-        formData.productPrice,
-        formData.budget,
-        formData.marketingType
-      );
-
-      setCurrentStep('Generating comprehensive marketing solution...');
-      
-      const solution = await MarketingSolutionGenerator.generateComprehensiveSolution(
-        formData,
-        competitorData
-      );
+      const solution = await MarketingIntelligenceService.generateMarketingSolution(formData);
 
       onCreateSolution({
         businessData: formData,
-        competitorData,
         solution
       });
     } catch (error) {
