@@ -69,6 +69,8 @@ export type SectionType =
   | 'newsletter'
   | 'contact-form'
   | 'custom-liquid'
+  | 'testimonials'
+  | 'faq'
   // Product Sections
   | 'featured-collection'
   | 'featured-product'
