@@ -7,19 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
   Monitor, Tablet, Smartphone, Wand2, Save, Download, 
-  Eye, Palette, Type, Layout, Sparkles, Brain, Zap,
-  Plus, Trash2, Copy, ArrowUp, ArrowDown, Settings,
-  ShoppingBag, Users, MessageSquare, Star, Globe,
-  Package, FileText, DollarSign, BarChart3,
-  Search, Gauge, Store
+  Eye, Sparkles, Brain, Plus, Trash2, ArrowUp, ArrowDown,
+  ShoppingBag, Users, MessageSquare, Star, Globe, Settings,
+  Package, FileText, DollarSign, BarChart3, Search, Gauge, Store
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import SectionEditor from './SectionEditor';
 import PreviewFrame from './PreviewFrame';
-import SEOOptimizer from './SEOOptimizer';
-import PerformanceMonitor from './PerformanceMonitor';
-import AdvancedAnalytics from './AdvancedAnalytics';
-import MarketplaceIntegrations from './MarketplaceIntegrations';
+import EnhancedAITemplateGenerator from './EnhancedAITemplateGenerator';
 import { EnhancedWebsiteData } from './EnhancedTemplateGenerator';
 
 interface Section {
@@ -36,31 +31,34 @@ interface AdvancedWebsiteBuilderProps {
   onSave: (sections: Section[], devicePreviews: any) => void;
 }
 
+interface EnhancedAIOptions {
+  businessType?: string;
+  targetAudience?: string;
+  contentTone?: string;
+  industry?: string;
+  colorPalette?: string;
+  fontStyle?: string;
+  layoutStyle?: string;
+  language?: string;
+  features?: string[];
+  customTone?: string;
+  seoFocused?: boolean;
+  ecommerceFeatures?: boolean;
+  multiLanguage?: boolean;
+}
+
 const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderProps) => {
   const [sections, setSections] = useState<Section[]>([]);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
-  const [showAISuggestions, setShowAISuggestions] = useState(false);
   const [livePreviewHtml, setLivePreviewHtml] = useState('');
-  const [activeTab, setActiveTab] = useState<'builder' | 'design' | 'ecommerce' | 'seo' | 'performance' | 'analytics' | 'integrations'>('builder');
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
+  const [activeTab, setActiveTab] = useState<'generator' | 'builder' | 'preview'>('generator');
 
-  // SEO Data State - Fixed the tags property issue
-  const [seoData, setSeoData] = useState({
-    title: `${websiteData.businessName} - ${websiteData.businessDescription}`,
-    description: websiteData.businessDescription,
-    keywords: [], // Use empty array instead of websiteData.tags
-    ogImage: websiteData.logoUrl || '',
-    canonicalUrl: '',
-    structuredData: {}
-  });
-
-  // Creative AI-powered section suggestions based on business type
+  // AI-powered section suggestions based on business type
   const getAISectionSuggestions = useCallback(() => {
     const businessType = websiteData.businessType;
-    const industry = websiteData.industry;
     
     const baseSuggestions = [
       { type: 'hero', name: 'Hero Banner', description: 'Eye-catching main banner', icon: Sparkles },
@@ -79,32 +77,32 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
 
     if (businessType === 'service' || businessType === 'agency') {
       baseSuggestions.push(
-        { type: 'services', name: 'Our Services', description: 'What we offer', icon: Zap },
-        { type: 'pricing', name: 'Pricing Plans', description: 'Service packages', icon: Type },
+        { type: 'services', name: 'Our Services', description: 'What we offer', icon: Package },
+        { type: 'pricing', name: 'Pricing Plans', description: 'Service packages', icon: DollarSign },
         { type: 'testimonials', name: 'Client Testimonials', description: 'Success stories', icon: Star }
       );
     }
 
     baseSuggestions.push(
-      { type: 'features', name: 'Key Features', description: 'Why choose us', icon: Layout },
+      { type: 'features', name: 'Key Features', description: 'Why choose us', icon: BarChart3 },
       { type: 'faq', name: 'FAQ Section', description: 'Common questions', icon: MessageSquare }
     );
 
     return baseSuggestions;
   }, [websiteData]);
 
-  // Generate initial AI-powered layout
-  const generateAILayout = async () => {
+  // Handle AI template generation
+  const handleAIGeneration = async (prompt: string, options: EnhancedAIOptions) => {
     setIsGenerating(true);
     setGenerationProgress(0);
 
     const steps = [
-      'Analyzing your business data...',
-      'Creating AI-powered section layout...',
-      'Generating content for each section...',
+      'Analyzing your business requirements...',
+      'Generating AI-powered sections...',
+      'Creating personalized content...',
       'Optimizing for your industry...',
-      'Applying smart design patterns...',
-      'Finalizing responsive layouts...'
+      'Applying design patterns...',
+      'Building responsive layouts...'
     ];
 
     for (let i = 0; i < steps.length; i++) {
@@ -112,17 +110,17 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
       setGenerationProgress(((i + 1) / steps.length) * 100);
     }
 
-    // Generate sections based on business data
+    // Generate sections based on AI prompt and options
     const generatedSections: Section[] = [
       {
         id: 'hero-1',
         type: 'hero',
         content: {
-          headline: `Welcome to ${websiteData.businessName}`,
-          subheadline: websiteData.businessDescription,
-          ctaText: websiteData.businessType === 'ecommerce' ? 'Shop Now' : 'Get Started',
+          headline: `${websiteData.businessName} - ${options.contentTone === 'luxury' ? 'Premium' : 'Professional'} ${websiteData.businessType}`,
+          subheadline: prompt.substring(0, 120) + '...',
+          ctaText: options.businessType === 'ecommerce' ? 'Shop Now' : 'Get Started',
           backgroundImage: websiteData.logoUrl || '',
-          backgroundColor: '#667eea'
+          backgroundColor: options.colorPalette === 'modern-blue' ? '#667eea' : '#764ba2'
         },
         visible: true,
         mobileVisible: true,
@@ -130,8 +128,8 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
       }
     ];
 
-    // Add sections based on available data
-    if (websiteData.products.length > 0) {
+    // Add AI-generated sections based on options
+    if (options.ecommerceFeatures && websiteData.products.length > 0) {
       generatedSections.push({
         id: 'products-1',
         type: 'products',
@@ -161,7 +159,7 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
       });
     }
 
-    if (websiteData.reviews.length > 0) {
+    if (options.features?.includes('conversion-focused')) {
       generatedSections.push({
         id: 'testimonials-1',
         type: 'testimonials',
@@ -192,6 +190,7 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
 
     setSections(generatedSections);
     setIsGenerating(false);
+    setActiveTab('builder'); // Switch to builder tab after generation
     generateLivePreview(generatedSections);
   };
 
@@ -333,6 +332,7 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
 
     setSections([...sections, newSection]);
     setSelectedSection(newSection.id);
+    generateLivePreview([...sections, newSection]);
   };
 
   // Get default content for section type
@@ -361,33 +361,23 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
 
   // Update section content
   const updateSection = (sectionId: string, newContent: any) => {
-    setSections(sections.map(section => 
+    const updatedSections = sections.map(section => 
       section.id === sectionId 
         ? { ...section, content: { ...section.content, ...newContent } }
         : section
-    ));
-    generateLivePreview(sections);
+    );
+    setSections(updatedSections);
+    generateLivePreview(updatedSections);
   };
 
   // Delete section
   const deleteSection = (sectionId: string) => {
-    setSections(sections.filter(s => s.id !== sectionId));
+    const updatedSections = sections.filter(s => s.id !== sectionId);
+    setSections(updatedSections);
+    generateLivePreview(updatedSections);
     if (selectedSection === sectionId) {
       setSelectedSection(null);
     }
-  };
-
-  // Integration handlers
-  const handleIntegrationToggle = (integrationId: string, enabled: boolean) => {
-    console.log(`Integration ${integrationId} ${enabled ? 'enabled' : 'disabled'}`);
-  };
-
-  const handleConfigureIntegration = (integrationId: string) => {
-    console.log(`Configure integration: ${integrationId}`);
-  };
-
-  const handlePerformanceOptimize = (optimizations: string[]) => {
-    console.log('Applying optimizations:', optimizations);
   };
 
   return (
@@ -397,8 +387,10 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
         <div className="flex items-center space-x-4">
           <h2 className="text-xl font-bold flex items-center space-x-2">
             <Brain className="h-5 w-5" />
-            <span>Advanced Website Builder</span>
-            <Badge variant="secondary">AI-Powered + E-commerce + Phase 3</Badge>
+            <span>AI Website Builder</span>
+            <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+              AI Generator + Builder
+            </Badge>
           </h2>
           
           <div className="flex items-center space-x-2">
@@ -427,10 +419,6 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
         </div>
 
         <div className="flex items-center space-x-2">
-          <Button onClick={generateAILayout} disabled={isGenerating}>
-            <Wand2 className="h-4 w-4 mr-2" />
-            {isGenerating ? 'Generating...' : 'AI Generate'}
-          </Button>
           <Button variant="outline">
             <Eye className="h-4 w-4 mr-2" />
             Preview
@@ -449,7 +437,7 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
       {isGenerating && (
         <div className="bg-blue-50 border-b p-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Generating AI-powered website with advanced features...</span>
+            <span className="text-sm font-medium">Generating AI-powered website...</span>
             <span className="text-sm">{Math.round(generationProgress)}%</span>
           </div>
           <Progress value={generationProgress} className="h-2" />
@@ -458,23 +446,22 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
 
       {/* Main Content */}
       <div className="flex-1 flex">
-        {/* Left Sidebar */}
+        {/* Left Sidebar - Integrated AI Generator + Builder */}
         <div className="w-80 bg-white border-r flex flex-col">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="flex-1">
-            <TabsList className="grid w-full grid-cols-4 p-1 m-4">
+            <TabsList className="grid w-full grid-cols-3 p-1 m-4">
+              <TabsTrigger value="generator">AI Generator</TabsTrigger>
               <TabsTrigger value="builder">Builder</TabsTrigger>
-              <TabsTrigger value="design">Design</TabsTrigger>
-              <TabsTrigger value="ecommerce">Store</TabsTrigger>
-              <TabsTrigger value="seo">SEO</TabsTrigger>
+              <TabsTrigger value="preview">Preview</TabsTrigger>
             </TabsList>
-            
-            <div className="px-4 mb-2">
-              <TabsList className="grid w-full grid-cols-3 p-1">
-                <TabsTrigger value="performance">Speed</TabsTrigger>
-                <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                <TabsTrigger value="integrations">Apps</TabsTrigger>
-              </TabsList>
-            </div>
+
+            <TabsContent value="generator" className="flex-1 overflow-auto p-4">
+              <EnhancedAITemplateGenerator
+                onGenerate={handleAIGeneration}
+                isGenerating={isGenerating}
+                progress={generationProgress}
+              />
+            </TabsContent>
 
             <TabsContent value="builder" className="flex-1 overflow-auto p-4">
               <div className="space-y-4">
@@ -545,125 +532,33 @@ const AdvancedWebsiteBuilder = ({ websiteData, onSave }: AdvancedWebsiteBuilderP
                     </Droppable>
                   </DragDropContext>
                 </div>
-              </div>
-            </TabsContent>
 
-            <TabsContent value="design" className="flex-1 overflow-auto p-4">
-              <div className="space-y-4">
-                <h3 className="font-semibold">Design Controls</h3>
+                {/* Section Editor */}
                 {selectedSection && (
-                  <SectionEditor
-                    section={sections.find(s => s.id === selectedSection)!}
-                    onUpdate={(content) => updateSection(selectedSection, content)}
-                  />
-                )}
-                {!selectedSection && (
-                  <p className="text-muted-foreground text-sm">Select a section to edit its design</p>
+                  <div className="border-t pt-4">
+                    <h3 className="font-semibold mb-3">Edit Section</h3>
+                    <SectionEditor
+                      section={sections.find(s => s.id === selectedSection)!}
+                      onUpdate={(content) => updateSection(selectedSection, content)}
+                    />
+                  </div>
                 )}
               </div>
             </TabsContent>
 
-            <TabsContent value="ecommerce" className="flex-1 overflow-auto p-4">
+            <TabsContent value="preview" className="flex-1 overflow-auto p-4">
               <div className="space-y-4">
-                <h3 className="font-semibold flex items-center space-x-2">
-                  <ShoppingBag className="h-4 w-4" />
-                  <span>E-commerce Setup</span>
-                </h3>
-                
-                <div className="space-y-3">
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium text-sm mb-2">Product Management</h4>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Manage your product catalog, pricing, and inventory
-                    </p>
-                    <Button size="sm" className="w-full">
-                      <Package className="h-3 w-3 mr-1" />
-                      Manage Products
-                    </Button>
+                <h3 className="font-semibold">Website Preview</h3>
+                <p className="text-sm text-muted-foreground">
+                  Your AI-generated website with custom sections
+                </p>
+                {sections.length === 0 && (
+                  <div className="text-center py-8">
+                    <Wand2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-muted-foreground">Generate a website to see the preview</p>
                   </div>
-
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium text-sm mb-2">Order Processing</h4>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Handle orders, shipping, and customer communications
-                    </p>
-                    <Button size="sm" className="w-full">
-                      <FileText className="h-3 w-3 mr-1" />
-                      View Orders
-                    </Button>
-                  </div>
-
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium text-sm mb-2">Payment Setup</h4>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Configure payment processors and checkout flow
-                    </p>
-                    <Button size="sm" className="w-full" variant="outline">
-                      <DollarSign className="h-3 w-3 mr-1" />
-                      Setup Payments
-                    </Button>
-                  </div>
-
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium text-sm mb-2">Analytics & Reports</h4>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Track sales performance and customer behavior
-                    </p>
-                    <Button size="sm" className="w-full" variant="outline">
-                      <BarChart3 className="h-3 w-3 mr-1" />
-                      View Analytics
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h4 className="font-medium text-sm mb-3">Quick Add Products</h4>
-                  <div className="space-y-2">
-                    <Button size="sm" variant="outline" className="w-full justify-start">
-                      <Plus className="h-3 w-3 mr-2" />
-                      Add Physical Product
-                    </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start">
-                      <Plus className="h-3 w-3 mr-2" />
-                      Add Digital Product
-                    </Button>
-                    <Button size="sm" variant="outline" className="w-full justify-start">
-                      <Plus className="h-3 w-3 mr-2" />
-                      Add Service
-                    </Button>
-                  </div>
-                </div>
+                )}
               </div>
-            </TabsContent>
-
-            <TabsContent value="seo" className="flex-1 overflow-auto p-4">
-              <SEOOptimizer
-                seoData={seoData}
-                onUpdate={setSeoData}
-                websiteName={websiteData.businessName}
-              />
-            </TabsContent>
-
-            <TabsContent value="performance" className="flex-1 overflow-auto p-4">
-              <PerformanceMonitor
-                websiteUrl={window.location.origin}
-                onOptimize={handlePerformanceOptimize}
-              />
-            </TabsContent>
-
-            <TabsContent value="analytics" className="flex-1 overflow-auto p-4">
-              <AdvancedAnalytics
-                websiteName={websiteData.businessName}
-                timeRange={timeRange}
-                onTimeRangeChange={setTimeRange}
-              />
-            </TabsContent>
-
-            <TabsContent value="integrations" className="flex-1 overflow-auto p-4">
-              <MarketplaceIntegrations
-                onIntegrationToggle={handleIntegrationToggle}
-                onConfigureIntegration={handleConfigureIntegration}
-              />
             </TabsContent>
           </Tabs>
         </div>
