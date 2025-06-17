@@ -16,9 +16,13 @@ import {
   MessageSquare
 } from 'lucide-react';
 import LeadManagement from './agency/LeadManagement';
+import LeadScoringDashboard from './agency/LeadScoringDashboard';
+import CampaignOrchestration from './agency/CampaignOrchestration';
+import SocialMediaFactory from './agency/SocialMediaFactory';
 
 const AgencyDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'leads' | 'social' | 'clients'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'campaigns' | 'leads' | 'scoring' | 'social' | 'clients'>('campaigns');
+  const [leads, setLeads] = useState([]);
 
   const stats = [
     {
@@ -51,18 +55,17 @@ const AgencyDashboard = () => {
     }
   ];
 
-  const recentCampaigns = [
-    { name: 'TechStartup Q1 Launch', client: 'InnovateTech', status: 'Active', roi: '425%' },
-    { name: 'E-commerce Holiday', client: 'ShopMart', status: 'Optimizing', roi: '280%' },
-    { name: 'B2B Lead Generation', client: 'DataCorp', status: 'Active', roi: '390%' }
-  ];
+  const handleLeadAdded = (newLead: any) => {
+    setLeads(prevLeads => [...prevLeads, newLead]);
+  };
 
-  const leadMetrics = [
-    { source: 'Facebook Ads', leads: 342, quality: 'High', cost: '$12.50' },
-    { source: 'Google Ads', leads: 289, quality: 'Very High', cost: '$18.20' },
-    { source: 'LinkedIn', leads: 156, quality: 'High', cost: '$24.80' },
-    { source: 'Organic Social', leads: 98, quality: 'Medium', cost: '$0.00' }
-  ];
+  const handleNurtureLead = (lead: any) => {
+    console.log('Nurturing lead:', lead);
+  };
+
+  const handleScheduleMeeting = (lead: any) => {
+    console.log('Scheduling meeting with:', lead);
+  };
 
   return (
     <div className="space-y-6">
@@ -96,6 +99,14 @@ const AgencyDashboard = () => {
           >
             <Target className="h-4 w-4" />
             <span>Lead Management</span>
+          </Button>
+          <Button
+            variant={activeTab === 'scoring' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('scoring')}
+            className="flex items-center space-x-2"
+          >
+            <UserCheck className="h-4 w-4" />
+            <span>Lead Scoring</span>
           </Button>
           <Button
             variant={activeTab === 'social' ? 'default' : 'outline'}
@@ -135,6 +146,17 @@ const AgencyDashboard = () => {
       </div>
 
       {/* Tab Content */}
+      {activeTab === 'campaigns' && <CampaignOrchestration />}
+      {activeTab === 'leads' && <LeadManagement onLeadAdded={handleLeadAdded} />}
+      {activeTab === 'scoring' && (
+        <LeadScoringDashboard 
+          leads={leads} 
+          onNurtureLead={handleNurtureLead}
+          onScheduleMeeting={handleScheduleMeeting}
+        />
+      )}
+      {activeTab === 'social' && <SocialMediaFactory />}
+
       {activeTab === 'overview' && (
         <div className="grid lg:grid-cols-2 gap-6">
           <Card>
@@ -147,20 +169,36 @@ const AgencyDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentCampaigns.map((campaign, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{campaign.name}</p>
-                      <p className="text-sm text-muted-foreground">{campaign.client}</p>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant={campaign.status === 'Active' ? 'default' : 'secondary'}>
-                        {campaign.status}
-                      </Badge>
-                      <p className="text-sm font-semibold text-green-600 mt-1">{campaign.roi} ROI</p>
-                    </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium">TechStartup Q1 Launch</p>
+                    <p className="text-sm text-muted-foreground">InnovateTech</p>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <Badge variant="default">Active</Badge>
+                    <p className="text-sm font-semibold text-green-600 mt-1">425% ROI</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium">E-commerce Holiday</p>
+                    <p className="text-sm text-muted-foreground">ShopMart</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge variant="secondary">Optimizing</Badge>
+                    <p className="text-sm font-semibold text-green-600 mt-1">280% ROI</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium">B2B Lead Generation</p>
+                    <p className="text-sm text-muted-foreground">DataCorp</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge variant="default">Active</Badge>
+                    <p className="text-sm font-semibold text-green-600 mt-1">390% ROI</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -175,55 +213,72 @@ const AgencyDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {leadMetrics.map((source, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{source.source}</p>
-                      <p className="text-sm text-muted-foreground">{source.leads} leads</p>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant={source.quality === 'Very High' ? 'default' : source.quality === 'High' ? 'secondary' : 'outline'}>
-                        {source.quality}
-                      </Badge>
-                      <p className="text-sm font-semibold mt-1">{source.cost} CPL</p>
-                    </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium">Facebook Ads</p>
+                    <p className="text-sm text-muted-foreground">342 leads</p>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <Badge variant="default">High</Badge>
+                    <p className="text-sm font-semibold mt-1">$12.50 CPL</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium">Google Ads</p>
+                    <p className="text-sm text-muted-foreground">289 leads</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge variant="default">Very High</Badge>
+                    <p className="text-sm font-semibold mt-1">$18.20 CPL</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium">LinkedIn</p>
+                    <p className="text-sm text-muted-foreground">156 leads</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge variant="secondary">High</Badge>
+                    <p className="text-sm font-semibold mt-1">$24.80 CPL</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <p className="font-medium">Organic Social</p>
+                    <p className="text-sm text-muted-foreground">98 leads</p>
+                  </div>
+                  <div className="text-right">
+                    <Badge variant="outline">Medium</Badge>
+                    <p className="text-sm font-semibold mt-1">$0.00 CPL</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
       )}
 
-      {activeTab === 'leads' && <LeadManagement />}
-
-      {(activeTab === 'campaigns' || activeTab === 'social' || activeTab === 'clients') && (
+      {activeTab === 'clients' && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <MessageSquare className="h-5 w-5" />
-              <span>
-                {activeTab === 'campaigns' ? 'Campaign Orchestration' : 
-                 activeTab === 'social' ? 'Social Media Factory' : 'Client Management'}
-              </span>
+              <Users className="h-5 w-5" />
+              <span>Client Management &amp; Reporting</span>
             </CardTitle>
             <CardDescription>
-              {activeTab === 'campaigns' && 'Multi-platform campaign creation and optimization'}
-              {activeTab === 'social' && 'Automated social media content generation and scheduling'}
-              {activeTab === 'clients' && 'Client relationship management and reporting'}
+              Comprehensive client portals with white-label reporting
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-12">
               <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Feature Coming Soon</h3>
+              <h3 className="text-lg font-semibold mb-2">Client Portal Available</h3>
               <p className="text-muted-foreground mb-4">
-                {activeTab === 'campaigns' && 'Advanced campaign management with cross-platform optimization'}
-                {activeTab === 'social' && 'AI-powered content creation with automated posting schedules'}
-                {activeTab === 'clients' && 'Comprehensive client portals with white-label reporting'}
+                Automated client reporting with performance dashboards and insights
               </p>
               <Button variant="outline">
-                Get Notified
+                Access Client Portal
               </Button>
             </div>
           </CardContent>

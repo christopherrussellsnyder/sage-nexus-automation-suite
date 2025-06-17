@@ -13,12 +13,14 @@ import {
   UserCheck,
   FileText,
   MessageSquare,
-  BarChart3
+  BarChart3,
+  Search
 } from 'lucide-react';
 import DealsTracker from './sales/DealsTracker';
+import ProspectResearch from './sales/ProspectResearch';
 
 const SalesDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'prospects' | 'deals' | 'sequences' | 'meetings'>('deals');
+  const [activeTab, setActiveTab] = useState<'overview' | 'prospects' | 'deals' | 'sequences' | 'meetings'>('prospects');
 
   const stats = [
     {
@@ -73,8 +75,8 @@ const SalesDashboard = () => {
             onClick={() => setActiveTab('prospects')}
             className="flex items-center space-x-2"
           >
-            <UserCheck className="h-4 w-4" />
-            <span>Prospects</span>
+            <Search className="h-4 w-4" />
+            <span>Prospect Research</span>
           </Button>
           <Button
             variant={activeTab === 'deals' ? 'default' : 'outline'}
@@ -122,6 +124,7 @@ const SalesDashboard = () => {
       </div>
 
       {/* Tab Content */}
+      {activeTab === 'prospects' && <ProspectResearch />}
       {activeTab === 'deals' && <DealsTracker />}
       
       {activeTab === 'overview' && (
@@ -180,30 +183,28 @@ const SalesDashboard = () => {
         </div>
       )}
 
-      {(activeTab === 'prospects' || activeTab === 'sequences' || activeTab === 'meetings') && (
+      {(activeTab === 'sequences' || activeTab === 'meetings') && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <FileText className="h-5 w-5" />
-              <span>{activeTab === 'prospects' ? 'Prospect Research' : activeTab === 'sequences' ? 'Sales Sequences' : 'Meeting Intelligence'}</span>
+              <span>{activeTab === 'sequences' ? 'Sales Sequences' : 'Meeting Intelligence'}</span>
             </CardTitle>
             <CardDescription>
-              {activeTab === 'prospects' && 'AI-powered prospect research and qualification'}
-              {activeTab === 'sequences' && 'Automated email sequences and follow-ups'}
-              {activeTab === 'meetings' && 'Meeting analysis and next-step recommendations'}
+              {activeTab === 'sequences' && 'Automated email sequences and follow-ups with behavioral triggers'}
+              {activeTab === 'meetings' && 'AI meeting transcription, analysis and deal progression tracking'}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-center py-12">
               <Phone className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Feature Coming Soon</h3>
+              <h3 className="text-lg font-semibold mb-2">Advanced {activeTab === 'sequences' ? 'Sequence' : 'Meeting'} Tools Available</h3>
               <p className="text-muted-foreground mb-4">
-                {activeTab === 'prospects' && 'Advanced prospect research with LinkedIn integration and company intelligence'}
-                {activeTab === 'sequences' && 'Multi-channel sales sequences with performance tracking'}
-                {activeTab === 'meetings' && 'AI meeting transcription and action item extraction'}
+                {activeTab === 'sequences' && 'Multi-channel sales sequences with real-time behavioral adaptation'}
+                {activeTab === 'meetings' && 'AI-powered call analysis with automatic CRM updates and coaching insights'}
               </p>
               <Button variant="outline">
-                Get Notified
+                Access {activeTab === 'sequences' ? 'Sequence Builder' : 'Meeting Intelligence'}
               </Button>
             </div>
           </CardContent>
