@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,7 +49,7 @@ const LivePreviewEditor = ({
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLIFrameElement>(null);
 
   // Available section types with all comprehensive features
   const sectionTypes = {
@@ -376,18 +375,18 @@ const LivePreviewEditor = ({
                         ${section.content.title || 'Featured Products'}
                     </h2>
                     <div class="grid">
-                        ${websiteData.products.slice(0, section.content.productsCount || 6).map((product: any, index: number) => `
+                        ${websiteData.products?.slice(0, section.content.productsCount || 6).map((product: any, index: number) => `
                             <div class="card product-card editable-element" data-element="product" data-section-id="${section.id}" data-product-index="${index}">
                                 <img src="${product.imageUrl || '/placeholder.svg'}" alt="${product.name}" class="product-image">
                                 <h3 class="product-title editable-element" data-element="product-name" data-section-id="${section.id}" data-product-index="${index}">
                                     ${product.name}
                                 </h3>
                                 <p class="product-description editable-element" data-element="product-description" data-section-id="${section.id}" data-product-index="${index}">
-                                    ${product.description}
+                                    ${product.description || ''}
                                 </p>
                                 ${section.content.showPrices !== false ? `
                                     <p class="product-price editable-element" data-element="product-price" data-section-id="${section.id}" data-product-index="${index}">
-                                        ${product.price}
+                                        $${product.price || '0.00'}
                                     </p>
                                 ` : ''}
                                 ${section.content.showAddToCart !== false ? `
@@ -396,7 +395,7 @@ const LivePreviewEditor = ({
                                     </button>
                                 ` : ''}
                             </div>
-                        `).join('')}
+                        `).join('') || '<p>No products available</p>'}
                     </div>
                 </div>
             </section>`;
