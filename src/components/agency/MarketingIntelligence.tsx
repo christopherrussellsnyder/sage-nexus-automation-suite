@@ -33,100 +33,184 @@ const MarketingIntelligence = () => {
     setProgress(0);
     
     // Simulate analysis progress
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        return prev + 5;
-      });
-    }, 200);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 4000));
+    const progressSteps = [
+      "Analyzing agency websites in your niche...",
+      "Extracting organic content strategies...",
+      "Identifying top-performing content types...",
+      "Generating intelligence report..."
+    ];
+
+    for (let i = 0; i < progressSteps.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setProgress((i + 1) * 25);
+    }
     
     const mockAnalysis = {
       industryOverview: {
-        marketSize: '$8.2B',
-        clientDemand: 'High',
-        competitorCount: 156,
-        avgProjectValue: '$4,200'
+        marketSize: '$12.8B',
+        clientDemand: 'Very High',
+        competitorCount: 342,
+        avgProjectValue: '$8,500'
       },
       organicContentTrends: [
         {
-          trend: 'Educational carousel posts',
-          platforms: ['Instagram', 'LinkedIn'],
-          engagement: '127% above average',
-          usage: '78% of top agencies',
-          examples: ['Step-by-step tutorials', 'Industry insights', 'Tool comparisons']
+          trend: 'Case Study Carousels',
+          platforms: ['LinkedIn', 'Instagram'],
+          engagement: '247% above average',
+          usage: '89% of top agencies',
+          examples: ['Before/after client results', 'ROI breakdowns', 'Process walkthroughs'],
+          bestPractices: 'Use specific numbers, visual transformations, and client testimonials'
         },
         {
-          trend: 'Behind-the-scenes content',
-          platforms: ['Instagram Stories', 'TikTok'],
-          engagement: '89% above average',
-          usage: '65% of top agencies',
-          examples: ['Team meetings', 'Client wins', 'Office culture']
-        },
-        {
-          trend: 'Client success stories',
-          platforms: ['LinkedIn', 'Facebook'],
+          trend: 'Behind-the-Scenes Content',
+          platforms: ['Instagram Stories', 'LinkedIn'],
           engagement: '156% above average',
-          usage: '92% of top agencies',
-          examples: ['Before/after results', 'ROI testimonials', 'Case study videos']
+          usage: '73% of top agencies',
+          examples: ['Team strategy sessions', 'Client meetings', 'Tool tutorials'],
+          bestPractices: 'Show authenticity, team expertise, and client collaboration'
+        },
+        {
+          trend: 'Educational Tutorial Series',
+          platforms: ['LinkedIn', 'YouTube', 'TikTok'],
+          engagement: '198% above average',
+          usage: '82% of top agencies',
+          examples: ['Marketing tip series', 'Tool comparisons', 'Industry insights'],
+          bestPractices: 'Focus on actionable tips, trending topics, and tool demonstrations'
+        },
+        {
+          trend: 'Client Success Spotlights',
+          platforms: ['LinkedIn', 'Facebook'],
+          engagement: '289% above average',
+          usage: '95% of top agencies',
+          examples: ['Client transformation stories', 'Revenue growth highlights', 'Award announcements'],
+          bestPractices: 'Include specific metrics, client quotes, and visual proof'
         }
       ],
       topPerformers: [
         {
-          name: 'Digital Growth Agency',
-          specialties: ['SEO', 'PPC', 'Content Marketing'],
-          contentStrategy: 'Educational + Case Studies',
-          postFrequency: '3-4 times/week',
-          avgEngagement: '8.4%',
-          followers: '42K',
+          name: 'Growth Marketing Pro',
+          specialties: ['Digital Marketing', 'SEO', 'PPC'],
+          contentStrategy: 'Educational + Case Studies + Thought Leadership',
+          postFrequency: '4-5 times/week',
+          avgEngagement: '12.8%',
+          followers: '85K',
           topContent: [
-            'How we increased client ROI by 340%',
-            '5 SEO mistakes that cost businesses $10K+',
-            'Client transformation Tuesday series'
-          ]
+            'How we scaled a SaaS from $10K to $100K MRR in 8 months',
+            'The SEO strategy that increased organic traffic by 400%',
+            'Weekly marketing insights every Tuesday'
+          ],
+          contentCalendar: {
+            monday: 'Industry news commentary',
+            tuesday: 'Educational tutorials',
+            wednesday: 'Client success stories',
+            thursday: 'Behind-the-scenes',
+            friday: 'Weekly roundup/tips'
+          }
         },
         {
-          name: 'Creative Collective Co',
-          specialties: ['Brand Design', 'Social Media', 'Video'],
-          contentStrategy: 'Visual Storytelling + Process',
-          postFrequency: '5-6 times/week',
-          avgEngagement: '12.1%',
-          followers: '28K',
+          name: 'Creative Agency Collective',
+          specialties: ['Brand Design', 'Creative Strategy', 'Content'],
+          contentStrategy: 'Visual Storytelling + Process Shows + Portfolio',
+          postFrequency: '6-7 times/week',
+          avgEngagement: '15.2%',
+          followers: '64K',
           topContent: [
             'Brand transformation time-lapses',
             'Design process breakdowns',
             'Client collaboration stories'
-          ]
+          ],
+          contentCalendar: {
+            monday: 'Monday motivation/inspiration',
+            tuesday: 'Transformation Tuesday',
+            wednesday: 'Work-in-progress Wednesday',
+            thursday: 'Throwback Thursday (past projects)',
+            friday: 'Feature Friday (team/client spotlight)'
+          }
         }
       ],
       contentOpportunities: [
-        'Industry-specific how-to guides underused',
-        'Tool reviews and comparisons have high engagement potential',
-        'Client interview content is rare but highly effective',
-        'Process transparency content builds strong trust',
-        'Trend prediction posts establish thought leadership'
+        {
+          opportunity: 'Industry-specific tutorials are underused',
+          potential: 'High engagement potential',
+          actionable: 'Create niche-specific how-to content for your target industries'
+        },
+        {
+          opportunity: 'Client interview content is rare but highly effective',
+          potential: 'Builds strong trust and credibility',
+          actionable: 'Schedule monthly client interviews and turn into content series'
+        },
+        {
+          opportunity: 'Tool reviews and comparisons drive high engagement',
+          potential: 'Positions as industry expert',
+          actionable: 'Review marketing tools your clients use and provide honest comparisons'
+        },
+        {
+          opportunity: 'Trend prediction posts establish thought leadership',
+          potential: 'Increases industry authority',
+          actionable: 'Share monthly trend predictions and analysis for your specialization'
+        }
       ],
       platformInsights: {
         linkedin: {
-          bestTimes: ['Tuesday-Thursday 9-11 AM'],
-          topFormats: ['Document carousels', 'Video testimonials', 'Industry insights'],
-          avgEngagement: '6.8%'
+          bestTimes: ['Tuesday-Thursday 9-11 AM', 'Wednesday 1-3 PM'],
+          topFormats: ['Document carousels', 'Video case studies', 'Industry insights', 'Client testimonials'],
+          avgEngagement: '8.4%',
+          contentTips: [
+            'Professional tone with personal touches',
+            'Use data and specific metrics',
+            'Engage in comments within first hour',
+            'Share industry news with your take'
+          ]
         },
         instagram: {
-          bestTimes: ['Monday-Wednesday 11 AM-1 PM'],
-          topFormats: ['Story highlights', 'Reels tutorials', 'Carousel tips'],
-          avgEngagement: '4.2%'
+          bestTimes: ['Monday-Wednesday 11 AM-1 PM', 'Thursday 5-7 PM'],
+          topFormats: ['Story highlights', 'Reels tutorials', 'Carousel case studies', 'Behind-the-scenes'],
+          avgEngagement: '6.7%',
+          contentTips: [
+            'Visual-first approach',
+            'Use trending audio for Reels',
+            'Create story templates for consistency',
+            'Highlight client transformations visually'
+          ]
         },
         facebook: {
-          bestTimes: ['Wednesday-Friday 1-3 PM'],
-          topFormats: ['Client stories', 'Live Q&As', 'Group discussions'],
-          avgEngagement: '3.1%'
+          bestTimes: ['Wednesday-Friday 1-3 PM', 'Saturday 12-2 PM'],
+          topFormats: ['Client success posts', 'Educational videos', 'Live Q&As', 'Community discussions'],
+          avgEngagement: '4.2%',
+          contentTips: [
+            'Longer-form content performs well',
+            'Use Facebook Live for real-time engagement',
+            'Create discussion posts with questions',
+            'Share detailed case studies'
+          ]
+        },
+        youtube: {
+          bestTimes: ['Tuesday-Thursday 2-4 PM', 'Saturday-Sunday 9-11 AM'],
+          topFormats: ['Tutorial series', 'Client case studies', 'Tool reviews', 'Industry analysis'],
+          avgEngagement: '3.8%',
+          contentTips: [
+            'Create series for better retention',
+            'Optimize thumbnails and titles',
+            'Include clear CTAs in videos',
+            'Collaborate with other agencies'
+          ]
         }
+      },
+      competitiveAnalysis: {
+        avgPostFrequency: '4.2 posts per week',
+        topHashtags: ['#digitalmarketing', '#marketingagency', '#ROI', '#growthhacking', '#businessgrowth'],
+        commonMistakes: [
+          'Too much self-promotion, not enough value',
+          'Inconsistent posting schedule',
+          'Generic content not tailored to niche',
+          'Poor engagement with audience comments'
+        ],
+        successFactors: [
+          'Consistent value-first approach',
+          'Strong visual branding',
+          'Regular client success showcases',
+          'Active community engagement'
+        ]
       }
     };
 
@@ -146,7 +230,7 @@ const MarketingIntelligence = () => {
               <span>Agency Marketing Intelligence</span>
             </CardTitle>
             <CardDescription>
-              Analyze organic content strategies and trends in your agency niche
+              Analyze organic content strategies and trends in your agency specialization
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -196,7 +280,7 @@ const MarketingIntelligence = () => {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold">Marketing Intelligence Report</h3>
+              <h3 className="text-2xl font-bold">Agency Marketing Intelligence Report</h3>
               <p className="text-muted-foreground">Specialization: {industry}</p>
             </div>
             <Button onClick={() => setAnalysis(null)} variant="outline">
@@ -274,7 +358,7 @@ const MarketingIntelligence = () => {
                       Used by {trend.usage} • Best on: {trend.platforms.join(', ')}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-3">
                     <div>
                       <Label className="text-sm font-medium">Examples:</Label>
                       <ul className="mt-2 space-y-1">
@@ -284,6 +368,10 @@ const MarketingIntelligence = () => {
                           </li>
                         ))}
                       </ul>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Best Practices:</Label>
+                      <p className="text-sm bg-green-50 p-2 rounded mt-1">{trend.bestPractices}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -323,6 +411,16 @@ const MarketingIntelligence = () => {
                         </ul>
                       </div>
                     </div>
+                    <div>
+                      <Label className="text-sm font-medium">Weekly Content Calendar:</Label>
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        {Object.entries(performer.contentCalendar).map(([day, content]: [string, any]) => (
+                          <div key={day} className="text-xs bg-purple-50 p-2 rounded">
+                            <strong className="capitalize">{day}:</strong> {content}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -354,6 +452,16 @@ const MarketingIntelligence = () => {
                         ))}
                       </div>
                     </div>
+                    <div>
+                      <Label className="text-sm font-medium">Platform-Specific Tips:</Label>
+                      <ul className="mt-1 space-y-1">
+                        {data.contentTips.map((tip: string, tipIndex: number) => (
+                          <li key={tipIndex} className="text-sm bg-yellow-50 p-2 rounded">
+                            • {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -370,13 +478,47 @@ const MarketingIntelligence = () => {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    {analysis.contentOpportunities.map((opportunity: string, index: number) => (
+                    {analysis.contentOpportunities.map((item: any, index: number) => (
                       <li key={index} className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg">
                         <Lightbulb className="h-4 w-4 text-yellow-500 mt-0.5" />
-                        <span className="text-sm">{opportunity}</span>
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium">{item.opportunity}</p>
+                          <p className="text-xs text-muted-foreground">{item.potential}</p>
+                          <p className="text-xs bg-white p-2 rounded">{item.actionable}</p>
+                        </div>
                       </li>
                     ))}
                   </ul>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Competitive Analysis Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium">Common Mistakes to Avoid:</Label>
+                    <ul className="mt-2 space-y-1">
+                      {analysis.competitiveAnalysis.commonMistakes.map((mistake: string, index: number) => (
+                        <li key={index} className="text-sm bg-red-50 p-2 rounded flex items-center">
+                          <span className="text-red-500 mr-2">❌</span>
+                          {mistake}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Success Factors:</Label>
+                    <ul className="mt-2 space-y-1">
+                      {analysis.competitiveAnalysis.successFactors.map((factor: string, index: number) => (
+                        <li key={index} className="text-sm bg-green-50 p-2 rounded flex items-center">
+                          <span className="text-green-500 mr-2">✅</span>
+                          {factor}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, RefreshCw, Brain, TrendingUp } from "lucide-react";
 import WebsiteCopyGenerator from './WebsiteCopyGenerator';
 import AdCopyGenerator from './AdCopyGenerator';
+import EmailSequenceGenerator from '../copy-generation/EmailSequenceGenerator';
+import SocialContentGenerator from '../copy-generation/SocialContentGenerator';
 
 interface CopyGenerationHubProps {
   activeType: 'website' | 'ads' | 'emails' | 'social';
@@ -240,16 +241,12 @@ const CopyGenerationHub = ({ activeType }: CopyGenerationHubProps) => {
             />
           )}
           
-          {(activeType === 'emails' || activeType === 'social') && (
-            <Card>
-              <CardContent className="text-center py-12">
-                <Sparkles className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{config.title} Coming Soon</h3>
-                <p className="text-muted-foreground">
-                  {config.description} - Currently under development
-                </p>
-              </CardContent>
-            </Card>
+          {activeType === 'emails' && (
+            <EmailSequenceGenerator />
+          )}
+          
+          {activeType === 'social' && (
+            <SocialContentGenerator />
           )}
         </div>
       </div>
