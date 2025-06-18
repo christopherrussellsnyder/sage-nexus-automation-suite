@@ -21,195 +21,172 @@ import {
 } from 'lucide-react';
 
 const MarketingIntelligence = () => {
-  const [industry, setIndustry] = useState('');
+  const [businessData, setBusinessData] = useState({
+    businessName: '',
+    industry: '',
+    businessType: '',
+    targetAudience: '',
+    serviceOffering: '',
+    uniqueValue: '',
+    budget: '',
+    timeline: '',
+    campaignGoal: ''
+  });
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<any>(null);
   const [progress, setProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
 
   const runAnalysis = async () => {
-    if (!industry.trim()) return;
+    if (!businessData.businessName.trim() || !businessData.industry.trim()) return;
     
     setAnalyzing(true);
     setProgress(0);
+    setCurrentStep(1);
     
-    // Simulate analysis progress
-    const progressSteps = [
-      "Analyzing agency websites in your niche...",
-      "Extracting organic content strategies...",
-      "Identifying top-performing content types...",
-      "Generating intelligence report..."
+    // 3-step process for agency analysis
+    const analysisSteps = [
+      {
+        step: 1,
+        message: "Analyzing top agency websites in your specialization...",
+        duration: 3000
+      },
+      {
+        step: 2,
+        message: "Extracting winning content strategies and client acquisition methods...",
+        duration: 4000
+      },
+      {
+        step: 3,
+        message: "Generating comprehensive agency marketing intelligence report...",
+        duration: 3000
+      }
     ];
 
-    for (let i = 0; i < progressSteps.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setProgress((i + 1) * 25);
+    for (const stepData of analysisSteps) {
+      setCurrentStep(stepData.step);
+      await new Promise(resolve => setTimeout(resolve, stepData.duration));
+      setProgress(stepData.step * 33.33);
     }
     
     const mockAnalysis = {
       industryOverview: {
-        marketSize: '$12.8B',
+        marketSize: businessData.industry === 'Digital Marketing' ? '$146B' : '$89B',
         clientDemand: 'Very High',
-        competitorCount: 342,
-        avgProjectValue: '$8,500'
+        competitorCount: businessData.industry === 'Digital Marketing' ? 1247 : 892,
+        avgProjectValue: businessData.industry === 'SEO' ? '$4,200' : '$8,500',
+        marketSaturation: businessData.industry === 'Social Media' ? 'Medium' : 'High'
       },
       organicContentTrends: [
         {
-          trend: 'Case Study Carousels',
+          trend: 'Client Case Study Carousels',
           platforms: ['LinkedIn', 'Instagram'],
-          engagement: '247% above average',
-          usage: '89% of top agencies',
-          examples: ['Before/after client results', 'ROI breakdowns', 'Process walkthroughs'],
-          bestPractices: 'Use specific numbers, visual transformations, and client testimonials'
+          engagement: '347% above average',
+          usage: '94% of top agencies',
+          examples: [
+            'Before/after client results with specific ROI numbers',
+            'Timeline breakdowns of campaign success',
+            'Client testimonial overlays with metrics'
+          ],
+          bestPractices: 'Include specific numbers, visual transformations, and authentic client quotes'
         },
         {
-          trend: 'Behind-the-Scenes Content',
-          platforms: ['Instagram Stories', 'LinkedIn'],
-          engagement: '156% above average',
-          usage: '73% of top agencies',
-          examples: ['Team strategy sessions', 'Client meetings', 'Tool tutorials'],
-          bestPractices: 'Show authenticity, team expertise, and client collaboration'
+          trend: 'Behind-the-Scenes Strategy Content',
+          platforms: ['Instagram Stories', 'LinkedIn', 'TikTok'],
+          engagement: '256% above average',
+          usage: '87% of top agencies',
+          examples: [
+            'Live strategy sessions with clients',
+            'Tool tutorials and walkthroughs',
+            'Team brainstorming sessions'
+          ],
+          bestPractices: 'Show expertise through authentic process reveals and team collaboration'
         },
         {
           trend: 'Educational Tutorial Series',
           platforms: ['LinkedIn', 'YouTube', 'TikTok'],
-          engagement: '198% above average',
-          usage: '82% of top agencies',
-          examples: ['Marketing tip series', 'Tool comparisons', 'Industry insights'],
-          bestPractices: 'Focus on actionable tips, trending topics, and tool demonstrations'
-        },
-        {
-          trend: 'Client Success Spotlights',
-          platforms: ['LinkedIn', 'Facebook'],
-          engagement: '289% above average',
-          usage: '95% of top agencies',
-          examples: ['Client transformation stories', 'Revenue growth highlights', 'Award announcements'],
-          bestPractices: 'Include specific metrics, client quotes, and visual proof'
+          engagement: '298% above average',
+          usage: '91% of top agencies',
+          examples: [
+            `${businessData.industry} tip series`,
+            'Tool comparisons and reviews',
+            'Industry trend predictions'
+          ],
+          bestPractices: 'Focus on actionable insights, trending topics, and tool demonstrations'
         }
       ],
       topPerformers: [
         {
-          name: 'Growth Marketing Pro',
-          specialties: ['Digital Marketing', 'SEO', 'PPC'],
+          name: `${businessData.industry} Growth Agency`,
+          specialties: [businessData.industry, 'Lead Generation', 'ROI Optimization'],
           contentStrategy: 'Educational + Case Studies + Thought Leadership',
-          postFrequency: '4-5 times/week',
-          avgEngagement: '12.8%',
-          followers: '85K',
+          postFrequency: '5-6 times/week',
+          avgEngagement: '14.2%',
+          followers: '125K',
           topContent: [
-            'How we scaled a SaaS from $10K to $100K MRR in 8 months',
-            'The SEO strategy that increased organic traffic by 400%',
-            'Weekly marketing insights every Tuesday'
+            `How we scaled a ${businessData.targetAudience} business from $50K to $500K in 12 months`,
+            `The ${businessData.industry} strategy that increased client ROI by 400%`,
+            'Weekly industry insights every Tuesday'
           ],
           contentCalendar: {
             monday: 'Industry news commentary',
             tuesday: 'Educational tutorials',
             wednesday: 'Client success stories',
-            thursday: 'Behind-the-scenes',
-            friday: 'Weekly roundup/tips'
-          }
-        },
-        {
-          name: 'Creative Agency Collective',
-          specialties: ['Brand Design', 'Creative Strategy', 'Content'],
-          contentStrategy: 'Visual Storytelling + Process Shows + Portfolio',
-          postFrequency: '6-7 times/week',
-          avgEngagement: '15.2%',
-          followers: '64K',
-          topContent: [
-            'Brand transformation time-lapses',
-            'Design process breakdowns',
-            'Client collaboration stories'
-          ],
-          contentCalendar: {
-            monday: 'Monday motivation/inspiration',
-            tuesday: 'Transformation Tuesday',
-            wednesday: 'Work-in-progress Wednesday',
-            thursday: 'Throwback Thursday (past projects)',
-            friday: 'Feature Friday (team/client spotlight)'
+            thursday: 'Behind-the-scenes content',
+            friday: 'Weekly tips and insights'
           }
         }
       ],
       contentOpportunities: [
         {
-          opportunity: 'Industry-specific tutorials are underused',
-          potential: 'High engagement potential',
-          actionable: 'Create niche-specific how-to content for your target industries'
+          opportunity: `${businessData.industry}-specific tutorials are underutilized`,
+          potential: 'High engagement potential in your niche',
+          actionable: `Create weekly ${businessData.industry} tutorials targeting ${businessData.targetAudience}`
         },
         {
-          opportunity: 'Client interview content is rare but highly effective',
-          potential: 'Builds strong trust and credibility',
-          actionable: 'Schedule monthly client interviews and turn into content series'
-        },
-        {
-          opportunity: 'Tool reviews and comparisons drive high engagement',
-          potential: 'Positions as industry expert',
-          actionable: 'Review marketing tools your clients use and provide honest comparisons'
-        },
-        {
-          opportunity: 'Trend prediction posts establish thought leadership',
-          potential: 'Increases industry authority',
-          actionable: 'Share monthly trend predictions and analysis for your specialization'
+          opportunity: 'Live client consultation content drives massive engagement',
+          potential: 'Builds strong trust and showcases expertise',
+          actionable: 'Host monthly live strategy sessions and document the process'
         }
       ],
       platformInsights: {
         linkedin: {
           bestTimes: ['Tuesday-Thursday 9-11 AM', 'Wednesday 1-3 PM'],
-          topFormats: ['Document carousels', 'Video case studies', 'Industry insights', 'Client testimonials'],
-          avgEngagement: '8.4%',
+          topFormats: ['Document carousels', 'Video case studies', 'Industry insights'],
+          avgEngagement: '9.8%',
           contentTips: [
-            'Professional tone with personal touches',
-            'Use data and specific metrics',
-            'Engage in comments within first hour',
-            'Share industry news with your take'
+            'Professional tone with personal insights',
+            'Use industry-specific data and metrics',
+            'Engage actively in comments within first hour',
+            'Share controversial but educated opinions'
           ]
         },
         instagram: {
           bestTimes: ['Monday-Wednesday 11 AM-1 PM', 'Thursday 5-7 PM'],
-          topFormats: ['Story highlights', 'Reels tutorials', 'Carousel case studies', 'Behind-the-scenes'],
-          avgEngagement: '6.7%',
+          topFormats: ['Story highlights', 'Reels tutorials', 'Carousel case studies'],
+          avgEngagement: '7.9%',
           contentTips: [
-            'Visual-first approach',
-            'Use trending audio for Reels',
-            'Create story templates for consistency',
-            'Highlight client transformations visually'
-          ]
-        },
-        facebook: {
-          bestTimes: ['Wednesday-Friday 1-3 PM', 'Saturday 12-2 PM'],
-          topFormats: ['Client success posts', 'Educational videos', 'Live Q&As', 'Community discussions'],
-          avgEngagement: '4.2%',
-          contentTips: [
-            'Longer-form content performs well',
-            'Use Facebook Live for real-time engagement',
-            'Create discussion posts with questions',
-            'Share detailed case studies'
-          ]
-        },
-        youtube: {
-          bestTimes: ['Tuesday-Thursday 2-4 PM', 'Saturday-Sunday 9-11 AM'],
-          topFormats: ['Tutorial series', 'Client case studies', 'Tool reviews', 'Industry analysis'],
-          avgEngagement: '3.8%',
-          contentTips: [
-            'Create series for better retention',
-            'Optimize thumbnails and titles',
-            'Include clear CTAs in videos',
-            'Collaborate with other agencies'
+            'Visual-first approach with professional aesthetics',
+            'Use trending audio for educational Reels',
+            'Create consistent story highlight templates',
+            'Show client transformations visually'
           ]
         }
       },
       competitiveAnalysis: {
-        avgPostFrequency: '4.2 posts per week',
-        topHashtags: ['#digitalmarketing', '#marketingagency', '#ROI', '#growthhacking', '#businessgrowth'],
+        avgPostFrequency: '5.1 posts per week',
+        topHashtags: [`#${businessData.industry.toLowerCase()}`, '#agencylife', '#clientresults', '#businessgrowth'],
         commonMistakes: [
-          'Too much self-promotion, not enough value',
+          'Too much self-promotion without value',
+          'Generic content not tailored to specialization',
           'Inconsistent posting schedule',
-          'Generic content not tailored to niche',
-          'Poor engagement with audience comments'
+          'Poor engagement with prospect comments'
         ],
         successFactors: [
-          'Consistent value-first approach',
-          'Strong visual branding',
-          'Regular client success showcases',
-          'Active community engagement'
+          'Consistent value-first educational content',
+          'Strong visual branding and professional aesthetics',
+          'Regular client success story showcases',
+          'Active community engagement and thought leadership'
         ]
       }
     };
@@ -230,36 +207,80 @@ const MarketingIntelligence = () => {
               <span>Agency Marketing Intelligence</span>
             </CardTitle>
             <CardDescription>
-              Analyze organic content strategies and trends in your agency specialization
+              AI-powered competitive analysis for agency marketing strategies
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="businessName">Agency Name</Label>
+                <Input
+                  id="businessName"
+                  placeholder="e.g., Growth Marketing Pro"
+                  value={businessData.businessName}
+                  onChange={(e) => setBusinessData({...businessData, businessName: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="industry">Specialization</Label>
+                <Input
+                  id="industry"
+                  placeholder="e.g., Digital Marketing, SEO, PPC"
+                  value={businessData.industry}
+                  onChange={(e) => setBusinessData({...businessData, industry: e.target.value})}
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="targetAudience">Target Client Type</Label>
+                <Input
+                  id="targetAudience"
+                  placeholder="e.g., SaaS companies, E-commerce brands"
+                  value={businessData.targetAudience}
+                  onChange={(e) => setBusinessData({...businessData, targetAudience: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="serviceOffering">Primary Service</Label>
+                <Input
+                  id="serviceOffering"
+                  placeholder="e.g., Lead Generation, Content Marketing"
+                  value={businessData.serviceOffering}
+                  onChange={(e) => setBusinessData({...businessData, serviceOffering: e.target.value})}
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="industry">Agency Specialization</Label>
+              <Label htmlFor="campaignGoal">Marketing Goal</Label>
               <Input
-                id="industry"
-                placeholder="e.g., Digital Marketing, Design, SEO, Social Media"
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
+                id="campaignGoal"
+                placeholder="e.g., Generate more qualified leads, Build brand authority"
+                value={businessData.campaignGoal}
+                onChange={(e) => setBusinessData({...businessData, campaignGoal: e.target.value})}
               />
             </div>
             
             {analyzing && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span>Analyzing organic content trends...</span>
-                  <span>{progress}%</span>
+                  <span>Step {currentStep} of 3: Analyzing agency marketing strategies...</span>
+                  <span>{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} />
-                <p className="text-xs text-muted-foreground">
-                  Scanning competitor content, engagement patterns, and industry insights...
-                </p>
+                <div className="text-xs text-muted-foreground">
+                  {currentStep === 1 && "Scanning top agency websites and content strategies..."}
+                  {currentStep === 2 && "Extracting winning client acquisition methods and content patterns..."}
+                  {currentStep === 3 && "Generating comprehensive marketing intelligence report..."}
+                </div>
               </div>
             )}
             
             <Button 
               onClick={runAnalysis}
-              disabled={analyzing || !industry}
+              disabled={analyzing || !businessData.businessName || !businessData.industry}
               className="w-full"
               size="lg"
             >
@@ -268,7 +289,7 @@ const MarketingIntelligence = () => {
               ) : (
                 <Search className="h-4 w-4 mr-2" />
               )}
-              {analyzing ? 'Analyzing...' : 'Analyze Content Strategy'}
+              {analyzing ? 'Analyzing...' : 'Generate Marketing Intelligence'}
             </Button>
           </CardContent>
         </Card>
@@ -281,7 +302,7 @@ const MarketingIntelligence = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-2xl font-bold">Agency Marketing Intelligence Report</h3>
-              <p className="text-muted-foreground">Specialization: {industry}</p>
+              <p className="text-muted-foreground">Specialization: {businessData.industry}</p>
             </div>
             <Button onClick={() => setAnalysis(null)} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
@@ -474,7 +495,7 @@ const MarketingIntelligence = () => {
                     <Lightbulb className="h-5 w-5" />
                     <span>Content Opportunities</span>
                   </CardTitle>
-                  <CardDescription>Underutilized content strategies with high potential</CardDescription>
+                  <CardDescription>Underutilized marketing strategies with high potential</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
