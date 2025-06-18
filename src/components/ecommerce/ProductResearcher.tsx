@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -114,7 +113,10 @@ const ProductResearcher = () => {
 
   const handleViewProduct = (product: Product) => {
     console.log('View product:', product);
-    window.open(product.url, '_blank');
+    // Open the product URL in a new tab
+    if (product.url) {
+      window.open(product.url, '_blank', 'noopener,noreferrer');
+    }
     toast({
       title: "Opening Product",
       description: `Opening ${product.name} in new tab`,
@@ -138,16 +140,19 @@ const ProductResearcher = () => {
       });
     }, 150);
 
-    // Simulate API call
+    // Simulate API call for detailed research
     await new Promise(resolve => setTimeout(resolve, 3000));
     
     setIsResearching(false);
     setResearchProgress(100);
     
+    // Show detailed research results
     toast({
       title: "Research Complete",
       description: `Completed detailed analysis of ${product.name}`,
     });
+
+    // Here you could show additional research data in a modal or expanded section
   };
 
   return (
