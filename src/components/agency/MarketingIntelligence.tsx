@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -50,17 +51,17 @@ const MarketingIntelligence = () => {
     const analysisSteps = [
       {
         step: 1,
-        message: "Scanning top agency websites and extracting winning marketing strategies...",
+        message: "Scanning competitor agencies and extracting winning marketing strategies...",
         duration: 3000
       },
       {
         step: 2,
-        message: "Analyzing competitor angles, visual patterns, and audio strategies...",
+        message: "Analyzing competitor angles, pricing strategies, and market positioning...",
         duration: 4000
       },
       {
         step: 3,
-        message: "Generating comprehensive marketing intelligence with winning angles...",
+        message: "Generating comprehensive marketing intelligence with winning angles and actionable insights...",
         duration: 3000
       }
     ];
@@ -86,7 +87,8 @@ const MarketingIntelligence = () => {
           effectiveness: '340% higher engagement',
           implementation: 'Start ads with "Are you tired of..." then show client success story',
           visualStrategy: 'Split-screen before/after client results',
-          audioStrategy: 'Client testimonial voiceover with emotional background music'
+          audioStrategy: 'Client testimonial voiceover with emotional background music',
+          uniqueTwist: 'Add industry-specific pain points and use real client data visualizations'
         },
         {
           angle: 'Authority Through Data',
@@ -94,7 +96,8 @@ const MarketingIntelligence = () => {
           effectiveness: '280% more qualified leads',
           implementation: 'Lead with shocking industry statistic, position as solution',
           visualStrategy: 'Data visualizations, charts, and infographics',
-          audioStrategy: 'Professional narrator voice with data emphasis'
+          audioStrategy: 'Professional narrator voice with data emphasis',
+          uniqueTwist: 'Include exclusive industry insights and personalized data for target audience'
         },
         {
           angle: 'Behind-the-Scenes Expertise',
@@ -102,7 +105,8 @@ const MarketingIntelligence = () => {
           effectiveness: '190% trust increase',
           implementation: 'Document actual work sessions and strategy meetings',
           visualStrategy: 'Screen recordings, team collaboration shots',
-          audioStrategy: 'Natural conversation audio, minimal editing'
+          audioStrategy: 'Natural conversation audio, minimal editing',
+          uniqueTwist: 'Show client-specific strategy development and real-time problem solving'
         }
       ],
       organicContentTrends: [
@@ -161,7 +165,8 @@ const MarketingIntelligence = () => {
           copyFramework: 'Hook with value → Deliver insights → Soft CTA for more',
           visualStrategy: 'Educational content, tutorials, free resource previews',
           audioStrategy: 'Helpful, educational tone - like a helpful colleague',
-          expectedResults: '65% higher conversion rates, 40% lower cost per acquisition'
+          expectedResults: '65% higher conversion rates, 40% lower cost per acquisition',
+          uniqueTwist: 'Create industry-specific calculators and assessment tools as lead magnets'
         },
         {
           strategy: 'Social Proof Testimonial Blitz',
@@ -170,7 +175,8 @@ const MarketingIntelligence = () => {
           copyFramework: 'Multiple client results → Pattern recognition → Your turn CTA',
           visualStrategy: 'Fast-paced testimonial compilation, metric overlays',
           audioStrategy: 'Multiple client voices, upbeat music, professional narrator',
-          expectedResults: '85% trust increase, 50% higher lead quality'
+          expectedResults: '85% trust increase, 50% higher lead quality',
+          uniqueTwist: 'Include client testimonials from same industry as prospect for maximum relevance'
         },
         {
           strategy: 'No-Brainer Offer with Guarantees',
@@ -179,7 +185,8 @@ const MarketingIntelligence = () => {
           copyFramework: 'Problem → Solution → Guarantee → Bonuses → Urgency',
           visualStrategy: 'Guarantee badges, bonus stack visualization, countdown timers',
           audioStrategy: 'Confident, reassuring tone with emphasis on guarantees',
-          expectedResults: '120% conversion rate improvement, 30% higher average order value'
+          expectedResults: '120% conversion rate improvement, 30% higher average order value',
+          uniqueTwist: 'Offer performance-based pricing or revenue-sharing models for high-value clients'
         }
       ],
       competitiveAnalysis: {
@@ -189,14 +196,16 @@ const MarketingIntelligence = () => {
             winningAngle: 'ROI Calculator + Free Audit',
             whyItWorks: 'Provides immediate value and identifies specific problems',
             adaptation: 'Create industry-specific calculator for your niche',
-            implementation: 'Landing page tool + follow-up consultation offer'
+            implementation: 'Landing page tool + follow-up consultation offer',
+            pricingStrategy: 'Value-based pricing with transparent ROI projections'
           },
           {
             competitor: 'Growth Marketing Firm',
             winningAngle: 'Case Study Video Series',
             whyItWorks: 'Video testimonials are 300% more trusted than text',
             adaptation: 'Weekly client spotlight videos with detailed breakdowns',
-            implementation: 'Interview clients monthly, create mini-documentaries'
+            implementation: 'Interview clients monthly, create mini-documentaries',
+            pricingStrategy: 'Performance-based pricing with success guarantees'
           }
         ],
         pricingStrategies: [
@@ -320,9 +329,9 @@ const MarketingIntelligence = () => {
                 </div>
                 <Progress value={progress} />
                 <div className="text-xs text-muted-foreground">
-                  {currentStep === 1 && "Scanning top agency websites and extracting winning marketing strategies..."}
-                  {currentStep === 2 && "Analyzing competitor angles, visual patterns, and audio strategies..."}
-                  {currentStep === 3 && "Generating comprehensive marketing intelligence with winning angles..."}
+                  {currentStep === 1 && "Scanning competitor agencies and extracting winning marketing strategies..."}
+                  {currentStep === 2 && "Analyzing competitor angles, pricing strategies, and market positioning..."}
+                  {currentStep === 3 && "Generating comprehensive marketing intelligence with winning angles and actionable insights..."}
                 </div>
               </div>
             )}
@@ -425,7 +434,7 @@ const MarketingIntelligence = () => {
                       <span>{angle.angle}</span>
                       <Badge variant="default">{angle.effectiveness}</Badge>
                     </CardTitle>
-                    <CardDescription>{angle.description}</CardHeader>
+                    <CardDescription>{angle.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid md:grid-cols-3 gap-4">
@@ -450,6 +459,10 @@ const MarketingIntelligence = () => {
                         </Label>
                         <p className="text-sm bg-purple-50 p-3 rounded">{angle.audioStrategy}</p>
                       </div>
+                    </div>
+                    <div className="bg-yellow-50 p-3 rounded-lg">
+                      <Label className="text-sm font-medium">Unique Twist for Your Agency:</Label>
+                      <p className="text-sm mt-1 text-orange-600 font-medium">{angle.uniqueTwist}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -498,6 +511,11 @@ const MarketingIntelligence = () => {
                         </Label>
                         <p className="text-sm mt-1 bg-purple-50 p-2 rounded">{strategy.audioStrategy}</p>
                       </div>
+                    </div>
+
+                    <div className="bg-orange-50 p-3 rounded-lg">
+                      <Label className="text-sm font-medium">Unique Twist for Your Agency:</Label>
+                      <p className="text-sm mt-1 text-orange-600 font-medium">{strategy.uniqueTwist}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -584,9 +602,15 @@ const MarketingIntelligence = () => {
                           <p className="text-sm font-medium text-blue-600">{angle.adaptation}</p>
                         </div>
                       </div>
-                      <div>
-                        <Label className="text-xs font-medium">Implementation:</Label>
-                        <p className="text-sm bg-yellow-50 p-2 rounded">{angle.implementation}</p>
+                      <div className="grid md:grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-xs font-medium">Implementation:</Label>
+                          <p className="text-sm bg-yellow-50 p-2 rounded">{angle.implementation}</p>
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium">Pricing Strategy:</Label>
+                          <p className="text-sm bg-green-50 p-2 rounded">{angle.pricingStrategy}</p>
+                        </div>
                       </div>
                     </div>
                   ))}
