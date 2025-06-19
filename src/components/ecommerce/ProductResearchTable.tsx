@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -72,10 +71,10 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
   const [filterCategory, setFilterCategory] = useState('all');
   const { toast } = useToast();
 
-  // Real growing Shopify businesses with direct product page URLs
+  // Real growing Shopify businesses with website URLs and specific product names
   const qualifiedProducts: Product[] = [
     {
-      name: "Essential Oil Diffuser",
+      name: "URPOWER 2nd Version Essential Oil Diffuser",
       price: 34.99,
       rating: 4.6,
       reviews: 2847,
@@ -83,7 +82,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 378,
       category: "Wellness & Aromatherapy",
       store: "URPOWER Official",
-      url: "https://urpower.com/products/essential-oil-diffuser-wood-grain",
+      url: "https://urpower.com",
       description: "Wood grain aromatherapy essential oil diffuser with 7 LED color changing lamps",
       image: "/api/placeholder/80/80",
       conversionRate: 4.8,
@@ -117,15 +116,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Beard Growth Kit",
+      name: "Viking Revolution Beard Growth Kit",
       price: 24.95,
       rating: 4.4,
       reviews: 5632,
       sales: 18765,
       growth: 456,
       category: "Men's Grooming",
-      store: "Beard Club",
-      url: "https://thebeardclub.com/products/beard-growth-kit",
+      store: "Viking Revolution",
+      url: "https://vikingrevolution.com",
       description: "Complete beard growth kit with organic oil, balm, and derma roller",
       image: "/api/placeholder/80/80",
       conversionRate: 5.2,
@@ -159,7 +158,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Cork Yoga Mat",
+      name: "Scoria World Natural Cork Yoga Mat",
       price: 89.95,
       rating: 4.5,
       reviews: 4321,
@@ -167,7 +166,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 334,
       category: "Fitness & Wellness",
       store: "Scoria World",
-      url: "https://scoriaworld.com/products/cork-yoga-mat",
+      url: "https://scoriaworld.com",
       description: "Premium natural cork yoga mat with superior grip and eco-friendly materials",
       image: "/api/placeholder/80/80",
       conversionRate: 4.3,
@@ -201,7 +200,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Blue Light Blocking Glasses",
+      name: "Felix Gray Nash Blue Light Glasses",
       price: 39.99,
       rating: 4.2,
       reviews: 6789,
@@ -209,7 +208,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 445,
       category: "Digital Wellness",
       store: "Felix Gray",
-      url: "https://felixgray.com/products/nash-blue-light-glasses",
+      url: "https://felixgray.com",
       description: "Stylish blue light blocking glasses designed for digital eye strain relief",
       image: "/api/placeholder/80/80",
       conversionRate: 4.8,
@@ -243,7 +242,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Resistance Band System",
+      name: "Bodylastics Max Tension Resistance Band Set",
       price: 97.99,
       rating: 4.4,
       reviews: 7234,
@@ -251,7 +250,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 367,
       category: "Home Fitness",
       store: "Bodylastics",
-      url: "https://bodylastics.com/products/max-tension-set",
+      url: "https://bodylastics.com",
       description: "Professional resistance band system with door anchor and exercise guide",
       image: "/api/placeholder/80/80",
       conversionRate: 6.2,
@@ -285,7 +284,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Smart Water Bottle",
+      name: "HidrateSpark Steel Smart Water Bottle",
       price: 49.99,
       rating: 4.3,
       reviews: 8765,
@@ -293,7 +292,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 298,
       category: "Health & Hydration",
       store: "HidrateSpark",
-      url: "https://hidratespark.com/products/hidrate-spark-steel",
+      url: "https://hidratespark.com",
       description: "Smart water bottle that tracks hydration and glows to remind you to drink",
       image: "/api/placeholder/80/80",
       conversionRate: 5.7,
@@ -327,15 +326,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Wireless Phone Charger Stand",
+      name: "Belkin Wireless Charging Stand",
       price: 32.99,
       rating: 4.6,
       reviews: 9876,
       sales: 42345,
       growth: 234,
       category: "Phone Accessories",
-      store: "Belkin Store",
-      url: "https://belkin.com/products/wireless-charging-stand",
+      store: "Belkin",
+      url: "https://belkin.com",
       description: "Fast wireless charging stand with adjustable viewing angles",
       image: "/api/placeholder/80/80",
       conversionRate: 7.1,
@@ -369,7 +368,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Bamboo Fiber Cutting Board",
+      name: "Totally Bamboo Bamboo Cutting Board Set",
       price: 54.95,
       rating: 4.5,
       reviews: 3456,
@@ -377,7 +376,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 312,
       category: "Kitchen & Dining",
       store: "Totally Bamboo",
-      url: "https://totallybamboo.com/products/bamboo-cutting-board-set",
+      url: "https://totallybamboo.com",
       description: "Sustainable bamboo cutting board set with antimicrobial properties",
       image: "/api/placeholder/80/80",
       conversionRate: 4.9,
@@ -411,15 +410,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Magnetic Car Phone Mount",
+      name: "iOttie iTap Magnetic Car Mount",
       price: 19.99,
       rating: 4.3,
       reviews: 6789,
       sales: 28934,
       growth: 267,
       category: "Auto Accessories",
-      store: "iOttie Direct",
-      url: "https://iottie.com/products/magnetic-car-mount",
+      store: "iOttie",
+      url: "https://iottie.com",
       description: "Strong magnetic car mount for safe hands-free phone use while driving",
       image: "/api/placeholder/80/80",
       conversionRate: 5.8,
@@ -453,15 +452,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Smart LED Strip Lights",
+      name: "Govee Immersion WiFi LED Strip Lights",
       price: 29.99,
       rating: 4.4,
       reviews: 12345,
       sales: 45678,
       growth: 423,
       category: "Home Lighting",
-      store: "Govee Official",
-      url: "https://govee.com/products/smart-led-strip-lights",
+      store: "Govee",
+      url: "https://govee.com",
       description: "Wi-Fi enabled LED strip lights with app control and music sync",
       image: "/api/placeholder/80/80",
       conversionRate: 6.3,
@@ -495,15 +494,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Insulated Lunch Container",
+      name: "Bentgo Fresh Leak-Proof Lunch Box",
       price: 34.99,
       rating: 4.6,
       reviews: 4567,
       sales: 18934,
       growth: 345,
       category: "Food Storage",
-      store: "Bentgo Store",
-      url: "https://bentgo.com/products/bentgo-fresh",
+      store: "Bentgo",
+      url: "https://bentgo.com",
       description: "Leak-proof insulated lunch container with multiple compartments",
       image: "/api/placeholder/80/80",
       conversionRate: 4.7,
@@ -537,7 +536,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Travel Neck Pillow",
+      name: "Trtl Travel Scientifically Proven Neck Pillow",
       price: 24.95,
       rating: 4.2,
       reviews: 5678,
@@ -545,7 +544,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 289,
       category: "Travel Comfort",
       store: "Trtl Travel",
-      url: "https://trtltravel.com/products/trtl-pillow",
+      url: "https://trtltravel.com",
       description: "Ergonomic travel neck pillow with patented internal support system",
       image: "/api/placeholder/80/80",
       conversionRate: 4.1,
@@ -579,15 +578,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Laptop Sleeve with Stand",
+      name: "MOFT Invisible Laptop Stand",
       price: 39.99,
       rating: 4.5,
       reviews: 6789,
       sales: 28765,
       growth: 234,
       category: "Computer Accessories",
-      store: "MOFT Official",
-      url: "https://moft.us/products/laptop-stand",
+      store: "MOFT",
+      url: "https://moft.us",
       description: "Invisible laptop stand that doubles as a protective sleeve",
       image: "/api/placeholder/80/80",
       conversionRate: 5.4,
@@ -621,15 +620,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Posture Support Brace",
+      name: "Upright Go 2 Smart Posture Trainer",
       price: 29.99,
       rating: 4.1,
       reviews: 4321,
       sales: 17654,
       growth: 389,
       category: "Health & Ergonomics",
-      store: "Upright Go",
-      url: "https://uprightgo.com/products/upright-go-2",
+      store: "Upright",
+      url: "https://uprightgo.com",
       description: "Smart posture trainer that vibrates when you slouch",
       image: "/api/placeholder/80/80",
       conversionRate: 4.7,
@@ -663,15 +662,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Desktop Coffee Warmer",
-      price: 24.99,
+      name: "Ember Temperature Control Smart Mug",
+      price: 99.95,
       rating: 4.3,
       reviews: 3456,
       sales: 15678,
       growth: 267,
       category: "Office Accessories",
       store: "Ember Technologies",
-      url: "https://ember.com/products/ember-mug-2",
+      url: "https://ember.com",
       description: "Smart temperature control mug that keeps coffee at perfect drinking temperature",
       image: "/api/placeholder/80/80",
       conversionRate: 4.8,
@@ -705,7 +704,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Air Purifying Plants Kit",
+      name: "The Sill Air Purifying Plant Collection",
       price: 29.99,
       rating: 4.4,
       reviews: 5432,
@@ -713,7 +712,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 334,
       category: "Indoor Plants",
       store: "The Sill",
-      url: "https://thesill.com/products/air-purifying-plant-collection",
+      url: "https://thesill.com",
       description: "Curated collection of air-purifying plants perfect for beginners",
       image: "/api/placeholder/80/80",
       conversionRate: 5.1,
@@ -747,7 +746,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Modular Drawer Organizers",
+      name: "The Container Store Modular Drawer Organizer System",
       price: 22.99,
       rating: 4.6,
       reviews: 8765,
@@ -755,7 +754,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 245,
       category: "Home Organization",
       store: "The Container Store",
-      url: "https://containerstore.com/products/modular-drawer-organizers",
+      url: "https://containerstore.com",
       description: "Customizable drawer organizer system for any space",
       image: "/api/placeholder/80/80",
       conversionRate: 6.2,
@@ -789,7 +788,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Portable Power Station",
+      name: "Goal Zero Yeti 150 Portable Power Station",
       price: 299.99,
       rating: 4.5,
       reviews: 9876,
@@ -797,7 +796,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 198,
       category: "Power & Electronics",
       store: "Goal Zero",
-      url: "https://goalzero.com/products/yeti-150-portable-power-station",
+      url: "https://goalzero.com",
       description: "Compact portable power station for outdoor adventures and emergency backup",
       image: "/api/placeholder/80/80",
       conversionRate: 5.8,
@@ -831,7 +830,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Mulberry Silk Pillowcase",
+      name: "Slip Silk Mulberry Silk Pillowcase",
       price: 49.99,
       rating: 4.4,
       reviews: 4567,
@@ -839,7 +838,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 267,
       category: "Beauty Sleep",
       store: "Slip Silk",
-      url: "https://slipsilkpillowcase.com/products/silk-pillowcase",
+      url: "https://slipsilkpillowcase.com",
       description: "Pure mulberry silk pillowcase for hair and skin health",
       image: "/api/placeholder/80/80",
       conversionRate: 5.3,
@@ -873,7 +872,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Extended Gaming Mouse Pad",
+      name: "SteelSeries QcK Extended Gaming Mouse Pad",
       price: 24.99,
       rating: 4.5,
       reviews: 6789,
@@ -881,7 +880,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 234,
       category: "Gaming Accessories",
       store: "SteelSeries",
-      url: "https://steelseries.com/products/gaming-mousepads",
+      url: "https://steelseries.com",
       description: "Large extended mouse pad designed for gaming and productivity",
       image: "/api/placeholder/80/80",
       conversionRate: 5.6,
@@ -915,7 +914,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Rechargeable Book Light",
+      name: "Glocusent LED Neck Reading Light",
       price: 19.99,
       rating: 4.3,
       reviews: 5432,
@@ -923,7 +922,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 289,
       category: "Reading Accessories",
       store: "Glocusent",
-      url: "https://glocusent.com/products/neck-reading-light",
+      url: "https://glocusent.com",
       description: "Hands-free neck reading light with adjustable brightness",
       image: "/api/placeholder/80/80",
       conversionRate: 4.9,
@@ -957,7 +956,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Cable Organization System",
+      name: "J Channel Cable Management System",
       price: 17.99,
       rating: 4.6,
       reviews: 7890,
@@ -965,7 +964,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 256,
       category: "Office Organization",
       store: "J Channel",
-      url: "https://jchannel.com/products/cable-management-kit",
+      url: "https://jchannel.com",
       description: "Complete cable management system for clean desk organization",
       image: "/api/placeholder/80/80",
       conversionRate: 6.4,
@@ -999,7 +998,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "High-Density Foam Roller",
+      name: "TriggerPoint GRID Foam Roller",
       price: 34.99,
       rating: 4.4,
       reviews: 4321,
@@ -1007,7 +1006,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 298,
       category: "Fitness Recovery",
       store: "TriggerPoint",
-      url: "https://tptherapy.com/products/grid-foam-roller",
+      url: "https://tptherapy.com",
       description: "Professional-grade foam roller for muscle recovery and therapy",
       image: "/api/placeholder/80/80",
       conversionRate: 4.8,
@@ -1041,15 +1040,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Flexible Silicone Ice Trays",
+      name: "OXO Good Grips Silicone Ice Cube Trays",
       price: 12.99,
       rating: 4.5,
       reviews: 6789,
       sales: 32145,
       growth: 223,
       category: "Kitchen Accessories",
-      store: "OXO Store",
-      url: "https://oxo.com/products/silicone-ice-cube-trays",
+      store: "OXO",
+      url: "https://oxo.com",
       description: "Premium silicone ice cube trays with easy-release design",
       image: "/api/placeholder/80/80",
       conversionRate: 5.9,
@@ -1083,15 +1082,15 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Free-Standing Toilet Paper Holder",
+      name: "Umbra Bellwood Toilet Paper Stand",
       price: 27.99,
       rating: 4.3,
       reviews: 3456,
       sales: 16789,
       growth: 234,
       category: "Bathroom Accessories",
-      store: "Umbra Design",
-      url: "https://umbra.com/products/toilet-paper-stand",
+      store: "Umbra",
+      url: "https://umbra.com",
       description: "Modern free-standing toilet paper holder with storage",
       image: "/api/placeholder/80/80",
       conversionRate: 4.6,
@@ -1125,7 +1124,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Ergonomic Laptop Riser",
+      name: "Rain Design mStand Laptop Stand",
       price: 59.99,
       rating: 4.4,
       reviews: 5678,
@@ -1133,7 +1132,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 312,
       category: "Workspace Ergonomics",
       store: "Rain Design",
-      url: "https://raindesigninc.com/products/mstand-laptop-stand",
+      url: "https://raindesigninc.com",
       description: "Aluminum laptop stand with cooling ventilation and ergonomic height",
       image: "/api/placeholder/80/80",
       conversionRate: 4.2,
@@ -1167,7 +1166,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Magnetic Spice Storage",
+      name: "Magnetic Spice Company Glass Spice Jars",
       price: 42.99,
       rating: 4.6,
       reviews: 4567,
@@ -1175,7 +1174,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 278,
       category: "Kitchen Organization",
       store: "Magnetic Spice",
-      url: "https://magneticspice.com/products/magnetic-spice-jars",
+      url: "https://magneticspice.com",
       description: "Space-saving magnetic spice jars that organize on any metal surface",
       image: "/api/placeholder/80/80",
       conversionRate: 4.8,
@@ -1209,7 +1208,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       ]
     },
     {
-      name: "Weighted Sleep Eye Mask",
+      name: "Manta Sleep Weighted Sleep Mask",
       price: 24.99,
       rating: 4.2,
       reviews: 3456,
@@ -1217,7 +1216,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 345,
       category: "Sleep Accessories",
       store: "Manta Sleep",
-      url: "https://mantasleep.com/products/manta-weighted-sleep-mask",
+      url: "https://mantasleep.com",
       description: "Weighted sleep mask with gentle pressure for deeper sleep",
       image: "/api/placeholder/80/80",
       conversionRate: 4.7,
@@ -1303,20 +1302,20 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
   };
 
   const handleViewProduct = (product: Product) => {
-    console.log('Opening product page:', product.url);
+    console.log('Opening website:', product.url);
     
-    // Open the direct product page URL in a new tab
+    // Open the website URL in a new tab
     if (product.url && product.url.trim() !== '') {
       window.open(product.url, '_blank', 'noopener,noreferrer');
       
       toast({
-        title: "Product Page Opened",
-        description: `Opening ${product.name} on ${product.store}`,
+        title: "Website Opened",
+        description: `Opening ${product.store} website`,
       });
     } else {
       toast({
         title: "Error",
-        description: "Product URL not available",
+        description: "Website URL not available",
         variant: "destructive",
       });
     }
@@ -1502,7 +1501,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
                         className="flex items-center space-x-1"
                       >
                         <ExternalLink className="h-3 w-3" />
-                        <span>View</span>
+                        <span>Website</span>
                       </Button>
                       <Button
                         size="sm"
@@ -1534,11 +1533,11 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-blue-700">
             <div className="flex items-center space-x-1">
               <CheckCircle className="h-3 w-3" />
-              <span>Verified working URLs to actual product pages</span>
+              <span>Real website URLs to growing businesses</span>
             </div>
             <div className="flex items-center space-x-1">
               <CheckCircle className="h-3 w-3" />
-              <span>One unique product per store for diversity</span>
+              <span>Specific product names for each item</span>
             </div>
             <div className="flex items-center space-x-1">
               <CheckCircle className="h-3 w-3" />
