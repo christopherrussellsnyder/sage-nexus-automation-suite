@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +21,7 @@ import {
   Filter,
   SortAsc
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Product {
   name: string;
@@ -47,8 +47,9 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('growth');
   const [filterCategory, setFilterCategory] = useState('all');
+  const { toast } = useToast();
 
-  // Mock data for demonstration
+  // Updated mock data with real Shopify product URLs for demonstration
   const mockProducts: Product[] = [
     {
       name: "Smart Fitness Tracker Pro",
@@ -59,7 +60,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 234,
       category: "Electronics",
       store: "FitnessTech Store",
-      url: "https://example.com/product1",
+      url: "https://www.fitbit.com/global/us/products/trackers/versa4",
       description: "Advanced fitness tracking with heart rate monitoring",
       image: "/api/placeholder/80/80"
     },
@@ -72,7 +73,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 189,
       category: "Health",
       store: "NutriMax",
-      url: "https://example.com/product2",
+      url: "https://www.optimumnutrition.com/en-us/Products/Protein/Whey-Protein/GOLD-STANDARD-100%25-WHEY/p/gold-standard-100-whey",
       description: "Plant-based protein powder with natural ingredients",
       image: "/api/placeholder/80/80"
     },
@@ -85,7 +86,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 167,
       category: "Gaming",
       store: "GameZone Pro",
-      url: "https://example.com/product3",
+      url: "https://www.steelseries.com/gaming-headsets/arctis-7p",
       description: "High-quality wireless gaming headset with noise cancellation",
       image: "/api/placeholder/80/80"
     },
@@ -98,7 +99,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 145,
       category: "Lifestyle",
       store: "EcoLiving",
-      url: "https://example.com/product4",
+      url: "https://www.hydroflask.com/21-oz-standard-mouth",
       description: "Sustainable water bottle made from recycled materials",
       image: "/api/placeholder/80/80"
     },
@@ -111,7 +112,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       growth: 198,
       category: "Home & Office",
       store: "ModernDesk",
-      url: "https://example.com/product5",
+      url: "https://www.ikea.com/us/en/p/forsa-work-lamp-nickel-plated-20146770/",
       description: "Adjustable LED desk lamp with built-in USB charging ports",
       image: "/api/placeholder/80/80"
     }
@@ -145,6 +146,41 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
     if (growth >= 200) return 'default';
     if (growth >= 150) return 'secondary';
     return 'outline';
+  };
+
+  const handleViewProduct = (product: Product) => {
+    console.log('Opening product URL:', product.url);
+    
+    // Open the product URL in a new tab
+    if (product.url) {
+      window.open(product.url, '_blank', 'noopener,noreferrer');
+      
+      toast({
+        title: "Product Opened",
+        description: `Opening ${product.name} from ${product.store}`,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Product URL not available",
+        variant: "destructive",
+      });
+    }
+    
+    // Call the parent handler
+    onViewProduct(product);
+  };
+
+  const handleResearchProduct = (product: Product) => {
+    console.log('Researching product:', product);
+    
+    toast({
+      title: "Deep Research Started",
+      description: `Analyzing market data for ${product.name}`,
+    });
+    
+    // Call the parent handler which will trigger the research process
+    onResearchProduct(product);
   };
 
   return (
@@ -275,7 +311,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => onViewProduct(product)}
+                        onClick={() => handleViewProduct(product)}
                         className="flex items-center space-x-1"
                       >
                         <ExternalLink className="h-3 w-3" />
@@ -283,7 +319,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
                       </Button>
                       <Button
                         size="sm"
-                        onClick={() => onResearchProduct(product)}
+                        onClick={() => handleResearchProduct(product)}
                         className="flex items-center space-x-1"
                       >
                         <Search className="h-3 w-3" />
