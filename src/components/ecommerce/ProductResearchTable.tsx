@@ -49,7 +49,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
   const [filterCategory, setFilterCategory] = useState('all');
   const { toast } = useToast();
 
-  // Updated mock data with real Shopify product URLs for demonstration
+  // 30 products from growing stores with strong metrics and potential (1 per store)
   const mockProducts: Product[] = [
     {
       name: "Smart Fitness Tracker Pro",
@@ -114,6 +114,331 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       store: "ModernDesk",
       url: "https://www.ikea.com/us/en/p/forsa-work-lamp-nickel-plated-20146770/",
       description: "Adjustable LED desk lamp with built-in USB charging ports",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Bamboo Phone Stand",
+      price: 19.99,
+      rating: 4.4,
+      reviews: 892,
+      sales: 4560,
+      growth: 312,
+      category: "Accessories",
+      store: "EcoTech Solutions",
+      url: "https://example.com/bamboo-stand",
+      description: "Sustainable bamboo phone stand with adjustable angles",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Resistance Band Set",
+      price: 29.99,
+      rating: 4.6,
+      reviews: 2134,
+      sales: 9876,
+      growth: 278,
+      category: "Fitness",
+      store: "HomeFit Hub",
+      url: "https://example.com/resistance-bands",
+      description: "Complete resistance band workout kit with door anchor",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Blue Light Blocking Glasses",
+      price: 39.99,
+      rating: 4.3,
+      reviews: 1567,
+      sales: 7432,
+      growth: 201,
+      category: "Health",
+      store: "VisionCare Co",
+      url: "https://example.com/blue-light-glasses",
+      description: "Computer glasses to reduce eye strain and improve sleep",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Portable Phone Charger",
+      price: 49.99,
+      rating: 4.7,
+      reviews: 3421,
+      sales: 18650,
+      growth: 156,
+      category: "Electronics",
+      store: "PowerUp Tech",
+      url: "https://example.com/portable-charger",
+      description: "Fast-charging power bank with wireless charging capability",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Essential Oil Diffuser",
+      price: 59.99,
+      rating: 4.8,
+      reviews: 2876,
+      sales: 11230,
+      growth: 223,
+      category: "Home & Garden",
+      store: "Aromatherapy Plus",
+      url: "https://example.com/oil-diffuser",
+      description: "Ultrasonic aromatherapy diffuser with LED mood lighting",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Yoga Mat with Alignment",
+      price: 69.99,
+      rating: 4.5,
+      reviews: 1876,
+      sales: 8943,
+      growth: 189,
+      category: "Fitness",
+      store: "ZenFit Studio",
+      url: "https://example.com/yoga-mat",
+      description: "Non-slip yoga mat with body alignment guides",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Coffee Grinder Manual",
+      price: 79.99,
+      rating: 4.6,
+      reviews: 1432,
+      sales: 5678,
+      growth: 267,
+      category: "Kitchen",
+      store: "BrewMaster Co",
+      url: "https://example.com/coffee-grinder",
+      description: "Precision manual burr grinder for perfect coffee",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Pet GPS Tracker",
+      price: 99.99,
+      rating: 4.4,
+      reviews: 987,
+      sales: 3456,
+      growth: 345,
+      category: "Pet Care",
+      store: "PetSafe Innovations",
+      url: "https://example.com/pet-tracker",
+      description: "Real-time GPS tracking collar for dogs and cats",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Skincare LED Mask",
+      price: 149.99,
+      rating: 4.2,
+      reviews: 765,
+      sales: 2341,
+      growth: 398,
+      category: "Beauty",
+      store: "GlowSkin Beauty",
+      url: "https://example.com/led-mask",
+      description: "Professional LED light therapy mask for anti-aging",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Smart Plant Monitor",
+      price: 54.99,
+      rating: 4.3,
+      reviews: 1234,
+      sales: 4567,
+      growth: 234,
+      category: "Home & Garden",
+      store: "PlantCare Pro",
+      url: "https://example.com/plant-monitor",
+      description: "WiFi-enabled plant health monitoring system",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Meal Prep Containers",
+      price: 34.99,
+      rating: 4.7,
+      reviews: 2345,
+      sales: 12456,
+      growth: 178,
+      category: "Kitchen",
+      store: "MealPrep Masters",
+      url: "https://example.com/meal-prep",
+      description: "Glass meal prep containers with leak-proof lids",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Posture Corrector",
+      price: 29.99,
+      rating: 4.1,
+      reviews: 1876,
+      sales: 8765,
+      growth: 245,
+      category: "Health",
+      store: "PostureFix Co",
+      url: "https://example.com/posture-corrector",
+      description: "Adjustable back brace for improved posture",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Wireless Car Charger",
+      price: 39.99,
+      rating: 4.5,
+      reviews: 1543,
+      sales: 7891,
+      growth: 212,
+      category: "Auto",
+      store: "CarTech Solutions",
+      url: "https://example.com/car-charger",
+      description: "Fast wireless charging mount for smartphones",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Sleep Tracking Ring",
+      price: 199.99,
+      rating: 4.6,
+      reviews: 876,
+      sales: 2134,
+      growth: 456,
+      category: "Electronics",
+      store: "SleepTech Innovations",
+      url: "https://example.com/sleep-ring",
+      description: "Advanced sleep and activity tracking smart ring",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Ceramic Hair Straightener",
+      price: 79.99,
+      rating: 4.4,
+      reviews: 2109,
+      sales: 9876,
+      growth: 167,
+      category: "Beauty",
+      store: "StylePro Beauty",
+      url: "https://example.com/hair-straightener",
+      description: "Professional ceramic hair straightener with heat protection",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Smart Doorbell Camera",
+      price: 159.99,
+      rating: 4.3,
+      reviews: 1432,
+      sales: 5678,
+      growth: 289,
+      category: "Home Security",
+      store: "SecureHome Tech",
+      url: "https://example.com/doorbell-camera",
+      description: "WiFi video doorbell with motion detection",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Ergonomic Mouse Pad",
+      price: 24.99,
+      rating: 4.2,
+      reviews: 987,
+      sales: 4321,
+      growth: 198,
+      category: "Office",
+      store: "ErgoWork Solutions",
+      url: "https://example.com/mouse-pad",
+      description: "Memory foam wrist support mouse pad",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Reusable Food Wraps",
+      price: 19.99,
+      rating: 4.6,
+      reviews: 1765,
+      sales: 8432,
+      growth: 234,
+      category: "Kitchen",
+      store: "EcoKitchen Co",
+      url: "https://example.com/food-wraps",
+      description: "Beeswax food wraps as plastic alternative",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Bluetooth Sleep Headphones",
+      price: 49.99,
+      rating: 4.4,
+      reviews: 1234,
+      sales: 6789,
+      growth: 276,
+      category: "Electronics",
+      store: "SleepSound Audio",
+      url: "https://example.com/sleep-headphones",
+      description: "Ultra-thin wireless headphones for sleeping",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Magnetic Phone Mount",
+      price: 14.99,
+      rating: 4.3,
+      reviews: 2876,
+      sales: 15432,
+      growth: 189,
+      category: "Auto",
+      store: "DriveEasy Accessories",
+      url: "https://example.com/phone-mount",
+      description: "Strong magnetic car phone mount for dashboard",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Compression Knee Sleeve",
+      price: 19.99,
+      rating: 4.5,
+      reviews: 1543,
+      sales: 7654,
+      growth: 223,
+      category: "Sports",
+      store: "ActiveSupport Gear",
+      url: "https://example.com/knee-sleeve",
+      description: "Medical grade compression sleeve for knee support",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Digital Kitchen Scale",
+      price: 29.99,
+      rating: 4.7,
+      reviews: 2109,
+      sales: 9876,
+      growth: 178,
+      category: "Kitchen",
+      store: "PrecisionCook Tools",
+      url: "https://example.com/kitchen-scale",
+      description: "High-precision digital scale with app connectivity",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Air Purifying Plants Kit",
+      price: 39.99,
+      rating: 4.6,
+      reviews: 876,
+      sales: 3456,
+      growth: 312,
+      category: "Home & Garden",
+      store: "CleanAir Plants",
+      url: "https://example.com/plants-kit",
+      description: "Starter kit with 3 air-purifying plants and pots",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Laptop Cooling Pad",
+      price: 34.99,
+      rating: 4.2,
+      reviews: 1432,
+      sales: 6789,
+      growth: 234,
+      category: "Electronics",
+      store: "CoolTech Solutions",
+      url: "https://example.com/cooling-pad",
+      description: "RGB laptop cooling pad with adjustable fans",
+      image: "/api/placeholder/80/80"
+    },
+    {
+      name: "Silicone Baking Mats",
+      price: 22.99,
+      rating: 4.8,
+      reviews: 1987,
+      sales: 8765,
+      growth: 198,
+      category: "Kitchen",
+      store: "BakeEasy Supplies",
+      url: "https://example.com/baking-mats",
+      description: "Non-stick silicone baking mats set of 3",
       image: "/api/placeholder/80/80"
     }
   ];
@@ -190,7 +515,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
           <div>
             <CardTitle>Product Research Results</CardTitle>
             <CardDescription>
-              Trending products updated weekly from 1000+ Shopify stores
+              30 trending products from growing stores with strong metrics and upside potential
             </CardDescription>
           </div>
           <Badge variant="outline" className="flex items-center space-x-1">
