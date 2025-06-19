@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Search, TrendingUp, Star, Users, DollarSign, ExternalLink, Eye, BarChart3, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Search, TrendingUp, Star, Users, DollarSign, ExternalLink, Eye, BarChart3, CheckCircle, AlertTriangle, Calendar, Package, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Product {
@@ -28,6 +27,13 @@ interface Product {
   avgCPC: number;
   searchVolume: number;
   trendDirection: 'Rising' | 'Stable' | 'Declining';
+  evergreenScore: number;
+  problemSeverity: 'High' | 'Medium' | 'Low';
+  profitMargin: number;
+  upsellPotential: 'High' | 'Medium' | 'Low';
+  shippingComplexity: 'Easy' | 'Medium' | 'Complex';
+  recommendationReason: string[];
+  winningAngles: string[];
 }
 
 const ProductResearcher = () => {
@@ -60,7 +66,26 @@ const ProductResearcher = () => {
       competitorCount: 156,
       avgCPC: 2.45,
       searchVolume: 45000,
-      trendDirection: 'Rising'
+      trendDirection: 'Rising',
+      evergreenScore: 8.5,
+      problemSeverity: 'High',
+      profitMargin: 65,
+      upsellPotential: 'High',
+      shippingComplexity: 'Easy',
+      recommendationReason: [
+        'Solves painful health tracking problem',
+        'Evergreen market with 8.5/10 stability score',
+        '65% profit margin potential',
+        'High upsell potential with accessories',
+        'Easy shipping - lightweight product'
+      ],
+      winningAngles: [
+        'Health transformation testimonials',
+        'Before/after fitness journey stories',
+        'Celebrity endorsement angle',
+        'Medical professional recommendations',
+        'Bundle with nutrition guides'
+      ]
     },
     {
       name: 'Organic Protein Powder',
@@ -80,7 +105,26 @@ const ProductResearcher = () => {
       competitorCount: 340,
       avgCPC: 3.20,
       searchVolume: 78000,
-      trendDirection: 'Stable'
+      trendDirection: 'Stable',
+      evergreenScore: 9.2,
+      problemSeverity: 'Medium',
+      profitMargin: 58,
+      upsellPotential: 'Medium',
+      shippingComplexity: 'Easy',
+      recommendationReason: [
+        'Evergreen health & fitness market (9.2/10 score)',
+        'Solves protein deficiency problem',
+        '58% profit margin with subscription model',
+        'Monthly recurring revenue potential',
+        'Simple shipping logistics'
+      ],
+      winningAngles: [
+        'Plant-based lifestyle transformation',
+        'Athletic performance improvement',
+        'Weight loss success stories',
+        'Subscription convenience angle',
+        'Taste challenge vs competitors'
+      ]
     },
     {
       name: 'Wireless Bluetooth Headphones',
@@ -100,7 +144,26 @@ const ProductResearcher = () => {
       competitorCount: 890,
       avgCPC: 4.80,
       searchVolume: 120000,
-      trendDirection: 'Declining'
+      trendDirection: 'Declining',
+      evergreenScore: 7.8,
+      problemSeverity: 'Medium',
+      profitMargin: 45,
+      upsellPotential: 'High',
+      shippingComplexity: 'Easy',
+      recommendationReason: [
+        'Solves audio quality and convenience problem',
+        'Decent evergreen score (7.8/10)',
+        'High upsell potential with cases/accessories',
+        'Easy shipping - compact product',
+        'Strong brand differentiation opportunities'
+      ],
+      winningAngles: [
+        'Productivity enhancement for remote work',
+        'Audiophile quality at affordable price',
+        'Lifestyle upgrade positioning',
+        'Bundle with carrying case and warranty',
+        'Comparison with premium brands'
+      ]
     },
     {
       name: 'Eco-Friendly Water Bottle',
@@ -120,7 +183,26 @@ const ProductResearcher = () => {
       competitorCount: 89,
       avgCPC: 1.85,
       searchVolume: 28000,
-      trendDirection: 'Rising'
+      trendDirection: 'Rising',
+      evergreenScore: 9.5,
+      problemSeverity: 'High',
+      profitMargin: 72,
+      upsellPotential: 'Medium',
+      shippingComplexity: 'Easy',
+      recommendationReason: [
+        'Highest evergreen score (9.5/10) - sustainability trend',
+        'Solves critical hydration and environmental problem',
+        'Excellent 72% profit margin',
+        'Low competition in eco-friendly niche',
+        'Simple shipping and fulfillment'
+      ],
+      winningAngles: [
+        'Environmental impact reduction',
+        'Health benefits of proper hydration',
+        'Cost savings vs buying bottled water',
+        'Lifestyle and status symbol',
+        'Corporate gifting opportunity'
+      ]
     }
   ];
 
@@ -147,12 +229,12 @@ const ProductResearcher = () => {
       },
       {
         step: 2,
-        message: "Validating market data and conversion rates...",
+        message: "Validating evergreen potential, problem-solving criteria, and profit margins...",
         duration: 4000
       },
       {
         step: 3,
-        message: "Analyzing market saturation and competition levels...",
+        message: "Analyzing winning angles, shipping complexity, and upsell opportunities...",
         duration: 3000
       }
     ];
@@ -239,7 +321,7 @@ const ProductResearcher = () => {
             <span>Advanced Product Research Engine</span>
           </CardTitle>
           <CardDescription>
-            AI-powered product validation with market saturation analysis and competitive intelligence
+            AI-powered product validation with evergreen market analysis, problem-solving verification, and profit optimization
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -265,8 +347,8 @@ const ProductResearcher = () => {
               <Progress value={searchProgress} />
               <div className="text-xs text-muted-foreground">
                 {currentStep === 1 && "Scanning 1000+ Shopify stores, selecting 1 unique product per store..."}
-                {currentStep === 2 && "Validating conversion rates, market demand, and business metrics..."}
-                {currentStep === 3 && "Analyzing competition levels, CPC costs, and market saturation..."}
+                {currentStep === 2 && "Validating evergreen potential, problem-solving criteria, and profit margins..."}
+                {currentStep === 3 && "Analyzing winning angles, shipping complexity, and upsell opportunities..."}
               </div>
             </div>
           )}
@@ -292,12 +374,12 @@ const ProductResearcher = () => {
           <CardContent>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Analyzing market dynamics and competitive landscape...</span>
+                <span>Analyzing evergreen potential and winning angles...</span>
                 <span>{researchProgress}%</span>
               </div>
               <Progress value={researchProgress} />
               <p className="text-xs text-muted-foreground">
-                Gathering competitor pricing, market trends, seasonal patterns, and profitability analysis...
+                Gathering competitor strategies, profit optimization opportunities, and market differentiation angles...
               </p>
             </div>
           </CardContent>
@@ -310,7 +392,7 @@ const ProductResearcher = () => {
           <CardHeader>
             <CardTitle>Validated Product Results</CardTitle>
             <CardDescription>
-              Found {products.length} products with comprehensive market validation and saturation analysis
+              Found {products.length} evergreen products with comprehensive validation and winning angle analysis
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -352,8 +434,8 @@ const ProductResearcher = () => {
                             </div>
                           </div>
 
-                          {/* Market Validation Badges */}
-                          <div className="flex items-center space-x-2">
+                          {/* Enhanced Validation Badges */}
+                          <div className="flex items-center space-x-2 flex-wrap">
                             <Badge variant="secondary">{product.category}</Badge>
                             <Badge variant="outline">{product.store}</Badge>
                             <Badge className={getValidationColor(product.marketValidation)}>
@@ -365,12 +447,46 @@ const ProductResearcher = () => {
                               {product.marketSaturation} Saturation
                             </Badge>
                             <Badge variant="default" className="bg-green-100 text-green-800">
-                              +{product.growth}% growth
+                              <Calendar className="h-3 w-3 mr-1" />
+                              {product.evergreenScore}/10 Evergreen
+                            </Badge>
+                            <Badge variant="default" className="bg-blue-100 text-blue-800">
+                              <Package className="h-3 w-3 mr-1" />
+                              {product.profitMargin}% Margin
+                            </Badge>
+                            <Badge variant="default" className="bg-purple-100 text-purple-800">
+                              <Zap className="h-3 w-3 mr-1" />
+                              {product.problemSeverity} Problem
                             </Badge>
                           </div>
 
+                          {/* Why This Product Section */}
+                          <div className="bg-green-50 p-3 rounded-lg">
+                            <h4 className="text-sm font-medium text-green-800 mb-2">Why This Product Is Recommended:</h4>
+                            <ul className="text-xs space-y-1">
+                              {product.recommendationReason.map((reason, reasonIndex) => (
+                                <li key={reasonIndex} className="flex items-start">
+                                  <CheckCircle className="h-3 w-3 text-green-600 mr-1 mt-0.5 flex-shrink-0" />
+                                  <span>{reason}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {/* Winning Angles Section */}
+                          <div className="bg-blue-50 p-3 rounded-lg">
+                            <h4 className="text-sm font-medium text-blue-800 mb-2">Winning Marketing Angles:</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {product.winningAngles.map((angle, angleIndex) => (
+                                <Badge key={angleIndex} variant="outline" className="text-xs">
+                                  {angle}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+
                           {/* Advanced Metrics */}
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                             <div>
                               <span className="text-muted-foreground">Competitors:</span>
                               <div className="font-medium">{product.competitorCount}</div>
@@ -384,12 +500,21 @@ const ProductResearcher = () => {
                               <div className="font-medium">{product.searchVolume.toLocaleString()}/mo</div>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Trend:</span>
+                              <span className="text-muted-foreground">Upsell Potential:</span>
                               <div className={`font-medium ${
-                                product.trendDirection === 'Rising' ? 'text-green-600' :
-                                product.trendDirection === 'Stable' ? 'text-blue-600' : 'text-red-600'
+                                product.upsellPotential === 'High' ? 'text-green-600' :
+                                product.upsellPotential === 'Medium' ? 'text-blue-600' : 'text-orange-600'
                               }`}>
-                                {product.trendDirection}
+                                {product.upsellPotential}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Shipping:</span>
+                              <div className={`font-medium ${
+                                product.shippingComplexity === 'Easy' ? 'text-green-600' :
+                                product.shippingComplexity === 'Medium' ? 'text-blue-600' : 'text-red-600'
+                              }`}>
+                                {product.shippingComplexity}
                               </div>
                             </div>
                           </div>

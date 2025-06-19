@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,10 @@ import {
   Users,
   MessageSquare,
   Eye,
-  Lightbulb
+  Lightbulb,
+  Camera,
+  Volume2,
+  Zap
 } from 'lucide-react';
 
 const MarketingIntelligence = () => {
@@ -44,21 +46,21 @@ const MarketingIntelligence = () => {
     setProgress(0);
     setCurrentStep(1);
     
-    // 3-step process for agency analysis
+    // Enhanced 3-step process for agency analysis
     const analysisSteps = [
       {
         step: 1,
-        message: "Analyzing top agency websites in your specialization...",
+        message: "Scanning top agency websites and extracting winning marketing strategies...",
         duration: 3000
       },
       {
         step: 2,
-        message: "Extracting winning content strategies and client acquisition methods...",
+        message: "Analyzing competitor angles, visual patterns, and audio strategies...",
         duration: 4000
       },
       {
         step: 3,
-        message: "Generating comprehensive agency marketing intelligence report...",
+        message: "Generating comprehensive marketing intelligence with winning angles...",
         duration: 3000
       }
     ];
@@ -77,6 +79,32 @@ const MarketingIntelligence = () => {
         avgProjectValue: businessData.industry === 'SEO' ? '$4,200' : '$8,500',
         marketSaturation: businessData.industry === 'Social Media' ? 'Medium' : 'High'
       },
+      winningAngles: [
+        {
+          angle: 'Problem-Solution Testimonial Approach',
+          description: 'Leading with client pain points, then showcasing transformation',
+          effectiveness: '340% higher engagement',
+          implementation: 'Start ads with "Are you tired of..." then show client success story',
+          visualStrategy: 'Split-screen before/after client results',
+          audioStrategy: 'Client testimonial voiceover with emotional background music'
+        },
+        {
+          angle: 'Authority Through Data',
+          description: 'Using industry statistics and proprietary research',
+          effectiveness: '280% more qualified leads',
+          implementation: 'Lead with shocking industry statistic, position as solution',
+          visualStrategy: 'Data visualizations, charts, and infographics',
+          audioStrategy: 'Professional narrator voice with data emphasis'
+        },
+        {
+          angle: 'Behind-the-Scenes Expertise',
+          description: 'Showing the process and methodology transparency',
+          effectiveness: '190% trust increase',
+          implementation: 'Document actual work sessions and strategy meetings',
+          visualStrategy: 'Screen recordings, team collaboration shots',
+          audioStrategy: 'Natural conversation audio, minimal editing'
+        }
+      ],
       organicContentTrends: [
         {
           trend: 'Client Case Study Carousels',
@@ -88,7 +116,18 @@ const MarketingIntelligence = () => {
             'Timeline breakdowns of campaign success',
             'Client testimonial overlays with metrics'
           ],
-          bestPractices: 'Include specific numbers, visual transformations, and authentic client quotes'
+          bestPractices: 'Include specific numbers, visual transformations, and authentic client quotes',
+          visualRecommendations: [
+            'Use consistent brand colors and fonts',
+            'Include client logos for credibility',
+            'Show actual dashboard screenshots',
+            'Use arrows and callouts to highlight key metrics'
+          ],
+          audioRecommendations: [
+            'Client testimonial voiceovers',
+            'Upbeat background music for success stories',
+            'Professional narrator for data points'
+          ]
         },
         {
           trend: 'Behind-the-Scenes Strategy Content',
@@ -100,55 +139,81 @@ const MarketingIntelligence = () => {
             'Tool tutorials and walkthroughs',
             'Team brainstorming sessions'
           ],
-          bestPractices: 'Show expertise through authentic process reveals and team collaboration'
-        },
-        {
-          trend: 'Educational Tutorial Series',
-          platforms: ['LinkedIn', 'YouTube', 'TikTok'],
-          engagement: '298% above average',
-          usage: '91% of top agencies',
-          examples: [
-            `${businessData.industry} tip series`,
-            'Tool comparisons and reviews',
-            'Industry trend predictions'
+          bestPractices: 'Show expertise through authentic process reveals and team collaboration',
+          visualRecommendations: [
+            'Natural lighting for authenticity',
+            'Multiple camera angles for dynamic content',
+            'Screen recordings with clear annotations',
+            'Casual but professional settings'
           ],
-          bestPractices: 'Focus on actionable insights, trending topics, and tool demonstrations'
+          audioRecommendations: [
+            'Natural conversation without heavy editing',
+            'Subtle background music during transitions',
+            'Clear explanation of complex concepts'
+          ]
         }
       ],
-      topPerformers: [
+      advertisementStrategies: [
         {
-          name: `${businessData.industry} Growth Agency`,
-          specialties: [businessData.industry, 'Lead Generation', 'ROI Optimization'],
-          contentStrategy: 'Educational + Case Studies + Thought Leadership',
-          postFrequency: '5-6 times/week',
-          avgEngagement: '14.2%',
-          followers: '125K',
-          topContent: [
-            `How we scaled a ${businessData.targetAudience} business from $50K to $500K in 12 months`,
-            `The ${businessData.industry} strategy that increased client ROI by 400%`,
-            'Weekly industry insights every Tuesday'
-          ],
-          contentCalendar: {
-            monday: 'Industry news commentary',
-            tuesday: 'Educational tutorials',
-            wednesday: 'Client success stories',
-            thursday: 'Behind-the-scenes content',
-            friday: 'Weekly tips and insights'
+          strategy: 'Value-First No-Sell Approach',
+          description: 'Provide massive value without obvious selling, building trust first',
+          implementation: 'Share free tools, insights, and strategies before mentioning services',
+          copyFramework: 'Hook with value → Deliver insights → Soft CTA for more',
+          visualStrategy: 'Educational content, tutorials, free resource previews',
+          audioStrategy: 'Helpful, educational tone - like a helpful colleague',
+          expectedResults: '65% higher conversion rates, 40% lower cost per acquisition'
+        },
+        {
+          strategy: 'Social Proof Testimonial Blitz',
+          description: 'Overwhelming evidence of results through multiple client testimonials',
+          implementation: 'Rapid-fire client results with specific numbers and transformations',
+          copyFramework: 'Multiple client results → Pattern recognition → Your turn CTA',
+          visualStrategy: 'Fast-paced testimonial compilation, metric overlays',
+          audioStrategy: 'Multiple client voices, upbeat music, professional narrator',
+          expectedResults: '85% trust increase, 50% higher lead quality'
+        },
+        {
+          strategy: 'No-Brainer Offer with Guarantees',
+          description: 'Remove all risk with strong guarantees and bonus inclusions',
+          implementation: 'Money-back guarantee + bonus services + risk reversal',
+          copyFramework: 'Problem → Solution → Guarantee → Bonuses → Urgency',
+          visualStrategy: 'Guarantee badges, bonus stack visualization, countdown timers',
+          audioStrategy: 'Confident, reassuring tone with emphasis on guarantees',
+          expectedResults: '120% conversion rate improvement, 30% higher average order value'
+        }
+      ],
+      competitiveAnalysis: {
+        topPerformingAngles: [
+          {
+            competitor: 'Leading Digital Agency',
+            winningAngle: 'ROI Calculator + Free Audit',
+            whyItWorks: 'Provides immediate value and identifies specific problems',
+            adaptation: 'Create industry-specific calculator for your niche',
+            implementation: 'Landing page tool + follow-up consultation offer'
+          },
+          {
+            competitor: 'Growth Marketing Firm',
+            winningAngle: 'Case Study Video Series',
+            whyItWorks: 'Video testimonials are 300% more trusted than text',
+            adaptation: 'Weekly client spotlight videos with detailed breakdowns',
+            implementation: 'Interview clients monthly, create mini-documentaries'
           }
-        }
-      ],
-      contentOpportunities: [
-        {
-          opportunity: `${businessData.industry}-specific tutorials are underutilized`,
-          potential: 'High engagement potential in your niche',
-          actionable: `Create weekly ${businessData.industry} tutorials targeting ${businessData.targetAudience}`
-        },
-        {
-          opportunity: 'Live client consultation content drives massive engagement',
-          potential: 'Builds strong trust and showcases expertise',
-          actionable: 'Host monthly live strategy sessions and document the process'
-        }
-      ],
+        ],
+        pricingStrategies: [
+          {
+            strategy: 'Value-Based Pricing with Tiers',
+            description: 'Multiple service levels to capture different budget ranges',
+            implementation: 'Starter → Growth → Enterprise packages',
+            winningElement: 'Clear ROI projections for each tier'
+          },
+          {
+            strategy: 'Performance-Based Pricing',
+            description: 'Share revenue risk with clients for higher trust',
+            implementation: 'Base fee + performance bonuses tied to results',
+            winningElement: 'Removes risk perception, increases commitment'
+          }
+        ]
+      },
       platformInsights: {
         linkedin: {
           bestTimes: ['Tuesday-Thursday 9-11 AM', 'Wednesday 1-3 PM'],
@@ -172,22 +237,6 @@ const MarketingIntelligence = () => {
             'Show client transformations visually'
           ]
         }
-      },
-      competitiveAnalysis: {
-        avgPostFrequency: '5.1 posts per week',
-        topHashtags: [`#${businessData.industry.toLowerCase()}`, '#agencylife', '#clientresults', '#businessgrowth'],
-        commonMistakes: [
-          'Too much self-promotion without value',
-          'Generic content not tailored to specialization',
-          'Inconsistent posting schedule',
-          'Poor engagement with prospect comments'
-        ],
-        successFactors: [
-          'Consistent value-first educational content',
-          'Strong visual branding and professional aesthetics',
-          'Regular client success story showcases',
-          'Active community engagement and thought leadership'
-        ]
       }
     };
 
@@ -207,7 +256,7 @@ const MarketingIntelligence = () => {
               <span>Agency Marketing Intelligence</span>
             </CardTitle>
             <CardDescription>
-              AI-powered competitive analysis for agency marketing strategies
+              AI-powered competitive analysis with winning angles and visual/audio strategies
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -271,9 +320,9 @@ const MarketingIntelligence = () => {
                 </div>
                 <Progress value={progress} />
                 <div className="text-xs text-muted-foreground">
-                  {currentStep === 1 && "Scanning top agency websites and content strategies..."}
-                  {currentStep === 2 && "Extracting winning client acquisition methods and content patterns..."}
-                  {currentStep === 3 && "Generating comprehensive marketing intelligence report..."}
+                  {currentStep === 1 && "Scanning top agency websites and extracting winning marketing strategies..."}
+                  {currentStep === 2 && "Analyzing competitor angles, visual patterns, and audio strategies..."}
+                  {currentStep === 3 && "Generating comprehensive marketing intelligence with winning angles..."}
                 </div>
               </div>
             )}
@@ -358,14 +407,102 @@ const MarketingIntelligence = () => {
             </Card>
           </div>
 
-          {/* Detailed Analysis Tabs */}
-          <Tabs defaultValue="trends" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-4">
+          {/* Enhanced Analysis Tabs */}
+          <Tabs defaultValue="angles" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="angles">Winning Angles</TabsTrigger>
+              <TabsTrigger value="ads">Ad Strategies</TabsTrigger>
               <TabsTrigger value="trends">Content Trends</TabsTrigger>
               <TabsTrigger value="competitors">Top Performers</TabsTrigger>
               <TabsTrigger value="platforms">Platform Insights</TabsTrigger>
-              <TabsTrigger value="opportunities">Opportunities</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="angles" className="space-y-4">
+              {analysis.winningAngles.map((angle: any, index: number) => (
+                <Card key={index}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>{angle.angle}</span>
+                      <Badge variant="default">{angle.effectiveness}</Badge>
+                    </CardTitle>
+                    <CardDescription>{angle.description}</CardHeader>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label className="flex items-center space-x-1">
+                          <MessageSquare className="h-4 w-4" />
+                          <span>Copy Strategy</span>
+                        </Label>
+                        <p className="text-sm bg-blue-50 p-3 rounded">{angle.implementation}</p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="flex items-center space-x-1">
+                          <Camera className="h-4 w-4" />
+                          <span>Visual Strategy</span>
+                        </Label>
+                        <p className="text-sm bg-green-50 p-3 rounded">{angle.visualStrategy}</p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="flex items-center space-x-1">
+                          <Volume2 className="h-4 w-4" />
+                          <span>Audio Strategy</span>
+                        </Label>
+                        <p className="text-sm bg-purple-50 p-3 rounded">{angle.audioStrategy}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </TabsContent>
+
+            <TabsContent value="ads" className="space-y-4">
+              {analysis.advertisementStrategies.map((strategy: any, index: number) => (
+                <Card key={index}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Zap className="h-5 w-5" />
+                      <span>{strategy.strategy}</span>
+                    </CardTitle>
+                    <CardDescription>{strategy.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="bg-yellow-50 p-4 rounded-lg">
+                      <Label className="text-sm font-medium">Expected Results:</Label>
+                      <p className="text-sm font-medium text-green-600">{strategy.expectedResults}</p>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium">Copy Framework:</Label>
+                        <p className="text-sm mt-1 bg-blue-50 p-2 rounded">{strategy.copyFramework}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Implementation:</Label>
+                        <p className="text-sm mt-1 bg-gray-50 p-2 rounded">{strategy.implementation}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium flex items-center space-x-1">
+                          <Camera className="h-3 w-3" />
+                          <span>Visual Recommendations:</span>
+                        </Label>
+                        <p className="text-sm mt-1 bg-green-50 p-2 rounded">{strategy.visualStrategy}</p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium flex items-center space-x-1">
+                          <Volume2 className="h-3 w-3" />
+                          <span>Audio Recommendations:</span>
+                        </Label>
+                        <p className="text-sm mt-1 bg-purple-50 p-2 rounded">{strategy.audioStrategy}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </TabsContent>
 
             <TabsContent value="trends" className="space-y-4">
               {analysis.organicContentTrends.map((trend: any, index: number) => (
@@ -379,7 +516,7 @@ const MarketingIntelligence = () => {
                       Used by {trend.usage} • Best on: {trend.platforms.join(', ')}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-4">
                     <div>
                       <Label className="text-sm font-medium">Examples:</Label>
                       <ul className="mt-2 space-y-1">
@@ -390,9 +527,34 @@ const MarketingIntelligence = () => {
                         ))}
                       </ul>
                     </div>
-                    <div>
-                      <Label className="text-sm font-medium">Best Practices:</Label>
-                      <p className="text-sm bg-green-50 p-2 rounded mt-1">{trend.bestPractices}</p>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-sm font-medium flex items-center space-x-1">
+                          <Camera className="h-3 w-3" />
+                          <span>Visual Recommendations:</span>
+                        </Label>
+                        <ul className="mt-1 space-y-1">
+                          {trend.visualRecommendations.map((rec: string, recIndex: number) => (
+                            <li key={recIndex} className="text-xs bg-green-50 p-2 rounded">
+                              • {rec}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium flex items-center space-x-1">
+                          <Volume2 className="h-3 w-3" />
+                          <span>Audio Recommendations:</span>
+                        </Label>
+                        <ul className="mt-1 space-y-1">
+                          {trend.audioRecommendations.map((rec: string, recIndex: number) => (
+                            <li key={recIndex} className="text-xs bg-purple-50 p-2 rounded">
+                              • {rec}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -400,51 +562,62 @@ const MarketingIntelligence = () => {
             </TabsContent>
 
             <TabsContent value="competitors" className="space-y-4">
-              {analysis.topPerformers.map((performer: any, index: number) => (
-                <Card key={index}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>{performer.name}</span>
-                      <div className="flex space-x-2">
-                        <Badge variant="secondary">{performer.avgEngagement} engagement</Badge>
-                        <Badge variant="outline">{performer.followers} followers</Badge>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Competitive Winning Angles</CardTitle>
+                  <CardDescription>Proven strategies from top performers in your industry</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {analysis.competitiveAnalysis.topPerformingAngles.map((angle: any, index: number) => (
+                    <div key={index} className="border rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium">{angle.competitor}</h4>
+                        <Badge variant="outline">{angle.winningAngle}</Badge>
                       </div>
-                    </CardTitle>
-                    <CardDescription>
-                      Specialties: {performer.specialties.join(', ')}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium">Content Strategy:</Label>
-                        <p className="text-sm mt-1">{performer.contentStrategy}</p>
-                        <p className="text-xs text-muted-foreground mt-1">Posts {performer.postFrequency}</p>
+                      <div className="grid md:grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-xs font-medium">Why It Works:</Label>
+                          <p className="text-sm">{angle.whyItWorks}</p>
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium">Your Adaptation:</Label>
+                          <p className="text-sm font-medium text-blue-600">{angle.adaptation}</p>
+                        </div>
                       </div>
                       <div>
-                        <Label className="text-sm font-medium">Top Performing Content:</Label>
-                        <ul className="mt-1 space-y-1">
-                          {performer.topContent.map((content: string, contentIndex: number) => (
-                            <li key={contentIndex} className="text-sm">
-                              • {content}
-                            </li>
-                          ))}
-                        </ul>
+                        <Label className="text-xs font-medium">Implementation:</Label>
+                        <p className="text-sm bg-yellow-50 p-2 rounded">{angle.implementation}</p>
                       </div>
                     </div>
-                    <div>
-                      <Label className="text-sm font-medium">Weekly Content Calendar:</Label>
-                      <div className="grid grid-cols-2 gap-2 mt-2">
-                        {Object.entries(performer.contentCalendar).map(([day, content]: [string, any]) => (
-                          <div key={day} className="text-xs bg-purple-50 p-2 rounded">
-                            <strong className="capitalize">{day}:</strong> {content}
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pricing Strategy Analysis</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {analysis.competitiveAnalysis.pricingStrategies.map((pricing: any, index: number) => (
+                      <div key={index} className="border rounded-lg p-4">
+                        <h4 className="font-medium mb-2">{pricing.strategy}</h4>
+                        <p className="text-sm text-muted-foreground mb-2">{pricing.description}</p>
+                        <div className="grid md:grid-cols-2 gap-3">
+                          <div>
+                            <Label className="text-xs font-medium">Implementation:</Label>
+                            <p className="text-sm">{pricing.implementation}</p>
                           </div>
-                        ))}
+                          <div>
+                            <Label className="text-xs font-medium">Winning Element:</Label>
+                            <p className="text-sm text-green-600">{pricing.winningElement}</p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="platforms" className="space-y-4">
@@ -486,62 +659,6 @@ const MarketingIntelligence = () => {
                   </CardContent>
                 </Card>
               ))}
-            </TabsContent>
-
-            <TabsContent value="opportunities" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Lightbulb className="h-5 w-5" />
-                    <span>Content Opportunities</span>
-                  </CardTitle>
-                  <CardDescription>Underutilized marketing strategies with high potential</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    {analysis.contentOpportunities.map((item: any, index: number) => (
-                      <li key={index} className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg">
-                        <Lightbulb className="h-4 w-4 text-yellow-500 mt-0.5" />
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium">{item.opportunity}</p>
-                          <p className="text-xs text-muted-foreground">{item.potential}</p>
-                          <p className="text-xs bg-white p-2 rounded">{item.actionable}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>Competitive Analysis Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label className="text-sm font-medium">Common Mistakes to Avoid:</Label>
-                    <ul className="mt-2 space-y-1">
-                      {analysis.competitiveAnalysis.commonMistakes.map((mistake: string, index: number) => (
-                        <li key={index} className="text-sm bg-red-50 p-2 rounded flex items-center">
-                          <span className="text-red-500 mr-2">❌</span>
-                          {mistake}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium">Success Factors:</Label>
-                    <ul className="mt-2 space-y-1">
-                      {analysis.competitiveAnalysis.successFactors.map((factor: string, index: number) => (
-                        <li key={index} className="text-sm bg-green-50 p-2 rounded flex items-center">
-                          <span className="text-green-500 mr-2">✅</span>
-                          {factor}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
             </TabsContent>
           </Tabs>
         </div>
