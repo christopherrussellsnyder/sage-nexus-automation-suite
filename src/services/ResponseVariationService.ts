@@ -1,3 +1,21 @@
+interface AdCopyPattern {
+  hook: string;
+  bodyStart: string;
+  framework: string;
+}
+
+interface EmailPattern {
+  subject: string;
+  opening: string;
+  framework: string;
+}
+
+interface WebsiteCopyPattern {
+  headline: string;
+  subheadline: string;
+  approach: string;
+}
+
 export class ResponseVariationService {
   private static responsePatterns = {
     adCopy: [
@@ -26,7 +44,7 @@ export class ResponseVariationService {
         bodyStart: "I know it sounds too good to be true, but here's the proof:",
         framework: "Curiosity-Proof-Credibility"
       }
-    ],
+    ] as AdCopyPattern[],
     emailSequences: [
       {
         subject: "Your {industry} breakthrough starts here",
@@ -43,7 +61,7 @@ export class ResponseVariationService {
         opening: "I'm pulling back the curtain to show you exactly how {process}.",
         framework: "Transparency-Process-Trust"
       }
-    ],
+    ] as EmailPattern[],
     websiteCopy: [
       {
         headline: "Finally, {solution} that actually works for {targetAudience}",
@@ -60,7 +78,7 @@ export class ResponseVariationService {
         subheadline: "Our breakthrough method works when others fail - here's why",
         approach: "Contrarian-Hope-Curiosity"
       }
-    ]
+    ] as WebsiteCopyPattern[]
   };
 
   private static emotionalTriggers = [
@@ -86,49 +104,70 @@ export class ResponseVariationService {
   ];
 
   static generateVariedResponse(type: 'adCopy' | 'emailSequences' | 'websiteCopy', data: any, previousResponses: string[] = []): any {
-    const patterns = this.responsePatterns[type];
-    const availablePatterns = patterns.filter(pattern => 
-      !previousResponses.some(prev => prev.includes(pattern.framework))
-    );
-    
-    const selectedPattern = availablePatterns.length > 0 
-      ? availablePatterns[Math.floor(Math.random() * availablePatterns.length)]
-      : patterns[Math.floor(Math.random() * patterns.length)];
-
     const randomTrigger = this.emotionalTriggers[Math.floor(Math.random() * this.emotionalTriggers.length)];
     const randomCTA = this.callToActions[Math.floor(Math.random() * this.callToActions.length)];
 
     switch (type) {
-      case 'adCopy':
+      case 'adCopy': {
+        const patterns = this.responsePatterns.adCopy;
+        const availablePatterns = patterns.filter(pattern => 
+          !previousResponses.some(prev => prev.includes(pattern.framework))
+        );
+        
+        const selectedPattern = availablePatterns.length > 0 
+          ? availablePatterns[Math.floor(Math.random() * availablePatterns.length)]
+          : patterns[Math.floor(Math.random() * patterns.length)];
+
         return {
-          ...selectedPattern,
           hook: this.populateTemplate(selectedPattern.hook, data),
           body: this.populateTemplate(selectedPattern.bodyStart, data),
+          framework: selectedPattern.framework,
           cta: randomCTA,
           emotionalTrigger: randomTrigger.name,
           triggerPhrases: randomTrigger.phrases
         };
+      }
       
-      case 'emailSequences':
+      case 'emailSequences': {
+        const patterns = this.responsePatterns.emailSequences;
+        const availablePatterns = patterns.filter(pattern => 
+          !previousResponses.some(prev => prev.includes(pattern.framework))
+        );
+        
+        const selectedPattern = availablePatterns.length > 0 
+          ? availablePatterns[Math.floor(Math.random() * availablePatterns.length)]
+          : patterns[Math.floor(Math.random() * patterns.length)];
+
         return {
-          ...selectedPattern,
           subject: this.populateTemplate(selectedPattern.subject, data),
           opening: this.populateTemplate(selectedPattern.opening, data),
+          framework: selectedPattern.framework,
           cta: randomCTA,
           emotionalTrigger: randomTrigger.name
         };
+      }
       
-      case 'websiteCopy':
+      case 'websiteCopy': {
+        const patterns = this.responsePatterns.websiteCopy;
+        const availablePatterns = patterns.filter(pattern => 
+          !previousResponses.some(prev => prev.includes(pattern.approach))
+        );
+        
+        const selectedPattern = availablePatterns.length > 0 
+          ? availablePatterns[Math.floor(Math.random() * availablePatterns.length)]
+          : patterns[Math.floor(Math.random() * patterns.length)];
+
         return {
-          ...selectedPattern,
           headline: this.populateTemplate(selectedPattern.headline, data),
           subheadline: this.populateTemplate(selectedPattern.subheadline, data),
+          approach: selectedPattern.approach,
           cta: randomCTA,
           emotionalTrigger: randomTrigger.name
         };
+      }
       
       default:
-        return selectedPattern;
+        return {};
     }
   }
 
