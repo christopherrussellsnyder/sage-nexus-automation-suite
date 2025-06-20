@@ -26,37 +26,6 @@ const SalesDashboard = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'prospects' | 'deals' | 'sequences' | 'meetings'>('deals');
   const [leads, setLeads] = useState<any[]>([]);
 
-  const stats = [
-    {
-      title: 'Active Prospects',
-      value: '147',
-      description: 'In pipeline',
-      icon: Users,
-      color: 'text-blue-600'
-    },
-    {
-      title: 'Deals Closed',
-      value: '$89K',
-      description: 'This month',
-      icon: DollarSign,
-      color: 'text-green-600'
-    },
-    {
-      title: 'Meetings Booked',
-      value: '23',
-      description: 'This week',
-      icon: Calendar,
-      color: 'text-purple-600'
-    },
-    {
-      title: 'Conversion Rate',
-      value: '24%',
-      description: '+5% vs last month',
-      icon: TrendingUp,
-      color: 'text-orange-600'
-    }
-  ];
-
   const handleLeadAdded = (lead: any) => {
     setLeads(prev => [...prev, lead]);
   };
@@ -68,6 +37,43 @@ const SalesDashboard = () => {
   const handleScheduleMeeting = (lead: any) => {
     console.log('Scheduling meeting with:', lead);
   };
+
+  // Calculate metrics based on actual data - start from 0
+  const activeProspects = leads.length;
+  const dealsClosedThisMonth = 0; // Will be calculated from actual deals
+  const meetingsBookedThisWeek = 0; // Will be calculated from actual meetings
+  const conversionRate = 0; // Will be calculated from actual conversion data
+
+  const stats = [
+    {
+      title: 'Active Prospects',
+      value: activeProspects.toString(),
+      description: 'In pipeline',
+      icon: Users,
+      color: 'text-blue-600'
+    },
+    {
+      title: 'Deals Closed',
+      value: `$${dealsClosedThisMonth.toLocaleString()}`,
+      description: 'This month',
+      icon: DollarSign,
+      color: 'text-green-600'
+    },
+    {
+      title: 'Meetings Booked',
+      value: meetingsBookedThisWeek.toString(),
+      description: 'This week',
+      icon: Calendar,
+      color: 'text-purple-600'
+    },
+    {
+      title: 'Conversion Rate',
+      value: `${conversionRate}%`,
+      description: 'Prospect to customer',
+      icon: TrendingUp,
+      color: 'text-orange-600'
+    }
+  ];
 
   return (
     <div className="space-y-6">
@@ -169,15 +175,15 @@ const SalesDashboard = () => {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Pipeline Value</span>
-                  <span className="text-2xl font-bold text-green-600">$247K</span>
+                  <span className="text-2xl font-bold text-green-600">$0</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Avg Deal Size</span>
-                  <span className="text-lg font-semibold">$8,900</span>
+                  <span className="text-lg font-semibold">$0</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Sales Cycle</span>
-                  <span className="text-lg font-semibold">28 days</span>
+                  <span className="text-lg font-semibold">0 days</span>
                 </div>
               </div>
             </CardContent>
@@ -193,18 +199,16 @@ const SalesDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm">Deal closed: TechCorp - $15K</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm">Meeting scheduled with DataFlow Inc</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span className="text-sm">Proposal sent to CloudTech Solutions</span>
-                </div>
+                {leads.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No recent activities</p>
+                ) : (
+                  <>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">Prospect added: {leads[leads.length - 1]?.name}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>

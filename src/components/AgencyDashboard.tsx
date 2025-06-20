@@ -25,37 +25,6 @@ const AgencyDashboard = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'scoring' | 'intelligence' | 'deals' | 'meetings'>('overview');
   const [leads, setLeads] = useState<any[]>([]);
 
-  const stats = [
-    {
-      title: 'Active Leads',
-      value: '89',
-      description: 'In pipeline',
-      icon: Users,
-      color: 'text-blue-600'
-    },
-    {
-      title: 'Revenue This Month',
-      value: '$47K',
-      description: 'From closed deals',
-      icon: DollarSign,
-      color: 'text-green-600'
-    },
-    {
-      title: 'Meetings Scheduled',
-      value: '18',
-      description: 'This week',
-      icon: Calendar,
-      color: 'text-purple-600'
-    },
-    {
-      title: 'Conversion Rate',
-      value: '28%',
-      description: '+6% vs last month',
-      icon: TrendingUp,
-      color: 'text-orange-600'
-    }
-  ];
-
   const handleLeadAdded = (lead: any) => {
     setLeads(prev => [...prev, lead]);
   };
@@ -67,6 +36,47 @@ const AgencyDashboard = () => {
   const handleScheduleMeeting = (lead: any) => {
     console.log('Scheduling meeting with:', lead);
   };
+
+  // Calculate metrics based on actual data - start from 0
+  const activeLeads = leads.length;
+  const revenueThisMonth = 0; // Will be calculated from actual closed deals
+  const meetingsScheduled = 0; // Will be calculated from actual meetings
+  const hotLeads = leads.filter(l => l.status === 'hot').length;
+  const warmLeads = leads.filter(l => l.status === 'warm').length;
+  const coldLeads = leads.filter(l => l.status === 'cold').length;
+  const avgScore = leads.length > 0 ? Math.round(leads.reduce((sum, l) => sum + (l.score || 0), 0) / leads.length) : 0;
+  const conversionRate = 0; // Will be calculated from actual conversion data
+
+  const stats = [
+    {
+      title: 'Active Leads',
+      value: activeLeads.toString(),
+      description: 'In pipeline',
+      icon: Users,
+      color: 'text-blue-600'
+    },
+    {
+      title: 'Revenue This Month',
+      value: `$${revenueThisMonth.toLocaleString()}`,
+      description: 'From closed deals',
+      icon: DollarSign,
+      color: 'text-green-600'
+    },
+    {
+      title: 'Meetings Scheduled',
+      value: meetingsScheduled.toString(),
+      description: 'This week',
+      icon: Calendar,
+      color: 'text-purple-600'
+    },
+    {
+      title: 'Conversion Rate',
+      value: `${conversionRate}%`,
+      description: 'Lead to customer',
+      icon: TrendingUp,
+      color: 'text-orange-600'
+    }
+  ];
 
   return (
     <div className="space-y-6">
@@ -161,15 +171,15 @@ const AgencyDashboard = () => {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Pipeline Value</span>
-                  <span className="text-2xl font-bold text-green-600">$156K</span>
+                  <span className="text-2xl font-bold text-green-600">$0</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Avg Deal Size</span>
-                  <span className="text-lg font-semibold">$5,200</span>
+                  <span className="text-lg font-semibold">$0</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Sales Cycle</span>
-                  <span className="text-lg font-semibold">35 days</span>
+                  <span className="text-lg font-semibold">0 days</span>
                 </div>
               </div>
             </CardContent>
@@ -185,18 +195,16 @@ const AgencyDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm">New lead: TechStartup Inc - Hot lead</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm">Meeting scheduled with Digital Solutions</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  <span className="text-sm">Proposal sent to E-commerce Brand</span>
-                </div>
+                {leads.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No recent activities</p>
+                ) : (
+                  <>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">Lead added: {leads[leads.length - 1]?.name}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
