@@ -136,6 +136,7 @@ const DealsTracker = () => {
     }
   };
 
+  // Calculate metrics based on actual data - start from 0
   const totalPipelineValue = deals
     .filter(deal => !['closed-won', 'closed-lost'].includes(deal.stage))
     .reduce((sum, deal) => sum + (deal.amount * deal.probability / 100), 0);
@@ -146,9 +147,14 @@ const DealsTracker = () => {
 
   const activeDealCount = deals.filter(deal => !['closed-won', 'closed-lost'].includes(deal.stage)).length;
 
+  // Win rate calculation based on actual data
+  const closedDeals = deals.filter(deal => ['closed-won', 'closed-lost'].includes(deal.stage));
+  const wonDeals = deals.filter(deal => deal.stage === 'closed-won');
+  const winRate = closedDeals.length > 0 ? Math.round((wonDeals.length / closedDeals.length) * 100) : 0;
+
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
+      {/* Stats Cards - Dynamic based on actual data */}
       <div className="grid md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -166,7 +172,7 @@ const DealsTracker = () => {
             <div className="flex items-center space-x-2">
               <DollarSign className="h-6 w-6 text-green-500" />
               <div>
-                <p className="text-2xl font-bold">${totalPipelineValue.toLocaleString()}</p>
+                <p className="text-2xl font-bold">${Math.round(totalPipelineValue).toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground">Pipeline Value</p>
               </div>
             </div>
@@ -177,7 +183,7 @@ const DealsTracker = () => {
             <div className="flex items-center space-x-2">
               <TrendingUp className="h-6 w-6 text-purple-500" />
               <div>
-                <p className="text-2xl font-bold">${totalWonValue.toLocaleString()}</p>
+                <p className="text-2xl font-bold">${Math.round(totalWonValue).toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground">Closed Won</p>
               </div>
             </div>
@@ -188,10 +194,8 @@ const DealsTracker = () => {
             <div className="flex items-center space-x-2">
               <Target className="h-6 w-6 text-orange-500" />
               <div>
-                <p className="text-2xl font-bold">
-                  {activeDealCount > 0 ? Math.round(totalPipelineValue / activeDealCount) : 0}%
-                </p>
-                <p className="text-sm text-muted-foreground">Avg Win Rate</p>
+                <p className="text-2xl font-bold">{winRate}%</p>
+                <p className="text-sm text-muted-foreground">Win Rate</p>
               </div>
             </div>
           </CardContent>

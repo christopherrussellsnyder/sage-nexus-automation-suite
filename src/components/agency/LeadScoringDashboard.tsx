@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,75 +42,8 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
   const [meetingData, setMeetingData] = useState({ date: '', time: '', agenda: '' });
   const { toast } = useToast();
 
-  const sampleLeads: Lead[] = [
-    {
-      id: '1',
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@techcorp.com',
-      company: 'TechCorp Solutions',
-      jobTitle: 'Marketing Director',
-      score: 92,
-      status: 'hot',
-      lastActivity: '2 hours ago',
-      source: 'LinkedIn',
-      engagementLevel: 85,
-      notes: 'Downloaded pricing guide, visited pricing page 3 times'
-    },
-    {
-      id: '2',
-      name: 'Michael Chen',
-      email: 'michael.chen@startup.io',
-      company: 'Startup.io',
-      jobTitle: 'CEO',
-      score: 78,
-      status: 'warm',
-      lastActivity: '1 day ago',
-      source: 'Google Ads',
-      engagementLevel: 65,
-      notes: 'Attended webinar, signed up for newsletter'
-    },
-    {
-      id: '3',
-      name: 'Emily Rodriguez',
-      email: 'emily.r@consulting.com',
-      company: 'Rodriguez Consulting',
-      jobTitle: 'Operations Manager',
-      score: 85,
-      status: 'hot',
-      lastActivity: '30 minutes ago',
-      source: 'Website',
-      engagementLevel: 78,
-      notes: 'Requested demo, multiple page visits this week'
-    },
-    {
-      id: '4',
-      name: 'David Kim',
-      email: 'david.kim@bigcorp.com',
-      company: 'BigCorp Industries',
-      jobTitle: 'VP Marketing',
-      score: 45,
-      status: 'cold',
-      lastActivity: '1 week ago',
-      source: 'Trade Show',
-      engagementLevel: 25,
-      notes: 'Initial contact at trade show, no follow-up engagement'
-    },
-    {
-      id: '5',
-      name: 'Lisa Thompson',
-      email: 'lisa.t@agency.co',
-      company: 'Creative Agency Co',
-      jobTitle: 'Creative Director',
-      score: 67,
-      status: 'warm',
-      lastActivity: '3 days ago',
-      source: 'Referral',
-      engagementLevel: 55,
-      notes: 'Referred by existing client, opened several emails'
-    }
-  ];
-
-  const leadsToShow = leads.length > 0 ? leads : sampleLeads;
+  // Use actual leads data or empty array - no sample data
+  const leadsToShow = leads || [];
   const filteredLeads = selectedStatus === 'all' 
     ? leadsToShow 
     : leadsToShow.filter(lead => lead.status === selectedStatus);
@@ -178,12 +112,13 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  // Calculate metrics based on actual data
   const leadStats = {
     total: leadsToShow.length,
     hot: leadsToShow.filter(l => l.status === 'hot').length,
     warm: leadsToShow.filter(l => l.status === 'warm').length,
     cold: leadsToShow.filter(l => l.status === 'cold').length,
-    avgScore: Math.round(leadsToShow.reduce((sum, l) => sum + l.score, 0) / leadsToShow.length)
+    avgScore: leadsToShow.length > 0 ? Math.round(leadsToShow.reduce((sum, l) => sum + l.score, 0) / leadsToShow.length) : 0
   };
 
   return (
@@ -271,7 +206,7 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
         </DialogContent>
       </Dialog>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Dynamic based on actual data */}
       <div className="grid md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -355,98 +290,106 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Lead</TableHead>
-                  <TableHead>Company</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Engagement</TableHead>
-                  <TableHead>Last Activity</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredLeads.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell>
-                      <div className="flex items-center space-x-3">
-                        <Avatar>
-                          <AvatarFallback>{getInitials(lead.name)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{lead.name}</div>
-                          <div className="text-sm text-muted-foreground">{lead.jobTitle}</div>
-                          <div className="text-xs text-muted-foreground">{lead.email}</div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{lead.company}</div>
-                        <Badge variant="outline" className="text-xs">
-                          {lead.source}
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className={`text-lg font-bold ${getScoreColor(lead.score)}`}>
-                        {lead.score}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${getStatusColor(lead.status)}`} />
-                        <span className="capitalize font-medium">{lead.status}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <Progress value={lead.engagementLevel} className="h-2" />
-                        <span className="text-xs text-muted-foreground">{lead.engagementLevel}%</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm">{lead.lastActivity}</span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-1">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => {
-                            setSelectedLead(lead);
-                            setEmailData({
-                              subject: `Following up - ${lead.company}`,
-                              message: `Hi ${lead.name},\n\nI hope this email finds you well. I wanted to follow up on our previous conversation...\n\nBest regards`
-                            });
-                            setEmailDialog(true);
-                          }}
-                        >
-                          <Mail className="h-3 w-3" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => {
-                            setSelectedLead(lead);
-                            setMeetingDialog(true);
-                          }}
-                        >
-                          <Calendar className="h-3 w-3" />
-                        </Button>
-                        <Button size="sm">
-                          <MessageSquare className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </TableCell>
+          {leadsToShow.length === 0 ? (
+            <div className="text-center py-8">
+              <UserCheck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No leads yet</h3>
+              <p className="text-muted-foreground">Add leads to start tracking and scoring them</p>
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Lead</TableHead>
+                    <TableHead>Company</TableHead>
+                    <TableHead>Score</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Engagement</TableHead>
+                    <TableHead>Last Activity</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {filteredLeads.map((lead) => (
+                    <TableRow key={lead.id}>
+                      <TableCell>
+                        <div className="flex items-center space-x-3">
+                          <Avatar>
+                            <AvatarFallback>{getInitials(lead.name)}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium">{lead.name}</div>
+                            <div className="text-sm text-muted-foreground">{lead.jobTitle}</div>
+                            <div className="text-xs text-muted-foreground">{lead.email}</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{lead.company}</div>
+                          <Badge variant="outline" className="text-xs">
+                            {lead.source}
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className={`text-lg font-bold ${getScoreColor(lead.score)}`}>
+                          {lead.score}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-2 h-2 rounded-full ${getStatusColor(lead.status)}`} />
+                          <span className="capitalize font-medium">{lead.status}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <Progress value={lead.engagementLevel} className="h-2" />
+                          <span className="text-xs text-muted-foreground">{lead.engagementLevel}%</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{lead.lastActivity}</span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedLead(lead);
+                              setEmailData({
+                                subject: `Following up - ${lead.company}`,
+                                message: `Hi ${lead.name},\n\nI hope this email finds you well. I wanted to follow up on our previous conversation...\n\nBest regards`
+                              });
+                              setEmailDialog(true);
+                            }}
+                          >
+                            <Mail className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedLead(lead);
+                              setMeetingDialog(true);
+                            }}
+                          >
+                            <Calendar className="h-3 w-3" />
+                          </Button>
+                          <Button size="sm">
+                            <MessageSquare className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
