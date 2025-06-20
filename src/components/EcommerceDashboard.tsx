@@ -5,13 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Search, 
-  TrendingUp, 
-  BarChart3,
   RefreshCw,
-  Star,
-  DollarSign,
-  ShoppingBag,
-  Target,
   Megaphone
 } from "lucide-react";
 import ProductResearchTable from './ecommerce/ProductResearchTable';
@@ -94,57 +88,8 @@ const EcommerceDashboard = () => {
           {/* Product Research Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold">Weekly Product Research</h3>
-              <p className="text-muted-foreground">Top 30 trending products updated weekly from 1000+ Shopify stores</p>
+              <h3 className="text-2xl font-bold">Product Research</h3>
             </div>
-          </div>
-
-          {/* Research Stats */}
-          <div className="grid md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <ShoppingBag className="h-6 w-6 text-blue-500" />
-                  <div>
-                    <p className="text-2xl font-bold">30</p>
-                    <p className="text-sm text-muted-foreground">Products Found</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="h-6 w-6 text-green-500" />
-                  <div>
-                    <p className="text-2xl font-bold">+156%</p>
-                    <p className="text-sm text-muted-foreground">Avg Growth</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <Star className="h-6 w-6 text-yellow-500" />
-                  <div>
-                    <p className="text-2xl font-bold">4.7</p>
-                    <p className="text-sm text-muted-foreground">Avg Rating</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <BarChart3 className="h-6 w-6 text-purple-500" />
-                  <div>
-                    <p className="text-2xl font-bold">10.2%</p>
-                    <p className="text-sm text-muted-foreground">Avg Conversion</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Product Research Table */}
@@ -160,60 +105,11 @@ const EcommerceDashboard = () => {
       {activeTab === 'marketing' && (
         <div className="space-y-6">
           {!showResults && (
-            <>
-              <div className="grid md:grid-cols-4 gap-4">
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <Target className="h-6 w-6 text-blue-500" />
-                      <div>
-                        <p className="text-2xl font-bold">10+</p>
-                        <p className="text-sm text-muted-foreground">Competitors Analyzed</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <BarChart3 className="h-6 w-6 text-green-500" />
-                      <div>
-                        <p className="text-2xl font-bold">100+</p>
-                        <p className="text-sm text-muted-foreground">Ad Libraries Scraped</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <Megaphone className="h-6 w-6 text-purple-500" />
-                      <div>
-                        <p className="text-2xl font-bold">30</p>
-                        <p className="text-sm text-muted-foreground">Day Plan Generated</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <TrendingUp className="h-6 w-6 text-orange-500" />
-                      <div>
-                        <p className="text-2xl font-bold">4.2x</p>
-                        <p className="text-sm text-muted-foreground">Avg ROAS</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <EnhancedMarketingWizard 
-                onCreateSolution={handleCreateSolution}
-                isCreating={isCreatingCampaign}
-                progress={campaignProgress}
-              />
-            </>
+            <EnhancedMarketingWizard 
+              onCreateSolution={handleCreateSolution}
+              isCreating={isCreatingCampaign}
+              progress={campaignProgress}
+            />
           )}
 
           {showResults && marketingSolution && (
