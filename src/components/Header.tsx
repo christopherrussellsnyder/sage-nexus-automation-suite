@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
+import { useCopySettings } from '@/hooks/useCopySettings';
 
 interface HeaderProps {
   user?: any;
@@ -17,6 +18,7 @@ interface HeaderProps {
 
 const Header = ({ user }: HeaderProps) => {
   const navigate = useNavigate();
+  const copy = useCopySettings();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -28,13 +30,13 @@ const Header = ({ user }: HeaderProps) => {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/')}>
           <Brain className="h-8 w-8 text-blue-600" />
-          <span className="text-2xl font-bold text-gray-900">Sage.ai</span>
+          <span className="text-2xl font-bold text-gray-900">{copy.brandName}</span>
         </div>
 
         <nav className="hidden md:flex items-center space-x-6">
-          <a href="/features" className="text-gray-600 hover:text-gray-900">Features</a>
-          <a href="/pricing" className="text-gray-600 hover:text-gray-900">Pricing</a>
-          <a href="/about" className="text-gray-600 hover:text-gray-900">About</a>
+          <a href="/features" className="text-gray-600 hover:text-gray-900">{copy.featuresLabel}</a>
+          <a href="/pricing" className="text-gray-600 hover:text-gray-900">{copy.pricingLabel}</a>
+          <a href="/about" className="text-gray-600 hover:text-gray-900">{copy.aboutLabel}</a>
           
           {user && (
             <DropdownMenu>
@@ -80,6 +82,9 @@ const Header = ({ user }: HeaderProps) => {
                 <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                   Dashboard
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/admin')}>
+                  Admin Panel
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 mr-2" />
@@ -90,10 +95,10 @@ const Header = ({ user }: HeaderProps) => {
           ) : (
             <>
               <Button variant="ghost" onClick={() => navigate('/login')}>
-                Sign In
+                {copy.signInLabel}
               </Button>
               <Button onClick={() => navigate('/signup')}>
-                Get Started
+                {copy.getStartedLabel}
               </Button>
             </>
           )}

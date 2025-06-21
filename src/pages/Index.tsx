@@ -23,9 +23,11 @@ import EcommerceDashboard from "@/components/EcommerceDashboard";
 import AgencyDashboard from "@/components/AgencyDashboard";
 import SalesDashboard from "@/components/SalesDashboard";
 import CopywritingDashboard from "@/components/CopywritingDashboard";
+import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'ecommerce' | 'agency' | 'sales' | 'copywriting'>('overview');
+  const copy = useCopySettings();
 
   const renderContent = () => {
     switch (activeSection) {
@@ -51,10 +53,10 @@ const Index = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
                 <Brain className="h-8 w-8 text-primary" />
-                <span className="text-xl font-bold">Sage.ai</span>
+                <span className="text-xl font-bold">{copy.brandName}</span>
               </div>
               <Badge variant="secondary" className="hidden sm:inline-flex">
-                AI Business Automation Suite
+                {copy.brandTagline}
               </Badge>
             </div>
             
@@ -75,7 +77,7 @@ const Index = () => {
                 className="flex items-center space-x-2"
               >
                 <ShoppingCart className="h-4 w-4" />
-                <span className="hidden sm:inline">E-commerce</span>
+                <span className="hidden sm:inline">{copy.ecommerceTitle}</span>
               </Button>
               <Button
                 variant={activeSection === 'agency' ? 'default' : 'ghost'}
@@ -84,7 +86,7 @@ const Index = () => {
                 className="flex items-center space-x-2"
               >
                 <Users className="h-4 w-4" />
-                <span className="hidden sm:inline">Agency</span>
+                <span className="hidden sm:inline">{copy.agencyTitle}</span>
               </Button>
               <Button
                 variant={activeSection === 'sales' ? 'default' : 'ghost'}
@@ -93,7 +95,7 @@ const Index = () => {
                 className="flex items-center space-x-2"
               >
                 <Phone className="h-4 w-4" />
-                <span className="hidden sm:inline">Sales</span>
+                <span className="hidden sm:inline">{copy.salesTitle}</span>
               </Button>
               <Button
                 variant={activeSection === 'copywriting' ? 'default' : 'ghost'}
@@ -102,7 +104,7 @@ const Index = () => {
                 className="flex items-center space-x-2"
               >
                 <PenTool className="h-4 w-4" />
-                <span className="hidden sm:inline">Copywriting</span>
+                <span className="hidden sm:inline">{copy.copywritingTitle}</span>
               </Button>
             </div>
           </div>

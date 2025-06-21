@@ -13,6 +13,7 @@ import AdCopy from "./pages/AdCopy";
 import EmailSequences from "./pages/EmailSequences";
 import SocialContent from "./pages/SocialContent";
 import WebsiteCopy from "./pages/WebsiteCopy";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/email-sequences" element={<EmailSequences />} />
           <Route path="/social-content" element={<SocialContent />} />
           <Route path="/website-copy" element={<WebsiteCopy />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
