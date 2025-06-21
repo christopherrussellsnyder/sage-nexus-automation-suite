@@ -6,7 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 export interface SavedTemplate {
   id: string;
   template_name: string;
-  feature_type: 'website' | 'advertising' | 'email' | 'social';
+  feature_type: string; // Changed from union type to string to match database
   template_data: any;
   business_info: any;
   is_favorite: boolean;
@@ -45,7 +45,7 @@ export const useTemplateManager = () => {
 
   const saveTemplate = async (
     templateName: string,
-    featureType: 'website' | 'advertising' | 'email' | 'social',
+    featureType: string, // Changed from union type to string
     templateData: any,
     businessInfo: any
   ): Promise<boolean> => {

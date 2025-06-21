@@ -11,8 +11,8 @@ export interface UsageData {
 }
 
 export interface SubscriptionData {
-  subscription_type: 'free' | 'premium';
-  subscription_status: 'active' | 'cancelled' | 'expired';
+  subscription_type: string; // Changed from union type to string to match database
+  subscription_status: string; // Changed from union type to string to match database
 }
 
 export const useUsageTracking = () => {
