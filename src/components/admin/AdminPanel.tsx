@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,25 +14,92 @@ const defaultCopySettings: CopySettings = {
   brandName: 'Sage.ai',
   brandTagline: 'AI Business Automation Suite',
   
-  // Hero Section
-  heroTitle: 'Welcome to the Future of Business Automation',
-  heroSubtitle: 'Transform Your Business with AI-Powered Solutions',
-  heroDescription: 'Streamline operations, boost productivity, and accelerate growth with our comprehensive AI platform.',
-  heroCTA: 'Get Started',
+  // Hero Section (Overview Page)
+  overviewHeroTitle: 'Sage.ai',
+  overviewHeroSubtitle: 'All-in-One AI Business Automation',
+  overviewHeroDescription: 'Streamline your e-commerce, marketing, sales, and copywriting operations with advanced AI automation. Built for entrepreneurs, agencies, and sales teams who want to scale efficiently.',
+  overviewBadge1: 'AI-Powered',
+  overviewBadge2: 'Multi-Platform',
+  overviewBadge3: 'Fully Automated',
+  
+  // Quick Stats (Overview Page)
+  stat1Title: 'Active Projects',
+  stat1Value: '24',
+  stat1Description: 'Across all platforms',
+  stat2Title: 'Time Saved',
+  stat2Value: '156hrs',
+  stat2Description: 'This month',
+  stat3Title: 'Revenue Generated',
+  stat3Value: '$89K',
+  stat3Description: 'Through automation',
+  stat4Title: 'Conversion Rate',
+  stat4Value: '+285%',
+  stat4Description: 'Average improvement',
+  
+  // Platform Features Section
+  platformFeaturesTitle: 'Choose Your Automation Hub',
+  platformFeaturesDescription: 'Select the area where you want to start automating your business',
   
   // Feature Cards
-  ecommerceTitle: 'E-commerce',
-  ecommerceDescription: 'AI-powered product research, listing optimization, and store management',
-  agencyTitle: 'Agency',
-  agencyDescription: 'Complete marketing automation and client management solutions',
-  salesTitle: 'Sales',
-  salesDescription: 'Intelligent lead generation, prospect research, and sales automation',
-  copywritingTitle: 'Copywriting',
-  copywritingDescription: 'AI-generated marketing copy, content creation, and brand messaging',
+  ecommerceTitle: 'E-commerce Automation',
+  ecommerceDescription: 'AI-powered website builder and product research',
+  ecommerceFeature1: 'Custom Website Builder',
+  ecommerceFeature2: 'Weekly Product Research',
+  ecommerceFeature3: 'Trending Product Analysis',
+  ecommerceFeature4: 'Store Templates',
+  ecommerceStat1Key: 'stores',
+  ecommerceStat1Value: '12',
+  ecommerceStat2Key: 'revenue',
+  ecommerceStat2Value: '$45K',
   
-  // Dashboard
-  dashboardWelcome: 'Welcome to Your Dashboard',
-  dashboardSubtitle: 'Choose your area of focus to get started',
+  agencyTitle: 'Marketing Agency Tools',
+  agencyDescription: 'Multi-platform campaign management and optimization',
+  agencyFeature1: 'Campaign Orchestration',
+  agencyFeature2: 'Lead Scoring',
+  agencyFeature3: 'Social Media Factory',
+  agencyFeature4: 'Client Reporting',
+  agencyStat1Key: 'clients',
+  agencyStat1Value: '28',
+  agencyStat2Key: 'campaigns',
+  agencyStat2Value: '156',
+  
+  salesTitle: 'Sales Operations',
+  salesDescription: 'Intelligent prospect research and sales automation',
+  salesFeature1: 'Prospect Research',
+  salesFeature2: 'Sales Sequences',
+  salesFeature3: 'Meeting Intelligence',
+  salesFeature4: 'Deal Progression',
+  salesStat1Key: 'prospects',
+  salesStat1Value: '340',
+  salesStat2Key: 'deals',
+  salesStat2Value: '89',
+  
+  copywritingTitle: 'AI Copywriting Suite',
+  copywritingDescription: 'High-converting copy for websites, ads, emails, and social media',
+  copywritingFeature1: 'Website Copy',
+  copywritingFeature2: 'Ad Copy',
+  copywritingFeature3: 'Email Sequences',
+  copywritingFeature4: 'Social Content',
+  copywritingStat1Key: 'templates',
+  copywritingStat1Value: '150',
+  copywritingStat2Key: 'conv. rate',
+  copywritingStat2Value: '400%',
+  
+  // Value Proposition Section
+  valuePropositionTitle: 'Why Choose Sage.ai?',
+  valuePropositionDescription: 'The only platform that combines e-commerce, marketing, sales, and copywriting automation in one unified system',
+  valueProposition1Title: 'AI-Powered Intelligence',
+  valueProposition1Description: 'Advanced AI analyzes your business data to provide personalized automation strategies',
+  valueProposition2Title: 'All-in-One Platform',
+  valueProposition2Description: 'No need for multiple tools. Everything you need to automate your business in one place',
+  valueProposition3Title: 'Proven Results',
+  valueProposition3Description: 'Join thousands of businesses that have automated their operations and increased revenue',
+  
+  // CTA Section
+  ctaTitle: 'Ready to Automate Your Business?',
+  ctaDescription: 'Start your free trial today and see how AI can transform your operations',
+  ctaPrimaryButton: 'Start Free Trial',
+  ctaSecondaryButton: 'View Pricing',
   
   // Navigation
   featuresLabel: 'Features',
@@ -97,7 +163,14 @@ const defaultCopySettings: CopySettings = {
   accountLabel: 'Account',
   dashboardLabel: 'Dashboard',
   adminPanelLabel: 'Admin Panel',
-  signOutLabel: 'Sign Out'
+  signOutLabel: 'Sign Out',
+  
+  // Dashboard
+  dashboardWelcome: 'Welcome to Your Dashboard',
+  dashboardSubtitle: 'Choose your area of focus to get started',
+  
+  // Button Labels
+  exploreButton: 'Explore'
 };
 
 const AdminPanel = () => {
@@ -169,13 +242,14 @@ const AdminPanel = () => {
         </div>
 
         <Tabs defaultValue="brand" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="brand">Brand</TabsTrigger>
-            <TabsTrigger value="hero">Hero</TabsTrigger>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="features">Features</TabsTrigger>
             <TabsTrigger value="auth">Auth Pages</TabsTrigger>
             <TabsTrigger value="survey">Survey</TabsTrigger>
             <TabsTrigger value="tools">Tool Pages</TabsTrigger>
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           </TabsList>
 
           <TabsContent value="brand" className="space-y-6">
@@ -267,6 +341,751 @@ const AdminPanel = () => {
                       onChange={(e) => handleInputChange('accountLabel', e.target.value)}
                     />
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="overview" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Overview Page Hero Section</CardTitle>
+                <CardDescription>Customize the main overview page hero section</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="overviewHeroTitle">Hero Title</Label>
+                    <Input
+                      id="overviewHeroTitle"
+                      value={copySettings.overviewHeroTitle}
+                      onChange={(e) => handleInputChange('overviewHeroTitle', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="overviewHeroSubtitle">Hero Subtitle</Label>
+                    <Input
+                      id="overviewHeroSubtitle"
+                      value={copySettings.overviewHeroSubtitle}
+                      onChange={(e) => handleInputChange('overviewHeroSubtitle', e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="overviewHeroDescription">Hero Description</Label>
+                  <Textarea
+                    id="overviewHeroDescription"
+                    value={copySettings.overviewHeroDescription}
+                    onChange={(e) => handleInputChange('overviewHeroDescription', e.target.value)}
+                    rows={3}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="overviewBadge1">Badge 1</Label>
+                    <Input
+                      id="overviewBadge1"
+                      value={copySettings.overviewBadge1}
+                      onChange={(e) => handleInputChange('overviewBadge1', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="overviewBadge2">Badge 2</Label>
+                    <Input
+                      id="overviewBadge2"
+                      value={copySettings.overviewBadge2}
+                      onChange={(e) => handleInputChange('overviewBadge2', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="overviewBadge3">Badge 3</Label>
+                    <Input
+                      id="overviewBadge3"
+                      value={copySettings.overviewBadge3}
+                      onChange={(e) => handleInputChange('overviewBadge3', e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Stats Section</CardTitle>
+                <CardDescription>Customize the statistics displayed on the overview page</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h4 className="font-medium">Stat 1</h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="stat1Title">Title</Label>
+                      <Input
+                        id="stat1Title"
+                        value={copySettings.stat1Title}
+                        onChange={(e) => handleInputChange('stat1Title', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="stat1Value">Value</Label>
+                      <Input
+                        id="stat1Value"
+                        value={copySettings.stat1Value}
+                        onChange={(e) => handleInputChange('stat1Value', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="stat1Description">Description</Label>
+                      <Input
+                        id="stat1Description"
+                        value={copySettings.stat1Description}
+                        onChange={(e) => handleInputChange('stat1Description', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-medium">Stat 2</h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="stat2Title">Title</Label>
+                      <Input
+                        id="stat2Title"
+                        value={copySettings.stat2Title}
+                        onChange={(e) => handleInputChange('stat2Title', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="stat2Value">Value</Label>
+                      <Input
+                        id="stat2Value"
+                        value={copySettings.stat2Value}
+                        onChange={(e) => handleInputChange('stat2Value', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="stat2Description">Description</Label>
+                      <Input
+                        id="stat2Description"
+                        value={copySettings.stat2Description}
+                        onChange={(e) => handleInputChange('stat2Description', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-medium">Stat 3</h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="stat3Title">Title</Label>
+                      <Input
+                        id="stat3Title"
+                        value={copySettings.stat3Title}
+                        onChange={(e) => handleInputChange('stat3Title', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="stat3Value">Value</Label>
+                      <Input
+                        id="stat3Value"
+                        value={copySettings.stat3Value}
+                        onChange={(e) => handleInputChange('stat3Value', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="stat3Description">Description</Label>
+                      <Input
+                        id="stat3Description"
+                        value={copySettings.stat3Description}
+                        onChange={(e) => handleInputChange('stat3Description', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-medium">Stat 4</h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="stat4Title">Title</Label>
+                      <Input
+                        id="stat4Title"
+                        value={copySettings.stat4Title}
+                        onChange={(e) => handleInputChange('stat4Title', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="stat4Value">Value</Label>
+                      <Input
+                        id="stat4Value"
+                        value={copySettings.stat4Value}
+                        onChange={(e) => handleInputChange('stat4Value', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="stat4Description">Description</Label>
+                      <Input
+                        id="stat4Description"
+                        value={copySettings.stat4Description}
+                        onChange={(e) => handleInputChange('stat4Description', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Platform Features Section</CardTitle>
+                <CardDescription>Customize the platform features section title and description</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="platformFeaturesTitle">Section Title</Label>
+                  <Input
+                    id="platformFeaturesTitle"
+                    value={copySettings.platformFeaturesTitle}
+                    onChange={(e) => handleInputChange('platformFeaturesTitle', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="platformFeaturesDescription">Section Description</Label>
+                  <Input
+                    id="platformFeaturesDescription"
+                    value={copySettings.platformFeaturesDescription}
+                    onChange={(e) => handleInputChange('platformFeaturesDescription', e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Value Proposition & CTA</CardTitle>
+                <CardDescription>Customize the value proposition and call-to-action sections</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h4 className="font-medium">Value Proposition Section</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="valuePropositionTitle">Title</Label>
+                      <Input
+                        id="valuePropositionTitle"
+                        value={copySettings.valuePropositionTitle}
+                        onChange={(e) => handleInputChange('valuePropositionTitle', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="valuePropositionDescription">Description</Label>
+                      <Textarea
+                        id="valuePropositionDescription"
+                        value={copySettings.valuePropositionDescription}
+                        onChange={(e) => handleInputChange('valuePropositionDescription', e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="valueProposition1Title">Value Prop 1 Title</Label>
+                      <Input
+                        id="valueProposition1Title"
+                        value={copySettings.valueProposition1Title}
+                        onChange={(e) => handleInputChange('valueProposition1Title', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="valueProposition1Description">Value Prop 1 Description</Label>
+                      <Textarea
+                        id="valueProposition1Description"
+                        value={copySettings.valueProposition1Description}
+                        onChange={(e) => handleInputChange('valueProposition1Description', e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="valueProposition2Title">Value Prop 2 Title</Label>
+                      <Input
+                        id="valueProposition2Title"
+                        value={copySettings.valueProposition2Title}
+                        onChange={(e) => handleInputChange('valueProposition2Title', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="valueProposition2Description">Value Prop 2 Description</Label>
+                      <Textarea
+                        id="valueProposition2Description"
+                        value={copySettings.valueProposition2Description}
+                        onChange={(e) => handleInputChange('valueProposition2Description', e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="valueProposition3Title">Value Prop 3 Title</Label>
+                      <Input
+                        id="valueProposition3Title"
+                        value={copySettings.valueProposition3Title}
+                        onChange={(e) => handleInputChange('valueProposition3Title', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="valueProposition3Description">Value Prop 3 Description</Label>
+                      <Textarea
+                        id="valueProposition3Description"
+                        value={copySettings.valueProposition3Description}
+                        onChange={(e) => handleInputChange('valueProposition3Description', e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-medium">Call-to-Action Section</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="ctaTitle">CTA Title</Label>
+                      <Input
+                        id="ctaTitle"
+                        value={copySettings.ctaTitle}
+                        onChange={(e) => handleInputChange('ctaTitle', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ctaDescription">CTA Description</Label>
+                      <Input
+                        id="ctaDescription"
+                        value={copySettings.ctaDescription}
+                        onChange={(e) => handleInputChange('ctaDescription', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="ctaPrimaryButton">Primary Button Text</Label>
+                      <Input
+                        id="ctaPrimaryButton"
+                        value={copySettings.ctaPrimaryButton}
+                        onChange={(e) => handleInputChange('ctaPrimaryButton', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ctaSecondaryButton">Secondary Button Text</Label>
+                      <Input
+                        id="ctaSecondaryButton"
+                        value={copySettings.ctaSecondaryButton}
+                        onChange={(e) => handleInputChange('ctaSecondaryButton', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="features" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Feature Cards</CardTitle>
+                <CardDescription>Customize the titles, descriptions, features, and stats for each feature area</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h4 className="font-medium">E-commerce</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="ecommerceTitle">Title</Label>
+                      <Input
+                        id="ecommerceTitle"
+                        value={copySettings.ecommerceTitle}
+                        onChange={(e) => handleInputChange('ecommerceTitle', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ecommerceDescription">Description</Label>
+                      <Textarea
+                        id="ecommerceDescription"
+                        value={copySettings.ecommerceDescription}
+                        onChange={(e) => handleInputChange('ecommerceDescription', e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="ecommerceFeature1">Feature 1</Label>
+                      <Input
+                        id="ecommerceFeature1"
+                        value={copySettings.ecommerceFeature1}
+                        onChange={(e) => handleInputChange('ecommerceFeature1', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ecommerceFeature2">Feature 2</Label>
+                      <Input
+                        id="ecommerceFeature2"
+                        value={copySettings.ecommerceFeature2}
+                        onChange={(e) => handleInputChange('ecommerceFeature2', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ecommerceFeature3">Feature 3</Label>
+                      <Input
+                        id="ecommerceFeature3"
+                        value={copySettings.ecommerceFeature3}
+                        onChange={(e) => handleInputChange('ecommerceFeature3', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ecommerceFeature4">Feature 4</Label>
+                      <Input
+                        id="ecommerceFeature4"
+                        value={copySettings.ecommerceFeature4}
+                        onChange={(e) => handleInputChange('ecommerceFeature4', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="ecommerceStat1Key">Stat 1 Key</Label>
+                      <Input
+                        id="ecommerceStat1Key"
+                        value={copySettings.ecommerceStat1Key}
+                        onChange={(e) => handleInputChange('ecommerceStat1Key', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ecommerceStat1Value">Stat 1 Value</Label>
+                      <Input
+                        id="ecommerceStat1Value"
+                        value={copySettings.ecommerceStat1Value}
+                        onChange={(e) => handleInputChange('ecommerceStat1Value', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ecommerceStat2Key">Stat 2 Key</Label>
+                      <Input
+                        id="ecommerceStat2Key"
+                        value={copySettings.ecommerceStat2Key}
+                        onChange={(e) => handleInputChange('ecommerceStat2Key', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="ecommerceStat2Value">Stat 2 Value</Label>
+                      <Input
+                        id="ecommerceStat2Value"
+                        value={copySettings.ecommerceStat2Value}
+                        onChange={(e) => handleInputChange('ecommerceStat2Value', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Agency Section */}
+                <div className="space-y-4">
+                  <h4 className="font-medium">Agency</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="agencyTitle">Title</Label>
+                      <Input
+                        id="agencyTitle"
+                        value={copySettings.agencyTitle}
+                        onChange={(e) => handleInputChange('agencyTitle', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="agencyDescription">Description</Label>
+                      <Textarea
+                        id="agencyDescription"
+                        value={copySettings.agencyDescription}
+                        onChange={(e) => handleInputChange('agencyDescription', e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="agencyFeature1">Feature 1</Label>
+                      <Input
+                        id="agencyFeature1"
+                        value={copySettings.agencyFeature1}
+                        onChange={(e) => handleInputChange('agencyFeature1', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="agencyFeature2">Feature 2</Label>
+                      <Input
+                        id="agencyFeature2"
+                        value={copySettings.agencyFeature2}
+                        onChange={(e) => handleInputChange('agencyFeature2', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="agencyFeature3">Feature 3</Label>
+                      <Input
+                        id="agencyFeature3"
+                        value={copySettings.agencyFeature3}
+                        onChange={(e) => handleInputChange('agencyFeature3', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="agencyFeature4">Feature 4</Label>
+                      <Input
+                        id="agencyFeature4"
+                        value={copySettings.agencyFeature4}
+                        onChange={(e) => handleInputChange('agencyFeature4', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="agencyStat1Key">Stat 1 Key</Label>
+                      <Input
+                        id="agencyStat1Key"
+                        value={copySettings.agencyStat1Key}
+                        onChange={(e) => handleInputChange('agencyStat1Key', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="agencyStat1Value">Stat 1 Value</Label>
+                      <Input
+                        id="agencyStat1Value"
+                        value={copySettings.agencyStat1Value}
+                        onChange={(e) => handleInputChange('agencyStat1Value', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="agencyStat2Key">Stat 2 Key</Label>
+                      <Input
+                        id="agencyStat2Key"
+                        value={copySettings.agencyStat2Key}
+                        onChange={(e) => handleInputChange('agencyStat2Key', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="agencyStat2Value">Stat 2 Value</Label>
+                      <Input
+                        id="agencyStat2Value"
+                        value={copySettings.agencyStat2Value}
+                        onChange={(e) => handleInputChange('agencyStat2Value', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Sales Section */}
+                <div className="space-y-4">
+                  <h4 className="font-medium">Sales</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="salesTitle">Title</Label>
+                      <Input
+                        id="salesTitle"
+                        value={copySettings.salesTitle}
+                        onChange={(e) => handleInputChange('salesTitle', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="salesDescription">Description</Label>
+                      <Textarea
+                        id="salesDescription"
+                        value={copySettings.salesDescription}
+                        onChange={(e) => handleInputChange('salesDescription', e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="salesFeature1">Feature 1</Label>
+                      <Input
+                        id="salesFeature1"
+                        value={copySettings.salesFeature1}
+                        onChange={(e) => handleInputChange('salesFeature1', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="salesFeature2">Feature 2</Label>
+                      <Input
+                        id="salesFeature2"
+                        value={copySettings.salesFeature2}
+                        onChange={(e) => handleInputChange('salesFeature2', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="salesFeature3">Feature 3</Label>
+                      <Input
+                        id="salesFeature3"
+                        value={copySettings.salesFeature3}
+                        onChange={(e) => handleInputChange('salesFeature3', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="salesFeature4">Feature 4</Label>
+                      <Input
+                        id="salesFeature4"
+                        value={copySettings.salesFeature4}
+                        onChange={(e) => handleInputChange('salesFeature4', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="salesStat1Key">Stat 1 Key</Label>
+                      <Input
+                        id="salesStat1Key"
+                        value={copySettings.salesStat1Key}
+                        onChange={(e) => handleInputChange('salesStat1Key', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="salesStat1Value">Stat 1 Value</Label>
+                      <Input
+                        id="salesStat1Value"
+                        value={copySettings.salesStat1Value}
+                        onChange={(e) => handleInputChange('salesStat1Value', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="salesStat2Key">Stat 2 Key</Label>
+                      <Input
+                        id="salesStat2Key"
+                        value={copySettings.salesStat2Key}
+                        onChange={(e) => handleInputChange('salesStat2Key', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="salesStat2Value">Stat 2 Value</Label>
+                      <Input
+                        id="salesStat2Value"
+                        value={copySettings.salesStat2Value}
+                        onChange={(e) => handleInputChange('salesStat2Value', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Copywriting Section */}
+                <div className="space-y-4">
+                  <h4 className="font-medium">Copywriting</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="copywritingTitle">Title</Label>
+                      <Input
+                        id="copywritingTitle"
+                        value={copySettings.copywritingTitle}
+                        onChange={(e) => handleInputChange('copywritingTitle', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="copywritingDescription">Description</Label>
+                      <Textarea
+                        id="copywritingDescription"
+                        value={copySettings.copywritingDescription}
+                        onChange={(e) => handleInputChange('copywritingDescription', e.target.value)}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="copywritingFeature1">Feature 1</Label>
+                      <Input
+                        id="copywritingFeature1"
+                        value={copySettings.copywritingFeature1}
+                        onChange={(e) => handleInputChange('copywritingFeature1', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="copywritingFeature2">Feature 2</Label>
+                      <Input
+                        id="copywritingFeature2"
+                        value={copySettings.copywritingFeature2}
+                        onChange={(e) => handleInputChange('copywritingFeature2', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="copywritingFeature3">Feature 3</Label>
+                      <Input
+                        id="copywritingFeature3"
+                        value={copySettings.copywritingFeature3}
+                        onChange={(e) => handleInputChange('copywritingFeature3', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="copywritingFeature4">Feature 4</Label>
+                      <Input
+                        id="copywritingFeature4"
+                        value={copySettings.copywritingFeature4}
+                        onChange={(e) => handleInputChange('copywritingFeature4', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="copywritingStat1Key">Stat 1 Key</Label>
+                      <Input
+                        id="copywritingStat1Key"
+                        value={copySettings.copywritingStat1Key}
+                        onChange={(e) => handleInputChange('copywritingStat1Key', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="copywritingStat1Value">Stat 1 Value</Label>
+                      <Input
+                        id="copywritingStat1Value"
+                        value={copySettings.copywritingStat1Value}
+                        onChange={(e) => handleInputChange('copywritingStat1Value', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="copywritingStat2Key">Stat 2 Key</Label>
+                      <Input
+                        id="copywritingStat2Key"
+                        value={copySettings.copywritingStat2Key}
+                        onChange={(e) => handleInputChange('copywritingStat2Key', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="copywritingStat2Value">Stat 2 Value</Label>
+                      <Input
+                        id="copywritingStat2Value"
+                        value={copySettings.copywritingStat2Value}
+                        onChange={(e) => handleInputChange('copywritingStat2Value', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="exploreButton">Explore Button Text</Label>
+                  <Input
+                    id="exploreButton"
+                    value={copySettings.exploreButton}
+                    onChange={(e) => handleInputChange('exploreButton', e.target.value)}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -512,158 +1331,29 @@ const AdminPanel = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="hero" className="space-y-6">
+          <TabsContent value="dashboard" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Hero Section</CardTitle>
-                <CardDescription>Customize the main hero section text and call-to-action</CardDescription>
+                <CardTitle>Dashboard</CardTitle>
+                <CardDescription>Customize dashboard welcome text and subtitle</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="heroTitle">Hero Title</Label>
+                  <Label htmlFor="dashboardWelcome">Welcome Title</Label>
                   <Input
-                    id="heroTitle"
-                    value={copySettings.heroTitle}
-                    onChange={(e) => handleInputChange('heroTitle', e.target.value)}
+                    id="dashboardWelcome"
+                    value={copySettings.dashboardWelcome}
+                    onChange={(e) => handleInputChange('dashboardWelcome', e.target.value)}
                   />
                 </div>
-                
                 <div>
-                  <Label htmlFor="heroSubtitle">Hero Subtitle</Label>
-                  <Input
-                    id="heroSubtitle"
-                    value={copySettings.heroSubtitle}
-                    onChange={(e) => handleInputChange('heroSubtitle', e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="heroDescription">Hero Description</Label>
+                  <Label htmlFor="dashboardSubtitle">Subtitle</Label>
                   <Textarea
-                    id="heroDescription"
-                    value={copySettings.heroDescription}
-                    onChange={(e) => handleInputChange('heroDescription', e.target.value)}
-                    rows={3}
+                    id="dashboardSubtitle"
+                    value={copySettings.dashboardSubtitle}
+                    onChange={(e) => handleInputChange('dashboardSubtitle', e.target.value)}
+                    rows={2}
                   />
-                </div>
-                
-                <div>
-                  <Label htmlFor="heroCTA">Hero Call-to-Action Button</Label>
-                  <Input
-                    id="heroCTA"
-                    value={copySettings.heroCTA}
-                    onChange={(e) => handleInputChange('heroCTA', e.target.value)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="features" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Feature Cards</CardTitle>
-                <CardDescription>Customize the titles and descriptions for each feature area</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="ecommerceTitle">E-commerce Title</Label>
-                    <Input
-                      id="ecommerceTitle"
-                      value={copySettings.ecommerceTitle}
-                      onChange={(e) => handleInputChange('ecommerceTitle', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="ecommerceDescription">E-commerce Description</Label>
-                    <Textarea
-                      id="ecommerceDescription"
-                      value={copySettings.ecommerceDescription}
-                      onChange={(e) => handleInputChange('ecommerceDescription', e.target.value)}
-                      rows={2}
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="agencyTitle">Agency Title</Label>
-                    <Input
-                      id="agencyTitle"
-                      value={copySettings.agencyTitle}
-                      onChange={(e) => handleInputChange('agencyTitle', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="agencyDescription">Agency Description</Label>
-                    <Textarea
-                      id="agencyDescription"
-                      value={copySettings.agencyDescription}
-                      onChange={(e) => handleInputChange('agencyDescription', e.target.value)}
-                      rows={2}
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="salesTitle">Sales Title</Label>
-                    <Input
-                      id="salesTitle"
-                      value={copySettings.salesTitle}
-                      onChange={(e) => handleInputChange('salesTitle', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="salesDescription">Sales Description</Label>
-                    <Textarea
-                      id="salesDescription"
-                      value={copySettings.salesDescription}
-                      onChange={(e) => handleInputChange('salesDescription', e.target.value)}
-                      rows={2}
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="copywritingTitle">Copywriting Title</Label>
-                    <Input
-                      id="copywritingTitle"
-                      value={copySettings.copywritingTitle}
-                      onChange={(e) => handleInputChange('copywritingTitle', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="copywritingDescription">Copywriting Description</Label>
-                    <Textarea
-                      id="copywritingDescription"
-                      value={copySettings.copywritingDescription}
-                      onChange={(e) => handleInputChange('copywritingDescription', e.target.value)}
-                      rows={2}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="dashboardWelcome">Dashboard Welcome Title</Label>
-                    <Input
-                      id="dashboardWelcome"
-                      value={copySettings.dashboardWelcome}
-                      onChange={(e) => handleInputChange('dashboardWelcome', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="dashboardSubtitle">Dashboard Subtitle</Label>
-                    <Textarea
-                      id="dashboardSubtitle"
-                      value={copySettings.dashboardSubtitle}
-                      onChange={(e) => handleInputChange('dashboardSubtitle', e.target.value)}
-                      rows={2}
-                    />
-                  </div>
                 </div>
               </CardContent>
             </Card>

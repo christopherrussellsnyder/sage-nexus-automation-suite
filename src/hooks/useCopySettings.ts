@@ -6,25 +6,92 @@ interface CopySettings {
   brandName: string;
   brandTagline: string;
   
-  // Hero Section
-  heroTitle: string;
-  heroSubtitle: string;
-  heroDescription: string;
-  heroCTA: string;
+  // Hero Section (Overview Page)
+  overviewHeroTitle: string;
+  overviewHeroSubtitle: string;
+  overviewHeroDescription: string;
+  overviewBadge1: string;
+  overviewBadge2: string;
+  overviewBadge3: string;
+  
+  // Quick Stats (Overview Page)
+  stat1Title: string;
+  stat1Value: string;
+  stat1Description: string;
+  stat2Title: string;
+  stat2Value: string;
+  stat2Description: string;
+  stat3Title: string;
+  stat3Value: string;
+  stat3Description: string;
+  stat4Title: string;
+  stat4Value: string;
+  stat4Description: string;
+  
+  // Platform Features Section
+  platformFeaturesTitle: string;
+  platformFeaturesDescription: string;
   
   // Feature Cards
   ecommerceTitle: string;
   ecommerceDescription: string;
+  ecommerceFeature1: string;
+  ecommerceFeature2: string;
+  ecommerceFeature3: string;
+  ecommerceFeature4: string;
+  ecommerceStat1Key: string;
+  ecommerceStat1Value: string;
+  ecommerceStat2Key: string;
+  ecommerceStat2Value: string;
+  
   agencyTitle: string;
   agencyDescription: string;
+  agencyFeature1: string;
+  agencyFeature2: string;
+  agencyFeature3: string;
+  agencyFeature4: string;
+  agencyStat1Key: string;
+  agencyStat1Value: string;
+  agencyStat2Key: string;
+  agencyStat2Value: string;
+  
   salesTitle: string;
   salesDescription: string;
+  salesFeature1: string;
+  salesFeature2: string;
+  salesFeature3: string;
+  salesFeature4: string;
+  salesStat1Key: string;
+  salesStat1Value: string;
+  salesStat2Key: string;
+  salesStat2Value: string;
+  
   copywritingTitle: string;
   copywritingDescription: string;
+  copywritingFeature1: string;
+  copywritingFeature2: string;
+  copywritingFeature3: string;
+  copywritingFeature4: string;
+  copywritingStat1Key: string;
+  copywritingStat1Value: string;
+  copywritingStat2Key: string;
+  copywritingStat2Value: string;
   
-  // Dashboard
-  dashboardWelcome: string;
-  dashboardSubtitle: string;
+  // Value Proposition Section
+  valuePropositionTitle: string;
+  valuePropositionDescription: string;
+  valueProposition1Title: string;
+  valueProposition1Description: string;
+  valueProposition2Title: string;
+  valueProposition2Description: string;
+  valueProposition3Title: string;
+  valueProposition3Description: string;
+  
+  // CTA Section
+  ctaTitle: string;
+  ctaDescription: string;
+  ctaPrimaryButton: string;
+  ctaSecondaryButton: string;
   
   // Navigation
   featuresLabel: string;
@@ -89,6 +156,13 @@ interface CopySettings {
   dashboardLabel: string;
   adminPanelLabel: string;
   signOutLabel: string;
+  
+  // Dashboard
+  dashboardWelcome: string;
+  dashboardSubtitle: string;
+  
+  // Button Labels
+  exploreButton: string;
 }
 
 const defaultCopySettings: CopySettings = {
@@ -96,25 +170,92 @@ const defaultCopySettings: CopySettings = {
   brandName: 'Sage.ai',
   brandTagline: 'AI Business Automation Suite',
   
-  // Hero Section (from Index.tsx)
-  heroTitle: 'Welcome to the Future of Business Automation',
-  heroSubtitle: 'Transform Your Business with AI-Powered Solutions',
-  heroDescription: 'Streamline operations, boost productivity, and accelerate growth with our comprehensive AI platform.',
-  heroCTA: 'Get Started',
+  // Hero Section (Overview Page)
+  overviewHeroTitle: 'Sage.ai',
+  overviewHeroSubtitle: 'All-in-One AI Business Automation',
+  overviewHeroDescription: 'Streamline your e-commerce, marketing, sales, and copywriting operations with advanced AI automation. Built for entrepreneurs, agencies, and sales teams who want to scale efficiently.',
+  overviewBadge1: 'AI-Powered',
+  overviewBadge2: 'Multi-Platform',
+  overviewBadge3: 'Fully Automated',
+  
+  // Quick Stats (Overview Page)
+  stat1Title: 'Active Projects',
+  stat1Value: '24',
+  stat1Description: 'Across all platforms',
+  stat2Title: 'Time Saved',
+  stat2Value: '156hrs',
+  stat2Description: 'This month',
+  stat3Title: 'Revenue Generated',
+  stat3Value: '$89K',
+  stat3Description: 'Through automation',
+  stat4Title: 'Conversion Rate',
+  stat4Value: '+285%',
+  stat4Description: 'Average improvement',
+  
+  // Platform Features Section
+  platformFeaturesTitle: 'Choose Your Automation Hub',
+  platformFeaturesDescription: 'Select the area where you want to start automating your business',
   
   // Feature Cards
-  ecommerceTitle: 'E-commerce',
-  ecommerceDescription: 'AI-powered product research, listing optimization, and store management',
-  agencyTitle: 'Agency',
-  agencyDescription: 'Complete marketing automation and client management solutions',
-  salesTitle: 'Sales',
-  salesDescription: 'Intelligent lead generation, prospect research, and sales automation',
-  copywritingTitle: 'Copywriting',
-  copywritingDescription: 'AI-generated marketing copy, content creation, and brand messaging',
+  ecommerceTitle: 'E-commerce Automation',
+  ecommerceDescription: 'AI-powered website builder and product research',
+  ecommerceFeature1: 'Custom Website Builder',
+  ecommerceFeature2: 'Weekly Product Research',
+  ecommerceFeature3: 'Trending Product Analysis',
+  ecommerceFeature4: 'Store Templates',
+  ecommerceStat1Key: 'stores',
+  ecommerceStat1Value: '12',
+  ecommerceStat2Key: 'revenue',
+  ecommerceStat2Value: '$45K',
   
-  // Dashboard
-  dashboardWelcome: 'Welcome to Your Dashboard',
-  dashboardSubtitle: 'Choose your area of focus to get started',
+  agencyTitle: 'Marketing Agency Tools',
+  agencyDescription: 'Multi-platform campaign management and optimization',
+  agencyFeature1: 'Campaign Orchestration',
+  agencyFeature2: 'Lead Scoring',
+  agencyFeature3: 'Social Media Factory',
+  agencyFeature4: 'Client Reporting',
+  agencyStat1Key: 'clients',
+  agencyStat1Value: '28',
+  agencyStat2Key: 'campaigns',
+  agencyStat2Value: '156',
+  
+  salesTitle: 'Sales Operations',
+  salesDescription: 'Intelligent prospect research and sales automation',
+  salesFeature1: 'Prospect Research',
+  salesFeature2: 'Sales Sequences',
+  salesFeature3: 'Meeting Intelligence',
+  salesFeature4: 'Deal Progression',
+  salesStat1Key: 'prospects',
+  salesStat1Value: '340',
+  salesStat2Key: 'deals',
+  salesStat2Value: '89',
+  
+  copywritingTitle: 'AI Copywriting Suite',
+  copywritingDescription: 'High-converting copy for websites, ads, emails, and social media',
+  copywritingFeature1: 'Website Copy',
+  copywritingFeature2: 'Ad Copy',
+  copywritingFeature3: 'Email Sequences',
+  copywritingFeature4: 'Social Content',
+  copywritingStat1Key: 'templates',
+  copywritingStat1Value: '150',
+  copywritingStat2Key: 'conv. rate',
+  copywritingStat2Value: '400%',
+  
+  // Value Proposition Section
+  valuePropositionTitle: 'Why Choose Sage.ai?',
+  valuePropositionDescription: 'The only platform that combines e-commerce, marketing, sales, and copywriting automation in one unified system',
+  valueProposition1Title: 'AI-Powered Intelligence',
+  valueProposition1Description: 'Advanced AI analyzes your business data to provide personalized automation strategies',
+  valueProposition2Title: 'All-in-One Platform',
+  valueProposition2Description: 'No need for multiple tools. Everything you need to automate your business in one place',
+  valueProposition3Title: 'Proven Results',
+  valueProposition3Description: 'Join thousands of businesses that have automated their operations and increased revenue',
+  
+  // CTA Section
+  ctaTitle: 'Ready to Automate Your Business?',
+  ctaDescription: 'Start your free trial today and see how AI can transform your operations',
+  ctaPrimaryButton: 'Start Free Trial',
+  ctaSecondaryButton: 'View Pricing',
   
   // Navigation
   featuresLabel: 'Features',
@@ -178,7 +319,14 @@ const defaultCopySettings: CopySettings = {
   accountLabel: 'Account',
   dashboardLabel: 'Dashboard',
   adminPanelLabel: 'Admin Panel',
-  signOutLabel: 'Sign Out'
+  signOutLabel: 'Sign Out',
+  
+  // Dashboard
+  dashboardWelcome: 'Welcome to Your Dashboard',
+  dashboardSubtitle: 'Choose your area of focus to get started',
+  
+  // Button Labels
+  exploreButton: 'Explore'
 };
 
 export const useCopySettings = () => {
