@@ -644,6 +644,114 @@
     background-color: hsl(var(--primary)) !important;
     color: hsl(var(--primary-foreground)) !important;
   }
+
+  /* SPECIFIC TARGETING FOR HIGH PROBLEM/HIGH SATURATION TEXT BUBBLES */
+  
+  /* Target specific text content within input fields or text areas */
+  input[value*="high problem"],
+  input[value*="High Problem"],
+  input[value*="HIGH PROBLEM"],
+  input[value*="high saturation"],
+  input[value*="High Saturation"],
+  input[value*="HIGH SATURATION"],
+  textarea[value*="high problem"],
+  textarea[value*="High Problem"],
+  textarea[value*="HIGH PROBLEM"],
+  textarea[value*="high saturation"],
+  textarea[value*="High Saturation"],
+  textarea[value*="HIGH SATURATION"] {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+
+  /* Target any div or span elements that might contain these specific texts */
+  div:contains("high problem"),
+  div:contains("High Problem"),
+  div:contains("HIGH PROBLEM"),
+  div:contains("high saturation"),
+  div:contains("High Saturation"),
+  div:contains("HIGH SATURATION"),
+  span:contains("high problem"),
+  span:contains("High Problem"),
+  span:contains("HIGH PROBLEM"),
+  span:contains("high saturation"),
+  span:contains("High Saturation"),
+  span:contains("HIGH SATURATION") {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    padding: 0.5rem !important;
+    border-radius: calc(var(--radius) - 4px) !important;
+  }
+
+  /* Target any element with data attributes or classes that might contain these values */
+  [data-value*="high problem"],
+  [data-value*="High Problem"],
+  [data-value*="HIGH PROBLEM"],
+  [data-value*="high saturation"],
+  [data-value*="High Saturation"],
+  [data-value*="HIGH SATURATION"],
+  [class*="high-problem"],
+  [class*="high-saturation"],
+  .high-problem,
+  .high-saturation {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    padding: 0.5rem !important;
+    border-radius: calc(var(--radius) - 4px) !important;
+  }
+
+  /* Target any text elements that might be displayed as bubbles */
+  .text-bubble,
+  .content-bubble,
+  .value-bubble,
+  .tag-bubble,
+  [class*="bubble"] {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    padding: 0.5rem !important;
+    border-radius: calc(var(--radius) - 4px) !important;
+  }
+
+  /* Target badge-like elements that might contain these values */
+  .badge,
+  .tag,
+  .chip,
+  [class*="badge"],
+  [class*="tag"],
+  [class*="chip"] {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+
+  /* Additional targeting for specific content areas that might display these values */
+  .result-item,
+  .content-item,
+  .generated-item,
+  [class*="result-item"],
+  [class*="content-item"],
+  [class*="generated-item"] {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+
+  /* Force any light colored elements to use dark theme */
+  .bg-white *,
+  .bg-gray-50 *,
+  .bg-gray-100 *,
+  .bg-purple-50 *,
+  .bg-blue-50 *,
+  .bg-green-50 *,
+  .bg-yellow-50 *,
+  .bg-pink-50 * {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+  }
 }
 
 /* Additional utility classes for manual application */
