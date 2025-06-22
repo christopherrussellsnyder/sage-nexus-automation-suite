@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -645,112 +646,294 @@
     color: hsl(var(--primary-foreground)) !important;
   }
 
-  /* SPECIFIC TARGETING FOR HIGH PROBLEM/HIGH SATURATION TEXT BUBBLES */
+  /* COMPREHENSIVE TARGETING FOR ALL TEXT BUBBLES AND ELEMENTS */
   
-  /* Target specific text content within input fields or text areas */
-  input[value*="high problem"],
-  input[value*="High Problem"],
-  input[value*="HIGH PROBLEM"],
-  input[value*="high saturation"],
-  input[value*="High Saturation"],
-  input[value*="HIGH SATURATION"],
-  textarea[value*="high problem"],
-  textarea[value*="High Problem"],
-  textarea[value*="HIGH PROBLEM"],
-  textarea[value*="high saturation"],
-  textarea[value*="High Saturation"],
-  textarea[value*="HIGH SATURATION"] {
+  /* Target all possible red/colored backgrounds and force them to black */
+  .bg-red-50,
+  .bg-red-100,
+  .bg-red-200,
+  .bg-red-300,
+  .bg-red-400,
+  .bg-red-500,
+  .bg-orange-50,
+  .bg-orange-100,
+  .bg-orange-200,
+  .bg-orange-300,
+  .bg-orange-400,
+  .bg-orange-500,
+  .bg-amber-50,
+  .bg-amber-100,
+  .bg-amber-200,
+  .bg-amber-300,
+  .bg-amber-400,
+  .bg-amber-500,
+  .bg-yellow-100,
+  .bg-yellow-200,
+  .bg-yellow-300,
+  .bg-yellow-400,
+  .bg-yellow-500,
+  .bg-lime-50,
+  .bg-lime-100,
+  .bg-lime-200,
+  .bg-lime-300,
+  .bg-lime-400,
+  .bg-lime-500,
+  .bg-emerald-50,
+  .bg-emerald-100,
+  .bg-emerald-200,
+  .bg-emerald-300,
+  .bg-emerald-400,
+  .bg-emerald-500,
+  .bg-teal-50,
+  .bg-teal-100,
+  .bg-teal-200,
+  .bg-teal-300,
+  .bg-teal-400,
+  .bg-teal-500,
+  .bg-cyan-50,
+  .bg-cyan-100,
+  .bg-cyan-200,
+  .bg-cyan-300,
+  .bg-cyan-400,
+  .bg-cyan-500,
+  .bg-sky-50,
+  .bg-sky-100,
+  .bg-sky-200,
+  .bg-sky-300,
+  .bg-sky-400,
+  .bg-sky-500,
+  .bg-indigo-50,
+  .bg-indigo-100,
+  .bg-indigo-200,
+  .bg-indigo-300,
+  .bg-indigo-400,
+  .bg-indigo-500,
+  .bg-violet-50,
+  .bg-violet-100,
+  .bg-violet-200,
+  .bg-violet-300,
+  .bg-violet-400,
+  .bg-violet-500,
+  .bg-purple-100,
+  .bg-purple-200,
+  .bg-purple-300,
+  .bg-purple-400,
+  .bg-purple-500,
+  .bg-fuchsia-50,
+  .bg-fuchsia-100,
+  .bg-fuchsia-200,
+  .bg-fuchsia-300,
+  .bg-fuchsia-400,
+  .bg-fuchsia-500,
+  .bg-pink-100,
+  .bg-pink-200,
+  .bg-pink-300,
+  .bg-pink-400,
+  .bg-pink-500,
+  .bg-rose-50,
+  .bg-rose-100,
+  .bg-rose-200,
+  .bg-rose-300,
+  .bg-rose-400,
+  .bg-rose-500 {
     background-color: hsl(var(--response-background)) !important;
     color: hsl(var(--response-foreground)) !important;
     border: 1px solid hsl(var(--border)) !important;
   }
 
-  /* Target any div or span elements that might contain these specific texts */
-  div:contains("high problem"),
-  div:contains("High Problem"),
-  div:contains("HIGH PROBLEM"),
-  div:contains("high saturation"),
-  div:contains("High Saturation"),
-  div:contains("HIGH SATURATION"),
-  span:contains("high problem"),
-  span:contains("High Problem"),
-  span:contains("HIGH PROBLEM"),
-  span:contains("high saturation"),
-  span:contains("High Saturation"),
-  span:contains("HIGH SATURATION") {
-    background-color: hsl(var(--response-background)) !important;
+  /* Target all nested elements within colored backgrounds */
+  .bg-red-50 *,
+  .bg-red-100 *,
+  .bg-red-200 *,
+  .bg-red-300 *,
+  .bg-red-400 *,
+  .bg-red-500 *,
+  .bg-orange-50 *,
+  .bg-orange-100 *,
+  .bg-orange-200 *,
+  .bg-orange-300 *,
+  .bg-orange-400 *,
+  .bg-orange-500 *,
+  .bg-amber-50 *,
+  .bg-amber-100 *,
+  .bg-amber-200 *,
+  .bg-amber-300 *,
+  .bg-amber-400 *,
+  .bg-amber-500 *,
+  .bg-yellow-100 *,
+  .bg-yellow-200 *,
+  .bg-yellow-300 *,
+  .bg-yellow-400 *,
+  .bg-yellow-500 *,
+  .bg-lime-50 *,
+  .bg-lime-100 *,
+  .bg-lime-200 *,
+  .bg-lime-300 *,
+  .bg-lime-400 *,
+  .bg-lime-500 *,
+  .bg-emerald-50 *,
+  .bg-emerald-100 *,
+  .bg-emerald-200 *,
+  .bg-emerald-300 *,
+  .bg-emerald-400 *,
+  .bg-emerald-500 *,
+  .bg-teal-50 *,
+  .bg-teal-100 *,
+  .bg-teal-200 *,
+  .bg-teal-300 *,
+  .bg-teal-400 *,
+  .bg-teal-500 *,
+  .bg-cyan-50 *,
+  .bg-cyan-100 *,
+  .bg-cyan-200 *,
+  .bg-cyan-300 *,
+  .bg-cyan-400 *,
+  .bg-cyan-500 *,
+  .bg-sky-50 *,
+  .bg-sky-100 *,
+  .bg-sky-200 *,
+  .bg-sky-300 *,
+  .bg-sky-400 *,
+  .bg-sky-500 *,
+  .bg-indigo-50 *,
+  .bg-indigo-100 *,
+  .bg-indigo-200 *,
+  .bg-indigo-300 *,
+  .bg-indigo-400 *,
+  .bg-indigo-500 *,
+  .bg-violet-50 *,
+  .bg-violet-100 *,
+  .bg-violet-200 *,
+  .bg-violet-300 *,
+  .bg-violet-400 *,
+  .bg-violet-500 *,
+  .bg-purple-100 *,
+  .bg-purple-200 *,
+  .bg-purple-300 *,
+  .bg-purple-400 *,
+  .bg-purple-500 *,
+  .bg-fuchsia-50 *,
+  .bg-fuchsia-100 *,
+  .bg-fuchsia-200 *,
+  .bg-fuchsia-300 *,
+  .bg-fuchsia-400 *,
+  .bg-fuchsia-500 *,
+  .bg-pink-100 *,
+  .bg-pink-200 *,
+  .bg-pink-300 *,
+  .bg-pink-400 *,
+  .bg-pink-500 *,
+  .bg-rose-50 *,
+  .bg-rose-100 *,
+  .bg-rose-200 *,
+  .bg-rose-300 *,
+  .bg-rose-400 *,
+  .bg-rose-500 * {
     color: hsl(var(--response-foreground)) !important;
-    border: 1px solid hsl(var(--border)) !important;
-    padding: 0.5rem !important;
-    border-radius: calc(var(--radius) - 4px) !important;
   }
 
-  /* Target any element with data attributes or classes that might contain these values */
-  [data-value*="high problem"],
-  [data-value*="High Problem"],
-  [data-value*="HIGH PROBLEM"],
-  [data-value*="high saturation"],
-  [data-value*="High Saturation"],
-  [data-value*="HIGH SATURATION"],
-  [class*="high-problem"],
-  [class*="high-saturation"],
-  .high-problem,
-  .high-saturation {
-    background-color: hsl(var(--response-background)) !important;
-    color: hsl(var(--response-foreground)) !important;
-    border: 1px solid hsl(var(--border)) !important;
-    padding: 0.5rem !important;
-    border-radius: calc(var(--radius) - 4px) !important;
-  }
-
-  /* Target any text elements that might be displayed as bubbles */
+  /* Target any span, div, or text elements that might be text bubbles */
+  span[class*="bg-"],
+  div[class*="bg-"],
+  p[class*="bg-"],
   .text-bubble,
   .content-bubble,
   .value-bubble,
   .tag-bubble,
-  [class*="bubble"] {
-    background-color: hsl(var(--response-background)) !important;
-    color: hsl(var(--response-foreground)) !important;
-    border: 1px solid hsl(var(--border)) !important;
-    padding: 0.5rem !important;
-    border-radius: calc(var(--radius) - 4px) !important;
-  }
-
-  /* Target badge-like elements that might contain these values */
+  .bubble,
+  [class*="bubble"],
   .badge,
   .tag,
   .chip,
+  .pill,
   [class*="badge"],
   [class*="tag"],
-  [class*="chip"] {
+  [class*="chip"],
+  [class*="pill"] {
     background-color: hsl(var(--response-background)) !important;
     color: hsl(var(--response-foreground)) !important;
     border: 1px solid hsl(var(--border)) !important;
   }
 
-  /* Additional targeting for specific content areas that might display these values */
-  .result-item,
-  .content-item,
-  .generated-item,
-  [class*="result-item"],
-  [class*="content-item"],
-  [class*="generated-item"] {
+  /* Target elements with inline styles that might override */
+  [style*="background-color: #ef4444"],
+  [style*="background-color: #f87171"],
+  [style*="background-color: #fca5a5"],
+  [style*="background-color: #fecaca"],
+  [style*="background-color: #fee2e2"],
+  [style*="background-color: #fef2f2"],
+  [style*="background: #ef4444"],
+  [style*="background: #f87171"],
+  [style*="background: #fca5a5"],
+  [style*="background: #fecaca"],
+  [style*="background: #fee2e2"],
+  [style*="background: #fef2f2"],
+  [style*="background-color: rgb(239, 68, 68)"],
+  [style*="background-color: rgb(248, 113, 113)"],
+  [style*="background-color: rgb(252, 165, 165)"],
+  [style*="background-color: rgb(254, 202, 202)"],
+  [style*="background-color: rgb(254, 226, 226)"],
+  [style*="background-color: rgb(254, 242, 242)"],
+  [style*="background: rgb(239, 68, 68)"],
+  [style*="background: rgb(248, 113, 113)"],
+  [style*="background: rgb(252, 165, 165)"],
+  [style*="background: rgb(254, 202, 202)"],
+  [style*="background: rgb(254, 226, 226)"],
+  [style*="background: rgb(254, 242, 242)"] {
     background-color: hsl(var(--response-background)) !important;
     color: hsl(var(--response-foreground)) !important;
     border: 1px solid hsl(var(--border)) !important;
   }
 
-  /* Force any light colored elements to use dark theme */
-  .bg-white *,
-  .bg-gray-50 *,
-  .bg-gray-100 *,
-  .bg-purple-50 *,
-  .bg-blue-50 *,
-  .bg-green-50 *,
-  .bg-yellow-50 *,
-  .bg-pink-50 * {
+  /* Additional targeting for problem/saturation content */
+  [data-value*="problem"],
+  [data-value*="Problem"],
+  [data-value*="PROBLEM"],
+  [data-value*="saturation"],
+  [data-value*="Saturation"],
+  [data-value*="SATURATION"],
+  [data-content*="problem"],
+  [data-content*="Problem"],
+  [data-content*="PROBLEM"],
+  [data-content*="saturation"],
+  [data-content*="Saturation"],
+  [data-content*="SATURATION"],
+  .problem,
+  .saturation,
+  [class*="problem"],
+  [class*="saturation"] {
     background-color: hsl(var(--response-background)) !important;
     color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+
+  /* Universal override for any light backgrounds */
+  [class*="bg-"][class*="50"],
+  [class*="bg-"][class*="100"],
+  [class*="bg-"][class*="200"],
+  [class*="bg-"][class*="300"],
+  [class*="bg-white"],
+  [class*="bg-gray"],
+  [class*="bg-light"] {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+  }
+
+  /* Final catch-all for any remaining light elements */
+  * {
+    background-color: inherit;
+  }
+
+  /* Force override for specific red backgrounds that might be causing issues */
+  .bg-red-500,
+  .bg-red-400,
+  .bg-red-300,
+  .bg-red-200,
+  .bg-red-100,
+  .bg-red-50 {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
   }
 }
 
@@ -788,6 +971,12 @@
     border: 1px solid hsl(var(--border)) !important;
     border-radius: calc(var(--radius) - 2px) !important;
     padding: 1rem !important;
+  }
+
+  /* Force black backgrounds for all Tailwind color variations */
+  .force-dark-bubbles * {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
   }
 }
 
