@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import AdCopyGenerator from '@/components/copy-generation/AdCopyGenerator';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCopySettings } from '@/hooks/useCopySettings';
 
 const AdCopy = () => {
   const navigate = useNavigate();
+  const copy = useCopySettings();
 
   useEffect(() => {
     checkAuth();
@@ -42,12 +44,12 @@ const AdCopy = () => {
             className="flex items-center space-x-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to Dashboard</span>
+            <span>{copy.backToDashboard}</span>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Ad Copy Generator</h1>
+            <h1 className="text-3xl font-bold">{copy.adCopyTitle}</h1>
             <p className="text-muted-foreground">
-              Create compelling ad copy for all major social media platforms
+              {copy.adCopyDescription}
             </p>
           </div>
         </div>

@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import SocialContentGenerator from '@/components/copy-generation/SocialContentGenerator';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCopySettings } from '@/hooks/useCopySettings';
 
 const SocialContent = () => {
   const navigate = useNavigate();
+  const copy = useCopySettings();
 
   useEffect(() => {
     checkAuth();
@@ -42,12 +44,12 @@ const SocialContent = () => {
             className="flex items-center space-x-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to Dashboard</span>
+            <span>{copy.backToDashboard}</span>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Social Content Generator</h1>
+            <h1 className="text-3xl font-bold">{copy.socialContentTitle}</h1>
             <p className="text-muted-foreground">
-              Viral-worthy social media content with complete captions
+              {copy.socialContentDescription}
             </p>
           </div>
         </div>

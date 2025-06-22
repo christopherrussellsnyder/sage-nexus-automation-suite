@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Brain } from 'lucide-react';
+import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const copy = useCopySettings();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,27 +67,27 @@ const Login = () => {
             <Brain className="h-12 w-12 text-blue-600" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            {copy.loginTitle}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Or{' '}
+            {copy.loginLinkText}{' '}
             <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-              create a new account
+              {copy.loginSubtitle}
             </Link>
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Welcome back</CardTitle>
-            <CardDescription>Sign in to your account to continue</CardDescription>
+            <CardTitle>{copy.loginCardTitle}</CardTitle>
+            <CardDescription>{copy.loginCardDescription}</CardDescription>
           </CardHeader>
           <CardContent>
             <form className="space-y-4" onSubmit={handleLogin}>
               <div>
                 <Input
                   type="email"
-                  placeholder="Email address"
+                  placeholder={copy.loginEmailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -94,14 +96,14 @@ const Login = () => {
               <div>
                 <Input
                   type="password"
-                  placeholder="Password"
+                  placeholder={copy.loginPasswordPlaceholder}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading ? copy.loginLoadingText : copy.loginButton}
               </Button>
             </form>
           </CardContent>

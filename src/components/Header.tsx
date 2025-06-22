@@ -43,7 +43,7 @@ const Header = ({ user }: HeaderProps) => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center space-x-1">
                   <PenTool className="h-4 w-4" />
-                  <span>Copywriting Tools</span>
+                  <span>{copy.copywritingToolsLabel}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -75,20 +75,20 @@ const Header = ({ user }: HeaderProps) => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="flex items-center space-x-2">
                   <User className="h-4 w-4" />
-                  <span>Account</span>
+                  <span>{copy.accountLabel}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-                  Dashboard
+                  {copy.dashboardLabel}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/admin')}>
-                  Admin Panel
+                  {copy.adminPanelLabel}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
+                  {copy.signOutLabel}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

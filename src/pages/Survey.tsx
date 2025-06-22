@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Brain } from 'lucide-react';
+import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Survey = () => {
   const [businessType, setBusinessType] = useState('');
@@ -16,6 +17,7 @@ const Survey = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const copy = useCopySettings();
 
   useEffect(() => {
     checkAuth();
@@ -88,21 +90,21 @@ const Survey = () => {
       <div className="max-w-2xl w-full">
         <div className="text-center mb-8">
           <Brain className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900">Welcome to your AI automation platform</h1>
-          <p className="text-gray-600 mt-2">Help us personalize your experience with these 3 quick questions</p>
+          <h1 className="text-3xl font-bold text-gray-900">{copy.surveyTitle}</h1>
+          <p className="text-gray-600 mt-2">{copy.surveyDescription}</p>
         </div>
 
         <Card>
           <CardHeader className="text-center">
-            <CardTitle>Let's customize your AI tools</CardTitle>
+            <CardTitle>{copy.surveyCardTitle}</CardTitle>
             <CardDescription>
-              Your answers will help us show you the most relevant automation features
+              {copy.surveyCardDescription}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-4">
-                <Label className="text-base font-medium">What type of business do you run?</Label>
+                <Label className="text-base font-medium">{copy.surveyQuestion1}</Label>
                 <RadioGroup value={businessType} onValueChange={setBusinessType}>
                   <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-gray-50">
                     <RadioGroupItem value="ecommerce" id="ecommerce" />
@@ -136,7 +138,7 @@ const Survey = () => {
               </div>
 
               <div className="space-y-4">
-                <Label className="text-base font-medium">What's your primary goal with AI automation?</Label>
+                <Label className="text-base font-medium">{copy.surveyQuestion2}</Label>
                 <RadioGroup value={primaryGoal} onValueChange={setPrimaryGoal}>
                   <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-gray-50">
                     <RadioGroupItem value="save-time" id="save-time" />
@@ -170,7 +172,7 @@ const Survey = () => {
               </div>
 
               <div className="space-y-4">
-                <Label className="text-base font-medium">What's your biggest challenge right now?</Label>
+                <Label className="text-base font-medium">{copy.surveyQuestion3}</Label>
                 <RadioGroup value={mainChallenge} onValueChange={setMainChallenge}>
                   <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-gray-50">
                     <RadioGroupItem value="content-creation" id="content-creation" />
@@ -204,7 +206,7 @@ const Survey = () => {
               </div>
 
               <Button type="submit" className="w-full" disabled={loading} size="lg">
-                {loading ? 'Setting up your dashboard...' : 'Complete Setup & Access AI Tools'}
+                {loading ? copy.surveySubmitLoadingText : copy.surveySubmitButton}
               </Button>
             </form>
           </CardContent>
