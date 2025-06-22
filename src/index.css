@@ -565,6 +565,85 @@
   [class*="field-container"] {
     color: hsl(var(--foreground)) !important;
   }
+
+  /* Text selection styling for input fields and textareas */
+  input::selection,
+  textarea::selection,
+  input[type="text"]::selection,
+  input[type="email"]::selection,
+  input[type="password"]::selection,
+  input[type="search"]::selection,
+  input[type="url"]::selection,
+  input[type="tel"]::selection,
+  input[type="number"]::selection,
+  select::selection {
+    background-color: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+  }
+
+  /* Text selection for all form elements within specific containers */
+  .space-y-2 input::selection,
+  .space-y-3 input::selection,
+  .space-y-4 input::selection,
+  .space-y-6 input::selection,
+  .form-group input::selection,
+  .input-group input::selection,
+  .field input::selection,
+  [class*="form"] input::selection,
+  [class*="field"] input::selection,
+  .space-y-2 textarea::selection,
+  .space-y-3 textarea::selection,
+  .space-y-4 textarea::selection,
+  .space-y-6 textarea::selection,
+  .form-group textarea::selection,
+  .input-group textarea::selection,
+  .field textarea::selection,
+  [class*="form"] textarea::selection,
+  [class*="field"] textarea::selection {
+    background-color: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+  }
+
+  /* Component-specific text selection */
+  .ad-copy input::selection,
+  .ad-copy textarea::selection,
+  .website-copy input::selection,
+  .website-copy textarea::selection,
+  .email-sequence input::selection,
+  .email-sequence textarea::selection,
+  .social-content input::selection,
+  .social-content textarea::selection,
+  .ecommerce input::selection,
+  .ecommerce textarea::selection,
+  .agency input::selection,
+  .agency textarea::selection,
+  .sales input::selection,
+  .sales textarea::selection,
+  .copywriting input::selection,
+  .copywriting textarea::selection {
+    background-color: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+  }
+
+  /* Generator component text selection */
+  .generator input::selection,
+  .generator textarea::selection,
+  [class*="generator"] input::selection,
+  [class*="generator"] textarea::selection,
+  [class*="Generator"] input::selection,
+  [class*="Generator"] textarea::selection {
+    background-color: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+  }
+
+  /* Card and container text selection */
+  .card input::selection,
+  .card textarea::selection,
+  [class*="card"] input::selection,
+  [class*="card"] textarea::selection {
+    background-color: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+  }
 }
 
 /* Additional utility classes for manual application */
