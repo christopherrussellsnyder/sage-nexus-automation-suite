@@ -117,17 +117,27 @@
     background-clip: text;
   }
 
-  /* AI Response/Output styling for all features */
+  /* AI Response/Output styling for all features - Enhanced targeting */
   .ai-response,
   .generated-content,
   .output-area,
   .response-content,
   .result-content,
   .ai-output,
+  .template-content,
+  .generated-template,
+  .ai-generated-text,
+  .copy-output,
+  .generation-result,
   [class*="response"],
   [class*="output"],
   [class*="result"],
-  [class*="generated"] {
+  [class*="generated"],
+  [class*="template"],
+  [class*="copy-"],
+  [data-testid*="output"],
+  [data-testid*="result"],
+  [data-testid*="generated"] {
     background-color: hsl(var(--response-background)) !important;
     color: hsl(var(--response-foreground)) !important;
     border: 1px solid hsl(var(--border)) !important;
@@ -139,12 +149,39 @@
     word-wrap: break-word !important;
   }
 
-  /* Specific targeting for common response containers */
+  /* Specific targeting for common response containers and white backgrounds */
+  .bg-white,
   .bg-gray-50,
   .bg-gray-100,
   .bg-muted,
   .bg-secondary {
     background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+  }
+
+  /* Target any div or container that might contain generated content */
+  div[class*="whitespace-pre-wrap"],
+  div[class*="bg-white"],
+  div[class*="bg-gray"],
+  .prose,
+  .prose-sm,
+  .prose-lg {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+  }
+
+  /* Ensure all text elements within response areas are white */
+  .ai-response *,
+  .generated-content *,
+  .output-area *,
+  .response-content *,
+  .result-content *,
+  .ai-output *,
+  .template-content *,
+  .generated-template *,
+  .ai-generated-text *,
+  .copy-output *,
+  .generation-result * {
     color: hsl(var(--response-foreground)) !important;
   }
 
@@ -225,6 +262,26 @@
     margin: 0.25rem 0 !important;
     color: hsl(var(--response-foreground)) !important;
   }
+
+  /* Additional targeting for specific content areas that might appear white */
+  [style*="background-color: white"],
+  [style*="background-color: #fff"],
+  [style*="background-color: #ffffff"],
+  [style*="background: white"],
+  [style*="background: #fff"],
+  [style*="background: #ffffff"] {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+  }
+
+  /* Target textarea and input elements that might contain generated content */
+  textarea[readonly],
+  input[readonly],
+  .readonly {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
 }
 
 /* Additional utility classes for manual application */
@@ -240,5 +297,17 @@
     border: 1px solid hsl(var(--border)) !important;
     border-radius: calc(var(--radius) - 2px) !important;
     padding: 1rem !important;
+  }
+
+  /* Force black background and white text for any element */
+  .force-black-bg {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+  }
+
+  /* Override any white backgrounds */
+  .no-white-bg {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
   }
 }
