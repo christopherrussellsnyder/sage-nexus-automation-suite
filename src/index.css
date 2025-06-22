@@ -117,7 +117,9 @@
     background-clip: text;
   }
 
-  /* AI Response/Output styling for all features - Enhanced targeting */
+  /* COMPREHENSIVE AI RESPONSE/OUTPUT STYLING - All Features Coverage */
+  
+  /* Primary response content selectors */
   .ai-response,
   .generated-content,
   .output-area,
@@ -129,15 +131,41 @@
   .ai-generated-text,
   .copy-output,
   .generation-result,
+  
+  /* Feature-specific response areas */
+  .ad-copy-result,
+  .website-copy-result,
+  .email-sequence-result,
+  .social-content-result,
+  .copywriting-output,
+  .ecommerce-template,
+  .agency-campaign-result,
+  .sales-sequence-result,
+  
+  /* Generic class-based selectors */
   [class*="response"],
   [class*="output"],
   [class*="result"],
   [class*="generated"],
   [class*="template"],
   [class*="copy-"],
+  [class*="ai-"],
+  [class*="content-"],
+  
+  /* Data attribute selectors */
   [data-testid*="output"],
   [data-testid*="result"],
-  [data-testid*="generated"] {
+  [data-testid*="generated"],
+  [data-testid*="response"],
+  [data-testid*="template"],
+  
+  /* Card content that contains generated text */
+  .bg-purple-50,
+  .bg-blue-50,
+  .bg-green-50,
+  .bg-yellow-50,
+  .bg-pink-50,
+  .bg-gray-50 {
     background-color: hsl(var(--response-background)) !important;
     color: hsl(var(--response-foreground)) !important;
     border: 1px solid hsl(var(--border)) !important;
@@ -149,9 +177,8 @@
     word-wrap: break-word !important;
   }
 
-  /* Specific targeting for common response containers and white backgrounds */
+  /* Specific targeting for all background variations that might contain responses */
   .bg-white,
-  .bg-gray-50,
   .bg-gray-100,
   .bg-muted,
   .bg-secondary {
@@ -163,6 +190,11 @@
   div[class*="whitespace-pre-wrap"],
   div[class*="bg-white"],
   div[class*="bg-gray"],
+  div[class*="bg-purple"],
+  div[class*="bg-blue"],
+  div[class*="bg-green"],
+  div[class*="bg-yellow"],
+  div[class*="bg-pink"],
   .prose,
   .prose-sm,
   .prose-lg {
@@ -170,7 +202,7 @@
     color: hsl(var(--response-foreground)) !important;
   }
 
-  /* Ensure all text elements within response areas are white */
+  /* Ensure ALL text elements within response areas are white */
   .ai-response *,
   .generated-content *,
   .output-area *,
@@ -181,7 +213,21 @@
   .generated-template *,
   .ai-generated-text *,
   .copy-output *,
-  .generation-result * {
+  .generation-result *,
+  .ad-copy-result *,
+  .website-copy-result *,
+  .email-sequence-result *,
+  .social-content-result *,
+  .copywriting-output *,
+  .ecommerce-template *,
+  .agency-campaign-result *,
+  .sales-sequence-result *,
+  .bg-purple-50 *,
+  .bg-blue-50 *,
+  .bg-green-50 *,
+  .bg-yellow-50 *,
+  .bg-pink-50 *,
+  .bg-gray-50 * {
     color: hsl(var(--response-foreground)) !important;
   }
 
@@ -192,6 +238,14 @@
   .response-content pre,
   .result-content pre,
   .ai-output pre,
+  .template-content pre,
+  .generated-template pre,
+  .bg-purple-50 pre,
+  .bg-blue-50 pre,
+  .bg-green-50 pre,
+  .bg-yellow-50 pre,
+  .bg-pink-50 pre,
+  .bg-gray-50 pre,
   [class*="response"] pre,
   [class*="output"] pre,
   [class*="result"] pre,
@@ -221,7 +275,19 @@
   .output-area h3,
   .output-area h4,
   .output-area h5,
-  .output-area h6 {
+  .output-area h6,
+  .bg-purple-50 h1,
+  .bg-purple-50 h2,
+  .bg-purple-50 h3,
+  .bg-purple-50 h4,
+  .bg-purple-50 h5,
+  .bg-purple-50 h6,
+  .bg-blue-50 h1,
+  .bg-blue-50 h2,
+  .bg-blue-50 h3,
+  .bg-blue-50 h4,
+  .bg-blue-50 h5,
+  .bg-blue-50 h6 {
     color: hsl(var(--primary)) !important;
     margin: 1rem 0 0.5rem 0 !important;
   }
@@ -232,7 +298,19 @@
   .generated-content strong,
   .generated-content b,
   .output-area strong,
-  .output-area b {
+  .output-area b,
+  .bg-purple-50 strong,
+  .bg-purple-50 b,
+  .bg-blue-50 strong,
+  .bg-blue-50 b,
+  .bg-green-50 strong,
+  .bg-green-50 b,
+  .bg-yellow-50 strong,
+  .bg-yellow-50 b,
+  .bg-pink-50 strong,
+  .bg-pink-50 b,
+  .bg-gray-50 strong,
+  .bg-gray-50 b {
     color: hsl(var(--primary)) !important;
     font-weight: 600 !important;
   }
@@ -240,7 +318,13 @@
   /* Links in responses */
   .ai-response a,
   .generated-content a,
-  .output-area a {
+  .output-area a,
+  .bg-purple-50 a,
+  .bg-blue-50 a,
+  .bg-green-50 a,
+  .bg-yellow-50 a,
+  .bg-pink-50 a,
+  .bg-gray-50 a {
     color: hsl(var(--primary)) !important;
     text-decoration: underline !important;
   }
@@ -251,25 +335,45 @@
   .generated-content ul,
   .generated-content ol,
   .output-area ul,
-  .output-area ol {
+  .output-area ol,
+  .bg-purple-50 ul,
+  .bg-purple-50 ol,
+  .bg-blue-50 ul,
+  .bg-blue-50 ol,
+  .bg-green-50 ul,
+  .bg-green-50 ol,
+  .bg-yellow-50 ul,
+  .bg-yellow-50 ol,
+  .bg-pink-50 ul,
+  .bg-pink-50 ol,
+  .bg-gray-50 ul,
+  .bg-gray-50 ol {
     margin: 0.5rem 0 !important;
     padding-left: 1.5rem !important;
   }
 
   .ai-response li,
   .generated-content li,
-  .output-area li {
+  .output-area li,
+  .bg-purple-50 li,
+  .bg-blue-50 li,
+  .bg-green-50 li,
+  .bg-yellow-50 li,
+  .bg-pink-50 li,
+  .bg-gray-50 li {
     margin: 0.25rem 0 !important;
     color: hsl(var(--response-foreground)) !important;
   }
 
-  /* Additional targeting for specific content areas that might appear white */
+  /* Additional targeting for inline styles that might override */
   [style*="background-color: white"],
   [style*="background-color: #fff"],
   [style*="background-color: #ffffff"],
   [style*="background: white"],
   [style*="background: #fff"],
-  [style*="background: #ffffff"] {
+  [style*="background: #ffffff"],
+  [style*="background-color: rgb(255, 255, 255)"],
+  [style*="background: rgb(255, 255, 255)"] {
     background-color: hsl(var(--response-background)) !important;
     color: hsl(var(--response-foreground)) !important;
   }
@@ -281,6 +385,16 @@
     background-color: hsl(var(--response-background)) !important;
     color: hsl(var(--response-foreground)) !important;
     border: 1px solid hsl(var(--border)) !important;
+  }
+
+  /* Specific targeting for copywriting component response areas */
+  .space-y-4 > div[class*="bg-"],
+  .space-y-3 > div[class*="bg-"],
+  .rounded-lg[class*="bg-"],
+  .p-4[class*="bg-"],
+  .p-3[class*="bg-"] {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
   }
 }
 
@@ -309,5 +423,14 @@
   .no-white-bg {
     background-color: hsl(var(--response-background)) !important;
     color: hsl(var(--response-foreground)) !important;
+  }
+
+  /* Apply to specific template response containers */
+  .template-response {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: calc(var(--radius) - 2px) !important;
+    padding: 1rem !important;
   }
 }
