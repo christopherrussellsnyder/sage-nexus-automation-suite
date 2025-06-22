@@ -45,6 +45,10 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 15%;
     --sidebar-ring: 142 86% 41%;
+
+    /* Response/Output area specific variables */
+    --response-background: 0 0% 0%; /* Pure black for responses */
+    --response-foreground: 0 0% 100%; /* Pure white text */
   }
 
   .dark {
@@ -75,6 +79,8 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 15%;
     --sidebar-ring: 142 86% 41%;
+    --response-background: 0 0% 0%;
+    --response-foreground: 0 0% 100%;
   }
 }
 
@@ -109,5 +115,130 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* AI Response/Output styling for all features */
+  .ai-response,
+  .generated-content,
+  .output-area,
+  .response-content,
+  .result-content,
+  .ai-output,
+  [class*="response"],
+  [class*="output"],
+  [class*="result"],
+  [class*="generated"] {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: calc(var(--radius) - 2px) !important;
+    padding: 1rem !important;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace !important;
+    line-height: 1.6 !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+  }
+
+  /* Specific targeting for common response containers */
+  .bg-gray-50,
+  .bg-gray-100,
+  .bg-muted,
+  .bg-secondary {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+  }
+
+  /* Ensure readability for code blocks and pre elements within responses */
+  .ai-response pre,
+  .generated-content pre,
+  .output-area pre,
+  .response-content pre,
+  .result-content pre,
+  .ai-output pre,
+  [class*="response"] pre,
+  [class*="output"] pre,
+  [class*="result"] pre,
+  [class*="generated"] pre {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    padding: 0.75rem !important;
+    border-radius: calc(var(--radius) - 4px) !important;
+  }
+
+  /* Typography improvements for responses */
+  .ai-response h1,
+  .ai-response h2,
+  .ai-response h3,
+  .ai-response h4,
+  .ai-response h5,
+  .ai-response h6,
+  .generated-content h1,
+  .generated-content h2,
+  .generated-content h3,
+  .generated-content h4,
+  .generated-content h5,
+  .generated-content h6,
+  .output-area h1,
+  .output-area h2,
+  .output-area h3,
+  .output-area h4,
+  .output-area h5,
+  .output-area h6 {
+    color: hsl(var(--primary)) !important;
+    margin: 1rem 0 0.5rem 0 !important;
+  }
+
+  /* Strong/bold text in responses */
+  .ai-response strong,
+  .ai-response b,
+  .generated-content strong,
+  .generated-content b,
+  .output-area strong,
+  .output-area b {
+    color: hsl(var(--primary)) !important;
+    font-weight: 600 !important;
+  }
+
+  /* Links in responses */
+  .ai-response a,
+  .generated-content a,
+  .output-area a {
+    color: hsl(var(--primary)) !important;
+    text-decoration: underline !important;
+  }
+
+  /* Lists in responses */
+  .ai-response ul,
+  .ai-response ol,
+  .generated-content ul,
+  .generated-content ol,
+  .output-area ul,
+  .output-area ol {
+    margin: 0.5rem 0 !important;
+    padding-left: 1.5rem !important;
+  }
+
+  .ai-response li,
+  .generated-content li,
+  .output-area li {
+    margin: 0.25rem 0 !important;
+    color: hsl(var(--response-foreground)) !important;
+  }
+}
+
+/* Additional utility classes for manual application */
+@layer utilities {
+  .response-bg {
+    background-color: hsl(var(--response-background));
+    color: hsl(var(--response-foreground));
+  }
+
+  .force-response-styling {
+    background-color: hsl(var(--response-background)) !important;
+    color: hsl(var(--response-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: calc(var(--radius) - 2px) !important;
+    padding: 1rem !important;
   }
 }
