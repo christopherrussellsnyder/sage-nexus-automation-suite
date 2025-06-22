@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 interface CopySettings {
@@ -6,7 +5,7 @@ interface CopySettings {
   brandName: string;
   brandTagline: string;
   
-  // Hero Section (Overview Page)
+  // Hero Section (Overview Page) - Updated for multi-feature platform
   overviewHeroTitle: string;
   overviewHeroSubtitle: string;
   overviewHeroDescription: string;
@@ -14,7 +13,7 @@ interface CopySettings {
   overviewBadge2: string;
   overviewBadge3: string;
   
-  // Quick Stats (Overview Page)
+  // Quick Stats (Overview Page) - Updated for platform scope
   stat1Title: string;
   stat1Value: string;
   stat1Description: string;
@@ -28,11 +27,11 @@ interface CopySettings {
   stat4Value: string;
   stat4Description: string;
   
-  // Platform Features Section
+  // Platform Features Section - Updated
   platformFeaturesTitle: string;
   platformFeaturesDescription: string;
   
-  // Feature Cards
+  // Feature Cards - Confident, benefit-focused copy
   ecommerceTitle: string;
   ecommerceDescription: string;
   ecommerceFeature1: string;
@@ -77,7 +76,7 @@ interface CopySettings {
   copywritingStat2Key: string;
   copywritingStat2Value: string;
   
-  // Value Proposition Section
+  // Value Proposition Section - Updated for platform scope
   valuePropositionTitle: string;
   valuePropositionDescription: string;
   valueProposition1Title: string;
@@ -87,7 +86,7 @@ interface CopySettings {
   valueProposition3Title: string;
   valueProposition3Description: string;
   
-  // CTA Section
+  // CTA Section - Updated
   ctaTitle: string;
   ctaDescription: string;
   ctaPrimaryButton: string;
@@ -170,31 +169,31 @@ const defaultCopySettings: CopySettings = {
   brandName: 'Sage.ai',
   brandTagline: 'Stop Guessing. Start Converting.',
   
-  // Hero Section (Overview Page) - TradePath AI inspired
+  // Hero Section (Overview Page) - Updated for multi-feature platform
   overviewHeroTitle: 'Sage.ai',
-  overviewHeroSubtitle: 'Unlock Your Business Potential with AI-Powered Copy',
-  overviewHeroDescription: 'Stop struggling with mediocre messaging. Transform your copywriting from guesswork into a data-driven competitive advantage. Join thousands of businesses who trust Sage.ai to create high-converting copy that actually works.',
-  overviewBadge1: 'Data-Driven',
-  overviewBadge2: 'Proven Results',
-  overviewBadge3: 'Industry-Specific',
+  overviewHeroSubtitle: 'Your Complete AI Business Growth Platform',
+  overviewHeroDescription: 'Stop struggling with mediocre results across your business operations. Transform everything from copywriting to sales, e-commerce, and agency management with our comprehensive AI-powered suite. Join thousands of businesses who trust Sage.ai to create data-driven competitive advantages across every aspect of their growth.',
+  overviewBadge1: 'All-In-One Platform',
+  overviewBadge2: 'Multi-Industry AI',
+  overviewBadge3: 'Proven Results',
   
-  // Quick Stats (Overview Page)
-  stat1Title: 'Revenue Generated',
+  // Quick Stats (Overview Page) - Updated for platform scope
+  stat1Title: 'Business Growth',
   stat1Value: '$2.4M+',
-  stat1Description: 'Through optimized copy',
-  stat2Title: 'Conversion Boost',
+  stat1Description: 'Revenue generated across all features',
+  stat2Title: 'Average Improvement',
   stat2Value: '340%',
-  stat2Description: 'Average improvement',
-  stat3Title: 'Active Users',
+  stat2Description: 'Across all business functions',
+  stat3Title: 'Active Businesses',
   stat3Value: '15,000+',
-  stat3Description: 'Trust our platform',
-  stat4Title: 'Copy Templates',
+  stat3Description: 'Trust our AI platform',
+  stat4Title: 'AI Tools Available',
   stat4Value: '500+',
-  stat4Description: 'Ready to deploy',
+  stat4Description: 'Across all business areas',
   
-  // Platform Features Section
-  platformFeaturesTitle: 'Choose Your Growth Engine',
-  platformFeaturesDescription: 'Select the area where you want to accelerate your results and dominate your market',
+  // Platform Features Section - Updated
+  platformFeaturesTitle: 'Choose Your AI-Powered Growth Engine',
+  platformFeaturesDescription: 'Select the business area where you want to accelerate results and dominate your market with intelligent automation',
   
   // Feature Cards - Confident, benefit-focused copy
   ecommerceTitle: 'E-commerce Domination',
@@ -241,20 +240,20 @@ const defaultCopySettings: CopySettings = {
   copywritingStat2Key: 'avg improvement',
   copywritingStat2Value: '400%',
   
-  // Value Proposition Section
-  valuePropositionTitle: 'Why Sage.ai Wins',
-  valuePropositionDescription: 'Unlike generic copywriting tools that rely on templates, we provide personalized, data-driven insights tailored to your specific industry and audience.',
-  valueProposition1Title: 'Industry Intelligence',
-  valueProposition1Description: 'Our AI analyzes top-performing content across your industry to understand what actually converts your specific audience',
-  valueProposition2Title: 'Proven Frameworks',
-  valueProposition2Description: 'Stop reinventing the wheel. Use battle-tested psychological triggers and frameworks that drive real results',
-  valueProposition3Title: 'Competitive Edge',
-  valueProposition3Description: 'Get insights into what your competitors are doing wrong and capitalize on market gaps they are missing',
+  // Value Proposition Section - Updated for platform scope
+  valuePropositionTitle: 'Why Sage.ai Dominates',
+  valuePropositionDescription: 'Unlike single-purpose tools that leave gaps in your business growth, we provide a comprehensive AI platform that optimizes every aspect of your operations with personalized, data-driven insights.',
+  valueProposition1Title: 'Complete Business Intelligence',
+  valueProposition1Description: 'Our AI analyzes top-performing strategies across e-commerce, sales, marketing, and copywriting to optimize your entire business ecosystem',
+  valueProposition2Title: 'Integrated Growth System',
+  valueProposition2Description: 'Stop juggling multiple tools. Our unified platform ensures every business function works together for maximum results',
+  valueProposition3Title: 'Cross-Platform Dominance',
+  valueProposition3Description: 'Gain competitive advantages across all business areas while competitors struggle with fragmented solutions',
   
-  // CTA Section
-  ctaTitle: 'Ready to Transform Your Business Results?',
-  ctaDescription: 'Join thousands of businesses who have unlocked their potential with AI-powered copywriting that actually converts.',
-  ctaPrimaryButton: 'Start Winning Now',
+  // CTA Section - Updated
+  ctaTitle: 'Ready to Transform Your Entire Business?',
+  ctaDescription: 'Join thousands of businesses who have unlocked exponential growth across all operations with our comprehensive AI platform.',
+  ctaPrimaryButton: 'Start My Transformation',
   ctaSecondaryButton: 'See Success Stories',
   
   // Navigation
@@ -268,7 +267,7 @@ const defaultCopySettings: CopySettings = {
   loginTitle: 'Welcome back to Sage.ai',
   loginSubtitle: 'create a new account',
   loginCardTitle: 'Continue Your Success',
-  loginCardDescription: 'Sign in to access your high-converting copy tools',
+  loginCardDescription: 'Sign in to access your AI business growth platform',
   loginEmailPlaceholder: 'Email address',
   loginPasswordPlaceholder: 'Password',
   loginButton: 'Access Dashboard',
@@ -276,10 +275,10 @@ const defaultCopySettings: CopySettings = {
   loginLinkText: 'Or',
   
   // Signup Page
-  signupTitle: 'Unlock Your Copy Potential',
+  signupTitle: 'Unlock Your Business Potential',
   signupSubtitle: 'sign in to your existing account',
   signupCardTitle: 'Start Winning Today',
-  signupCardDescription: 'Join thousands who have transformed their business with AI-powered copy',
+  signupCardDescription: 'Join thousands who have transformed their entire business with our AI platform',
   signupEmailPlaceholder: 'Email address',
   signupPasswordPlaceholder: 'Password',
   signupButton: 'Start My Transformation',
@@ -315,7 +314,7 @@ const defaultCopySettings: CopySettings = {
   backToDashboard: 'Back to Dashboard',
   
   // Header Dropdown
-  copywritingToolsLabel: 'Copy Tools',
+  copywritingToolsLabel: 'AI Tools',
   accountLabel: 'Account',
   dashboardLabel: 'Dashboard',
   adminPanelLabel: 'Control Center',
@@ -323,7 +322,7 @@ const defaultCopySettings: CopySettings = {
   
   // Dashboard
   dashboardWelcome: 'Ready to Dominate Your Market?',
-  dashboardSubtitle: 'Choose your weapon and start converting like never before',
+  dashboardSubtitle: 'Choose your AI-powered weapon and start converting like never before',
   
   // Button Labels
   exploreButton: 'Start Winning'
