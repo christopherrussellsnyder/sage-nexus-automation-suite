@@ -23,14 +23,17 @@ import EcommerceDashboard from "@/components/EcommerceDashboard";
 import AgencyDashboard from "@/components/AgencyDashboard";
 import SalesDashboard from "@/components/SalesDashboard";
 import CopywritingDashboard from "@/components/CopywritingDashboard";
+import IntelligenceDashboard from "@/components/IntelligenceDashboard";
 import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState<'overview' | 'ecommerce' | 'agency' | 'sales' | 'copywriting'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'ecommerce' | 'agency' | 'sales' | 'copywriting'>('overview');
   const copy = useCopySettings();
 
   const renderContent = () => {
     switch (activeSection) {
+      case 'intelligence':
+        return <IntelligenceDashboard />;
       case 'ecommerce':
         return <EcommerceDashboard />;
       case 'agency':
@@ -69,6 +72,15 @@ const Index = () => {
               >
                 <BarChart3 className="h-4 w-4" />
                 <span className="hidden sm:inline">Overview</span>
+              </Button>
+              <Button
+                variant={activeSection === 'intelligence' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveSection('intelligence')}
+                className="flex items-center space-x-2"
+              >
+                <Brain className="h-4 w-4" />
+                <span className="hidden sm:inline">Intelligence</span>
               </Button>
               <Button
                 variant={activeSection === 'ecommerce' ? 'default' : 'ghost'}

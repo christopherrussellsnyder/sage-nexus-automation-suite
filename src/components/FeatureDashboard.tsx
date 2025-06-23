@@ -36,7 +36,7 @@ const FeatureDashboard = () => {
     {
       id: 'ecommerce',
       title: 'E-commerce Suite',
-      description: 'Product research and marketing intelligence',
+      description: 'Product research and marketing optimization',
       icon: ShoppingCart,
       color: 'bg-gradient-to-br from-blue-500 to-cyan-600',
       badge: 'PRO',

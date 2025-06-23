@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, RefreshCw, Brain, TrendingUp } from "lucide-react";
+import { Sparkles, RefreshCw } from "lucide-react";
 import WebsiteCopyGenerator from './WebsiteCopyGenerator';
 import AdCopyGenerator from './AdCopyGenerator';
 import EmailSequenceGenerator from '../copy-generation/EmailSequenceGenerator';
@@ -27,47 +28,6 @@ const CopyGenerationHub = ({ activeType }: CopyGenerationHubProps) => {
   });
   
   const [loading, setLoading] = useState(false);
-  const [competitorAnalysis, setCompetitorAnalysis] = useState<any>(null);
-  const [analyzingCompetitors, setAnalyzingCompetitors] = useState(false);
-
-  const analyzeCompetitors = async () => {
-    setAnalyzingCompetitors(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockAnalysis = {
-        topPerformers: [
-          {
-            name: `Top ${businessData.industry} Brand`,
-            conversionRate: 4.2,
-            topMessages: [
-              "Transform your business in 30 days",
-              "The only solution you'll ever need", 
-              "Join 10,000+ successful customers"
-            ],
-            psychologyTriggers: ['urgency', 'social proof', 'authority'],
-            frameworks: ['Problem-Agitation-Solution', 'Before-After-Bridge', 'AIDA']
-          }
-        ],
-        industryTrends: [
-          "Increasing focus on personalization",
-          "Emphasis on quick results and transformation",
-          "Strong use of social proof and testimonials"
-        ],
-        commonEmotions: ['urgency', 'desire', 'fear of missing out', 'trust'],
-        gapOpportunities: [
-          "Most competitors focus on features, not outcomes",
-          "Limited use of storytelling in copy",
-          "Weak emotional connection in messaging"
-        ]
-      };
-      setCompetitorAnalysis(mockAnalysis);
-    } catch (error) {
-      console.error('Error analyzing competitors:', error);
-    } finally {
-      setAnalyzingCompetitors(false);
-    }
-  };
 
   const handleGenerate = () => {
     setLoading(true);
@@ -80,7 +40,7 @@ const CopyGenerationHub = ({ activeType }: CopyGenerationHubProps) => {
       case 'website':
         return {
           title: 'Website Copy Generator',
-          description: 'Generate section-by-section website copy based on top competitor analysis'
+          description: 'Generate section-by-section website copy optimized for conversions'
         };
       case 'ads':
         return {
@@ -187,37 +147,10 @@ const CopyGenerationHub = ({ activeType }: CopyGenerationHubProps) => {
                 </Select>
               </div>
 
-              <div className="space-y-2 pt-4 border-t">
-                <Label className="text-sm font-medium flex items-center space-x-2">
-                  <TrendingUp className="h-4 w-4" />
-                  <span>Competitive Intelligence</span>
-                </Label>
-                {!competitorAnalysis && (
-                  <Button 
-                    onClick={analyzeCompetitors}
-                    disabled={analyzingCompetitors || !businessData.industry}
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                  >
-                    <Brain className="h-4 w-4 mr-2" />
-                    {analyzingCompetitors ? 'Analyzing...' : 'Analyze Industry Copy'}
-                  </Button>
-                )}
-                
-                {competitorAnalysis && (
-                  <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                    <div className="flex items-center space-x-2 text-green-600 mb-2">
-                      <Brain className="h-4 w-4" />
-                      <span className="text-sm font-semibold">Analysis Complete!</span>
-                    </div>
-                    <div className="text-xs text-green-700 space-y-1">
-                      <div>• {competitorAnalysis.commonEmotions?.length || 0} emotional triggers identified</div>
-                      <div>• {competitorAnalysis.gapOpportunities?.length || 0} market gaps found</div>
-                      <div>• Industry conversion benchmarks loaded</div>
-                    </div>
-                  </div>
-                )}
+              <div className="pt-4 border-t">
+                <Badge variant="outline" className="w-full justify-center">
+                  For competitive intelligence, use the Intelligence feature
+                </Badge>
               </div>
             </CardContent>
           </Card>
