@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-50 border-t">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Brain className="h-6 w-6 text-blue-600" />
@@ -17,28 +17,6 @@ const Footer = () => {
               AI-powered tools for campaign creation, lead scoring, prospect research, website building, 
               and automated sales sequences.
             </p>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4">Features</h3>
-            <ul className="space-y-2 text-gray-600">
-              <li><a href="/features" className="hover:text-gray-900">AI Copywriting</a></li>
-              <li><a href="/features" className="hover:text-gray-900">Marketing Campaigns</a></li>
-              <li><a href="/features" className="hover:text-gray-900">Sales Automation</a></li>
-              <li><a href="/features" className="hover:text-gray-900">E-commerce Tools</a></li>
-              <li><a href="/features" className="hover:text-gray-900">Lead Scoring</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4">Solutions</h3>
-            <ul className="space-y-2 text-gray-600">
-              <li><a href="/dashboard" className="hover:text-gray-900">Website Builder</a></li>
-              <li><a href="/dashboard" className="hover:text-gray-900">Product Research</a></li>
-              <li><a href="/dashboard" className="hover:text-gray-900">Email Sequences</a></li>
-              <li><a href="/dashboard" className="hover:text-gray-900">Meeting Scheduler</a></li>
-              <li><a href="/dashboard" className="hover:text-gray-900">Deal Tracking</a></li>
-            </ul>
           </div>
 
           <div>
