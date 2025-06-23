@@ -255,7 +255,7 @@ const UnifiedIntelligenceWizard = ({
       {/* Header */}
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold">
-          {businessType.charAt(0).toUpperCase() + businessType.slice(1)} {getModeTitle()}
+          {getModeTitle()}
         </h2>
         <p className="text-muted-foreground">
           Complete the setup to receive personalized {intelligenceMode === 'full' ? 'comprehensive' : intelligenceMode} insights
