@@ -56,7 +56,7 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
       monthlyPlan: ['full', 'marketing'],
       metrics: ['full', 'marketing'],
       competitors: ['full', 'competitor'],
-      copywriting: ['full', 'copywriting']
+      copywriting: ['full', 'copywriting'] // Only show for full and copywriting modes
     };
     
     return sectionMapping[section]?.includes(intelligenceMode) || false;
@@ -121,15 +121,15 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
           <CompetitorInsights data={data} />
         )}
 
-        {/* Copywriting-specific message */}
-        {intelligenceMode === 'copywriting' && (
+        {/* Marketing-specific message */}
+        {intelligenceMode === 'marketing' && (
           <Card>
             <CardContent className="pt-6">
               <div className="text-center space-y-2">
-                <h3 className="font-semibold">Copywriting Focus Mode</h3>
+                <h3 className="font-semibold">Marketing Focus Mode</h3>
                 <p className="text-sm text-muted-foreground">
-                  This report focuses specifically on copywriting recommendations. 
-                  Switch to "Full Intelligence" mode for comprehensive marketing insights.
+                  This report focuses specifically on marketing strategy and campaign recommendations. 
+                  Switch to "Full Intelligence" mode for comprehensive insights including copywriting analysis.
                 </p>
               </div>
             </CardContent>

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +28,7 @@ interface ContentDay {
   hashtags?: string[];
   adSpendRecommendation?: string;
   industryTips: string[];
+  fullScript: string;
 }
 
 const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
@@ -36,39 +36,48 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
   const [selectedDay, setSelectedDay] = useState<ContentDay | null>(null);
   const [currentWeek, setCurrentWeek] = useState(1);
 
-  // Generate comprehensive 30-day plan based on business data
+  // Generate comprehensive 30-day plan with detailed copy
   const generateContentPlan = (): ContentDay[] => {
     const businessType = data.businessType || 'general';
     const industry = data.formData?.industry || 'general';
     const targetAudience = data.formData?.targetAudience || 'target audience';
     const monthlyRevenue = data.formData?.monthlyRevenue || '10k-50k';
     const productService = data.formData?.productService || 'product/service';
+    const businessName = data.formData?.businessName || 'Your Business';
+    const uniqueValue = data.formData?.uniqueValue || 'unique solution';
     
     const platforms = ['Facebook', 'Instagram', 'TikTok', 'LinkedIn', 'Google'];
     const contentTypes: ('ad' | 'organic')[] = ['ad', 'organic'];
-    
-    // Industry-specific hooks and content
-    const industryHooks = getIndustryHooks(industry);
-    const industryContent = getIndustryContent(industry, businessType);
     
     const plan: ContentDay[] = [];
     
     for (let day = 1; day <= 30; day++) {
       const platform = platforms[day % platforms.length];
       const contentType = contentTypes[day % contentTypes.length];
-      const hook = industryHooks[day % industryHooks.length];
-      const content = industryContent[day % industryContent.length];
+      
+      const contentTemplate = generateDetailedContent(
+        businessType, 
+        industry, 
+        targetAudience, 
+        productService, 
+        businessName, 
+        uniqueValue, 
+        day, 
+        platform, 
+        contentType
+      );
       
       plan.push({
         day,
         platform,
         contentType,
-        hook: hook.replace('{audience}', targetAudience).replace('{industry}', industry),
-        body: content.body.replace('{service}', productService).replace('{audience}', targetAudience),
-        cta: content.cta,
-        visualSuggestion: content.visual.replace('{industry}', industry),
+        hook: contentTemplate.hook,
+        body: contentTemplate.body,
+        cta: contentTemplate.cta,
+        fullScript: contentTemplate.fullScript,
+        visualSuggestion: contentTemplate.visual,
         targetAudience,
-        keyMessage: content.keyMessage,
+        keyMessage: contentTemplate.keyMessage,
         expectedMetrics: calculateMetrics(contentType, platform, monthlyRevenue),
         hashtags: platform === 'Instagram' || platform === 'TikTok' ? generateHashtags(industry, businessType) : undefined,
         adSpendRecommendation: contentType === 'ad' ? getAdSpendRecommendation(monthlyRevenue, platform) : undefined,
@@ -77,6 +86,240 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
     }
     
     return plan;
+  };
+
+  // Generate detailed, cohesive content that flows together
+  const generateDetailedContent = (
+    businessType: string, 
+    industry: string, 
+    targetAudience: string, 
+    productService: string, 
+    businessName: string, 
+    uniqueValue: string, 
+    day: number, 
+    platform: string, 
+    contentType: 'ad' | 'organic'
+  ) => {
+    const contentStrategies = getContentStrategies(businessType, industry);
+    const strategy = contentStrategies[day % contentStrategies.length];
+    
+    const hooks = getIndustryHooks(industry, businessType);
+    const hook = hooks[day % hooks.length]
+      .replace('{audience}', targetAudience)
+      .replace('{industry}', industry)
+      .replace('{business}', businessName);
+
+    // Generate detailed body copy that connects to the hook
+    const bodyParts = generateBodyContent(strategy, targetAudience, productService, businessName, uniqueValue, industry, businessType);
+    
+    const ctas = getStrategicCTAs(businessType, strategy.objective);
+    const cta = ctas[day % ctas.length];
+
+    // Create full script that flows from hook to body to CTA
+    const fullScript = createFullScript(hook, bodyParts, cta, strategy);
+
+    return {
+      hook,
+      body: bodyParts.join(' '),
+      cta,
+      fullScript,
+      visual: generateVisualSuggestion(strategy, platform, contentType, industry),
+      keyMessage: strategy.keyMessage.replace('{service}', productService)
+    };
+  };
+
+  const getContentStrategies = (businessType: string, industry: string) => {
+    const strategies = [
+      {
+        theme: 'Problem Identification',
+        objective: 'awareness',
+        keyMessage: 'Identify with the pain point your {service} solves',
+        emotionalTrigger: 'frustration'
+      },
+      {
+        theme: 'Solution Introduction',
+        objective: 'consideration',
+        keyMessage: 'Present your {service} as the solution',
+        emotionalTrigger: 'hope'
+      },
+      {
+        theme: 'Social Proof',
+        objective: 'trust',
+        keyMessage: 'Build credibility through testimonials and results',
+        emotionalTrigger: 'trust'
+      },
+      {
+        theme: 'Urgency Creation',
+        objective: 'conversion',
+        keyMessage: 'Create time-sensitive motivation to act',
+        emotionalTrigger: 'urgency'
+      },
+      {
+        theme: 'Value Demonstration',
+        objective: 'consideration',
+        keyMessage: 'Show tangible benefits and ROI',
+        emotionalTrigger: 'desire'
+      },
+      {
+        theme: 'Objection Handling',
+        objective: 'conversion',
+        keyMessage: 'Address common hesitations and concerns',
+        emotionalTrigger: 'reassurance'
+      },
+      {
+        theme: 'Authority Building',
+        objective: 'trust',
+        keyMessage: 'Establish expertise and industry leadership',
+        emotionalTrigger: 'respect'
+      }
+    ];
+
+    return strategies;
+  };
+
+  const getIndustryHooks = (industry: string, businessType: string): string[] => {
+    const hookTemplates: Record<string, string[]> = {
+      'ecommerce': [
+        "If you're tired of browsing endless products without finding what you actually need, this changes everything...",
+        "Most {audience} waste $X every month on products that don't deliver. Here's what actually works:",
+        "I used to think all {industry} products were the same until I discovered this game-changing difference...",
+        "Warning: Don't buy another {industry} product until you read this shocking truth...",
+        "The #1 mistake {audience} make when shopping for {industry} products (and how to avoid it)",
+        "This {industry} secret has helped over 10,000 {audience} save money while getting better results",
+        "Why 90% of {audience} choose the wrong {industry} solution (and how you can be in the smart 10%)"
+      ],
+      'saas': [
+        "If you're still doing [process] manually, you're losing $X every month in productivity...",
+        "Most {audience} waste 20+ hours per week on tasks that could be automated. Here's how to get those hours back:",
+        "I used to spend my entire day on {industry} tasks until I found this solution that changed everything...",
+        "The average {audience} loses $X annually to inefficient {industry} processes. Here's the fix:",
+        "Stop letting outdated {industry} methods hold your business back. This changes everything:",
+        "Why successful {audience} are switching from traditional {industry} methods to this new approach",
+        "The {industry} automation secret that's helping businesses scale 10x faster"
+      ],
+      'fitness': [
+        "If you've tried every diet and workout plan but still aren't seeing results, this is why...",
+        "Most people fail at fitness because they're missing this one crucial element...",
+        "I used to struggle with [fitness goal] until I discovered this scientifically-proven method...",
+        "The fitness industry doesn't want you to know this simple truth about getting results...",
+        "Why 95% of people fail at their fitness goals (and the 5% who succeed do this instead)",
+        "This fitness breakthrough is helping ordinary people achieve extraordinary transformations",
+        "The #1 reason your workouts aren't working (and how to fix it in the next 30 days)"
+      ],
+      'coaching': [
+        "If you feel stuck in your current situation and don't know how to break through, this is for you...",
+        "Most {audience} stay trapped in mediocrity because they don't know this success secret...",
+        "I used to think success was just for 'other people' until I learned this life-changing principle...",
+        "The mindset shift that separates high achievers from everyone else (and how to develop it)",
+        "Why most people never reach their full potential (and the simple fix that changes everything)",
+        "This coaching breakthrough has helped thousands transform their lives in just 90 days",
+        "The success formula that turns dreams into reality (used by top 1% performers)"
+      ]
+    };
+    
+    return hookTemplates[industry] || hookTemplates['ecommerce'];
+  };
+
+  const generateBodyContent = (
+    strategy: any, 
+    targetAudience: string, 
+    productService: string, 
+    businessName: string, 
+    uniqueValue: string, 
+    industry: string, 
+    businessType: string
+  ): string[] => {
+    const bodyParts = [];
+
+    // Opening - connect to hook
+    bodyParts.push(`Here's what most ${targetAudience} don't realize: the ${industry} industry has been doing things the same way for years, but there's a better approach that's finally available.`);
+
+    // Problem amplification
+    bodyParts.push(`Every day, I see ${targetAudience} struggling with [specific pain point] because they're using outdated methods that simply don't work in today's market.`);
+
+    // Solution introduction
+    bodyParts.push(`That's exactly why we created ${productService} at ${businessName}. Our ${uniqueValue} specifically addresses the root cause of these challenges, not just the symptoms.`);
+
+    // Proof and credibility
+    bodyParts.push(`In the last 12 months alone, we've helped over [X] ${targetAudience} achieve [specific result], with an average improvement of [Y]% in just [timeframe].`);
+
+    // Unique mechanism
+    bodyParts.push(`What makes our approach different is [unique process/method]. While others focus on [common approach], we've discovered that [better approach] delivers 3x better results.`);
+
+    // Social proof
+    bodyParts.push(`Just last week, [client name/type] told us: "I wish I had found ${businessName} sooner. In just [timeframe], I've achieved more progress than in the previous [longer timeframe] combined."`);
+
+    // Urgency/scarcity
+    bodyParts.push(`Here's the thing: we can only work with a limited number of ${targetAudience} each month to ensure everyone gets the personalized attention they deserve.`);
+
+    return bodyParts;
+  };
+
+  const getStrategicCTAs = (businessType: string, objective: string): string[] => {
+    const ctaMap: Record<string, string[]> = {
+      'awareness': [
+        'Learn More About This Solution',
+        'Discover How This Works',
+        'Get the Full Story Here',
+        'See the Complete Method'
+      ],
+      'consideration': [
+        'Schedule Your Free Strategy Call',
+        'Get Your Custom Analysis',
+        'Claim Your Free Assessment',
+        'Book Your Discovery Session'
+      ],
+      'conversion': [
+        'Start Your Transformation Today',
+        'Secure Your Spot Now',
+        'Get Instant Access',
+        'Join the Program'
+      ],
+      'trust': [
+        'Read the Success Stories',
+        'See the Proof',
+        'Watch the Case Study',
+        'View the Results'
+      ]
+    };
+
+    return ctaMap[objective] || ctaMap['consideration'];
+  };
+
+  const createFullScript = (hook: string, bodyParts: string[], cta: string, strategy: any): string => {
+    return `
+**HOOK:**
+${hook}
+
+**BODY COPY:**
+${bodyParts.join('\n\n')}
+
+**CALL TO ACTION:**
+${cta}
+
+**STRATEGY NOTE:**
+This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.emotionalTrigger} and move the audience toward ${strategy.objective}. The copy flows from problem identification through solution presentation to clear action step.
+
+**PERFORMANCE OPTIMIZATION:**
+- Hook addresses specific pain point
+- Body builds credibility and urgency
+- CTA creates clear next step
+- Overall message maintains consistent theme
+`.trim();
+  };
+
+  const generateVisualSuggestion = (strategy: any, platform: string, contentType: string, industry: string): string => {
+    const visualMap: Record<string, string> = {
+      'Problem Identification': `Before/after comparison showing the struggle vs. solution, optimized for ${platform} ${contentType} format`,
+      'Solution Introduction': `Product/service demonstration with clear value proposition overlay for ${platform}`,
+      'Social Proof': `Customer testimonial video or carousel of success stories formatted for ${platform}`,
+      'Urgency Creation': `Eye-catching countdown or limited-time graphics designed for ${platform} engagement`,
+      'Value Demonstration': `Infographic or video showing tangible benefits and ROI, ${platform} optimized`,
+      'Objection Handling': `FAQ-style visual or split-screen addressing concerns, perfect for ${platform}`,
+      'Authority Building': `Professional behind-the-scenes or credibility indicators for ${platform}`
+    };
+
+    return visualMap[strategy.theme] || `High-converting ${platform} creative with clear value proposition`;
   };
 
   const contentPlan = generateContentPlan();
@@ -119,7 +362,7 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
           </div>
         </CardTitle>
         <CardDescription>
-          AI-generated content calendar tailored for your {data.formData?.industry || 'business'} targeting {data.formData?.targetAudience || 'your audience'}
+          Detailed, cohesive content scripts tailored for your {data.formData?.industry || 'business'} targeting {data.formData?.targetAudience || 'your audience'}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -131,7 +374,7 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
             ))}
             
             <div className="text-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
-              <p className="text-muted-foreground">+ 27 more days of optimized content</p>
+              <p className="text-muted-foreground">+ 27 more days of detailed, conversion-focused content</p>
               <Button 
                 variant="outline" 
                 className="mt-2"
@@ -178,72 +421,34 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
           </div>
         )}
 
-        {/* Detailed Preview Dialog */}
+        {/* Enhanced Detailed Preview Dialog */}
         <Dialog open={!!selectedDay} onOpenChange={() => setSelectedDay(null)}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Day {selectedDay?.day} - {selectedDay?.platform} Content Preview</DialogTitle>
+              <DialogTitle>Day {selectedDay?.day} - {selectedDay?.platform} Complete Content Script</DialogTitle>
               <DialogDescription>
-                Detailed content breakdown and optimization recommendations
+                Full copy breakdown with strategic insights and optimization recommendations
               </DialogDescription>
             </DialogHeader>
             
             {selectedDay && (
               <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold mb-2">Content Details</h4>
-                      <div className="space-y-3">
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Hook</label>
-                          <p className="text-sm bg-gray-50 p-3 rounded">{selectedDay.hook}</p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Body</label>
-                          <p className="text-sm bg-gray-50 p-3 rounded">{selectedDay.body}</p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Call to Action</label>
-                          <p className="text-sm bg-gray-50 p-3 rounded">{selectedDay.cta}</p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Key Message</label>
-                          <p className="text-sm bg-gray-50 p-3 rounded">{selectedDay.keyMessage}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-semibold mb-2">Optimization Details</h4>
-                      <div className="space-y-3">
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Visual Suggestion</label>
-                          <p className="text-sm bg-gray-50 p-3 rounded">{selectedDay.visualSuggestion}</p>
-                        </div>
-                        {selectedDay.hashtags && (
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">Hashtags</label>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {selectedDay.hashtags.map((tag, i) => (
-                                <Badge key={i} variant="secondary" className="text-xs">{tag}</Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {selectedDay.adSpendRecommendation && (
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">Ad Spend Strategy</label>
-                            <p className="text-sm bg-blue-50 p-3 rounded border border-blue-200">{selectedDay.adSpendRecommendation}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                {/* Full Script Display */}
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <h4 className="font-semibold mb-4">Complete Content Script</h4>
+                  <pre className="whitespace-pre-wrap text-sm leading-relaxed">{selectedDay.fullScript}</pre>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-4"
+                    onClick={() => copyToClipboard(selectedDay.fullScript)}
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Full Script
+                  </Button>
                 </div>
 
+                {/* Metrics Display */}
                 <div className="grid grid-cols-4 gap-4">
                   <div className="text-center p-3 bg-blue-50 rounded">
                     <div className="font-semibold text-blue-600">{selectedDay.expectedMetrics.reach.toLocaleString()}</div>
@@ -265,16 +470,16 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
                   </div>
                 </div>
 
-                <div>
-                  <h4 className="font-semibold mb-2">Industry-Specific Tips</h4>
-                  <ul className="space-y-1">
-                    {selectedDay.industryTips.map((tip, i) => (
-                      <li key={i} className="text-sm bg-gray-50 p-2 rounded flex items-start">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
-                        {tip}
-                      </li>
-                    ))}
-                  </ul>
+                {/* Visual and Optimization Details */}
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold mb-2">Visual Strategy</h4>
+                    <p className="text-sm bg-gray-50 p-3 rounded">{selectedDay.visualSuggestion}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-2">Key Message</h4>
+                    <p className="text-sm bg-blue-50 p-3 rounded border border-blue-200">{selectedDay.keyMessage}</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -285,7 +490,7 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
   );
 };
 
-// Component for individual content day cards
+// Enhanced ContentDayCard component
 const ContentDayCard = ({ day, onPreview, onCopy }: { 
   day: ContentDay; 
   onPreview: (day: ContentDay) => void;
@@ -311,15 +516,15 @@ const ContentDayCard = ({ day, onPreview, onCopy }: {
         </div>
         <Button variant="ghost" size="sm" onClick={() => onPreview(day)}>
           <Eye className="h-4 w-4 mr-2" />
-          Preview
+          View Full Script
         </Button>
       </div>
 
       <div className="space-y-3">
         <div>
           <label className="text-sm font-medium text-muted-foreground">Hook</label>
-          <div className="flex items-center space-x-2">
-            <p className="text-sm bg-gray-50 p-2 rounded flex-1">{day.hook}</p>
+          <div className="flex items-start space-x-2">
+            <p className="text-sm bg-gray-50 p-3 rounded flex-1 leading-relaxed">{day.hook}</p>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -330,33 +535,40 @@ const ContentDayCard = ({ day, onPreview, onCopy }: {
           </div>
         </div>
 
+        <div>
+          <label className="text-sm font-medium text-muted-foreground">Body Preview</label>
+          <p className="text-sm bg-gray-50 p-3 rounded leading-relaxed">
+            {day.body.substring(0, 200)}...
+          </p>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground">Call to Action</label>
-            <p className="text-sm bg-gray-50 p-2 rounded">{day.cta}</p>
+            <p className="text-sm bg-blue-50 p-2 rounded border border-blue-200">{day.cta}</p>
           </div>
           <div>
             <label className="text-sm font-medium text-muted-foreground">Key Message</label>
-            <p className="text-sm bg-gray-50 p-2 rounded">{day.keyMessage}</p>
+            <p className="text-sm bg-green-50 p-2 rounded border border-green-200">{day.keyMessage}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-4 gap-4 text-sm">
           <div className="text-center p-2 bg-blue-50 rounded">
-            <div className="font-semibold text-blue-600">{day.expectedMetrics.reach.toLocaleString()}</div>
+            <div className="font-semibold text-blue-600">{selectedDay.expectedMetrics.reach.toLocaleString()}</div>
             <div className="text-muted-foreground">Reach</div>
           </div>
           <div className="text-center p-2 bg-green-50 rounded">
-            <div className="font-semibold text-green-600">{day.expectedMetrics.engagement}</div>
+            <div className="font-semibold text-green-600">{selectedDay.expectedMetrics.engagement}</div>
             <div className="text-muted-foreground">Engagement</div>
           </div>
           <div className="text-center p-2 bg-purple-50 rounded">
-            <div className="font-semibold text-purple-600">{day.expectedMetrics.conversions}</div>
+            <div className="font-semibold text-purple-600">{selectedDay.expectedMetrics.conversions}</div>
             <div className="text-muted-foreground">Conversions</div>
           </div>
           <div className="text-center p-2 bg-orange-50 rounded">
             <div className="font-semibold text-orange-600">
-              {day.expectedMetrics.cost > 0 ? `$${day.expectedMetrics.cost}` : 'Free'}
+              {selectedDay.expectedMetrics.cost > 0 ? `$${selectedDay.expectedMetrics.cost}` : 'Free'}
             </div>
             <div className="text-muted-foreground">Cost</div>
           </div>
@@ -367,73 +579,6 @@ const ContentDayCard = ({ day, onPreview, onCopy }: {
 };
 
 // Helper functions for generating industry-specific content
-const getIndustryHooks = (industry: string): string[] => {
-  const hooks: Record<string, string[]> = {
-    'ecommerce': [
-      "Stop scrolling if you're tired of overpriced {industry} products",
-      "This {industry} secret changed everything for {audience}",
-      "Warning: Don't buy {industry} products until you read this",
-      "The {industry} mistake that's costing {audience} thousands",
-      "Why 90% of {audience} choose the wrong {industry} solution"
-    ],
-    'saas': [
-      "Stop wasting time on manual {industry} processes",
-      "This software automation saves {audience} 20+ hours per week",
-      "The {industry} tool that {audience} wish they found sooner",
-      "How {audience} 10x their productivity with this simple {industry} hack",
-      "Warning: Your competitors are already using this {industry} advantage"
-    ],
-    'fitness': [
-      "Stop doing workouts that don't work for {audience}",
-      "This fitness transformation shocked everyone at the gym",
-      "The nutrition mistake that's sabotaging {audience} results",
-      "How {audience} lost 30+ pounds without giving up their favorite foods",
-      "The 15-minute workout that beats hour-long gym sessions"
-    ],
-    'coaching': [
-      "Stop letting limiting beliefs hold {audience} back",
-      "This mindset shift transformed my client's entire business",
-      "The coaching method that gets {audience} results in 30 days",
-      "How {audience} breakthrough their biggest obstacles",
-      "The success blueprint that {audience} have been missing"
-    ],
-    'finance': [
-      "Stop losing money on bad {industry} investments",
-      "This financial strategy helped {audience} retire early",
-      "The money mistake that keeps {audience} broke",
-      "How {audience} build wealth even with a small income",
-      "The financial freedom formula for {audience}"
-    ]
-  };
-  
-  return hooks[industry] || hooks['ecommerce'];
-};
-
-const getIndustryContent = (industry: string, businessType: string) => {
-  const content = [
-    {
-      body: "Our proven {service} system helps {audience} achieve their goals without the typical industry challenges. Join thousands who have already transformed their results.",
-      cta: "Get Started Today",
-      visual: "Split-screen showing before/after results with customer testimonial overlay",
-      keyMessage: "Proven results and transformation"
-    },
-    {
-      body: "Behind-the-scenes look at how we help {audience} streamline their {industry} operations for maximum efficiency and growth.",
-      cta: "Learn Our Method",
-      visual: "Behind-the-scenes video showing process in action",
-      keyMessage: "Transparency and process expertise"
-    },
-    {
-      body: "Discover the {industry} strategy that top performers use but most {audience} don't know about. Limited spots available.",
-      cta: "Claim Your Spot",
-      visual: "Professional demonstration with clear value proposition",
-      keyMessage: "Exclusivity and insider knowledge"
-    }
-  ];
-  
-  return content;
-};
-
 const calculateMetrics = (contentType: 'ad' | 'organic', platform: string, revenue: string) => {
   const revenueMultiplier = getRevenueMultiplier(revenue);
   const platformMultiplier = getPlatformMultiplier(platform);
