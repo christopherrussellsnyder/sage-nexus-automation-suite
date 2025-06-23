@@ -21,46 +21,91 @@ interface Step {
 interface UnifiedIntelligenceWizardProps {
   businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
   onIntelligenceGenerated: (data: any) => void;
+  intelligenceMode?: 'full' | 'copywriting' | 'marketing' | 'competitor';
 }
 
-const UnifiedIntelligenceWizard = ({ businessType, onIntelligenceGenerated }: UnifiedIntelligenceWizardProps) => {
+const UnifiedIntelligenceWizard = ({ 
+  businessType, 
+  onIntelligenceGenerated,
+  intelligenceMode = 'full'
+}: UnifiedIntelligenceWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({});
 
-  const steps: Step[] = [
-    {
-      id: 1,
-      title: 'Business Information',
-      description: 'Basic business details and industry information',
-      status: currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming'
-    },
-    {
-      id: 2,
-      title: 'Current Metrics',
-      description: 'Performance metrics and key challenges',
-      status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming'
-    },
-    {
-      id: 3,
-      title: 'Goals & Objectives',
-      description: 'Business goals and success metrics',
-      status: currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming'
-    },
-    {
-      id: 4,
-      title: 'Competitive Analysis',
-      description: 'Competitor information and market positioning',
-      status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming'
+  const getStepsForMode = () => {
+    const baseSteps = [
+      {
+        id: 1,
+        title: 'Business Information',
+        description: 'Basic business details and industry information',
+        status: currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming'
+      }
+    ];
+
+    if (intelligenceMode === 'copywriting') {
+      return [
+        ...baseSteps,
+        {
+          id: 2,
+          title: 'Copy Requirements',
+          description: 'Specific copywriting needs and target messaging',
+          status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming'
+        }
+      ];
     }
-  ];
+
+    if (intelligenceMode === 'marketing') {
+      return [
+        ...baseSteps,
+        {
+          id: 2,
+          title: 'Current Metrics',
+          description: 'Performance metrics and key challenges',
+          status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming'
+        },
+        {
+          id: 3,
+          title: 'Goals & Objectives',
+          description: 'Business goals and success metrics',
+          status: currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming'
+        }
+      ];
+    }
+
+    // Full intelligence mode
+    return [
+      ...baseSteps,
+      {
+        id: 2,
+        title: 'Current Metrics',
+        description: 'Performance metrics and key challenges',
+        status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming'
+      },
+      {
+        id: 3,
+        title: 'Goals & Objectives',
+        description: 'Business goals and success metrics',
+        status: currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming'
+      },
+      {
+        id: 4,
+        title: 'Competitive Analysis',
+        description: 'Competitor information and market positioning',
+        status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming'
+      }
+    ];
+  };
+
+  const steps = getStepsForMode();
+  const maxSteps = steps.length;
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < maxSteps) {
       setCurrentStep(prev => prev + 1);
     } else {
       generateIntelligence();
@@ -83,8 +128,8 @@ const UnifiedIntelligenceWizard = ({ businessType, onIntelligenceGenerated }: Un
       const mockIntelligenceData = {
         businessType,
         formData,
+        intelligenceMode,
         generatedAt: new Date().toISOString(),
-        // Mock data structure - would be replaced with actual AI-generated insights
         insights: {
           overview: 'Comprehensive intelligence analysis complete',
           recommendations: [],
@@ -112,6 +157,42 @@ const UnifiedIntelligenceWizard = ({ businessType, onIntelligenceGenerated }: Un
           />
         );
       case 2:
+        if (intelligenceMode === 'copywriting') {
+          return (
+            <Card>
+              <CardHeader>
+                <CardTitle>Copy Requirements</CardTitle>
+                <CardDescription>Tell us about your specific copywriting needs</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">What type of copy do you need?</label>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    value={formData.copyType || ''}
+                    onChange={(e) => handleFieldChange('copyType', e.target.value)}
+                  >
+                    <option value="">Select copy type</option>
+                    <option value="website">Website Copy</option>
+                    <option value="ads">Ad Copy</option>
+                    <option value="email">Email Marketing</option>
+                    <option value="social">Social Media Content</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Current challenges with your copy</label>
+                  <textarea 
+                    className="w-full p-2 border rounded"
+                    rows={3}
+                    value={formData.copywritingChallenges || ''}
+                    onChange={(e) => handleFieldChange('copywritingChallenges', e.target.value)}
+                    placeholder="e.g., Low conversion rates, unclear messaging, not resonating with audience..."
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          );
+        }
         return (
           <CurrentMetricsForm 
             data={formData} 
@@ -138,21 +219,34 @@ const UnifiedIntelligenceWizard = ({ businessType, onIntelligenceGenerated }: Un
     }
   };
 
-  const progress = (currentStep / 4) * 100;
+  const progress = (currentStep / maxSteps) * 100;
 
   if (loading) {
     return <IntelligenceLoading businessType={businessType} />;
   }
+
+  const getModeTitle = () => {
+    switch (intelligenceMode) {
+      case 'copywriting':
+        return 'Copywriting Intelligence Setup';
+      case 'marketing':
+        return 'Marketing Intelligence Setup';
+      case 'competitor':
+        return 'Competitor Intelligence Setup';
+      default:
+        return 'Full Intelligence Setup';
+    }
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold">
-          {businessType.charAt(0).toUpperCase() + businessType.slice(1)} Intelligence Setup
+          {businessType.charAt(0).toUpperCase() + businessType.slice(1)} {getModeTitle()}
         </h2>
         <p className="text-muted-foreground">
-          Complete the setup to receive personalized intelligence insights
+          Complete the setup to receive personalized {intelligenceMode === 'full' ? 'comprehensive' : intelligenceMode} insights
         </p>
         <Progress value={progress} className="w-full max-w-md mx-auto" />
       </div>
@@ -181,7 +275,7 @@ const UnifiedIntelligenceWizard = ({ businessType, onIntelligenceGenerated }: Un
                 </Button>
 
                 <Button onClick={handleNext}>
-                  {currentStep === 4 ? (
+                  {currentStep === maxSteps ? (
                     <>
                       <Sparkles className="h-4 w-4 mr-2" />
                       Generate Intelligence

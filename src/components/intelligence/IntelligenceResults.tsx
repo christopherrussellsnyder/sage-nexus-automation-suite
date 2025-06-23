@@ -17,19 +17,49 @@ interface IntelligenceResultsProps {
 }
 
 const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResultsProps) => {
+  const intelligenceMode = data.intelligenceMode || 'full';
+
   const handleExport = () => {
     const exportData = {
       ...data,
       exportedAt: new Date().toISOString()
     };
     
-    const filename = `intelligence-report-${new Date().toISOString().split('T')[0]}.json`;
+    const filename = `intelligence-report-${intelligenceMode}-${new Date().toISOString().split('T')[0]}.json`;
     downloadJSON(exportData, filename);
   };
 
   const handleRegenerate = () => {
     // This would trigger regeneration - for now just refresh
     window.location.reload();
+  };
+
+  const getModeTitle = () => {
+    switch (intelligenceMode) {
+      case 'copywriting':
+        return 'Copywriting Intelligence Report';
+      case 'marketing':
+        return 'Marketing Intelligence Report';
+      case 'competitor':
+        return 'Competitor Intelligence Report';
+      default:
+        return 'Full Intelligence Report';
+    }
+  };
+
+  const shouldShowSection = (section: string) => {
+    if (intelligenceMode === 'full') return true;
+    
+    const sectionMapping = {
+      overview: ['full', 'copywriting', 'marketing', 'competitor'],
+      platforms: ['full', 'marketing'],
+      monthlyPlan: ['full', 'marketing'],
+      metrics: ['full', 'marketing'],
+      competitors: ['full', 'competitor'],
+      copywriting: ['full', 'copywriting']
+    };
+    
+    return sectionMapping[section]?.includes(intelligenceMode) || false;
   };
 
   return (
@@ -42,7 +72,7 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
             Back to Setup
           </Button>
           <div>
-            <h2 className="text-2xl font-bold">Intelligence Report</h2>
+            <h2 className="text-2xl font-bold">{getModeTitle()}</h2>
             <p className="text-muted-foreground">
               Generated for {businessType?.charAt(0).toUpperCase() + businessType?.slice(1)} business
               {data.generatedAt && (
@@ -51,6 +81,9 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
                 </span>
               )}
             </p>
+            <Badge variant="outline" className="mt-1">
+              Mode: {intelligenceMode.charAt(0).toUpperCase() + intelligenceMode.slice(1)}
+            </Badge>
           </div>
         </div>
         
@@ -68,11 +101,40 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
 
       {/* Results Content */}
       <div className="space-y-6">
-        <ResultsOverview data={data} businessType={businessType} />
-        <PlatformRecommendations data={data} />
-        <MonthlyPlan data={data} />
-        <MetricOptimization data={data} />
-        <CompetitorInsights data={data} />
+        {shouldShowSection('overview') && (
+          <ResultsOverview data={data} businessType={businessType} />
+        )}
+        
+        {shouldShowSection('platforms') && (
+          <PlatformRecommendations data={data} />
+        )}
+        
+        {shouldShowSection('monthlyPlan') && (
+          <MonthlyPlan data={data} />
+        )}
+        
+        {shouldShowSection('metrics') && (
+          <MetricOptimization data={data} />
+        )}
+        
+        {shouldShowSection('competitors') && (
+          <CompetitorInsights data={data} />
+        )}
+
+        {/* Copywriting-specific message */}
+        {intelligenceMode === 'copywriting' && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center space-y-2">
+                <h3 className="font-semibold">Copywriting Focus Mode</h3>
+                <p className="text-sm text-muted-foreground">
+                  This report focuses specifically on copywriting recommendations. 
+                  Switch to "Full Intelligence" mode for comprehensive marketing insights.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

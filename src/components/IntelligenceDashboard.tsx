@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +25,7 @@ const IntelligenceDashboard = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'wizard' | 'results'>('overview');
   const [intelligenceData, setIntelligenceData] = useState(null);
   const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | 'copywriting' | null>(null);
+  const [intelligenceMode, setIntelligenceMode] = useState<'full' | 'copywriting' | 'marketing' | 'competitor'>('full');
 
   const handleBusinessTypeSelect = (type: any) => {
     setBusinessType(type);
@@ -41,6 +41,7 @@ const IntelligenceDashboard = () => {
     setActiveSection('overview');
     setBusinessType(null);
     setIntelligenceData(null);
+    setIntelligenceMode('full');
   };
 
   return (
@@ -61,14 +62,28 @@ const IntelligenceDashboard = () => {
             <span>Overview</span>
           </Button>
           {businessType && (
-            <Button
-              variant={activeSection === 'wizard' ? 'default' : 'outline'}
-              onClick={() => setActiveSection('wizard')}
-              className="flex items-center space-x-2"
-            >
-              <Target className="h-4 w-4" />
-              <span>Intelligence Wizard</span>
-            </Button>
+            <>
+              <Button
+                variant={activeSection === 'wizard' ? 'default' : 'outline'}
+                onClick={() => setActiveSection('wizard')}
+                className="flex items-center space-x-2"
+              >
+                <Target className="h-4 w-4" />
+                <span>Intelligence Wizard</span>
+              </Button>
+              
+              {/* Intelligence Mode Selector */}
+              <select
+                value={intelligenceMode}
+                onChange={(e) => setIntelligenceMode(e.target.value as any)}
+                className="px-3 py-1 border rounded text-sm"
+              >
+                <option value="full">Full Intelligence</option>
+                <option value="copywriting">Copywriting Only</option>
+                <option value="marketing">Marketing Only</option>
+                <option value="competitor">Competitor Analysis</option>
+              </select>
+            </>
           )}
           {intelligenceData && (
             <Button
@@ -95,6 +110,7 @@ const IntelligenceDashboard = () => {
         <UnifiedIntelligenceWizard 
           businessType={businessType}
           onIntelligenceGenerated={handleIntelligenceGenerated}
+          intelligenceMode={intelligenceMode}
         />
       )}
 
