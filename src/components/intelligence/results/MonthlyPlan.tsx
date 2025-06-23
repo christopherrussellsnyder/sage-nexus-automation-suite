@@ -135,13 +135,17 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
     // Create full script that flows from hook to body to CTA
     const fullScript = createFullScript(hook, bodyParts, cta, strategy);
 
+    // Generate strategic reasoning
+    const strategicReasoning = `This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.emotionalTrigger} and move the audience toward ${strategy.objective}. The copy flows from problem identification through solution presentation to clear action step.`;
+
     return {
       hook,
       body: bodyParts.join(' '),
       cta,
       fullScript,
       visual: generateVisualSuggestion(strategy, platform, contentType, industry),
-      keyMessage: strategy.keyMessage.replace('{service}', productService)
+      keyMessage: strategy.keyMessage.replace('{service}', productService),
+      strategicReasoning
     };
   };
 
