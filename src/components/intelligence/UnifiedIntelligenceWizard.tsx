@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,13 @@ import CurrentMetricsForm from './wizard/CurrentMetricsForm';
 import GoalsObjectivesForm from './wizard/GoalsObjectivesForm';
 import CompetitorAnalysisForm from './wizard/CompetitorAnalysisForm';
 
+interface Step {
+  id: number;
+  title: string;
+  description: string;
+  status: 'completed' | 'current' | 'upcoming';
+}
+
 interface UnifiedIntelligenceWizardProps {
   businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
   onIntelligenceGenerated: (data: any) => void;
@@ -20,30 +26,30 @@ const UnifiedIntelligenceWizard = ({ businessType, onIntelligenceGenerated }: Un
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({});
 
-  const steps = [
+  const steps: Step[] = [
     {
       id: 1,
       title: 'Business Information',
       description: 'Basic business details and industry information',
-      status: currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming'
+      status: (currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     },
     {
       id: 2,
       title: 'Current Metrics',
       description: 'Performance metrics and key challenges',
-      status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming'
+      status: (currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     },
     {
       id: 3,
       title: 'Goals & Objectives',
       description: 'Business goals and success metrics',
-      status: currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming'
+      status: (currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     },
     {
       id: 4,
       title: 'Competitive Analysis',
       description: 'Competitor information and market positioning',
-      status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming'
+      status: (currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
     }
   ];
 
