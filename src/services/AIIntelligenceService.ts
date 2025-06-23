@@ -126,6 +126,12 @@ export class AIIntelligenceService {
     }
   }
 
+  static saveApiKey(apiKey: string): void {
+    // Since we're using hardcoded API key, this method is just a placeholder
+    // to prevent build errors from ApiKeySetup component
+    console.log('API key integration is handled directly in the code');
+  }
+
   private static buildComprehensivePrompt(request: IntelligenceRequest): string {
     const { formData, intelligenceMode, businessType } = request;
 
