@@ -1,26 +1,23 @@
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Key, CheckCircle, ExternalLink, Eye, EyeOff } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Key, ExternalLink, Shield, Zap } from 'lucide-react';
+import { AIIntelligenceService } from '@/services/AIIntelligenceService';
 import { useToast } from '@/components/ui/use-toast';
-import { MarketingIntelligenceService } from '@/services/MarketingIntelligenceService';
 
 interface ApiKeySetupProps {
+  isVisible: boolean;
   onApiKeySet: () => void;
-  existingApiKey?: string | null;
-  isVisible?: boolean;
 }
 
-const ApiKeySetup = ({ onApiKeySet, existingApiKey, isVisible = false }: ApiKeySetupProps) => {
-  const { toast } = useToast();
-  const [apiKey, setApiKey] = useState(existingApiKey || '');
-  const [showApiKey, setShowApiKey] = useState(false);
+const ApiKeySetup = ({ isVisible, onApiKeySet }: ApiKeySetupProps) => {
+  const [apiKey, setApiKey] = useState('');
   const [isValidating, setIsValidating] = useState(false);
+  const { toast } = useToast();
 
   const handleSaveApiKey = async () => {
     if (!apiKey.trim()) {
@@ -31,32 +28,43 @@ const ApiKeySetup = ({ onApiKeySet, existingApiKey, isVisible = false }: ApiKeyS
       });
       return;
     }
-    
-    if (!isValidApiKey) {
+
+    if (!apiKey.startsWith('sk-')) {
       toast({
-        title: "Invalid API Key",
-        description: "Please enter a valid OpenAI API key (starts with 'sk-')",
+        title: "Invalid API Key Format",
+        description: "OpenAI API keys should start with 'sk-'",
         variant: "destructive"
       });
       return;
     }
-    
+
     setIsValidating(true);
+    
     try {
+      // Validate the API key by making a simple request
+      const response = await fetch('https://api.openai.com/v1/models', {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Invalid API key');
+      }
+
       // Save the API key
-      MarketingIntelligenceService.saveApiKey(apiKey.trim());
+      AIIntelligenceService.saveApiKey(apiKey);
       
       toast({
-        title: "API Key Saved",
-        description: "Your OpenAI API key has been saved successfully",
+        title: "API Key Saved Successfully",
+        description: "You can now generate AI-powered intelligence reports",
       });
       
       onApiKeySet();
     } catch (error) {
-      console.error('Error saving API key:', error);
       toast({
-        title: "Error Saving API Key",
-        description: "There was an error saving your API key. Please try again.",
+        title: "Invalid API Key",
+        description: "Please check your OpenAI API key and try again",
         variant: "destructive"
       });
     } finally {
@@ -64,107 +72,130 @@ const ApiKeySetup = ({ onApiKeySet, existingApiKey, isVisible = false }: ApiKeyS
     }
   };
 
-  const isValidApiKey = apiKey.trim().startsWith('sk-') && apiKey.trim().length > 20;
+  const handleSkip = () => {
+    onApiKeySet();
+  };
 
-  const content = (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center space-x-2">
-          <Key className="h-5 w-5 text-primary" />
-          <CardTitle>OpenAI API Configuration</CardTitle>
-          {existingApiKey && (
-            <Badge variant="outline" className="flex items-center space-x-1">
-              <CheckCircle className="h-3 w-3" />
-              <span>Configured</span>
-            </Badge>
-          )}
-        </div>
-        <CardDescription>
-          Set up your OpenAI API key to enable AI-powered competitor analysis and marketing strategy generation.
-        </CardDescription>
-      </CardHeader>
+  return (
+    <Dialog open={isVisible} onOpenChange={() => {}}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center space-x-2">
+            <Key className="h-5 w-5" />
+            <span>OpenAI API Key Setup</span>
+          </DialogTitle>
+          <DialogDescription>
+            Connect your OpenAI API key to unlock AI-powered, personalized intelligence reports
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Benefits Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center space-x-2">
+                <Zap className="h-5 w-5 text-blue-500" />
+                <span>AI-Enhanced Intelligence</span>
+              </CardTitle>
+              <CardDescription>
+                Upgrade from template-based to AI-generated personalized content
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-green-600">✓ With AI Integration:</h4>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li>• Fully personalized content for your business</li>
+                    <li>• Industry-specific insights and strategies</li>
+                    <li>• Dynamic competitor analysis</li>
+                    <li>• Contextual optimization recommendations</li>
+                  </ul>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-orange-600">⚠ Without AI (Template Mode):</h4>
+                  <ul className="space-y-1 text-muted-foreground">
+                    <li>• Generic template-based content</li>
+                    <li>• Limited personalization</li>
+                    <li>• Basic placeholder insights</li>
+                    <li>• Standard recommendations</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-      <CardContent className="space-y-4">
-        <Alert>
-          <AlertDescription>
-            Your API key is stored locally in your browser and is only used to make requests to OpenAI's API.
-            <a 
-              href="https://platform.openai.com/api-keys" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center space-x-1 ml-2 text-primary hover:underline"
+          {/* API Key Input */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="apiKey" className="flex items-center space-x-2">
+                <Shield className="h-4 w-4" />
+                <span>OpenAI API Key</span>
+              </Label>
+              <Input
+                id="apiKey"
+                type="password"
+                placeholder="sk-..."
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="font-mono"
+              />
+              <p className="text-xs text-muted-foreground">
+                Your API key is stored locally and never sent to our servers
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2 text-sm">
+              <ExternalLink className="h-4 w-4" />
+              <a 
+                href="https://platform.openai.com/api-keys" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Get your OpenAI API key here
+              </a>
+            </div>
+          </div>
+
+          {/* Cost Information */}
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="pt-4">
+              <div className="text-sm">
+                <h4 className="font-semibold text-blue-800 mb-2">Estimated API Costs:</h4>
+                <div className="space-y-1 text-blue-700">
+                  <p>• Full Intelligence Report: ~$0.05-0.08 per generation</p>
+                  <p>• Copywriting Report: ~$0.02-0.03 per generation</p>
+                  <p>• Marketing Report: ~$0.03-0.04 per generation</p>
+                </div>
+                <p className="text-xs text-blue-600 mt-2">
+                  Costs are charged directly to your OpenAI account
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Action Buttons */}
+          <div className="flex space-x-3">
+            <Button 
+              onClick={handleSaveApiKey} 
+              disabled={isValidating}
+              className="flex-1"
             >
-              <span>Get your API key here</span>
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </AlertDescription>
-        </Alert>
-
-        <div className="space-y-2">
-          <label htmlFor="apiKey" className="text-sm font-medium">
-            OpenAI API Key
-          </label>
-          <div className="relative">
-            <Input
-              id="apiKey"
-              type={showApiKey ? 'text' : 'password'}
-              placeholder="sk-..."
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="pr-10"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-              onClick={() => setShowApiKey(!showApiKey)}
+              {isValidating ? 'Validating...' : 'Save API Key & Enable AI'}
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleSkip}
+              className="flex-1"
             >
-              {showApiKey ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              Continue with Templates
             </Button>
           </div>
-          {apiKey && !isValidApiKey && (
-            <p className="text-sm text-destructive">
-              Please enter a valid OpenAI API key (starts with 'sk-')
-            </p>
-          )}
         </div>
-
-        <Button 
-          onClick={handleSaveApiKey}
-          disabled={!isValidApiKey || isValidating}
-          className="w-full"
-        >
-          {isValidating ? 'Saving...' : existingApiKey ? 'Update API Key' : 'Save API Key'}
-        </Button>
-
-        <div className="text-xs text-muted-foreground space-y-1">
-          <p>• Your API key is stored securely in your browser's local storage</p>
-          <p>• We recommend using a dedicated API key with usage limits</p>
-          <p>• API costs are typically $0.01-0.05 per analysis depending on complexity</p>
-        </div>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
-
-  if (isVisible) {
-    return (
-      <Dialog open={isVisible} onOpenChange={() => {}}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>API Key Setup Required</DialogTitle>
-          </DialogHeader>
-          {content}
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  return content;
 };
 
 export default ApiKeySetup;

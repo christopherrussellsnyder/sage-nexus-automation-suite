@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar, Eye, Copy, Grid, List, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface MonthlyPlanProps {
@@ -26,9 +26,7 @@ interface ContentDay {
     conversions: number;
   };
   hashtags?: string[];
-  adSpendRecommendation?: string;
-  industryTips: string[];
-  fullScript: string;
+  strategicReasoning: string;
 }
 
 const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
@@ -36,8 +34,18 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
   const [selectedDay, setSelectedDay] = useState<ContentDay | null>(null);
   const [currentWeek, setCurrentWeek] = useState(1);
 
-  // Generate comprehensive 30-day plan with detailed copy
-  const generateContentPlan = (): ContentDay[] => {
+  // Use AI-generated content if available, otherwise fall back to template generation
+  const getContentPlan = (): ContentDay[] => {
+    if (data.aiGenerated && data.insights?.monthlyPlan) {
+      // Use AI-generated monthly plan
+      return data.insights.monthlyPlan;
+    }
+    
+    // Fallback to template generation for backward compatibility
+    return generateTemplateContentPlan();
+  };
+
+  const generateTemplateContentPlan = (): ContentDay[] => {
     const businessType = data.businessType || 'general';
     const industry = data.formData?.industry || 'general';
     const targetAudience = data.formData?.targetAudience || 'target audience';
@@ -85,14 +93,12 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
         hook: contentTemplate.hook,
         body: contentTemplate.body,
         cta: contentTemplate.cta,
-        fullScript: contentTemplate.fullScript,
         visualSuggestion: contentTemplate.visual,
         targetAudience,
         keyMessage: contentTemplate.keyMessage,
         expectedMetrics: calculateMetrics(contentType, platform, monthlyRevenue),
         hashtags: platform === 'Instagram' || platform === 'TikTok' ? generateHashtags(industry, businessType) : undefined,
-        adSpendRecommendation: contentType === 'ad' ? getAdSpendRecommendation(monthlyRevenue, platform) : undefined,
-        industryTips: getIndustryTips(industry, businessType, day)
+        strategicReasoning: contentTemplate.strategicReasoning
       });
     }
     
@@ -372,7 +378,7 @@ This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.e
     return visualMap[strategy.theme] || `High-converting ${platform} creative with clear value proposition`;
   };
 
-  const contentPlan = generateContentPlan();
+  const contentPlan = getContentPlan();
   const totalWeeks = Math.ceil(30 / 7);
   const currentWeekDays = contentPlan.slice((currentWeek - 1) * 7, currentWeek * 7);
 
@@ -391,6 +397,11 @@ This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.e
           <div className="flex items-center space-x-2">
             <Calendar className="h-5 w-5" />
             <span>30-Day Content Calendar</span>
+            {data.aiGenerated && (
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                AI-Generated
+              </Badge>
+            )}
           </div>
           <div className="flex items-center space-x-2">
             <Button
@@ -412,7 +423,7 @@ This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.e
           </div>
         </CardTitle>
         <CardDescription>
-          Detailed, cohesive content scripts tailored for your {data.formData?.industry || 'business'} targeting {data.formData?.targetAudience || 'your audience'}
+          {data.aiGenerated ? 'AI-powered, personalized' : 'Template-based'} content scripts tailored for your {data.formData?.industry || 'business'} targeting {data.formData?.targetAudience || 'your audience'}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -420,7 +431,7 @@ This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.e
           // Preview mode - show first 3 days
           <div className="space-y-6">
             {contentPlan.slice(0, 3).map((day, index) => (
-              <ContentDayCard key={index} day={day} onPreview={openPreview} onCopy={copyToClipboard} />
+              <ContentDayCard key={index} day={day} onPreview={openPreview} onCopy={copyToClipboard} isAIGenerated={data.aiGenerated} />
             ))}
             
             <div className="text-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
@@ -465,7 +476,7 @@ This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.e
             {/* Week content */}
             <div className="space-y-4">
               {currentWeekDays.map((day, index) => (
-                <ContentDayCard key={index} day={day} onPreview={openPreview} onCopy={copyToClipboard} />
+                <ContentDayCard key={index} day={day} onPreview={openPreview} onCopy={copyToClipboard} isAIGenerated={data.aiGenerated} />
               ))}
             </div>
           </div>
@@ -475,9 +486,16 @@ This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.e
         <Dialog open={!!selectedDay} onOpenChange={() => setSelectedDay(null)}>
           <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Day {selectedDay?.day} - {selectedDay?.platform} Complete Content Script</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                Day {selectedDay?.day} - {selectedDay?.platform} Complete Content Script
+                {data.aiGenerated && (
+                  <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    AI-Generated
+                  </Badge>
+                )}
+              </DialogTitle>
               <DialogDescription>
-                Full copy breakdown with strategic insights and optimization recommendations
+                {data.aiGenerated ? 'AI-powered content' : 'Template-based content'} with strategic insights and optimization recommendations
               </DialogDescription>
             </DialogHeader>
             
@@ -486,12 +504,29 @@ This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.e
                 {/* Full Script Display */}
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h4 className="font-semibold mb-4">Complete Content Script</h4>
-                  <pre className="whitespace-pre-wrap text-sm leading-relaxed">{selectedDay.fullScript}</pre>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Hook:</label>
+                      <p className="text-lg font-semibold mt-1">{selectedDay.hook}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Body Copy:</label>
+                      <p className="text-sm leading-relaxed mt-1">{selectedDay.body}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Call to Action:</label>
+                      <p className="font-medium text-blue-600 mt-1">{selectedDay.cta}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Strategic Reasoning:</label>
+                      <p className="text-sm text-muted-foreground mt-1">{selectedDay.strategicReasoning}</p>
+                    </div>
+                  </div>
                   <Button 
                     variant="outline" 
                     size="sm" 
                     className="mt-4"
-                    onClick={() => copyToClipboard(selectedDay.fullScript)}
+                    onClick={() => copyToClipboard(`${selectedDay.hook}\n\n${selectedDay.body}\n\n${selectedDay.cta}`)}
                   >
                     <Copy className="h-4 w-4 mr-2" />
                     Copy Full Script
@@ -541,10 +576,11 @@ This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.e
 };
 
 // Enhanced ContentDayCard component
-const ContentDayCard = ({ day, onPreview, onCopy }: { 
+const ContentDayCard = ({ day, onPreview, onCopy, isAIGenerated }: { 
   day: ContentDay; 
   onPreview: (day: ContentDay) => void;
   onCopy: (text: string) => void;
+  isAIGenerated?: boolean;
 }) => {
   return (
     <div className="border rounded-lg p-4">
@@ -563,6 +599,11 @@ const ContentDayCard = ({ day, onPreview, onCopy }: {
           <Badge variant={day.contentType === 'ad' ? 'default' : 'secondary'}>
             {day.contentType.toUpperCase()}
           </Badge>
+          {isAIGenerated && (
+            <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
+              AI
+            </Badge>
+          )}
         </div>
         <Button variant="ghost" size="sm" onClick={() => onPreview(day)}>
           <Eye className="h-4 w-4 mr-2" />

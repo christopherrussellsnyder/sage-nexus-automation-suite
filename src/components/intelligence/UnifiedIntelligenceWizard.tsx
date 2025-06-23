@@ -9,6 +9,9 @@ import CurrentMetricsForm from './wizard/CurrentMetricsForm';
 import GoalsObjectivesForm from './wizard/GoalsObjectivesForm';
 import CompetitorAnalysisForm from './wizard/CompetitorAnalysisForm';
 import IntelligenceLoading from './IntelligenceLoading';
+import ApiKeySetup from '../ApiKeySetup';
+import { AIIntelligenceService } from '@/services/AIIntelligenceService';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Step {
   id: number;
@@ -36,7 +39,9 @@ const UnifiedIntelligenceWizard = ({
 }: UnifiedIntelligenceWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [showApiSetup, setShowApiSetup] = useState(false);
   const [formData, setFormData] = useState<FormData>({});
+  const { toast } = useToast();
 
   const getStepsForMode = (): Step[] => {
     const getStatus = (stepId: number): 'completed' | 'current' | 'upcoming' => {
@@ -130,32 +135,70 @@ const UnifiedIntelligenceWizard = ({
   };
 
   const generateIntelligence = async () => {
+    // Check if API key exists
+    const apiKey = AIIntelligenceService.getApiKey();
+    if (!apiKey) {
+      setShowApiSetup(true);
+      return;
+    }
+
     setLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      console.log('Starting AI intelligence generation...');
       
-      const mockIntelligenceData = {
+      const aiRequest = {
+        formData: {
+          businessName: formData.businessName || '',
+          industry: formData.industry || '',
+          targetAudience: formData.targetAudience || '',
+          productService: formData.productService || '',
+          uniqueValue: formData.uniqueValue || '',
+          monthlyRevenue: formData.monthlyRevenue || '',
+          businessType: businessType,
+          currentChallenges: formData.currentChallenges,
+          goals: formData.goals,
+          timeline: formData.timeline,
+          competitorData: formData.competitorData,
+          currentMetrics: formData.currentMetrics
+        },
+        intelligenceMode,
+        businessType
+      };
+
+      const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
+      
+      const intelligenceData = {
         businessType,
         formData,
         intelligenceMode,
         generatedAt: new Date().toISOString(),
-        insights: {
-          overview: 'Comprehensive intelligence analysis complete',
-          recommendations: [],
-          metrics: {},
-          competitorAnalysis: {},
-          optimization: {}
-        }
+        aiGenerated: true,
+        insights: aiIntelligence
       };
       
-      onIntelligenceGenerated(mockIntelligenceData);
+      console.log('AI intelligence generated successfully');
+      onIntelligenceGenerated(intelligenceData);
+      
     } catch (error) {
-      console.error('Error generating intelligence:', error);
+      console.error('Error generating AI intelligence:', error);
+      toast({
+        title: "Error generating intelligence",
+        description: error.message || "Please check your API key and try again",
+        variant: "destructive"
+      });
+      
+      if (error.message && error.message.includes('API key')) {
+        setShowApiSetup(true);
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleApiKeySet = () => {
+    setShowApiSetup(false);
+    generateIntelligence();
   };
 
   const renderCurrentStep = () => {
@@ -251,60 +294,67 @@ const UnifiedIntelligenceWizard = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">
-          {getModeTitle()}
-        </h2>
-        <p className="text-muted-foreground">
-          Complete the setup to receive personalized {intelligenceMode === 'full' ? 'comprehensive' : intelligenceMode} insights
-        </p>
-        <Progress value={progress} className="w-full max-w-md mx-auto" />
-      </div>
-
-      <div className="grid lg:grid-cols-4 gap-6">
-        {/* Steps Sidebar */}
-        <div className="lg:col-span-1">
-          <WizardSteps steps={steps} currentStep={currentStep} />
+    <>
+      <ApiKeySetup 
+        isVisible={showApiSetup}
+        onApiKeySet={handleApiKeySet}
+      />
+      
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold">
+            {getModeTitle()}
+          </h2>
+          <p className="text-muted-foreground">
+            Complete the setup to receive AI-powered personalized {intelligenceMode === 'full' ? 'comprehensive' : intelligenceMode} insights
+          </p>
+          <Progress value={progress} className="w-full max-w-md mx-auto" />
         </div>
 
-        {/* Form Content */}
-        <div className="lg:col-span-3 space-y-6">
-          {renderCurrentStep()}
+        <div className="grid lg:grid-cols-4 gap-6">
+          {/* Steps Sidebar */}
+          <div className="lg:col-span-1">
+            <WizardSteps steps={steps} currentStep={currentStep} />
+          </div>
 
-          {/* Navigation */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex justify-between">
-                <Button
-                  onClick={handlePrevious}
-                  disabled={currentStep === 1}
-                  variant="outline"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Previous
-                </Button>
+          {/* Form Content */}
+          <div className="lg:col-span-3 space-y-6">
+            {renderCurrentStep()}
 
-                <Button onClick={handleNext}>
-                  {currentStep === maxSteps ? (
-                    <>
-                      <Sparkles className="h-4 w-4 mr-2" />
-                      Generate Intelligence
-                    </>
-                  ) : (
-                    <>
-                      Next
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            {/* Navigation */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex justify-between">
+                  <Button
+                    onClick={handlePrevious}
+                    disabled={currentStep === 1}
+                    variant="outline"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Previous
+                  </Button>
+
+                  <Button onClick={handleNext}>
+                    {currentStep === maxSteps ? (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Generate AI Intelligence
+                      </>
+                    ) : (
+                      <>
+                        Next
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
