@@ -14,6 +14,10 @@ import EmailSequences from "./pages/EmailSequences";
 import SocialContent from "./pages/SocialContent";
 import WebsiteCopy from "./pages/WebsiteCopy";
 import Admin from "./pages/Admin";
+import About from "./pages/About";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +38,10 @@ const App = () => (
           <Route path="/social-content" element={<SocialContent />} />
           <Route path="/website-copy" element={<WebsiteCopy />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/faq" element={<FAQ />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
