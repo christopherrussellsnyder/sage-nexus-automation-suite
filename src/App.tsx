@@ -18,6 +18,7 @@ import About from "./pages/About";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import FAQ from "./pages/FAQ";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/pricing" element={<Pricing />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
