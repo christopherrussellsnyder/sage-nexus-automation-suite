@@ -22,10 +22,34 @@ const AgencyDashboard = () => {
   const [activeTab, setActiveTab] = useState<'campaigns' | 'leads' | 'scoring'>('campaigns');
   const [campaignData, setCampaignData] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-  const handleCampaignCreated = (data: any) => {
-    setCampaignData(data);
-    setShowResults(true);
+  const handleCreateCampaign = (data: any) => {
+    setIsCreating(true);
+    setProgress(0);
+    
+    // Simulate progress
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsCreating(false);
+          setCampaignData(data);
+          setShowResults(true);
+          return 100;
+        }
+        return prev + 25;
+      });
+    }, 1000);
+  };
+
+  const handleNurtureLead = (lead: any) => {
+    console.log('Nurturing lead:', lead);
+  };
+
+  const handleScheduleMeeting = (lead: any) => {
+    console.log('Scheduling meeting with:', lead);
   };
 
   return (
@@ -72,12 +96,16 @@ const AgencyDashboard = () => {
       {activeTab === 'campaigns' && (
         <div className="space-y-6">
           {!showResults && (
-            <CampaignWizard onCampaignCreated={handleCampaignCreated} />
+            <CampaignWizard 
+              onCreateCampaign={handleCreateCampaign}
+              isCreating={isCreating}
+              progress={progress}
+            />
           )}
           
           {showResults && campaignData && (
             <CampaignResults 
-              data={campaignData}
+              campaignData={campaignData}
               onClose={() => setShowResults(false)}
             />
           )}
@@ -89,7 +117,11 @@ const AgencyDashboard = () => {
       )}
 
       {activeTab === 'scoring' && (
-        <LeadScoringDashboard />
+        <LeadScoringDashboard 
+          leads={[]}
+          onNurtureLead={handleNurtureLead}
+          onScheduleMeeting={handleScheduleMeeting}
+        />
       )}
     </div>
   );
