@@ -46,8 +46,10 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
     const businessName = data.formData?.businessName || 'Your Business';
     const uniqueValue = data.formData?.uniqueValue || 'unique solution';
     
-    // Determine platforms based on business type - exclude LinkedIn unless freelancer
+    // Determine platforms based on business type - include LinkedIn for freelancers
     const isFreelancer = businessType === 'freelancer' || 
+                        businessType === 'agency' ||
+                        businessType === 'sales' ||
                         (industry && industry.toLowerCase().includes('freelanc')) ||
                         (productService && productService.toLowerCase().includes('freelanc')) ||
                         (targetAudience && targetAudience.toLowerCase().includes('contract'));
