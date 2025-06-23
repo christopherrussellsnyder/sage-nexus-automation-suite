@@ -3,54 +3,45 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { 
   ShoppingCart, 
   Target, 
-  TrendingUp, 
-  MessageSquare
+  TrendingUp
 } from 'lucide-react';
 
 interface BusinessTypeSelectorProps {
-  onSelect: (type: 'ecommerce' | 'agency' | 'sales' | 'copywriting') => void;
+  onSelect: (type: 'ecommerce' | 'agency' | 'sales') => void;
 }
 
 const BusinessTypeSelector = ({ onSelect }: BusinessTypeSelectorProps) => {
   const businessTypes = [
     {
       type: 'ecommerce' as const,
-      title: 'E-commerce Intelligence',
-      description: 'Product research, competitor analysis, and marketing optimization',
+      title: 'E-commerce Business',
+      description: 'Product research, competitor analysis, and marketing optimization for online stores',
       icon: ShoppingCart,
       color: 'bg-blue-500',
-      features: ['Product Research', 'Competitor Analysis', 'Marketing Campaigns', 'Performance Metrics']
+      features: ['Product Research', 'Competitor Analysis', 'Conversion Optimization', 'Marketing Campaigns']
     },
     {
       type: 'agency' as const,
-      title: 'Agency Intelligence',
-      description: 'Client management, lead generation, and campaign optimization',
+      title: 'Marketing Agency',
+      description: 'Client management, lead generation, and campaign optimization for agencies',
       icon: Target,
       color: 'bg-green-500',
-      features: ['Lead Scoring', 'Client Analytics', 'Campaign Performance', 'ROI Tracking']
+      features: ['Client Analytics', 'Lead Scoring', 'Campaign Performance', 'ROI Tracking']
     },
     {
       type: 'sales' as const,
-      title: 'Sales Intelligence',
-      description: 'Prospect research, deal tracking, and conversion optimization',
+      title: 'Sales Professional',
+      description: 'Prospect research, deal tracking, and conversion optimization for sales teams',
       icon: TrendingUp,
       color: 'bg-purple-500',
-      features: ['Prospect Analysis', 'Deal Pipeline', 'Conversion Metrics', 'Email Sequences']
-    },
-    {
-      type: 'copywriting' as const,
-      title: 'Copy Intelligence',
-      description: 'Content optimization, performance metrics, and conversion analysis',
-      icon: MessageSquare,
-      color: 'bg-orange-500',
-      features: ['Copy Performance', 'Metric Analysis', 'A/B Testing', 'Conversion Optimization']
+      features: ['Prospect Analysis', 'Deal Pipeline', 'Email Sequences', 'Conversion Metrics']
     }
   ];
 
   return (
     <div>
-      <h3 className="text-2xl font-bold mb-4">Choose Your Business Focus</h3>
-      <div className="grid md:grid-cols-2 gap-4">
+      <h3 className="text-2xl font-bold mb-4">Choose Your Business Type</h3>
+      <div className="grid md:grid-cols-3 gap-4">
         {businessTypes.map((business) => (
           <Card 
             key={business.type} 

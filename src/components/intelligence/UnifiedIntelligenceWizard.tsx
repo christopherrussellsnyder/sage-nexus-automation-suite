@@ -166,6 +166,7 @@ const UnifiedIntelligenceWizard = ({
           <BusinessInformationForm 
             data={formData} 
             onChange={handleFieldChange}
+            businessType={businessType}
           />
         );
       case 2:
