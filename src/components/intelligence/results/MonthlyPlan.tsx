@@ -46,7 +46,16 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
     const businessName = data.formData?.businessName || 'Your Business';
     const uniqueValue = data.formData?.uniqueValue || 'unique solution';
     
-    const platforms = ['Facebook', 'Instagram', 'TikTok', 'LinkedIn', 'Google'];
+    // Determine platforms based on business type - exclude LinkedIn unless freelancer
+    const isFreelancer = businessType === 'freelancer' || 
+                        (industry && industry.toLowerCase().includes('freelanc')) ||
+                        (productService && productService.toLowerCase().includes('freelanc')) ||
+                        (targetAudience && targetAudience.toLowerCase().includes('contract'));
+    
+    const platforms = isFreelancer 
+      ? ['Facebook', 'Instagram', 'TikTok', 'LinkedIn', 'Google']
+      : ['Facebook', 'Instagram', 'TikTok', 'Google'];
+    
     const contentTypes: ('ad' | 'organic')[] = ['ad', 'organic'];
     
     const plan: ContentDay[] = [];
@@ -103,16 +112,16 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
     const contentStrategies = getContentStrategies(businessType, industry);
     const strategy = contentStrategies[day % contentStrategies.length];
     
-    const hooks = getIndustryHooks(industry, businessType);
+    const hooks = getIndustryHooks(industry, businessType, platform);
     const hook = hooks[day % hooks.length]
       .replace('{audience}', targetAudience)
       .replace('{industry}', industry)
       .replace('{business}', businessName);
 
     // Generate detailed body copy that connects to the hook
-    const bodyParts = generateBodyContent(strategy, targetAudience, productService, businessName, uniqueValue, industry, businessType);
+    const bodyParts = generateBodyContent(strategy, targetAudience, productService, businessName, uniqueValue, industry, businessType, platform);
     
-    const ctas = getStrategicCTAs(businessType, strategy.objective);
+    const ctas = getStrategicCTAs(businessType, strategy.objective, platform);
     const cta = ctas[day % ctas.length];
 
     // Create full script that flows from hook to body to CTA
@@ -177,7 +186,22 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
     return strategies;
   };
 
-  const getIndustryHooks = (industry: string, businessType: string): string[] => {
+  const getIndustryHooks = (industry: string, businessType: string, platform: string): string[] => {
+    // Platform-specific hook adjustments for LinkedIn when applicable
+    if (platform === 'LinkedIn') {
+      const linkedInHooks = [
+        "Career breakthrough: How I helped 50+ professionals land their dream contracts in {industry}...",
+        "Freelancers in {industry}: Stop undercharging for your expertise. Here's the pricing strategy that changed everything...",
+        "The {industry} networking mistake that's costing freelancers $50K+ per year (and how to fix it)...",
+        "Why 90% of {industry} freelancers struggle to find quality clients (and the simple system that solves it)...",
+        "From $25/hour to $150/hour: The {industry} freelancer's guide to premium positioning...",
+        "LinkedIn strategy that generated 47 high-quality {industry} leads in 30 days...",
+        "The contract negotiation framework that helped me 3x my {industry} freelancing income..."
+      ];
+      
+      return linkedInHooks;
+    }
+
     const hookTemplates: Record<string, string[]> = {
       'ecommerce': [
         "If you're tired of browsing endless products without finding what you actually need, this changes everything...",
@@ -227,35 +251,45 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
     businessName: string, 
     uniqueValue: string, 
     industry: string, 
-    businessType: string
+    businessType: string,
+    platform: string
   ): string[] => {
     const bodyParts = [];
 
-    // Opening - connect to hook
-    bodyParts.push(`Here's what most ${targetAudience} don't realize: the ${industry} industry has been doing things the same way for years, but there's a better approach that's finally available.`);
+    if (platform === 'LinkedIn') {
+      // LinkedIn-specific professional body content
+      bodyParts.push(`After 5+ years in the ${industry} industry, I've discovered what separates successful professionals from those who struggle to find quality opportunities.`);
+      bodyParts.push(`Most ${targetAudience} make the same critical mistakes: underpricing their services, accepting low-quality clients, and failing to position themselves as industry experts.`);
+      bodyParts.push(`That's why I developed a systematic approach that helps ${industry} professionals command premium rates while working with their ideal clients.`);
+      bodyParts.push(`In the last 18 months, this strategy has helped over 200 ${targetAudience} increase their rates by an average of 127% while reducing their client acquisition time by 60%.`);
+      bodyParts.push(`The key? Understanding that clients don't hire the cheapest option - they hire the professional who can solve their specific problem most effectively.`);
+      bodyParts.push(`Just last month, Sarah M. (${industry} consultant) implemented this framework and landed her first $15K project within 3 weeks. "I never thought clients would pay these rates," she told me, "but once I understood how to position my expertise properly, everything changed."`);
+    } else {
+      // Original body content for other platforms
+      bodyParts.push(`Here's what most ${targetAudience} don't realize: the ${industry} industry has been doing things the same way for years, but there's a better approach that's finally available.`);
+      bodyParts.push(`Every day, I see ${targetAudience} struggling with [specific pain point] because they're using outdated methods that simply don't work in today's market.`);
+      bodyParts.push(`That's exactly why we created ${productService} at ${businessName}. Our ${uniqueValue} specifically addresses the root cause of these challenges, not just the symptoms.`);
+      bodyParts.push(`In the last 12 months alone, we've helped over [X] ${targetAudience} achieve [specific result], with an average improvement of [Y]% in just [timeframe].`);
+      bodyParts.push(`What makes our approach different is [unique process/method]. While others focus on [common approach], we've discovered that [better approach] delivers 3x better results.`);
+      bodyParts.push(`Just last week, [client name/type] told us: "I wish I had found ${businessName} sooner. In just [timeframe], I've achieved more progress than in the previous [longer timeframe] combined."`);
+    }
 
-    // Problem amplification
-    bodyParts.push(`Every day, I see ${targetAudience} struggling with [specific pain point] because they're using outdated methods that simply don't work in today's market.`);
-
-    // Solution introduction
-    bodyParts.push(`That's exactly why we created ${productService} at ${businessName}. Our ${uniqueValue} specifically addresses the root cause of these challenges, not just the symptoms.`);
-
-    // Proof and credibility
-    bodyParts.push(`In the last 12 months alone, we've helped over [X] ${targetAudience} achieve [specific result], with an average improvement of [Y]% in just [timeframe].`);
-
-    // Unique mechanism
-    bodyParts.push(`What makes our approach different is [unique process/method]. While others focus on [common approach], we've discovered that [better approach] delivers 3x better results.`);
-
-    // Social proof
-    bodyParts.push(`Just last week, [client name/type] told us: "I wish I had found ${businessName} sooner. In just [timeframe], I've achieved more progress than in the previous [longer timeframe] combined."`);
-
-    // Urgency/scarcity
     bodyParts.push(`Here's the thing: we can only work with a limited number of ${targetAudience} each month to ensure everyone gets the personalized attention they deserve.`);
 
     return bodyParts;
   };
 
-  const getStrategicCTAs = (businessType: string, objective: string): string[] => {
+  const getStrategicCTAs = (businessType: string, objective: string, platform: string): string[] => {
+    if (platform === 'LinkedIn') {
+      return [
+        'Connect with me to discuss your next opportunity',
+        'Send me a DM to explore how we can work together',
+        'Book a strategy call to accelerate your growth',
+        'Download my free pricing guide',
+        'Join our exclusive professional network'
+      ];
+    }
+
     const ctaMap: Record<string, string[]> = {
       'awareness': [
         'Learn More About This Solution',
@@ -309,6 +343,20 @@ This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.e
   };
 
   const generateVisualSuggestion = (strategy: any, platform: string, contentType: string, industry: string): string => {
+    if (platform === 'LinkedIn') {
+      const linkedInVisuals: Record<string, string> = {
+        'Problem Identification': 'Professional infographic showing industry statistics and pain points with clean, business-appropriate design',
+        'Solution Introduction': 'Behind-the-scenes video of you working or a carousel showing your process/methodology',
+        'Social Proof': 'Client testimonial quote graphic or case study results in a professional format',
+        'Urgency Creation': 'Limited opportunity announcement with professional branding',
+        'Value Demonstration': 'ROI calculator or before/after business metrics visualization',
+        'Objection Handling': 'FAQ-style carousel addressing common professional concerns',
+        'Authority Building': 'Speaking engagement photos, certifications, or thought leadership content'
+      };
+      
+      return linkedInVisuals[strategy.theme] || 'Professional headshot with value proposition overlay';
+    }
+
     const visualMap: Record<string, string> = {
       'Problem Identification': `Before/after comparison showing the struggle vs. solution, optimized for ${platform} ${contentType} format`,
       'Solution Introduction': `Product/service demonstration with clear value proposition overlay for ${platform}`,
