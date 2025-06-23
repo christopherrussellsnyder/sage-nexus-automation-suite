@@ -24,6 +24,7 @@ import AgencyDashboard from "@/components/AgencyDashboard";
 import SalesDashboard from "@/components/SalesDashboard";
 import CopywritingDashboard from "@/components/CopywritingDashboard";
 import IntelligenceDashboard from "@/components/IntelligenceDashboard";
+import Footer from "@/components/Footer";
 import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Index = () => {
@@ -127,6 +128,9 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         {renderContent()}
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
