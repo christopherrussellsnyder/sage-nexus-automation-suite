@@ -555,20 +555,20 @@ const ContentDayCard = ({ day, onPreview, onCopy }: {
 
         <div className="grid grid-cols-4 gap-4 text-sm">
           <div className="text-center p-2 bg-blue-50 rounded">
-            <div className="font-semibold text-blue-600">{selectedDay.expectedMetrics.reach.toLocaleString()}</div>
+            <div className="font-semibold text-blue-600">{day.expectedMetrics.reach.toLocaleString()}</div>
             <div className="text-muted-foreground">Reach</div>
           </div>
           <div className="text-center p-2 bg-green-50 rounded">
-            <div className="font-semibold text-green-600">{selectedDay.expectedMetrics.engagement}</div>
+            <div className="font-semibold text-green-600">{day.expectedMetrics.engagement}</div>
             <div className="text-muted-foreground">Engagement</div>
           </div>
           <div className="text-center p-2 bg-purple-50 rounded">
-            <div className="font-semibold text-purple-600">{selectedDay.expectedMetrics.conversions}</div>
+            <div className="font-semibold text-purple-600">{day.expectedMetrics.conversions}</div>
             <div className="text-muted-foreground">Conversions</div>
           </div>
           <div className="text-center p-2 bg-orange-50 rounded">
             <div className="font-semibold text-orange-600">
-              {selectedDay.expectedMetrics.cost > 0 ? `$${selectedDay.expectedMetrics.cost}` : 'Free'}
+              {day.expectedMetrics.cost > 0 ? `$${day.expectedMetrics.cost}` : 'Free'}
             </div>
             <div className="text-muted-foreground">Cost</div>
           </div>
