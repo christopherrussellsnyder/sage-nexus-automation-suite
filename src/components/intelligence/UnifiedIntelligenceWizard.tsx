@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import BusinessInformationForm from './wizard/BusinessInformationForm';
 import CurrentMetricsForm from './wizard/CurrentMetricsForm';
 import GoalsObjectivesForm from './wizard/GoalsObjectivesForm';
 import CompetitorAnalysisForm from './wizard/CompetitorAnalysisForm';
+import IntelligenceLoading from './IntelligenceLoading';
 
 interface Step {
   id: number;
@@ -31,25 +33,25 @@ const UnifiedIntelligenceWizard = ({ businessType, onIntelligenceGenerated }: Un
       id: 1,
       title: 'Business Information',
       description: 'Basic business details and industry information',
-      status: (currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+      status: currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming'
     },
     {
       id: 2,
       title: 'Current Metrics',
       description: 'Performance metrics and key challenges',
-      status: (currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+      status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming'
     },
     {
       id: 3,
       title: 'Goals & Objectives',
       description: 'Business goals and success metrics',
-      status: (currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+      status: currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming'
     },
     {
       id: 4,
       title: 'Competitive Analysis',
       description: 'Competitor information and market positioning',
-      status: (currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming') as 'completed' | 'current' | 'upcoming'
+      status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming'
     }
   ];
 
@@ -76,7 +78,7 @@ const UnifiedIntelligenceWizard = ({ businessType, onIntelligenceGenerated }: Un
     
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
       
       const mockIntelligenceData = {
         businessType,
@@ -139,20 +141,7 @@ const UnifiedIntelligenceWizard = ({ businessType, onIntelligenceGenerated }: Un
   const progress = (currentStep / 4) * 100;
 
   if (loading) {
-    return (
-      <Card>
-        <CardContent className="py-12">
-          <div className="text-center space-y-4">
-            <Sparkles className="h-12 w-12 mx-auto text-blue-500 animate-spin" />
-            <h3 className="text-xl font-semibold">Generating Intelligence Report</h3>
-            <p className="text-muted-foreground">
-              Analyzing your business data and generating personalized insights...
-            </p>
-            <Progress value={85} className="w-full max-w-md mx-auto" />
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <IntelligenceLoading businessType={businessType} />;
   }
 
   return (
