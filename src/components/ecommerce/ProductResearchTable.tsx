@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -1340,7 +1341,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Growing Business Product Research</CardTitle>
+            <CardTitle>Product Research</CardTitle>
             <CardDescription>
               30 qualified products from stores generating $300K-$2M monthly revenue with growth potential
             </CardDescription>
