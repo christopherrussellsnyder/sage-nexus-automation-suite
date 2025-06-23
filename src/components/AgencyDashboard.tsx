@@ -1,99 +1,49 @@
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { 
   Users, 
   TrendingUp, 
-  DollarSign, 
+  Target, 
   Calendar,
-  UserCheck,
+  FileText,
   BarChart3,
-  Target,
-  Brain,
-  MessageSquare,
-  FileText
-} from 'lucide-react';
+  Lightbulb,
+  RefreshCw
+} from "lucide-react";
+import CampaignWizard from './agency/CampaignWizard';
+import CampaignResults from './agency/CampaignResults';
 import LeadManagement from './agency/LeadManagement';
 import LeadScoringDashboard from './agency/LeadScoringDashboard';
-import MarketingIntelligence from './agency/MarketingIntelligence';
-import DealsTracker from './sales/DealsTracker';
-import MeetingScheduler from './sales/MeetingScheduler';
 
 const AgencyDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'scoring' | 'intelligence' | 'deals' | 'meetings'>('overview');
-  const [leads, setLeads] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'campaigns' | 'leads' | 'scoring'>('campaigns');
+  const [campaignData, setCampaignData] = useState(null);
+  const [showResults, setShowResults] = useState(false);
 
-  const handleLeadAdded = (lead: any) => {
-    setLeads(prev => [...prev, lead]);
+  const handleCampaignCreated = (data: any) => {
+    setCampaignData(data);
+    setShowResults(true);
   };
-
-  const handleNurtureLead = (lead: any) => {
-    console.log('Nurturing lead:', lead);
-  };
-
-  const handleScheduleMeeting = (lead: any) => {
-    console.log('Scheduling meeting with:', lead);
-  };
-
-  // Calculate metrics based on actual data - start from 0
-  const activeLeads = leads.length;
-  const revenueThisMonth = 0; // Will be calculated from actual closed deals
-  const meetingsScheduled = 0; // Will be calculated from actual meetings
-  const hotLeads = leads.filter(l => l.status === 'hot').length;
-  const warmLeads = leads.filter(l => l.status === 'warm').length;
-  const coldLeads = leads.filter(l => l.status === 'cold').length;
-  const avgScore = leads.length > 0 ? Math.round(leads.reduce((sum, l) => sum + (l.score || 0), 0) / leads.length) : 0;
-  const conversionRate = 0; // Will be calculated from actual conversion data
-
-  const stats = [
-    {
-      title: 'Active Leads',
-      value: activeLeads.toString(),
-      description: 'In pipeline',
-      icon: Users,
-      color: 'text-blue-600'
-    },
-    {
-      title: 'Revenue This Month',
-      value: `$${revenueThisMonth.toLocaleString()}`,
-      description: 'From closed deals',
-      icon: DollarSign,
-      color: 'text-green-600'
-    },
-    {
-      title: 'Meetings Scheduled',
-      value: meetingsScheduled.toString(),
-      description: 'This week',
-      icon: Calendar,
-      color: 'text-purple-600'
-    },
-    {
-      title: 'Conversion Rate',
-      value: `${conversionRate}%`,
-      description: 'Lead to customer',
-      icon: TrendingUp,
-      color: 'text-orange-600'
-    }
-  ];
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Agency Operations</h2>
-          <p className="text-muted-foreground">Lead management, marketing intelligence, and client operations</p>
+          <h2 className="text-3xl font-bold">Agency Suite</h2>
+          <p className="text-muted-foreground">Comprehensive client and campaign management</p>
         </div>
         <div className="flex space-x-2">
           <Button
-            variant={activeTab === 'overview' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('overview')}
+            variant={activeTab === 'campaigns' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('campaigns')}
             className="flex items-center space-x-2"
           >
-            <BarChart3 className="h-4 w-4" />
-            <span>Overview</span>
+            <Target className="h-4 w-4" />
+            <span>Campaigns</span>
           </Button>
           <Button
             variant={activeTab === 'leads' ? 'default' : 'outline'}
@@ -108,120 +58,39 @@ const AgencyDashboard = () => {
             onClick={() => setActiveTab('scoring')}
             className="flex items-center space-x-2"
           >
-            <UserCheck className="h-4 w-4" />
+            <BarChart3 className="h-4 w-4" />
             <span>Lead Scoring</span>
           </Button>
-          <Button
-            variant={activeTab === 'intelligence' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('intelligence')}
-            className="flex items-center space-x-2"
-          >
-            <Brain className="h-4 w-4" />
-            <span>Marketing Intelligence</span>
-          </Button>
-          <Button
-            variant={activeTab === 'deals' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('deals')}
-            className="flex items-center space-x-2"
-          >
-            <Target className="h-4 w-4" />
-            <span>Deals</span>
-          </Button>
-          <Button
-            variant={activeTab === 'meetings' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('meetings')}
-            className="flex items-center space-x-2"
-          >
-            <Calendar className="h-4 w-4" />
-            <span>Meetings</span>
+          <Button className="flex items-center space-x-2">
+            <RefreshCw className="h-4 w-4" />
+            <span>Refresh</span>
           </Button>
         </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid md:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <Card key={index}>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                <div>
-                  <p className="text-2xl font-bold">{stat.value}</p>
-                  <p className="text-sm text-muted-foreground">{stat.title}</p>
-                  <p className="text-xs text-muted-foreground">{stat.description}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <div className="grid lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="h-5 w-5" />
-                <span>Lead Pipeline Health</span>
-              </CardTitle>
-              <CardDescription>Track your lead generation and conversion metrics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Pipeline Value</span>
-                  <span className="text-2xl font-bold text-green-600">$0</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Avg Deal Size</span>
-                  <span className="text-lg font-semibold">$0</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Sales Cycle</span>
-                  <span className="text-lg font-semibold">0 days</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      {activeTab === 'campaigns' && (
+        <div className="space-y-6">
+          {!showResults && (
+            <CampaignWizard onCampaignCreated={handleCampaignCreated} />
+          )}
           
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5" />
-                <span>Recent Activities</span>
-              </CardTitle>
-              <CardDescription>Latest client interactions and updates</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {leads.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No recent activities</p>
-                ) : (
-                  <>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm">Lead added: {leads[leads.length - 1]?.name}</span>
-                    </div>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          {showResults && campaignData && (
+            <CampaignResults 
+              data={campaignData}
+              onClose={() => setShowResults(false)}
+            />
+          )}
         </div>
       )}
 
-      {activeTab === 'leads' && <LeadManagement onLeadAdded={handleLeadAdded} />}
-      {activeTab === 'scoring' && (
-        <LeadScoringDashboard 
-          leads={leads} 
-          onNurtureLead={handleNurtureLead}
-          onScheduleMeeting={handleScheduleMeeting}
-        />
+      {activeTab === 'leads' && (
+        <LeadManagement />
       )}
-      {activeTab === 'intelligence' && <MarketingIntelligence />}
-      {activeTab === 'deals' && <DealsTracker />}
-      {activeTab === 'meetings' && <MeetingScheduler />}
+
+      {activeTab === 'scoring' && (
+        <LeadScoringDashboard />
+      )}
     </div>
   );
 };
