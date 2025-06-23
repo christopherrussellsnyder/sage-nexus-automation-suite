@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -102,7 +101,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
             section: 'Sales Email',
             copy: `Last chance: ${targetAudience} are getting amazing ${industry} results with this`,
             description: 'Urgency-driven sales email with social proof',
-            cta: 'Join Before It's Too Late'
+            cta: 'Join Before It\'s Too Late'
           }
         ]
       },
