@@ -24,6 +24,12 @@ interface UnifiedIntelligenceWizardProps {
   intelligenceMode?: 'full' | 'copywriting' | 'marketing' | 'competitor';
 }
 
+interface FormData {
+  [key: string]: any;
+  copyType?: string;
+  copywritingChallenges?: string;
+}
+
 const UnifiedIntelligenceWizard = ({ 
   businessType, 
   onIntelligenceGenerated,
@@ -31,15 +37,21 @@ const UnifiedIntelligenceWizard = ({
 }: UnifiedIntelligenceWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<FormData>({});
 
-  const getStepsForMode = () => {
-    const baseSteps = [
+  const getStepsForMode = (): Step[] => {
+    const getStatus = (stepId: number): 'completed' | 'current' | 'upcoming' => {
+      if (currentStep > stepId) return 'completed';
+      if (currentStep === stepId) return 'current';
+      return 'upcoming';
+    };
+
+    const baseSteps: Step[] = [
       {
         id: 1,
         title: 'Business Information',
         description: 'Basic business details and industry information',
-        status: currentStep > 1 ? 'completed' : currentStep === 1 ? 'current' : 'upcoming'
+        status: getStatus(1)
       }
     ];
 
@@ -50,7 +62,7 @@ const UnifiedIntelligenceWizard = ({
           id: 2,
           title: 'Copy Requirements',
           description: 'Specific copywriting needs and target messaging',
-          status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming'
+          status: getStatus(2)
         }
       ];
     }
@@ -62,13 +74,13 @@ const UnifiedIntelligenceWizard = ({
           id: 2,
           title: 'Current Metrics',
           description: 'Performance metrics and key challenges',
-          status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming'
+          status: getStatus(2)
         },
         {
           id: 3,
           title: 'Goals & Objectives',
           description: 'Business goals and success metrics',
-          status: currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming'
+          status: getStatus(3)
         }
       ];
     }
@@ -80,19 +92,19 @@ const UnifiedIntelligenceWizard = ({
         id: 2,
         title: 'Current Metrics',
         description: 'Performance metrics and key challenges',
-        status: currentStep > 2 ? 'completed' : currentStep === 2 ? 'current' : 'upcoming'
+        status: getStatus(2)
       },
       {
         id: 3,
         title: 'Goals & Objectives',
         description: 'Business goals and success metrics',
-        status: currentStep > 3 ? 'completed' : currentStep === 3 ? 'current' : 'upcoming'
+        status: getStatus(3)
       },
       {
         id: 4,
         title: 'Competitive Analysis',
         description: 'Competitor information and market positioning',
-        status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'current' : 'upcoming'
+        status: getStatus(4)
       }
     ];
   };
