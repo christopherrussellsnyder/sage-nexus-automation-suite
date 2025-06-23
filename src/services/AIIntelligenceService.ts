@@ -1,4 +1,3 @@
-
 interface BusinessFormData {
   businessName: string;
   industry: string;
@@ -111,27 +110,15 @@ interface IndustryInsight {
 }
 
 export class AIIntelligenceService {
-  private static API_KEY_STORAGE_KEY = 'openai_api_key';
-
-  static saveApiKey(apiKey: string): void {
-    localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
-  }
-
-  static getApiKey(): string | null {
-    return localStorage.getItem(this.API_KEY_STORAGE_KEY);
-  }
+  // Hardcoded API key - replace with your actual OpenAI API key
+  private static API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
 
   static async generateIntelligence(request: IntelligenceRequest): Promise<AIGeneratedContent> {
-    const apiKey = this.getApiKey();
-    if (!apiKey) {
-      throw new Error('OpenAI API key not found. Please set your API key first.');
-    }
-
     console.log('Generating AI intelligence for:', request.formData.businessName);
 
     try {
       const prompt = this.buildComprehensivePrompt(request);
-      const response = await this.callOpenAI(prompt, apiKey);
+      const response = await this.callOpenAI(prompt);
       return this.parseAIResponse(response, request);
     } catch (error) {
       console.error('Error generating AI intelligence:', error);
@@ -211,11 +198,15 @@ Respond in a structured JSON format that matches the TypeScript interfaces provi
     return fullPrompt;
   }
 
-  private static async callOpenAI(prompt: string, apiKey: string): Promise<string> {
+  private static async callOpenAI(prompt: string): Promise<string> {
+    if (this.API_KEY === 'YOUR_OPENAI_API_KEY_HERE') {
+      throw new Error('Please replace YOUR_OPENAI_API_KEY_HERE with your actual OpenAI API key in the AIIntelligenceService file');
+    }
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${this.API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -240,7 +231,7 @@ Respond in a structured JSON format that matches the TypeScript interfaces provi
       console.error('OpenAI API error:', errorData);
       
       if (response.status === 401) {
-        throw new Error('Invalid API key. Please check your OpenAI API key.');
+        throw new Error('Invalid API key. Please check your OpenAI API key in the code.');
       } else if (response.status === 429) {
         throw new Error('API rate limit exceeded. Please try again later.');
       } else {
