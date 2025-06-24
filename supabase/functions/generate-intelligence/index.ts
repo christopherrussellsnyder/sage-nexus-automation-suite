@@ -248,23 +248,32 @@ Respond ONLY with valid JSON in this exact structure:
       }),
     });
 
+    console.log('OpenAI response status:', response.status);
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('OpenAI API error:', errorData);
+      const errorText = await response.text();
+      console.error('OpenAI API error status:', response.status);
+      console.error('OpenAI API error response:', errorText);
       
       if (response.status === 401) {
         throw new Error('Invalid OpenAI API key. Please check your API key configuration.');
       } else if (response.status === 429) {
         throw new Error('OpenAI API rate limit exceeded. Please try again later.');
       } else {
-        throw new Error(`OpenAI API request failed with status ${response.status}: ${errorData.error?.message || 'Unknown error'}`);
+        throw new Error(`OpenAI API request failed with status ${response.status}: ${errorText}`);
       }
     }
 
     const data = await response.json();
+    console.log('OpenAI response received successfully');
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      throw new Error('Invalid response structure from OpenAI API');
+    }
+
     const aiResponse = data.choices[0].message.content;
 
-    console.log('Received response from OpenAI, parsing JSON...');
+    console.log('Parsing AI response as JSON...');
 
     let intelligenceData;
     try {
