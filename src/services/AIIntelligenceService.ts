@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 interface BusinessFormData {
@@ -116,7 +117,7 @@ export class AIIntelligenceService {
     console.log('Generating AI intelligence for:', request.formData.businessName);
 
     try {
-      // Call the Supabase Edge Function instead of direct OpenAI API
+      // Call the Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('generate-intelligence', {
         body: request
       });
@@ -130,6 +131,7 @@ export class AIIntelligenceService {
         throw new Error('No data received from intelligence generation');
       }
 
+      console.log('Intelligence generated successfully');
       return data as AIGeneratedContent;
     } catch (error) {
       console.error('Error generating AI intelligence:', error);
@@ -139,6 +141,6 @@ export class AIIntelligenceService {
 
   static saveApiKey(apiKey: string): void {
     // API key is now handled securely through Supabase secrets
-    console.log('API key is managed through Supabase secrets');
+    console.log('API key is managed through Supabase secrets - no action needed');
   }
 }
