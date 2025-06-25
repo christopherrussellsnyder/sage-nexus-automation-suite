@@ -2,162 +2,225 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, TrendingUp, Users, DollarSign } from 'lucide-react';
+import { Eye, TrendingUp, Users, DollarSign, Target, AlertTriangle } from 'lucide-react';
 
 interface CompetitorInsightsProps {
   data: any;
 }
 
 const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
-  const competitors = [
+  console.log('Competitor Insights - AI Data:', data.competitorInsights);
+  console.log('Competitor Insights - Full Data:', data);
+
+  // Use AI competitor insights data
+  const aiCompetitorInsights = data.competitorInsights || [];
+  const isAIGenerated = aiCompetitorInsights.length > 0;
+
+  // Template fallback data
+  const templateCompetitors = [
     {
-      name: 'Market Leader A',
-      marketShare: '34%',
-      strategy: 'Problem-solution narrative with strong social proof elements',
-      performance: '4.2% conversion rate, $18 CPM',
-      application: 'Implement similar testimonial-driven approach with your unique value proposition',
-      strengths: ['High conversion rates', 'Strong brand recognition', 'Effective retargeting'],
-      weaknesses: ['High customer acquisition cost', 'Limited mobile optimization']
-    },
-    {
-      name: 'Emerging Competitor B',
-      marketShare: '18%',
-      strategy: 'High-frequency posting with user-generated content',
-      performance: '8.5% engagement rate, 22% monthly growth',
-      application: 'Launch a branded hashtag campaign to generate authentic UGC',
-      strengths: ['Viral content creation', 'Young audience engagement', 'Low cost per engagement'],
-      weaknesses: ['Limited conversion tracking', 'Inconsistent messaging']
-    },
-    {
-      name: 'Enterprise Player C',
-      marketShare: '28%',
-      strategy: 'Authority positioning through data-driven content',
-      performance: '380% ROI on white paper campaigns',
-      application: 'Create a simplified research report highlighting key industry trends',
-      strengths: ['Thought leadership', 'High-value clients', 'Long-term contracts'],
-      weaknesses: ['Slow to adapt to trends', 'Limited social media presence']
+      competitor: 'AI Automation Leader A',
+      marketPosition: 'Dominant player in enterprise AI automation with 35% market share',
+      pricingAnalysis: {
+        averagePackages: '$5000-12000/month for similar services',
+        pricingStrategy: 'Position 15-20% below market leader while emphasizing superior ROI',
+        valueGapOpportunity: 'Opportunity to provide 2x value at 80% of their pricing'
+      },
+      marketingStrategy: {
+        commonApproaches: ['LinkedIn executive outreach', 'Webinar marketing', 'Case study content'],
+        weaknesses: ['Generic messaging', 'Limited industry specialization', 'Slow response times'],
+        opportunities: ['Executive-focused positioning', 'Industry-specific case studies', 'Rapid implementation']
+      },
+      contentStrategy: {
+        typicalContent: 'Generic automation benefits and technical features',
+        contentGaps: ['Executive time-savings calculators', 'Industry-specific ROI data', 'Competitive benchmarking'],
+        opportunityAreas: ['Thought leadership on AI trends', 'Executive productivity content', 'Industry-specific automation']
+      },
+      conversionTactics: {
+        commonApproaches: ['Free consultations', 'ROI calculators', 'Technical demos'],
+        improvementOpportunities: ['Executive-focused assessments', 'Industry-specific case studies', 'Rapid value demonstration'],
+        differentiationStrategy: 'Position as executive productivity specialists with proven industry expertise'
+      },
+      weaknessExploitation: [
+        {
+          weakness: 'Generic, one-size-fits-all automation approaches',
+          strategy: 'Position as industry-specialized automation experts',
+          implementation: 'Develop industry-specific case studies and demos',
+          expectedImpact: '25-40% higher conversion rates vs generic competitors'
+        }
+      ]
     }
   ];
 
-  const marketGaps = [
-    'Most competitors focus on features, not outcomes',
-    'Limited use of storytelling in copy',
-    'Weak emotional connection in messaging',
-    'Opportunity to dominate mobile-first experience',
-    'Gap in personalized customer journey mapping'
-  ];
+  const competitors = isAIGenerated ? aiCompetitorInsights : templateCompetitors;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Competitive Intelligence</CardTitle>
+        <CardTitle className="flex items-center space-x-2">
+          <Eye className="h-5 w-5" />
+          <span>{isAIGenerated ? 'AI-Generated' : 'Template'} Competitive Intelligence</span>
+        </CardTitle>
         <CardDescription>
-          Analysis of top competitors and market opportunities for your business
+          {isAIGenerated 
+            ? 'Real-time analysis of top competitors and strategic market opportunities'
+            : 'Template competitive analysis (AI data not available)'
+          }
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {/* Competitor Analysis */}
+          {/* Main Competitor Analysis */}
           <div className="space-y-4">
-            <h4 className="font-semibold">Top Competitors Analysis</h4>
-            {competitors.map((competitor, index) => (
+            <h4 className="font-semibold">Competitive Landscape Analysis</h4>
+            {competitors.map((comp: any, index: number) => (
               <div key={index} className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-3">
-                    <h5 className="font-medium">{competitor.name}</h5>
-                    <Badge variant="outline">{competitor.marketShare} Market Share</Badge>
+                    <Badge variant="outline">#{index + 1}</Badge>
+                    <h5 className="font-medium">{comp.competitor}</h5>
                   </div>
                   <Button variant="ghost" size="sm">
                     <Eye className="h-4 w-4 mr-2" />
-                    View Details
+                    Analyze
                   </Button>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Key Strategy</label>
-                    <p className="text-sm mt-1">{competitor.strategy}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Performance Metrics</label>
-                    <p className="text-sm mt-1 text-green-600 font-medium">{competitor.performance}</p>
-                  </div>
-                </div>
-
+                {/* Market Position */}
                 <div className="mb-4">
-                  <label className="text-sm font-medium text-muted-foreground">Application for Your Business</label>
-                  <p className="text-sm mt-1 bg-blue-50 p-2 rounded border border-blue-200">{competitor.application}</p>
+                  <label className="text-sm font-medium text-muted-foreground">Market Position</label>
+                  <p className="text-sm mt-1 bg-blue-50 p-2 rounded border border-blue-200">{comp.marketPosition}</p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-green-600">Strengths</label>
-                    <ul className="text-sm mt-1 space-y-1">
-                      {competitor.strengths.map((strength, strengthIndex) => (
-                        <li key={strengthIndex} className="flex items-center space-x-2">
-                          <TrendingUp className="h-3 w-3 text-green-500" />
-                          <span>{strength}</span>
-                        </li>
-                      ))}
-                    </ul>
+                {/* Pricing Analysis */}
+                {comp.pricingAnalysis && (
+                  <div className="mb-4 p-3 bg-green-50 rounded border border-green-200">
+                    <h5 className="font-medium text-green-800 mb-2 flex items-center">
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      AI Pricing Intelligence
+                    </h5>
+                    <div className="space-y-2 text-sm">
+                      <div>
+                        <span className="font-medium">Market Pricing: </span>
+                        <span>{comp.pricingAnalysis.averagePackages}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium">Recommended Strategy: </span>
+                        <span className="text-green-700 font-medium">{comp.pricingAnalysis.pricingStrategy}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium">Value Opportunity: </span>
+                        <span>{comp.pricingAnalysis.valueGapOpportunity}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-red-600">Weaknesses</label>
-                    <ul className="text-sm mt-1 space-y-1">
-                      {competitor.weaknesses.map((weakness, weaknessIndex) => (
-                        <li key={weaknessIndex} className="flex items-center space-x-2">
-                          <div className="h-3 w-3 bg-red-500 rounded-full" />
-                          <span>{weakness}</span>
-                        </li>
-                      ))}
-                    </ul>
+                )}
+
+                {/* Marketing Strategy Analysis */}
+                {comp.marketingStrategy && (
+                  <div className="mb-4 p-3 bg-purple-50 rounded border border-purple-200">
+                    <h5 className="font-medium text-purple-800 mb-2 flex items-center">
+                      <Target className="h-4 w-4 mr-2" />
+                      Marketing Strategy Intel
+                    </h5>
+                    <div className="grid md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-purple-700">Common Approaches:</span>
+                        <ul className="mt-1 space-y-1">
+                          {comp.marketingStrategy.commonApproaches?.map((approach: string, i: number) => (
+                            <li key={i} className="flex items-center space-x-2">
+                              <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                              <span>{approach}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <span className="font-medium text-red-600">Identified Weaknesses:</span>
+                        <ul className="mt-1 space-y-1">
+                          {comp.marketingStrategy.weaknesses?.map((weakness: string, i: number) => (
+                            <li key={i} className="flex items-center space-x-2">
+                              <AlertTriangle className="w-3 h-3 text-red-500" />
+                              <span>{weakness}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="mt-3 p-2 bg-white rounded border">
+                      <span className="font-medium text-purple-800">Your Opportunities: </span>
+                      <span className="text-sm">{comp.marketingStrategy.opportunities?.join(', ')}</span>
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Content Strategy Analysis */}
+                {comp.contentStrategy && (
+                  <div className="mb-4 p-3 bg-orange-50 rounded border border-orange-200">
+                    <h5 className="font-medium text-orange-800 mb-2">Content Strategy Analysis</h5>
+                    <div className="space-y-2 text-sm">
+                      <div>
+                        <span className="font-medium">Their Content: </span>
+                        <span>{comp.contentStrategy.typicalContent}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-orange-700">Content Gaps: </span>
+                        <span>{comp.contentStrategy.contentGaps?.join(', ')}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-green-700">Your Opportunities: </span>
+                        <span>{comp.contentStrategy.opportunityAreas?.join(', ')}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Weakness Exploitation Strategies */}
+                {comp.weaknessExploitation && comp.weaknessExploitation.length > 0 && (
+                  <div className="p-3 bg-red-50 rounded border border-red-200">
+                    <h5 className="font-medium text-red-800 mb-2 flex items-center">
+                      <Target className="h-4 w-4 mr-2" />
+                      Strategic Advantage Opportunities
+                    </h5>
+                    {comp.weaknessExploitation.map((exploit: any, i: number) => (
+                      <div key={i} className="mb-3 last:mb-0">
+                        <div className="p-2 bg-white rounded border">
+                          <div className="text-sm space-y-1">
+                            <div>
+                              <span className="font-medium text-red-700">Their Weakness: </span>
+                              <span>{exploit.weakness}</span>
+                            </div>
+                            <div>
+                              <span className="font-medium text-blue-700">Your Strategy: </span>
+                              <span>{exploit.strategy}</span>
+                            </div>
+                            <div>
+                              <span className="font-medium text-green-700">Implementation: </span>
+                              <span>{exploit.implementation}</span>
+                            </div>
+                            <div>
+                              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                Expected Impact: {exploit.expectedImpact}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          {/* Market Gaps & Opportunities */}
-          <div className="border rounded-lg p-4 bg-gradient-to-r from-green-50 to-blue-50">
-            <h4 className="font-semibold mb-3 flex items-center space-x-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
-              <span>Market Opportunities</span>
-            </h4>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Identified Gaps</label>
-                <ul className="text-sm mt-2 space-y-1">
-                  {marketGaps.map((gap, gapIndex) => (
-                    <li key={gapIndex} className="flex items-start space-x-2">
-                      <span className="text-green-500 mt-1">•</span>
-                      <span>{gap}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Recommended Actions</label>
-                <ul className="text-sm mt-2 space-y-1">
-                  <li className="flex items-start space-x-2">
-                    <span className="text-blue-500 mt-1">•</span>
-                    <span>Focus on outcome-based messaging over feature lists</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="text-blue-500 mt-1">•</span>
-                    <span>Develop emotional storytelling framework</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="text-blue-500 mt-1">•</span>
-                    <span>Create mobile-optimized customer journey</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="text-blue-500 mt-1">•</span>
-                    <span>Implement advanced personalization tactics</span>
-                  </li>
-                </ul>
-              </div>
+          {/* Data Source Indicator */}
+          {!isAIGenerated && (
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
+              <p className="text-sm text-yellow-800">
+                ⚠️ Displaying template competitive analysis - AI competitor intelligence not available
+              </p>
             </div>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>

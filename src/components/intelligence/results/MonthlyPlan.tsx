@@ -1,789 +1,273 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Calendar, Eye, Copy, Grid, List, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Eye, Target, TrendingUp, Hash, Users } from 'lucide-react';
 
 interface MonthlyPlanProps {
   data: any;
 }
 
-interface ContentDay {
-  day: number;
-  platform: string;
-  contentType: 'ad' | 'organic';
-  hook: string;
-  body: string;
-  cta: string;
-  visualSuggestion: string;
-  targetAudience: string;
-  keyMessage: string;
-  expectedMetrics: {
-    reach: number;
-    engagement: number;
-    cost: number;
-    conversions: number;
-  };
-  hashtags?: string[];
-  strategicReasoning: string;
-}
-
 const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
-  const [viewMode, setViewMode] = useState<'preview' | 'full'>('preview');
-  const [selectedDay, setSelectedDay] = useState<ContentDay | null>(null);
-  const [currentWeek, setCurrentWeek] = useState(1);
+  const [viewMode, setViewMode] = useState<'overview' | 'full'>('overview');
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
-  // Use AI-generated content if available, otherwise fall back to template generation
-  const getContentPlan = (): ContentDay[] => {
-    if (data.aiGenerated && data.insights?.monthlyPlan) {
-      // Use AI-generated monthly plan
-      return data.insights.monthlyPlan;
-    }
-    
-    // Fallback to template generation for backward compatibility
-    return generateTemplateContentPlan();
-  };
+  console.log('Monthly Plan - AI Data:', data.monthlyPlan);
+  console.log('Monthly Plan - Full Data:', data);
 
-  const generateTemplateContentPlan = (): ContentDay[] => {
-    const businessType = data.businessType || 'general';
-    const industry = data.formData?.industry || 'general';
-    const targetAudience = data.formData?.targetAudience || 'target audience';
-    const monthlyRevenue = data.formData?.monthlyRevenue || '10k-50k';
-    const productService = data.formData?.productService || 'product/service';
-    const businessName = data.formData?.businessName || 'Your Business';
-    const uniqueValue = data.formData?.uniqueValue || 'unique solution';
-    
-    // Determine platforms based on business type - include LinkedIn for freelancers
-    const isFreelancer = businessType === 'freelancer' || 
-                        businessType === 'agency' ||
-                        businessType === 'sales' ||
-                        (industry && industry.toLowerCase().includes('freelanc')) ||
-                        (productService && productService.toLowerCase().includes('freelanc')) ||
-                        (targetAudience && targetAudience.toLowerCase().includes('contract'));
-    
-    const platforms = isFreelancer 
-      ? ['Facebook', 'Instagram', 'TikTok', 'LinkedIn', 'Google']
-      : ['Facebook', 'Instagram', 'TikTok', 'Google'];
-    
-    const contentTypes: ('ad' | 'organic')[] = ['ad', 'organic'];
-    
-    const plan: ContentDay[] = [];
-    
-    for (let day = 1; day <= 30; day++) {
-      const platform = platforms[day % platforms.length];
-      const contentType = contentTypes[day % contentTypes.length];
-      
-      const contentTemplate = generateDetailedContent(
-        businessType, 
-        industry, 
-        targetAudience, 
-        productService, 
-        businessName, 
-        uniqueValue, 
-        day, 
-        platform, 
-        contentType
-      );
-      
-      plan.push({
-        day,
-        platform,
-        contentType,
-        hook: contentTemplate.hook,
-        body: contentTemplate.body,
-        cta: contentTemplate.cta,
-        visualSuggestion: contentTemplate.visual,
-        targetAudience,
-        keyMessage: contentTemplate.keyMessage,
-        expectedMetrics: calculateMetrics(contentType, platform, monthlyRevenue),
-        hashtags: platform === 'Instagram' || platform === 'TikTok' ? generateHashtags(industry, businessType) : undefined,
-        strategicReasoning: contentTemplate.strategicReasoning
-      });
-    }
-    
-    return plan;
-  };
-
-  // Generate detailed, cohesive content that flows together
-  const generateDetailedContent = (
-    businessType: string, 
-    industry: string, 
-    targetAudience: string, 
-    productService: string, 
-    businessName: string, 
-    uniqueValue: string, 
-    day: number, 
-    platform: string, 
-    contentType: 'ad' | 'organic'
-  ) => {
-    const contentStrategies = getContentStrategies(businessType, industry);
-    const strategy = contentStrategies[day % contentStrategies.length];
-    
-    const hooks = getIndustryHooks(industry, businessType, platform);
-    const hook = hooks[day % hooks.length]
-      .replace('{audience}', targetAudience)
-      .replace('{industry}', industry)
-      .replace('{business}', businessName);
-
-    // Generate detailed body copy that connects to the hook
-    const bodyParts = generateBodyContent(strategy, targetAudience, productService, businessName, uniqueValue, industry, businessType, platform);
-    
-    const ctas = getStrategicCTAs(businessType, strategy.objective, platform);
-    const cta = ctas[day % ctas.length];
-
-    // Create full script that flows from hook to body to CTA
-    const fullScript = createFullScript(hook, bodyParts, cta, strategy);
-
-    // Generate strategic reasoning
-    const strategicReasoning = `This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.emotionalTrigger} and move the audience toward ${strategy.objective}. The copy flows from problem identification through solution presentation to clear action step.`;
-
-    return {
-      hook,
-      body: bodyParts.join(' '),
-      cta,
-      fullScript,
-      visual: generateVisualSuggestion(strategy, platform, contentType, industry),
-      keyMessage: strategy.keyMessage.replace('{service}', productService),
-      strategicReasoning
-    };
-  };
-
-  const getContentStrategies = (businessType: string, industry: string) => {
-    const strategies = [
-      {
-        theme: 'Problem Identification',
-        objective: 'awareness',
-        keyMessage: 'Identify with the pain point your {service} solves',
-        emotionalTrigger: 'frustration'
+  // Use AI-generated monthly plan data
+  const aiContentPlan = data.monthlyPlan || [];
+  
+  // Generate template data only as fallback
+  const generateTemplateContentPlan = () => {
+    return Array.from({ length: 30 }, (_, index) => ({
+      day: index + 1,
+      platform: index % 3 === 0 ? 'LinkedIn' : index % 3 === 1 ? 'Facebook' : 'Instagram',
+      contentType: index % 2 === 0 ? 'ad' : 'organic',
+      hook: `Day ${index + 1}: Transform your AI automation results with this proven strategy`,
+      body: `Discover how businesses are achieving 40% efficiency gains through automated workflows. This specific approach helps executives save 15+ hours per week while increasing revenue by 25%.`,
+      cta: index % 2 === 0 ? 'Book Free Consultation' : 'Learn More',
+      visualSuggestion: 'Professional executive in modern office with automation dashboard',
+      targetAudience: 'C-suite executives in manufacturing and professional services',
+      keyMessage: 'AI automation drives measurable business results',
+      hashtags: ['#AIAutomation', '#BusinessEfficiency', '#ExecutiveProductivity'],
+      expectedMetrics: {
+        reach: Math.floor(Math.random() * 10000) + 5000,
+        engagement: Math.floor(Math.random() * 500) + 200,
+        cost: Math.floor(Math.random() * 100) + 50,
+        conversions: Math.floor(Math.random() * 20) + 5
       },
-      {
-        theme: 'Solution Introduction',
-        objective: 'consideration',
-        keyMessage: 'Present your {service} as the solution',
-        emotionalTrigger: 'hope'
-      },
-      {
-        theme: 'Social Proof',
-        objective: 'trust',
-        keyMessage: 'Build credibility through testimonials and results',
-        emotionalTrigger: 'trust'
-      },
-      {
-        theme: 'Urgency Creation',
-        objective: 'conversion',
-        keyMessage: 'Create time-sensitive motivation to act',
-        emotionalTrigger: 'urgency'
-      },
-      {
-        theme: 'Value Demonstration',
-        objective: 'consideration',
-        keyMessage: 'Show tangible benefits and ROI',
-        emotionalTrigger: 'desire'
-      },
-      {
-        theme: 'Objection Handling',
-        objective: 'conversion',
-        keyMessage: 'Address common hesitations and concerns',
-        emotionalTrigger: 'reassurance'
-      },
-      {
-        theme: 'Authority Building',
-        objective: 'trust',
-        keyMessage: 'Establish expertise and industry leadership',
-        emotionalTrigger: 'respect'
-      }
-    ];
-
-    return strategies;
+      strategicReasoning: `Day ${index + 1} focuses on building awareness through value-driven content targeting executives seeking operational efficiency.`
+    }));
   };
 
-  const getIndustryHooks = (industry: string, businessType: string, platform: string): string[] => {
-    // Platform-specific hook adjustments for LinkedIn when applicable
-    if (platform === 'LinkedIn') {
-      const linkedInHooks = [
-        "Career breakthrough: How I helped 50+ professionals land their dream contracts in {industry}...",
-        "Freelancers in {industry}: Stop undercharging for your expertise. Here's the pricing strategy that changed everything...",
-        "The {industry} networking mistake that's costing freelancers $50K+ per year (and how to fix it)...",
-        "Why 90% of {industry} freelancers struggle to find quality clients (and the simple system that solves it)...",
-        "From $25/hour to $150/hour: The {industry} freelancer's guide to premium positioning...",
-        "LinkedIn strategy that generated 47 high-quality {industry} leads in 30 days...",
-        "The contract negotiation framework that helped me 3x my {industry} freelancing income..."
-      ];
-      
-      return linkedInHooks;
+  const contentPlan = aiContentPlan.length > 0 ? aiContentPlan : generateTemplateContentPlan();
+  const isAIGenerated = aiContentPlan.length > 0;
+
+  const getContentTypeColor = (type: string) => {
+    return type === 'ad' ? 'bg-blue-500' : 'bg-green-500';
+  };
+
+  const getPlatformIcon = (platform: string) => {
+    switch (platform.toLowerCase()) {
+      case 'linkedin': return '💼';
+      case 'facebook': return '📘';
+      case 'instagram': return '📸';
+      case 'twitter': return '🐦';
+      case 'tiktok': return '🎵';
+      default: return '📱';
     }
-
-    const hookTemplates: Record<string, string[]> = {
-      'ecommerce': [
-        "If you're tired of browsing endless products without finding what you actually need, this changes everything...",
-        "Most {audience} waste $X every month on products that don't deliver. Here's what actually works:",
-        "I used to think all {industry} products were the same until I discovered this game-changing difference...",
-        "Warning: Don't buy another {industry} product until you read this shocking truth...",
-        "The #1 mistake {audience} make when shopping for {industry} products (and how to avoid it)",
-        "This {industry} secret has helped over 10,000 {audience} save money while getting better results",
-        "Why 90% of {audience} choose the wrong {industry} solution (and how you can be in the smart 10%)"
-      ],
-      'saas': [
-        "If you're still doing [process] manually, you're losing $X every month in productivity...",
-        "Most {audience} waste 20+ hours per week on tasks that could be automated. Here's how to get those hours back:",
-        "I used to spend my entire day on {industry} tasks until I found this solution that changed everything...",
-        "The average {audience} loses $X annually to inefficient {industry} processes. Here's the fix:",
-        "Stop letting outdated {industry} methods hold your business back. This changes everything:",
-        "Why successful {audience} are switching from traditional {industry} methods to this new approach",
-        "The {industry} automation secret that's helping businesses scale 10x faster"
-      ],
-      'fitness': [
-        "If you've tried every diet and workout plan but still aren't seeing results, this is why...",
-        "Most people fail at fitness because they're missing this one crucial element...",
-        "I used to struggle with [fitness goal] until I discovered this scientifically-proven method...",
-        "The fitness industry doesn't want you to know this simple truth about getting results...",
-        "Why 95% of people fail at their fitness goals (and the 5% who succeed do this instead)",
-        "This fitness breakthrough is helping ordinary people achieve extraordinary transformations",
-        "The #1 reason your workouts aren't working (and how to fix it in the next 30 days)"
-      ],
-      'coaching': [
-        "If you feel stuck in your current situation and don't know how to break through, this is for you...",
-        "Most {audience} stay trapped in mediocrity because they don't know this success secret...",
-        "I used to think success was just for 'other people' until I learned this life-changing principle...",
-        "The mindset shift that separates high achievers from everyone else (and how to develop it)",
-        "Why most people never reach their full potential (and the simple fix that changes everything)",
-        "This coaching breakthrough has helped thousands transform their lives in just 90 days",
-        "The success formula that turns dreams into reality (used by top 1% performers)"
-      ]
-    };
-    
-    return hookTemplates[industry] || hookTemplates['ecommerce'];
-  };
-
-  const generateBodyContent = (
-    strategy: any, 
-    targetAudience: string, 
-    productService: string, 
-    businessName: string, 
-    uniqueValue: string, 
-    industry: string, 
-    businessType: string,
-    platform: string
-  ): string[] => {
-    const bodyParts = [];
-
-    if (platform === 'LinkedIn') {
-      // LinkedIn-specific professional body content
-      bodyParts.push(`After 5+ years in the ${industry} industry, I've discovered what separates successful professionals from those who struggle to find quality opportunities.`);
-      bodyParts.push(`Most ${targetAudience} make the same critical mistakes: underpricing their services, accepting low-quality clients, and failing to position themselves as industry experts.`);
-      bodyParts.push(`That's why I developed a systematic approach that helps ${industry} professionals command premium rates while working with their ideal clients.`);
-      bodyParts.push(`In the last 18 months, this strategy has helped over 200 ${targetAudience} increase their rates by an average of 127% while reducing their client acquisition time by 60%.`);
-      bodyParts.push(`The key? Understanding that clients don't hire the cheapest option - they hire the professional who can solve their specific problem most effectively.`);
-      bodyParts.push(`Just last month, Sarah M. (${industry} consultant) implemented this framework and landed her first $15K project within 3 weeks. "I never thought clients would pay these rates," she told me, "but once I understood how to position my expertise properly, everything changed."`);
-    } else {
-      // Original body content for other platforms
-      bodyParts.push(`Here's what most ${targetAudience} don't realize: the ${industry} industry has been doing things the same way for years, but there's a better approach that's finally available.`);
-      bodyParts.push(`Every day, I see ${targetAudience} struggling with [specific pain point] because they're using outdated methods that simply don't work in today's market.`);
-      bodyParts.push(`That's exactly why we created ${productService} at ${businessName}. Our ${uniqueValue} specifically addresses the root cause of these challenges, not just the symptoms.`);
-      bodyParts.push(`In the last 12 months alone, we've helped over [X] ${targetAudience} achieve [specific result], with an average improvement of [Y]% in just [timeframe].`);
-      bodyParts.push(`What makes our approach different is [unique process/method]. While others focus on [common approach], we've discovered that [better approach] delivers 3x better results.`);
-      bodyParts.push(`Just last week, [client name/type] told us: "I wish I had found ${businessName} sooner. In just [timeframe], I've achieved more progress than in the previous [longer timeframe] combined."`);
-    }
-
-    bodyParts.push(`Here's the thing: we can only work with a limited number of ${targetAudience} each month to ensure everyone gets the personalized attention they deserve.`);
-
-    return bodyParts;
-  };
-
-  const getStrategicCTAs = (businessType: string, objective: string, platform: string): string[] => {
-    if (platform === 'LinkedIn') {
-      return [
-        'Connect with me to discuss your next opportunity',
-        'Send me a DM to explore how we can work together',
-        'Book a strategy call to accelerate your growth',
-        'Download my free pricing guide',
-        'Join our exclusive professional network'
-      ];
-    }
-
-    const ctaMap: Record<string, string[]> = {
-      'awareness': [
-        'Learn More About This Solution',
-        'Discover How This Works',
-        'Get the Full Story Here',
-        'See the Complete Method'
-      ],
-      'consideration': [
-        'Schedule Your Free Strategy Call',
-        'Get Your Custom Analysis',
-        'Claim Your Free Assessment',
-        'Book Your Discovery Session'
-      ],
-      'conversion': [
-        'Start Your Transformation Today',
-        'Secure Your Spot Now',
-        'Get Instant Access',
-        'Join the Program'
-      ],
-      'trust': [
-        'Read the Success Stories',
-        'See the Proof',
-        'Watch the Case Study',
-        'View the Results'
-      ]
-    };
-
-    return ctaMap[objective] || ctaMap['consideration'];
-  };
-
-  const createFullScript = (hook: string, bodyParts: string[], cta: string, strategy: any): string => {
-    return `
-**HOOK:**
-${hook}
-
-**BODY COPY:**
-${bodyParts.join('\n\n')}
-
-**CALL TO ACTION:**
-${cta}
-
-**STRATEGY NOTE:**
-This ${strategy.theme.toLowerCase()} content is designed to trigger ${strategy.emotionalTrigger} and move the audience toward ${strategy.objective}. The copy flows from problem identification through solution presentation to clear action step.
-
-**PERFORMANCE OPTIMIZATION:**
-- Hook addresses specific pain point
-- Body builds credibility and urgency
-- CTA creates clear next step
-- Overall message maintains consistent theme
-`.trim();
-  };
-
-  const generateVisualSuggestion = (strategy: any, platform: string, contentType: string, industry: string): string => {
-    if (platform === 'LinkedIn') {
-      const linkedInVisuals: Record<string, string> = {
-        'Problem Identification': 'Professional infographic showing industry statistics and pain points with clean, business-appropriate design',
-        'Solution Introduction': 'Behind-the-scenes video of you working or a carousel showing your process/methodology',
-        'Social Proof': 'Client testimonial quote graphic or case study results in a professional format',
-        'Urgency Creation': 'Limited opportunity announcement with professional branding',
-        'Value Demonstration': 'ROI calculator or before/after business metrics visualization',
-        'Objection Handling': 'FAQ-style carousel addressing common professional concerns',
-        'Authority Building': 'Speaking engagement photos, certifications, or thought leadership content'
-      };
-      
-      return linkedInVisuals[strategy.theme] || 'Professional headshot with value proposition overlay';
-    }
-
-    const visualMap: Record<string, string> = {
-      'Problem Identification': `Before/after comparison showing the struggle vs. solution, optimized for ${platform} ${contentType} format`,
-      'Solution Introduction': `Product/service demonstration with clear value proposition overlay for ${platform}`,
-      'Social Proof': `Customer testimonial video or carousel of success stories formatted for ${platform}`,
-      'Urgency Creation': `Eye-catching countdown or limited-time graphics designed for ${platform} engagement`,
-      'Value Demonstration': `Infographic or video showing tangible benefits and ROI, ${platform} optimized`,
-      'Objection Handling': `FAQ-style visual or split-screen addressing concerns, perfect for ${platform}`,
-      'Authority Building': `Professional behind-the-scenes or credibility indicators for ${platform}`
-    };
-
-    return visualMap[strategy.theme] || `High-converting ${platform} creative with clear value proposition`;
-  };
-
-  const contentPlan = getContentPlan();
-  const totalWeeks = Math.ceil(30 / 7);
-  const currentWeekDays = contentPlan.slice((currentWeek - 1) * 7, currentWeek * 7);
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
-
-  const openPreview = (day: ContentDay) => {
-    setSelectedDay(day);
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5" />
-            <span>30-Day Content Calendar</span>
-            {data.aiGenerated && (
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
-                AI-Generated
-              </Badge>
-            )}
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center space-x-2">
+              <Calendar className="h-5 w-5" />
+              <span>{isAIGenerated ? 'AI-Generated' : 'Template'} 30-Day Content Calendar</span>
+            </CardTitle>
+            <CardDescription>
+              {isAIGenerated 
+                ? 'Personalized content strategy based on your business data and industry insights'
+                : 'Template content calendar (AI data not available)'
+              }
+            </CardDescription>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex space-x-2">
             <Button
-              variant={viewMode === 'preview' ? 'default' : 'outline'}
+              variant={viewMode === 'overview' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setViewMode('preview')}
+              onClick={() => setViewMode('overview')}
             >
-              <List className="h-4 w-4 mr-2" />
-              Preview
+              Overview
             </Button>
             <Button
               variant={viewMode === 'full' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode('full')}
             >
-              <Grid className="h-4 w-4 mr-2" />
-              View Full Calendar
+              Full Calendar
             </Button>
           </div>
-        </CardTitle>
-        <CardDescription>
-          {data.aiGenerated ? 'AI-powered, personalized' : 'Template-based'} content scripts tailored for your {data.formData?.industry || 'business'} targeting {data.formData?.targetAudience || 'your audience'}
-        </CardDescription>
+        </div>
       </CardHeader>
       <CardContent>
-        {viewMode === 'preview' ? (
-          // Preview mode - show first 3 days
-          <div className="space-y-6">
-            {contentPlan.slice(0, 3).map((day, index) => (
-              <ContentDayCard key={index} day={day} onPreview={openPreview} onCopy={copyToClipboard} isAIGenerated={data.aiGenerated} />
-            ))}
-            
-            <div className="text-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
-              <p className="text-muted-foreground">+ 27 more days of detailed, conversion-focused content</p>
-              <Button 
-                variant="outline" 
-                className="mt-2"
-                onClick={() => setViewMode('full')}
-              >
-                View Full Calendar
-              </Button>
-            </div>
-          </div>
-        ) : (
-          // Full calendar mode
+        {/* Overview Mode - First 7 days */}
+        {viewMode === 'overview' && (
           <div className="space-y-4">
-            {/* Week navigation */}
-            <div className="flex items-center justify-between">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentWeek(Math.max(1, currentWeek - 1))}
-                disabled={currentWeek === 1}
-              >
-                <ChevronLeft className="h-4 w-4 mr-2" />
-                Previous Week
-              </Button>
-              <span className="text-sm font-medium">
-                Week {currentWeek} of {totalWeeks}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentWeek(Math.min(totalWeeks, currentWeek + 1))}
-                disabled={currentWeek === totalWeeks}
-              >
-                Next Week
-                <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
-            </div>
+            <div className="grid gap-4">
+              {contentPlan.slice(0, 7).map((day: any) => (
+                <div key={day.day} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="outline">Day {day.day}</Badge>
+                      <Badge className={`${getContentTypeColor(day.contentType)} text-white`}>
+                        {day.contentType}
+                      </Badge>
+                      <span className="text-sm font-medium flex items-center space-x-1">
+                        <span>{getPlatformIcon(day.platform)}</span>
+                        <span>{day.platform}</span>
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Est. {day.expectedMetrics?.reach?.toLocaleString() || 'N/A'} reach
+                    </div>
+                  </div>
+                  
+                  <h4 className="font-semibold text-sm mb-1">{day.hook}</h4>
+                  <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{day.body}</p>
+                  
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="text-xs">{day.cta}</Badge>
+                    <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                      {day.expectedMetrics?.cost && (
+                        <span>Cost: ${day.expectedMetrics.cost}</span>
+                      )}
+                      {day.expectedMetrics?.conversions && (
+                        <span>Conv: {day.expectedMetrics.conversions}</span>
+                      )}
+                    </div>
+                  </div>
 
-            {/* Week content */}
-            <div className="space-y-4">
-              {currentWeekDays.map((day, index) => (
-                <ContentDayCard key={index} day={day} onPreview={openPreview} onCopy={copyToClipboard} isAIGenerated={data.aiGenerated} />
+                  {/* AI-Specific Details */}
+                  {isAIGenerated && (
+                    <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
+                      <div className="grid md:grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="font-medium text-blue-800">Target:</span>
+                          <p className="text-blue-700">{day.targetAudience}</p>
+                        </div>
+                        <div>
+                          <span className="font-medium text-blue-800">Key Message:</span>
+                          <p className="text-blue-700">{day.keyMessage}</p>
+                        </div>
+                      </div>
+                      {day.hashtags && (
+                        <div className="mt-2">
+                          <span className="font-medium text-blue-800">Hashtags:</span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {day.hashtags.map((tag: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => setViewMode('full')}
+            >
+              View Full 30-Day Calendar ({contentPlan.length} days)
+            </Button>
+          </div>
+        )}
+
+        {/* Full Calendar Mode - All 30 days */}
+        {viewMode === 'full' && (
+          <div className="space-y-4">
+            <div className="grid gap-3 max-h-96 overflow-y-auto">
+              {contentPlan.map((day: any) => (
+                <div 
+                  key={day.day} 
+                  className={`border rounded-lg p-3 cursor-pointer transition-colors ${
+                    selectedDay === day.day ? 'bg-blue-50 border-blue-300' : 'hover:bg-gray-50'
+                  }`}
+                  onClick={() => setSelectedDay(selectedDay === day.day ? null : day.day)}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="outline">Day {day.day}</Badge>
+                      <Badge className={`${getContentTypeColor(day.contentType)} text-white`}>
+                        {day.contentType}
+                      </Badge>
+                      <span className="text-sm font-medium flex items-center space-x-1">
+                        <span>{getPlatformIcon(day.platform)}</span>
+                        <span>{day.platform}</span>
+                      </span>
+                    </div>
+                    <Button variant="ghost" size="sm">
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  
+                  <h4 className="font-semibold text-sm mb-1">{day.hook}</h4>
+                  
+                  {selectedDay === day.day && (
+                    <div className="mt-3 space-y-3">
+                      <div className="p-3 bg-gray-50 rounded">
+                        <h5 className="font-medium text-sm mb-1">Content Body:</h5>
+                        <p className="text-sm text-muted-foreground">{day.body}</p>
+                      </div>
+                      
+                      <div className="grid md:grid-cols-2 gap-3">
+                        <div>
+                          <h5 className="font-medium text-sm mb-1">Visual Suggestion:</h5>
+                          <p className="text-xs text-muted-foreground">{day.visualSuggestion}</p>
+                        </div>
+                        <div>
+                          <h5 className="font-medium text-sm mb-1">Strategic Reasoning:</h5>
+                          <p className="text-xs text-muted-foreground">{day.strategicReasoning}</p>
+                        </div>
+                      </div>
+
+                      {day.expectedMetrics && (
+                        <div className="grid grid-cols-4 gap-2 text-center">
+                          <div className="p-2 bg-green-50 rounded">
+                            <div className="text-sm font-semibold text-green-600">
+                              {day.expectedMetrics.reach?.toLocaleString() || 'N/A'}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Reach</div>
+                          </div>
+                          <div className="p-2 bg-blue-50 rounded">
+                            <div className="text-sm font-semibold text-blue-600">
+                              {day.expectedMetrics.engagement || 'N/A'}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Engagement</div>
+                          </div>
+                          <div className="p-2 bg-purple-50 rounded">
+                            <div className="text-sm font-semibold text-purple-600">
+                              ${day.expectedMetrics.cost || 'N/A'}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Cost</div>
+                          </div>
+                          <div className="p-2 bg-orange-50 rounded">
+                            <div className="text-sm font-semibold text-orange-600">
+                              {day.expectedMetrics.conversions || 'N/A'}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Conversions</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Enhanced Detailed Preview Dialog */}
-        <Dialog open={!!selectedDay} onOpenChange={() => setSelectedDay(null)}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                Day {selectedDay?.day} - {selectedDay?.platform} Complete Content Script
-                {data.aiGenerated && (
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    AI-Generated
-                  </Badge>
-                )}
-              </DialogTitle>
-              <DialogDescription>
-                {data.aiGenerated ? 'AI-powered content' : 'Template-based content'} with strategic insights and optimization recommendations
-              </DialogDescription>
-            </DialogHeader>
-            
-            {selectedDay && (
-              <div className="space-y-6">
-                {/* Full Script Display */}
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h4 className="font-semibold mb-4">Complete Content Script</h4>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Hook:</label>
-                      <p className="text-lg font-semibold mt-1">{selectedDay.hook}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Body Copy:</label>
-                      <p className="text-sm leading-relaxed mt-1">{selectedDay.body}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Call to Action:</label>
-                      <p className="font-medium text-blue-600 mt-1">{selectedDay.cta}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Strategic Reasoning:</label>
-                      <p className="text-sm text-muted-foreground mt-1">{selectedDay.strategicReasoning}</p>
-                    </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="mt-4"
-                    onClick={() => copyToClipboard(`${selectedDay.hook}\n\n${selectedDay.body}\n\n${selectedDay.cta}`)}
-                  >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy Full Script
-                  </Button>
-                </div>
-
-                {/* Metrics Display */}
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="text-center p-3 bg-blue-50 rounded">
-                    <div className="font-semibold text-blue-600">{selectedDay.expectedMetrics.reach.toLocaleString()}</div>
-                    <div className="text-xs text-muted-foreground">Expected Reach</div>
-                  </div>
-                  <div className="text-center p-3 bg-green-50 rounded">
-                    <div className="font-semibold text-green-600">{selectedDay.expectedMetrics.engagement}</div>
-                    <div className="text-xs text-muted-foreground">Engagement</div>
-                  </div>
-                  <div className="text-center p-3 bg-purple-50 rounded">
-                    <div className="font-semibold text-purple-600">{selectedDay.expectedMetrics.conversions}</div>
-                    <div className="text-xs text-muted-foreground">Conversions</div>
-                  </div>
-                  <div className="text-center p-3 bg-orange-50 rounded">
-                    <div className="font-semibold text-orange-600">
-                      {selectedDay.expectedMetrics.cost > 0 ? `$${selectedDay.expectedMetrics.cost}` : 'Free'}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Daily Cost</div>
-                  </div>
-                </div>
-
-                {/* Visual and Optimization Details */}
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-2">Visual Strategy</h4>
-                    <p className="text-sm bg-gray-50 p-3 rounded">{selectedDay.visualSuggestion}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Key Message</h4>
-                    <p className="text-sm bg-blue-50 p-3 rounded border border-blue-200">{selectedDay.keyMessage}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+        {/* Data Status Indicator */}
+        {!isAIGenerated && (
+          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+            <p className="text-sm text-yellow-800">
+              ⚠️ Displaying template content calendar - AI-generated plan not available
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
-};
-
-// Enhanced ContentDayCard component
-const ContentDayCard = ({ day, onPreview, onCopy, isAIGenerated }: { 
-  day: ContentDay; 
-  onPreview: (day: ContentDay) => void;
-  onCopy: (text: string) => void;
-  isAIGenerated?: boolean;
-}) => {
-  return (
-    <div className="border rounded-lg p-4">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center space-x-3">
-          <Badge variant="outline">Day {day.day}</Badge>
-          <Badge className={
-            day.platform === 'Facebook' ? 'bg-blue-500' : 
-            day.platform === 'Instagram' ? 'bg-pink-500' : 
-            day.platform === 'TikTok' ? 'bg-black' :
-            day.platform === 'LinkedIn' ? 'bg-blue-700' :
-            'bg-green-500'
-          }>
-            {day.platform}
-          </Badge>
-          <Badge variant={day.contentType === 'ad' ? 'default' : 'secondary'}>
-            {day.contentType.toUpperCase()}
-          </Badge>
-          {isAIGenerated && (
-            <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
-              AI
-            </Badge>
-          )}
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => onPreview(day)}>
-          <Eye className="h-4 w-4 mr-2" />
-          View Full Script
-        </Button>
-      </div>
-
-      <div className="space-y-3">
-        <div>
-          <label className="text-sm font-medium text-muted-foreground">Hook</label>
-          <div className="flex items-start space-x-2">
-            <p className="text-sm bg-gray-50 p-3 rounded flex-1 leading-relaxed">{day.hook}</p>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => onCopy(day.hook)}
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium text-muted-foreground">Body Preview</label>
-          <p className="text-sm bg-gray-50 p-3 rounded leading-relaxed">
-            {day.body.substring(0, 200)}...
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Call to Action</label>
-            <p className="text-sm bg-blue-50 p-2 rounded border border-blue-200">{day.cta}</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">Key Message</label>
-            <p className="text-sm bg-green-50 p-2 rounded border border-green-200">{day.keyMessage}</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-4 gap-4 text-sm">
-          <div className="text-center p-2 bg-blue-50 rounded">
-            <div className="font-semibold text-blue-600">{day.expectedMetrics.reach.toLocaleString()}</div>
-            <div className="text-muted-foreground">Reach</div>
-          </div>
-          <div className="text-center p-2 bg-green-50 rounded">
-            <div className="font-semibold text-green-600">{day.expectedMetrics.engagement}</div>
-            <div className="text-muted-foreground">Engagement</div>
-          </div>
-          <div className="text-center p-2 bg-purple-50 rounded">
-            <div className="font-semibold text-purple-600">{day.expectedMetrics.conversions}</div>
-            <div className="text-muted-foreground">Conversions</div>
-          </div>
-          <div className="text-center p-2 bg-orange-50 rounded">
-            <div className="font-semibold text-orange-600">
-              {day.expectedMetrics.cost > 0 ? `$${day.expectedMetrics.cost}` : 'Free'}
-            </div>
-            <div className="text-muted-foreground">Cost</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Helper functions for generating industry-specific content
-const calculateMetrics = (contentType: 'ad' | 'organic', platform: string, revenue: string) => {
-  const revenueMultiplier = getRevenueMultiplier(revenue);
-  const platformMultiplier = getPlatformMultiplier(platform);
-  
-  const baseReach = contentType === 'ad' ? 15000 : 8000;
-  const baseEngagement = contentType === 'ad' ? 450 : 320;
-  const baseCost = contentType === 'ad' ? 125 : 0;
-  const baseConversions = contentType === 'ad' ? 12 : 6;
-  
-  return {
-    reach: Math.round(baseReach * revenueMultiplier * platformMultiplier),
-    engagement: Math.round(baseEngagement * platformMultiplier),
-    cost: Math.round(baseCost * revenueMultiplier),
-    conversions: Math.round(baseConversions * revenueMultiplier)
-  };
-};
-
-const getRevenueMultiplier = (revenue: string): number => {
-  const multipliers: Record<string, number> = {
-    '0-10k': 0.5,
-    '10k-50k': 1.0,
-    '50k-100k': 1.5,
-    '100k-500k': 2.0,
-    '500k+': 3.0
-  };
-  return multipliers[revenue] || 1.0;
-};
-
-const getPlatformMultiplier = (platform: string): number => {
-  const multipliers: Record<string, number> = {
-    'Facebook': 1.2,
-    'Instagram': 1.0,
-    'TikTok': 1.5,
-    'LinkedIn': 0.8,
-    'Google': 1.1
-  };
-  return multipliers[platform] || 1.0;
-};
-
-const generateHashtags = (industry: string, businessType: string): string[] => {
-  const base = [`#${industry.toLowerCase()}`, `#${businessType.toLowerCase()}`];
-  const industry_tags: Record<string, string[]> = {
-    'ecommerce': ['#onlineshopping', '#ecommercestore', '#onlinebusiness'],
-    'saas': ['#software', '#productivity', '#automation'],
-    'fitness': ['#fitness', '#health', '#workout'],
-    'coaching': ['#coaching', '#mindset', '#success'],
-    'finance': ['#finance', '#investing', '#wealth']
-  };
-  
-  return [...base, ...(industry_tags[industry] || []), '#growth', '#success'];
-};
-
-const getAdSpendRecommendation = (revenue: string, platform: string): string => {
-  const budgetRecommendations: Record<string, Record<string, string>> = {
-    '0-10k': {
-      'Facebook': 'Start with $5-10/day, focus on engagement and building audience',
-      'Instagram': 'Allocate $3-7/day, prioritize visual content and stories',
-      'Google': 'Begin with $8-15/day for search ads, target long-tail keywords',
-      'TikTok': 'Test with $5-10/day, focus on creative video content',
-      'LinkedIn': 'Start with $10-20/day for B2B targeting'
-    },
-    '10k-50k': {
-      'Facebook': 'Invest $15-30/day, test multiple ad sets and audiences',
-      'Instagram': 'Allocate $10-25/day, use shopping ads and reels',
-      'Google': 'Budget $20-40/day, expand to display network',
-      'TikTok': 'Spend $15-30/day, leverage trending sounds and effects',
-      'LinkedIn': 'Invest $25-50/day for professional targeting'
-    },
-    '50k-100k': {
-      'Facebook': 'Scale to $30-60/day, implement lookalike audiences',
-      'Instagram': 'Increase to $25-50/day, focus on conversion campaigns',
-      'Google': 'Expand to $40-80/day, add remarketing campaigns',
-      'TikTok': 'Boost to $30-60/day, test spark ads and branded effects',
-      'LinkedIn': 'Scale to $50-100/day, use sponsored content and messages'
-    }
-  };
-  
-  return budgetRecommendations[revenue]?.[platform] || 'Adjust spend based on performance metrics and ROI goals';
-};
-
-const getIndustryTips = (industry: string, businessType: string, day: number): string[] => {
-  const tips: Record<string, string[]> = {
-    'ecommerce': [
-      'Use high-quality product images with lifestyle context',
-      'Include customer reviews and ratings in ad copy',
-      'Test urgency elements like limited-time offers',
-      'Highlight free shipping and easy returns'
-    ],
-    'saas': [
-      'Focus on specific pain points your software solves',
-      'Include free trial or demo offers in every CTA',
-      'Use data and metrics to prove ROI',
-      'Target decision-makers with job title precision'
-    ],
-    'fitness': [
-      'Show real transformation results and timelines',
-      'Address common fitness myths and misconceptions',
-      'Include difficulty level and time commitment',
-      'Use before/after visuals for credibility'
-    ],
-    'coaching': [
-      'Share specific client success stories and outcomes',
-      'Address the emotional aspects of transformation',
-      'Offer value upfront with tips or assessments',
-      'Build authority with credentials and experience'
-    ]
-  };
-  
-  const industryTipsList = tips[industry] || tips['ecommerce'];
-  return [industryTipsList[day % industryTipsList.length]];
 };
 
 export default MonthlyPlan;

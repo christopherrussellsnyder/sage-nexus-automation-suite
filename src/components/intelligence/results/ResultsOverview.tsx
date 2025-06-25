@@ -25,113 +25,108 @@ interface ResultsOverviewProps {
 const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   const [selectedCopyType, setSelectedCopyType] = useState<'website' | 'ads' | 'email' | 'social'>('website');
   
+  console.log('Results Overview - AI Data:', data);
+  console.log('Copywriting Recommendations:', data.copywritingRecommendations);
+  
   const businessData = data.formData || {};
   const industry = businessData.industry || 'general';
   const targetAudience = businessData.targetAudience || 'target audience';
   const monthlyRevenue = businessData.monthlyRevenue || '10k-50k';
   const adBudget = businessData.monthlyAdBudget || '500-2k';
 
-  const generateCopywritingRecommendations = (type: string) => {
-    const recommendations: Record<string, any> = {
-      website: {
-        title: 'Website Copy Strategy',
-        icon: Globe,
-        recommendations: [
-          {
-            section: 'Hero Section',
-            copy: `Transform Your ${industry} Business with ${businessData.businessName || 'Our Solution'}`,
-            description: `Headline that immediately communicates value to ${targetAudience}`,
-            cta: 'Get Started Today'
-          },
-          {
-            section: 'Value Proposition',
-            copy: `The only ${industry} solution that ${targetAudience} need to achieve their goals`,
-            description: 'Clear positioning statement that differentiates from competitors',
-            cta: 'Learn More'
-          },
-          {
-            section: 'Social Proof',
-            copy: `Join 10,000+ ${targetAudience} who have already transformed their ${industry} results`,
-            description: 'Credibility-building section with testimonials and case studies',
-            cta: 'See Success Stories'
-          }
-        ]
-      },
-      ads: {
-        title: 'Advertising Copy Strategy',
-        icon: Megaphone,
-        recommendations: [
-          {
-            section: 'Facebook/Instagram Ads',
-            copy: `Stop struggling with ${industry} challenges. This solution helps ${targetAudience} get results in 30 days.`,
-            description: 'Problem-solution format with specific timeline',
-            cta: 'Claim Your Spot'
-          },
-          {
-            section: 'Google Ads',
-            copy: `#1 ${industry} Solution for ${targetAudience} - Free Demo Available`,
-            description: 'Authority positioning with clear offer',
-            cta: 'Book Free Demo'
-          },
-          {
-            section: 'Retargeting Ads',
-            copy: `Still thinking about improving your ${industry} results? Here's what you're missing...`,
-            description: 'Gentle reminder with curiosity gap',
-            cta: 'See What You Missed'
-          }
-        ]
-      },
-      email: {
-        title: 'Email Marketing Strategy',
-        icon: Mail,
-        recommendations: [
-          {
-            section: 'Welcome Email',
-            copy: `Welcome to the ${businessData.businessName || 'community'}! Here's what happens next...`,
-            description: 'Set expectations and build excitement for new subscribers',
-            cta: 'Get Your First Win'
-          },
-          {
-            section: 'Value Email',
-            copy: `The #1 mistake ${targetAudience} make in ${industry} (and how to avoid it)`,
-            description: 'Educational content that positions you as an authority',
-            cta: 'Read the Full Guide'
-          },
-          {
-            section: 'Sales Email',
-            copy: `Last chance: ${targetAudience} are getting amazing ${industry} results with this`,
-            description: 'Urgency-driven sales email with social proof',
-            cta: 'Join Before It\'s Too Late'
-          }
-        ]
-      },
-      social: {
-        title: 'Social Media Strategy',
-        icon: Share2,
-        recommendations: [
-          {
-            section: 'Educational Post',
-            copy: `3 ${industry} tips that every ${targetAudience} should know:\n\n1. [Specific tip]\n2. [Actionable advice]\n3. [Quick win]`,
-            description: 'Value-driven content that educates your audience',
-            cta: 'Save this post →'
-          },
-          {
-            section: 'Behind-the-Scenes',
-            copy: `Behind the scenes: How we help ${targetAudience} transform their ${industry} results`,
-            description: 'Authentic content that builds trust and connection',
-            cta: 'Want to know more?'
-          },
-          {
-            section: 'User-Generated Content',
-            copy: `Amazing results from one of our ${targetAudience}! This is what's possible when you...`,
-            description: 'Social proof through customer success stories',
-            cta: 'Your turn! Start here →'
-          }
-        ]
-      }
-    };
+  // Use AI copywriting recommendations if available
+  const aiCopyRecommendations = data.copywritingRecommendations?.[0];
+  const hasAICopywriting = !!aiCopyRecommendations;
 
-    return recommendations[type] || recommendations.website;
+  // AI Awareness Stage Display
+  const renderAwarenessStages = () => {
+    if (!aiCopyRecommendations?.awarenessStageVariations) return null;
+
+    return (
+      <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
+        <h4 className="font-semibold mb-3 flex items-center">
+          <Target className="h-4 w-4 mr-2 text-blue-600" />
+          AI Customer Awareness Stages
+        </h4>
+        <div className="space-y-3">
+          {Object.entries(aiCopyRecommendations.awarenessStageVariations).map(([stage, copy]) => (
+            <div key={stage} className="border-l-4 border-blue-400 pl-3">
+              <Badge variant="outline" className="mb-1 capitalize">{stage.replace(/([A-Z])/g, ' $1').trim()}</Badge>
+              <p className="text-sm text-gray-700 font-medium">{copy as string}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // AI Emotional Triggers Display
+  const renderEmotionalTriggers = () => {
+    if (!aiCopyRecommendations?.emotionalTriggers) return null;
+
+    return (
+      <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border">
+        <h4 className="font-semibold mb-3 flex items-center">
+          <TrendingUp className="h-4 w-4 mr-2 text-green-600" />
+          AI Emotional Triggers
+        </h4>
+        <div className="space-y-3">
+          {aiCopyRecommendations.emotionalTriggers.map((trigger: any, index: number) => (
+            <div key={index} className="p-3 bg-white rounded border border-green-200">
+              <h5 className="font-medium text-green-800 mb-1">{trigger.trigger}</h5>
+              <p className="text-sm text-gray-600 mb-2">{trigger.implementation}</p>
+              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                Expected Impact: {trigger.expectedImpact}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  // AI A/B Testing Framework Display
+  const renderABTestingFramework = () => {
+    if (!aiCopyRecommendations?.abTestingFramework) return null;
+
+    return (
+      <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border">
+        <h4 className="font-semibold mb-3 flex items-center">
+          <Target className="h-4 w-4 mr-2 text-purple-600" />
+          AI A/B Testing Strategy
+        </h4>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <h5 className="font-medium text-purple-800 mb-2">Variables to Test:</h5>
+            <ul className="space-y-1">
+              {aiCopyRecommendations.abTestingFramework.variables?.map((variable: string, index: number) => (
+                <li key={index} className="text-sm flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                  <span>{variable}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h5 className="font-medium text-purple-800 mb-2">Success Metrics:</h5>
+            <ul className="space-y-1">
+              {aiCopyRecommendations.abTestingFramework.successMetrics?.map((metric: string, index: number) => (
+                <li key={index} className="text-sm flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
+                  <span>{metric}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        {aiCopyRecommendations.abTestingFramework.statisticalSignificance && (
+          <div className="mt-3 p-2 bg-white rounded border">
+            <span className="text-sm font-medium">Statistical Requirements: </span>
+            <span className="text-sm text-gray-600">{aiCopyRecommendations.abTestingFramework.statisticalSignificance}</span>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const currentRecommendations = generateCopywritingRecommendations(selectedCopyType);
@@ -249,13 +244,13 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
         </Card>
       </div>
 
-      {/* Copywriting Recommendations */}
+      {/* Enhanced AI Copywriting Recommendations */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Lightbulb className="h-5 w-5" />
-              <span>AI Copywriting Recommendations</span>
+              <span>{hasAICopywriting ? 'AI-Generated' : 'Template'} Copywriting Intelligence</span>
             </div>
             <div className="flex items-center space-x-2">
               <Label htmlFor="copyType" className="text-sm">Content Type:</Label>
@@ -273,47 +268,79 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
             </div>
           </CardTitle>
           <CardDescription>
-            Tailored copywriting recommendations for your {industry} business targeting {targetAudience}
+            {hasAICopywriting 
+              ? `Advanced AI copywriting analysis for your ${industry} business targeting ${targetAudience}`
+              : `Template copywriting recommendations for your ${industry} business targeting ${targetAudience}`
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2 mb-4">
-              <currentRecommendations.icon className="h-5 w-5 text-blue-600" />
-              <h3 className="font-semibold">{currentRecommendations.title}</h3>
-            </div>
-            
-            <div className="space-y-4">
-              {currentRecommendations.recommendations.map((rec: any, index: number) => (
-                <div key={index} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="outline">{rec.section}</Badge>
-                    <Button variant="ghost" size="sm">
-                      Copy Template
-                    </Button>
-                  </div>
-                  
+          {hasAICopywriting ? (
+            <div className="space-y-6">
+              {/* AI Competitor Analysis */}
+              {aiCopyRecommendations.competitorAnalysis && (
+                <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                  <h4 className="font-semibold text-orange-800 mb-2">AI Competitor Copy Analysis</h4>
                   <div className="space-y-2">
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Copy</Label>
-                      <p className="text-sm bg-gray-50 p-2 rounded font-medium">{rec.copy}</p>
+                      <span className="font-medium">Common Approaches: </span>
+                      <span className="text-sm">{aiCopyRecommendations.competitorAnalysis.commonApproaches}</span>
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-sm font-medium text-muted-foreground">Strategy</Label>
-                        <p className="text-xs text-muted-foreground">{rec.description}</p>
-                      </div>
-                      <div>
-                        <Label className="text-sm font-medium text-muted-foreground">Call to Action</Label>
-                        <p className="text-xs bg-blue-50 p-1 rounded text-blue-700 font-medium">{rec.cta}</p>
-                      </div>
+                    <div>
+                      <span className="font-medium">Your Improved Strategy: </span>
+                      <span className="text-sm text-orange-700 font-medium">{aiCopyRecommendations.competitorAnalysis.improvedStrategy}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Key Differentiators: </span>
+                      <span className="text-sm">{aiCopyRecommendations.competitorAnalysis.differentiationPoints}</span>
                     </div>
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* AI Awareness Stages */}
+              {renderAwarenessStages()}
+
+              {/* AI Emotional Triggers */}
+              {renderEmotionalTriggers()}
+
+              {/* AI A/B Testing Framework */}
+              {renderABTestingFramework()}
+
+              {/* AI Power Words */}
+              {aiCopyRecommendations.powerWords && (
+                <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <h4 className="font-semibold text-yellow-800 mb-2">AI-Recommended Power Words</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {aiCopyRecommendations.powerWords.map((word: string, index: number) => (
+                      <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800">
+                        {word}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* AI Funnel Copy */}
+              {aiCopyRecommendations.funnelCopy && (
+                <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                  <h4 className="font-semibold text-indigo-800 mb-3">AI Funnel Copy Strategy</h4>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {Object.entries(aiCopyRecommendations.funnelCopy).map(([stage, copy]) => (
+                      <div key={stage} className="p-3 bg-white rounded border">
+                        <Badge variant="outline" className="mb-2 capitalize">{stage}</Badge>
+                        <p className="text-sm text-gray-600">{copy as string}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">AI copywriting analysis not available - using template recommendations</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -367,6 +394,15 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
           </CardContent>
         </Card>
       </div>
+
+      {/* AI Data Status */}
+      {!hasAICopywriting && (
+        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
+          <p className="text-sm text-yellow-800">
+            ⚠️ Displaying template copywriting recommendations - AI analysis not available
+          </p>
+        </div>
+      )}
     </div>
   );
 };

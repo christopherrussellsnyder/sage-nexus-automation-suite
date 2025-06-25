@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +17,40 @@ interface IntelligenceResultsProps {
 
 const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResultsProps) => {
   const intelligenceMode = data.intelligenceMode || 'full';
+
+  // Debug logging for data validation
+  console.log('=== INTELLIGENCE RESULTS DEBUG ===');
+  console.log('Full data object:', data);
+  console.log('AI Generated flag:', data.aiGenerated);
+  console.log('Platform Recommendations:', data.platformRecommendations);
+  console.log('Monthly Plan length:', data.monthlyPlan?.length);
+  console.log('Copywriting Recommendations:', data.copywritingRecommendations);
+  console.log('Competitor Insights:', data.competitorInsights);
+  console.log('Metric Optimization:', data.metricOptimization);
+  console.log('Budget Strategy:', data.budgetStrategy);
+  console.log('Industry Insights:', data.industryInsights);
+  console.log('Intelligence Mode:', intelligenceMode);
+  console.log('Business Type:', businessType);
+
+  // Data validation helper
+  const validateAIData = (data: any) => {
+    const checks = {
+      hasAIFlag: data.aiGenerated === true,
+      hasInsights: !!data,
+      hasPlatforms: !!data.platformRecommendations?.length,
+      hasMonthlyPlan: !!data.monthlyPlan?.length,
+      hasCopywriting: !!data.copywritingRecommendations?.length,
+      hasCompetitors: !!data.competitorInsights?.length,
+      hasMetrics: !!data.metricOptimization?.length,
+      hasBudget: !!data.budgetStrategy?.length,
+      hasIndustry: !!data.industryInsights?.length
+    };
+    console.log('AI Data Validation Results:', checks);
+    return checks;
+  };
+
+  // Run validation
+  const dataValidation = validateAIData(data);
 
   const handleExport = () => {
     const exportData = {
@@ -64,7 +97,7 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header with enhanced debugging info */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button onClick={onBack} variant="outline" size="sm">
@@ -81,9 +114,24 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
                 </span>
               )}
             </p>
-            <Badge variant="outline" className="mt-1">
-              Mode: {intelligenceMode.charAt(0).toUpperCase() + intelligenceMode.slice(1)}
-            </Badge>
+            <div className="flex items-center space-x-2 mt-1">
+              <Badge variant="outline">
+                Mode: {intelligenceMode.charAt(0).toUpperCase() + intelligenceMode.slice(1)}
+              </Badge>
+              <Badge variant={data.aiGenerated ? "default" : "secondary"}>
+                {data.aiGenerated ? "AI Generated" : "Template Data"}
+              </Badge>
+              {dataValidation.hasPlatforms && (
+                <Badge variant="outline" className="bg-green-50 text-green-700">
+                  ✓ Platforms ({data.platformRecommendations?.length})
+                </Badge>
+              )}
+              {dataValidation.hasMonthlyPlan && (
+                <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                  ✓ Calendar ({data.monthlyPlan?.length} days)
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
         
@@ -98,6 +146,22 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
           </Button>
         </div>
       </div>
+
+      {/* Data Quality Alert */}
+      {!data.aiGenerated && (
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="flex items-start space-x-3">
+            <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-amber-800">Template Data Notice</h3>
+              <p className="text-sm text-amber-700 mt-1">
+                This report is using template data because AI-generated insights are not available. 
+                For personalized intelligence, please regenerate the report.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Results Content */}
       <div className="space-y-6">
@@ -119,6 +183,25 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
         
         {shouldShowSection('competitors') && (
           <CompetitorInsights data={data} />
+        )}
+
+        {/* Debug Information (only in development) */}
+        {process.env.NODE_ENV === 'development' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Debug Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-sm font-mono">
+                <div>AI Generated: {String(data.aiGenerated)}</div>
+                <div>Platform Count: {data.platformRecommendations?.length || 0}</div>
+                <div>Monthly Plan Days: {data.monthlyPlan?.length || 0}</div>
+                <div>Copywriting Sections: {data.copywritingRecommendations?.length || 0}</div>
+                <div>Competitor Count: {data.competitorInsights?.length || 0}</div>
+                <div>Intelligence Mode: {intelligenceMode}</div>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Marketing-specific message */}
