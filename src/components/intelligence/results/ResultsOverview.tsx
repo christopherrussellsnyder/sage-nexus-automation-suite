@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,13 @@ import {
   Globe,
   Mail,
   Megaphone,
-  Share2
+  Share2,
+  AlertTriangle,
+  Shield,
+  Zap,
+  Brain,
+  Eye,
+  CheckCircle2
 } from 'lucide-react';
 
 interface ResultsOverviewProps {
@@ -47,23 +52,26 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   console.log('Has AI copywriting:', hasAICopywriting);
   console.log('Has AI budget strategy:', hasAIBudgetStrategy);
 
-  // AI Awareness Stage Display
+  // Enhanced AI Awareness Stage Display
   const renderAwarenessStages = () => {
     if (!aiCopyRecommendations?.awarenessStageVariations) return null;
 
     return (
-      <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
-        <h4 className="font-semibold mb-3 flex items-center">
-          <Target className="h-4 w-4 mr-2 text-blue-600" />
-          AI Customer Awareness Stages
+      <div className="mt-6 p-5 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+        <h4 className="text-lg font-bold mb-4 flex items-center text-blue-800">
+          <Brain className="h-5 w-5 mr-2" />
+          AI Customer Awareness Journey
         </h4>
-        <div className="space-y-3">
-          {Object.entries(aiCopyRecommendations.awarenessStageVariations).map(([stage, copy]) => (
-            <div key={stage} className="border-l-4 border-blue-400 pl-3">
-              <Badge variant="outline" className="mb-1 capitalize">
-                {stage.replace(/([A-Z])/g, ' $1').trim()}
-              </Badge>
-              <p className="text-sm text-gray-700 font-medium">{copy as string}</p>
+        <div className="space-y-4">
+          {Object.entries(aiCopyRecommendations.awarenessStageVariations).map(([stage, copy], index) => (
+            <div key={stage} className="border-l-4 border-blue-500 pl-4 py-3 bg-white rounded-r-lg shadow-sm">
+              <div className="flex items-center space-x-2 mb-2">
+                <Badge variant="outline" className="capitalize font-semibold text-blue-700 border-blue-300">
+                  Stage {index + 1}: {stage.replace(/([A-Z])/g, ' $1').trim()}
+                </Badge>
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+              </div>
+              <p className="text-sm text-gray-700 font-medium leading-relaxed">{copy as string}</p>
             </div>
           ))}
         </div>
@@ -71,24 +79,29 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
     );
   };
 
-  // AI Emotional Triggers Display
+  // Enhanced AI Emotional Triggers Display
   const renderEmotionalTriggers = () => {
     if (!aiCopyRecommendations?.emotionalTriggers) return null;
 
     return (
-      <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border">
-        <h4 className="font-semibold mb-3 flex items-center">
-          <TrendingUp className="h-4 w-4 mr-2 text-green-600" />
-          AI Emotional Triggers
+      <div className="mt-6 p-5 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 rounded-xl border-2 border-green-200">
+        <h4 className="text-lg font-bold mb-4 flex items-center text-green-800">
+          <Zap className="h-5 w-5 mr-2" />
+          High-Impact Emotional Triggers
         </h4>
-        <div className="space-y-3">
+        <div className="grid gap-4">
           {aiCopyRecommendations.emotionalTriggers.map((trigger: any, index: number) => (
-            <div key={index} className="p-3 bg-white rounded border border-green-200">
-              <h5 className="font-medium text-green-800 mb-1">{trigger.trigger}</h5>
-              <p className="text-sm text-gray-600 mb-2">{trigger.implementation}</p>
-              <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+            <div key={index} className="p-4 bg-white rounded-lg border-2 border-green-200 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between mb-2">
+                <h5 className="font-bold text-green-800 text-base">{trigger.trigger}</h5>
+                <Badge className="bg-green-100 text-green-800 font-semibold">
+                  +{trigger.expectedImpact}
+                </Badge>
+              </div>
+              <p className="text-sm text-gray-600 mb-2 leading-relaxed">{trigger.implementation}</p>
+              <div className="text-xs text-green-700 bg-green-50 px-3 py-1 rounded-full inline-block">
                 Expected Impact: {trigger.expectedImpact}
-              </Badge>
+              </div>
             </div>
           ))}
         </div>
@@ -96,43 +109,49 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
     );
   };
 
-  // AI A/B Testing Framework Display
+  // Enhanced A/B Testing Framework Display
   const renderABTestingFramework = () => {
     if (!aiCopyRecommendations?.abTestingFramework) return null;
 
     return (
-      <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border">
-        <h4 className="font-semibold mb-3 flex items-center">
-          <Target className="h-4 w-4 mr-2 text-purple-600" />
-          AI A/B Testing Strategy
+      <div className="mt-6 p-5 bg-gradient-to-br from-purple-50 via-pink-50 to-violet-50 rounded-xl border-2 border-purple-200">
+        <h4 className="text-lg font-bold mb-4 flex items-center text-purple-800">
+          <Target className="h-5 w-5 mr-2" />
+          Advanced A/B Testing Strategy
         </h4>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <h5 className="font-medium text-purple-800 mb-2">Variables to Test:</h5>
-            <ul className="space-y-1">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="p-4 bg-white rounded-lg border border-purple-200">
+            <h5 className="font-bold text-purple-800 mb-3 flex items-center">
+              <Eye className="h-4 w-4 mr-2" />
+              Variables to Test:
+            </h5>
+            <ul className="space-y-2">
               {aiCopyRecommendations.abTestingFramework.variables?.map((variable: string, index: number) => (
-                <li key={index} className="text-sm flex items-center space-x-2">
+                <li key={index} className="text-sm flex items-center space-x-3">
                   <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                  <span>{variable}</span>
+                  <span className="font-medium">{variable}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div>
-            <h5 className="font-medium text-purple-800 mb-2">Success Metrics:</h5>
-            <ul className="space-y-1">
+          <div className="p-4 bg-white rounded-lg border border-purple-200">
+            <h5 className="font-bold text-purple-800 mb-3 flex items-center">
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Success Metrics:
+            </h5>
+            <ul className="space-y-2">
               {aiCopyRecommendations.abTestingFramework.successMetrics?.map((metric: string, index: number) => (
-                <li key={index} className="text-sm flex items-center space-x-2">
+                <li key={index} className="text-sm flex items-center space-x-3">
                   <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
-                  <span>{metric}</span>
+                  <span className="font-medium">{metric}</span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
         {aiCopyRecommendations.abTestingFramework.statisticalSignificance && (
-          <div className="mt-3 p-2 bg-white rounded border">
-            <span className="text-sm font-medium">Statistical Requirements: </span>
+          <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
+            <span className="text-sm font-bold text-purple-800">Statistical Requirements: </span>
             <span className="text-sm text-gray-600">{aiCopyRecommendations.abTestingFramework.statisticalSignificance}</span>
           </div>
         )}
@@ -140,44 +159,103 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
     );
   };
 
-  // AI Budget Strategy Display
+  // Enhanced Crisis Management Display
+  const renderCrisisManagement = () => {
+    if (!aiBudgetStrategy?.crisisManagement) return null;
+
+    return (
+      <div className="mt-6 p-5 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 rounded-xl border-2 border-red-200">
+        <h4 className="text-lg font-bold mb-4 flex items-center text-red-800">
+          <Shield className="h-5 w-5 mr-2" />
+          Crisis Management Protocols
+        </h4>
+        <div className="grid gap-4">
+          <div className="p-4 bg-white rounded-lg border border-red-200">
+            <div className="flex items-center justify-between mb-3">
+              <h5 className="font-bold text-red-800">Underperformance Threshold</h5>
+              <Badge className="bg-red-100 text-red-800 text-lg font-bold">
+                {aiBudgetStrategy.crisisManagement.underperformanceThreshold}x ROAS
+              </Badge>
+            </div>
+          </div>
+          
+          <div className="p-4 bg-white rounded-lg border border-orange-200">
+            <h5 className="font-bold text-orange-800 mb-3">Automated Actions</h5>
+            <ul className="space-y-2">
+              {aiBudgetStrategy.crisisManagement.actions?.map((action: string, index: number) => (
+                <li key={index} className="text-sm flex items-center space-x-3">
+                  <AlertTriangle className="h-4 w-4 text-orange-600" />
+                  <span className="font-medium">{action}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="p-4 bg-white rounded-lg border border-yellow-200">
+            <h5 className="font-bold text-yellow-800 mb-2">Budget Reallocation Strategy</h5>
+            <p className="text-sm font-medium text-gray-700">{aiBudgetStrategy.crisisManagement.budgetReallocation}</p>
+          </div>
+
+          {aiBudgetStrategy.crisisManagement.emergencyRemarketing && (
+            <div className="p-4 bg-white rounded-lg border border-red-200">
+              <h5 className="font-bold text-red-800 mb-3">Emergency Remarketing Campaigns</h5>
+              <div className="flex flex-wrap gap-2">
+                {aiBudgetStrategy.crisisManagement.emergencyRemarketing.map((campaign: string, index: number) => (
+                  <Badge key={index} variant="outline" className="border-red-300 text-red-700">
+                    {campaign}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Enhanced AI Budget Strategy Display
   const renderBudgetStrategy = () => {
     if (!aiBudgetStrategy) return null;
 
     return (
-      <div className="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border">
-        <h4 className="font-semibold mb-3 flex items-center">
-          <DollarSign className="h-4 w-4 mr-2 text-yellow-600" />
+      <div className="mt-6 p-5 bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50 rounded-xl border-2 border-yellow-200">
+        <h4 className="text-lg font-bold mb-4 flex items-center text-yellow-800">
+          <DollarSign className="h-5 w-5 mr-2" />
           AI Budget Strategy & Allocation
         </h4>
         
         {/* Platform Allocations */}
         {aiBudgetStrategy.allocation && (
-          <div className="space-y-3 mb-4">
+          <div className="space-y-4 mb-6">
             {aiBudgetStrategy.allocation.map((platform: any, index: number) => (
-              <div key={index} className="p-3 bg-white rounded border border-yellow-200">
-                <div className="flex justify-between items-center mb-2">
-                  <h5 className="font-medium text-yellow-800">{platform.platform}</h5>
-                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                    {platform.percentage}% - ${platform.dailySpend}/day
-                  </Badge>
+              <div key={index} className="p-4 bg-white rounded-lg border-2 border-yellow-200 shadow-sm">
+                <div className="flex justify-between items-center mb-3">
+                  <h5 className="font-bold text-yellow-800 text-base">{platform.platform}</h5>
+                  <div className="flex space-x-2">
+                    <Badge className="bg-yellow-100 text-yellow-800 font-bold text-sm">
+                      {platform.percentage}%
+                    </Badge>
+                    <Badge variant="outline" className="border-yellow-400 text-yellow-700 font-semibold">
+                      ${platform.dailySpend}/day
+                    </Badge>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">{platform.reasoning}</p>
+                <p className="text-sm text-gray-600 mb-3 leading-relaxed">{platform.reasoning}</p>
                 
-                {/* Day-parting Strategy */}
+                {/* Enhanced Day-parting Strategy */}
                 {platform.dayPartingStrategy && (
-                  <div className="grid grid-cols-3 gap-2 text-xs mt-2">
-                    <div className="bg-blue-50 p-2 rounded">
-                      <span className="font-medium">Morning:</span>
-                      <p>{platform.dayPartingStrategy.morning}</p>
+                  <div className="grid grid-cols-3 gap-3 text-xs mt-3">
+                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                      <span className="font-bold text-blue-800">Morning:</span>
+                      <p className="text-blue-700 mt-1">{platform.dayPartingStrategy.morning}</p>
                     </div>
-                    <div className="bg-green-50 p-2 rounded">
-                      <span className="font-medium">Afternoon:</span>
-                      <p>{platform.dayPartingStrategy.afternoon}</p>
+                    <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                      <span className="font-bold text-green-800">Afternoon:</span>
+                      <p className="text-green-700 mt-1">{platform.dayPartingStrategy.afternoon}</p>
                     </div>
-                    <div className="bg-purple-50 p-2 rounded">
-                      <span className="font-medium">Evening:</span>
-                      <p>{platform.dayPartingStrategy.evening}</p>
+                    <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                      <span className="font-bold text-purple-800">Evening:</span>
+                      <p className="text-purple-700 mt-1">{platform.dayPartingStrategy.evening}</p>
                     </div>
                   </div>
                 )}
@@ -186,16 +264,23 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
           </div>
         )}
 
-        {/* ROAS Targets */}
+        {/* Enhanced ROAS Targets */}
         {aiBudgetStrategy.roasTargets && (
-          <div className="p-3 bg-white rounded border border-orange-200">
-            <h5 className="font-medium text-orange-800 mb-2">ROAS Targets</h5>
-            {aiBudgetStrategy.roasTargets.map((target: any, index: number) => (
-              <div key={index} className="flex justify-between items-center">
-                <span className="text-sm">{target.timeframe}</span>
-                <span className="font-medium text-orange-700">{target.target}x ROAS</span>
-              </div>
-            ))}
+          <div className="p-4 bg-white rounded-lg border-2 border-orange-200">
+            <h5 className="font-bold text-orange-800 mb-3 flex items-center">
+              <TrendingUp className="h-4 w-4 mr-2" />
+              ROAS Targets & Timeline
+            </h5>
+            <div className="grid gap-3">
+              {aiBudgetStrategy.roasTargets.map((target: any, index: number) => (
+                <div key={index} className="flex justify-between items-center p-2 bg-orange-50 rounded">
+                  <span className="text-sm font-medium">{target.timeframe}</span>
+                  <Badge className="bg-orange-500 text-white font-bold">
+                    {target.target}x ROAS
+                  </Badge>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -338,8 +423,14 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Lightbulb className="h-5 w-5" />
-              <span>{hasAICopywriting ? 'AI-Generated' : 'Template'} Copywriting Intelligence</span>
+              <Lightbulb className="h-6 w-6" />
+              <span className="text-xl">{hasAICopywriting ? 'AI-Generated' : 'Template'} Copywriting Intelligence</span>
+              {hasAICopywriting && (
+                <Badge className="bg-green-500 text-white">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  AI Powered
+                </Badge>
+              )}
             </div>
             <div className="flex items-center space-x-2">
               <Label htmlFor="copyType" className="text-sm">Content Type:</Label>
@@ -356,7 +447,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
               </Select>
             </div>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-base">
             {hasAICopywriting 
               ? `Advanced AI copywriting analysis for your ${industry} business targeting ${targetAudience}`
               : `Template copywriting recommendations for your ${industry} business targeting ${targetAudience}`
@@ -366,43 +457,45 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
         <CardContent>
           {hasAICopywriting ? (
             <div className="space-y-6">
-              {/* AI Competitor Analysis */}
+              {/* Enhanced AI Competitor Analysis */}
               {aiCopyRecommendations.competitorAnalysis && (
-                <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                  <h4 className="font-semibold text-orange-800 mb-2">AI Competitor Copy Analysis</h4>
-                  <div className="space-y-2">
-                    <div>
-                      <span className="font-medium">Common Approaches: </span>
-                      <span className="text-sm">{aiCopyRecommendations.competitorAnalysis.commonApproaches}</span>
+                <div className="p-5 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border-2 border-orange-200">
+                  <h4 className="text-lg font-bold text-orange-800 mb-4 flex items-center">
+                    <Globe className="h-5 w-5 mr-2" />
+                    AI Competitor Copy Analysis
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="p-3 bg-white rounded-lg border border-orange-200">
+                      <span className="font-bold text-orange-800">Common Approaches: </span> 
+                      <p className="text-sm mt-1">{aiCopyRecommendations.competitorAnalysis.commonApproaches}</p>
                     </div>
-                    <div>
-                      <span className="font-medium">Your Improved Strategy: </span>
-                      <span className="text-sm text-orange-700 font-medium">{aiCopyRecommendations.competitorAnalysis.improvedStrategy}</span>
+                    <div className="p-3 bg-white rounded-lg border border-red-200">
+                      <span className="font-bold text-red-800">Your Improved Strategy: </span> 
+                      <p className="text-sm text-red-700 font-medium mt-1">{aiCopyRecommendations.competitorAnalysis.improvedStrategy}</p>
                     </div>
-                    <div>
-                      <span className="font-medium">Key Differentiators: </span>
-                      <span className="text-sm">{aiCopyRecommendations.competitorAnalysis.differentiationPoints}</span>
+                    <div className="p-3 bg-white rounded-lg border border-green-200">
+                      <span className="font-bold text-green-800">Key Differentiators: </span> 
+                      <p className="text-sm text-green-700 mt-1">{aiCopyRecommendations.competitorAnalysis.differentiationPoints}</p>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* AI Awareness Stages */}
+              {/* Enhanced AI Components */}
               {renderAwarenessStages()}
-
-              {/* AI Emotional Triggers */}
               {renderEmotionalTriggers()}
-
-              {/* AI A/B Testing Framework */}
               {renderABTestingFramework()}
 
-              {/* AI Power Words */}
+              {/* Enhanced AI Power Words */}
               {aiCopyRecommendations.powerWords && (
-                <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <h4 className="font-semibold text-yellow-800 mb-2">AI-Recommended Power Words</h4>
+                <div className="p-5 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border-2 border-yellow-200">
+                  <h4 className="text-lg font-bold text-yellow-800 mb-4 flex items-center">
+                    <Zap className="h-5 w-5 mr-2" />
+                    High-Converting Power Words
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {aiCopyRecommendations.powerWords.map((word: string, index: number) => (
-                      <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800">
+                      <Badge key={index} className="bg-yellow-500 text-white font-semibold text-sm px-3 py-1">
                         {word}
                       </Badge>
                     ))}
@@ -410,15 +503,20 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
                 </div>
               )}
 
-              {/* AI Funnel Copy */}
+              {/* Enhanced AI Funnel Copy */}
               {aiCopyRecommendations.funnelCopy && (
-                <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
-                  <h4 className="font-semibold text-indigo-800 mb-3">AI Funnel Copy Strategy</h4>
+                <div className="p-5 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border-2 border-indigo-200">
+                  <h4 className="text-lg font-bold text-indigo-800 mb-4 flex items-center">
+                    <Share2 className="h-5 w-5 mr-2" />
+                    AI Funnel Copy Strategy
+                  </h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     {Object.entries(aiCopyRecommendations.funnelCopy).map(([stage, copy]) => (
-                      <div key={stage} className="p-3 bg-white rounded border">
-                        <Badge variant="outline" className="mb-2 capitalize">{stage}</Badge>
-                        <p className="text-sm text-gray-600">{copy as string}</p>
+                      <div key={stage} className="p-4 bg-white rounded-lg border-2 border-indigo-200">
+                        <Badge variant="outline" className="mb-3 capitalize font-semibold text-indigo-700 border-indigo-300">
+                          {stage}
+                        </Badge>
+                        <p className="text-sm text-gray-600 leading-relaxed">{copy as string}</p>
                       </div>
                     ))}
                   </div>
@@ -431,8 +529,11 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
             </div>
           )}
 
-          {/* AI Budget Strategy */}
+          {/* Enhanced AI Budget Strategy */}
           {renderBudgetStrategy()}
+          
+          {/* Enhanced Crisis Management */}
+          {renderCrisisManagement()}
         </CardContent>
       </Card>
 
@@ -487,12 +588,16 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
         </Card>
       </div>
 
-      {/* AI Data Status */}
+      {/* Enhanced AI Data Status */}
       {!hasAICopywriting && (
-        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
-          <p className="text-sm text-yellow-800">
-            ⚠️ Displaying template copywriting recommendations - AI analysis not available
-          </p>
+        <div className="p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg flex items-start space-x-3">
+          <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+          <div>
+            <h4 className="font-medium text-yellow-800">Template Data Notice</h4>
+            <p className="text-sm text-yellow-700">
+              Displaying template copywriting recommendations - AI analysis not available. Regenerate your intelligence report for personalized insights.
+            </p>
+          </div>
         </div>
       )}
     </div>
