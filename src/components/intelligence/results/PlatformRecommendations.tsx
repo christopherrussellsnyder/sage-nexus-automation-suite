@@ -10,26 +10,26 @@ interface PlatformRecommendationsProps {
 }
 
 const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
-  console.log('Platform Recommendations - AI Data:', data.platformRecommendations);
-  console.log('Platform Recommendations - Full Data:', data);
+  console.log('Platform Recommendations - Checking data structure:', data);
+  console.log('AI Data exists:', !!data.insights);
+  console.log('Platform data:', data.insights?.platformRecommendations);
 
-  // Use AI-generated platform data, fallback to template only if no AI data
-  const aiPlatforms = data.platformRecommendations?.map((platform: any, index: number) => ({
+  // Use correct data path: data.insights.platformRecommendations
+  const aiPlatforms = data.insights?.platformRecommendations?.map((platform: any, index: number) => ({
     name: platform.platform,
     priority: platform.priority,
-    score: Math.round((platform.expectedMetrics.roas / 6) * 100), // Scale ROAS to 100-point score
+    score: Math.round((platform.expectedMetrics?.roas / 6) * 100) || 85, // Scale ROAS to 100-point score
     reasoning: platform.reasoning,
     expectedMetrics: {
-      roas: `${platform.expectedMetrics.roas}x`,
-      cpm: `$${platform.expectedMetrics.cpm}`,
-      conversionRate: `${platform.expectedMetrics.conversionRate}%`,
-      reach: platform.expectedMetrics.reach?.toLocaleString() || 'N/A'
+      roas: `${platform.expectedMetrics?.roas || 3.5}x`,
+      cpm: `$${platform.expectedMetrics?.cpm || 15}`,
+      conversionRate: `${platform.expectedMetrics?.conversionRate || 3.2}%`,
+      reach: platform.expectedMetrics?.reach?.toLocaleString() || 'N/A'
     },
     budgetAllocation: platform.budgetAllocation,
     targetingParameters: platform.targetingParameters,
-    creativeFormats: platform.creativeFormats,
     dayPartingStrategy: platform.dayPartingStrategy,
-    scalingStrategy: platform.scalingStrategy
+    scalingTriggers: platform.scalingTriggers
   })) || [];
 
   // Fallback template data (only used if no AI data available)
@@ -53,6 +53,7 @@ const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
   ];
 
   const platforms = aiPlatforms.length > 0 ? aiPlatforms : templatePlatforms;
+  const isAIGenerated = aiPlatforms.length > 0;
 
   const getPriorityColor = (priority: number) => {
     switch (priority) {
@@ -68,7 +69,7 @@ const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
       <CardHeader>
         <CardTitle>AI Platform Recommendations</CardTitle>
         <CardDescription>
-          {aiPlatforms.length > 0 ? 'AI-ranked marketing platforms optimized for your business goals and budget' : 'Template platform recommendations (AI data not available)'}
+          {isAIGenerated ? 'AI-ranked marketing platforms optimized for your business goals and budget' : 'Template platform recommendations (AI data not available)'}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -90,12 +91,6 @@ const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Badge variant="outline">{platform.budgetAllocation}% Budget</Badge>
-                  {platform.targetingParameters && (
-                    <Button variant="ghost" size="sm">
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Targeting
-                    </Button>
-                  )}
                 </div>
               </div>
               
@@ -122,8 +117,8 @@ const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
                 </div>
               </div>
 
-              {/* AI-Specific Advanced Details */}
-              {platform.targetingParameters && (
+              {/* AI Advanced Targeting Details */}
+              {isAIGenerated && platform.targetingParameters && (
                 <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <h5 className="font-medium text-blue-800 mb-2 flex items-center">
                     <Target className="h-4 w-4 mr-2" />
@@ -138,12 +133,20 @@ const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
                       <span className="font-medium">Interests:</span>
                       <p className="text-blue-700">{platform.targetingParameters.interests?.join(', ')}</p>
                     </div>
+                    <div>
+                      <span className="font-medium">Behaviors:</span>
+                      <p className="text-blue-700">{platform.targetingParameters.behaviors?.join(', ')}</p>
+                    </div>
+                    <div>
+                      <span className="font-medium">Custom Audiences:</span>
+                      <p className="text-blue-700">{platform.targetingParameters.customAudiences?.join(', ')}</p>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Day-parting Strategy */}
-              {platform.dayPartingStrategy && (
+              {/* AI Day-parting Strategy */}
+              {isAIGenerated && platform.dayPartingStrategy && (
                 <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
                   <h5 className="font-medium text-green-800 mb-2">AI Day-parting Strategy</h5>
                   <div className="grid grid-cols-3 gap-2 text-xs">
@@ -162,11 +165,23 @@ const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
                   </div>
                 </div>
               )}
+
+              {/* Scaling Triggers */}
+              {isAIGenerated && platform.scalingTriggers && (
+                <div className="mt-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <h5 className="font-medium text-yellow-800 mb-2">Scaling Triggers</h5>
+                  <div className="flex flex-wrap gap-2">
+                    {platform.scalingTriggers.map((trigger: string, i: number) => (
+                      <Badge key={i} variant="secondary" className="text-xs">{trigger}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
 
-          {/* AI Data Validation Debug */}
-          {aiPlatforms.length === 0 && (
+          {/* AI Data Status */}
+          {!isAIGenerated && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
               <p className="text-sm text-yellow-800">
                 ⚠️ Displaying template data - AI platform recommendations not available

@@ -13,11 +13,11 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
   const [viewMode, setViewMode] = useState<'overview' | 'full'>('overview');
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
-  console.log('Monthly Plan - AI Data:', data.monthlyPlan);
-  console.log('Monthly Plan - Full Data:', data);
+  console.log('Monthly Plan - Checking data structure:', data);
+  console.log('AI Monthly Plan:', data.insights?.monthlyPlan);
 
-  // Use AI-generated monthly plan data
-  const aiContentPlan = data.monthlyPlan || [];
+  // Use correct data path: data.insights.monthlyPlan
+  const aiContentPlan = data.insights?.monthlyPlan || [];
   
   // Generate template data only as fallback
   const generateTemplateContentPlan = () => {
@@ -45,6 +45,9 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
   const contentPlan = aiContentPlan.length > 0 ? aiContentPlan : generateTemplateContentPlan();
   const isAIGenerated = aiContentPlan.length > 0;
 
+  console.log('Using AI generated plan:', isAIGenerated);
+  console.log('Content plan length:', contentPlan.length);
+
   const getContentTypeColor = (type: string) => {
     return type === 'ad' ? 'bg-blue-500' : 'bg-green-500';
   };
@@ -55,7 +58,7 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
       case 'facebook': return '📘';
       case 'instagram': return '📸';
       case 'twitter': return '🐦';
-      case 'tiktok': return '🎵';
+      case 'google ads': return '🔍';
       default: return '📱';
     }
   };
@@ -71,7 +74,7 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
             </CardTitle>
             <CardDescription>
               {isAIGenerated 
-                ? 'Personalized content strategy based on your business data and industry insights'
+                ? `Personalized content strategy with ${contentPlan.length} days of content based on your business data`
                 : 'Template content calendar (AI data not available)'
               }
             </CardDescription>
@@ -173,7 +176,7 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
           </div>
         )}
 
-        {/* Full Calendar Mode - All 30 days */}
+        {/* Full Calendar Mode - All days */}
         {viewMode === 'full' && (
           <div className="space-y-4">
             <div className="grid gap-3 max-h-96 overflow-y-auto">
@@ -220,6 +223,20 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
                           <p className="text-xs text-muted-foreground">{day.strategicReasoning}</p>
                         </div>
                       </div>
+
+                      {/* Advanced AI Features */}
+                      {isAIGenerated && day.psychologicalTriggers && (
+                        <div className="p-3 bg-purple-50 rounded border border-purple-200">
+                          <h5 className="font-medium text-purple-800 mb-2">Psychological Triggers:</h5>
+                          <div className="flex flex-wrap gap-1">
+                            {day.psychologicalTriggers.map((trigger: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs bg-purple-100 text-purple-800">
+                                {trigger}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       {day.expectedMetrics && (
                         <div className="grid grid-cols-4 gap-2 text-center">

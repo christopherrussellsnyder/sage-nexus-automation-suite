@@ -9,12 +9,15 @@ interface CompetitorInsightsProps {
 }
 
 const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
-  console.log('Competitor Insights - AI Data:', data.competitorInsights);
-  console.log('Competitor Insights - Full Data:', data);
+  console.log('Competitor Insights - Checking data structure:', data);
+  console.log('AI Competitor data:', data.insights?.competitorInsights);
 
-  // Use AI competitor insights data
-  const aiCompetitorInsights = data.competitorInsights || [];
+  // Use correct data path: data.insights.competitorInsights
+  const aiCompetitorInsights = data.insights?.competitorInsights || [];
   const isAIGenerated = aiCompetitorInsights.length > 0;
+
+  console.log('Using AI competitor data:', isAIGenerated);
+  console.log('Competitor count:', aiCompetitorInsights.length);
 
   // Template fallback data
   const templateCompetitors = [
@@ -170,6 +173,27 @@ const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
                       <div>
                         <span className="font-medium text-green-700">Your Opportunities: </span>
                         <span>{comp.contentStrategy.opportunityAreas?.join(', ')}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Conversion Tactics Analysis */}
+                {comp.conversionTactics && (
+                  <div className="mb-4 p-3 bg-pink-50 rounded border border-pink-200">
+                    <h5 className="font-medium text-pink-800 mb-2">Conversion Strategy Analysis</h5>
+                    <div className="space-y-2 text-sm">
+                      <div>
+                        <span className="font-medium">Common Tactics: </span>
+                        <span>{comp.conversionTactics.commonApproaches?.join(', ')}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-pink-700">Improvement Areas: </span>
+                        <span>{comp.conversionTactics.improvementOpportunities?.join(', ')}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-green-700">Your Strategy: </span>
+                        <span>{comp.conversionTactics.differentiationStrategy}</span>
                       </div>
                     </div>
                   </div>

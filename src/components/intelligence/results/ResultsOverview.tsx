@@ -26,8 +26,9 @@ interface ResultsOverviewProps {
 const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   const [selectedCopyType, setSelectedCopyType] = useState<'website' | 'ads' | 'email' | 'social'>('website');
   
-  console.log('Results Overview - AI Data:', data);
-  console.log('Copywriting Recommendations:', data.insights?.copywritingRecommendations);
+  console.log('Results Overview - Checking data structure:', data);
+  console.log('Copywriting data:', data.insights?.copywritingRecommendations);
+  console.log('Budget Strategy data:', data.insights?.budgetStrategy);
   
   const businessData = data.formData || {};
   const industry = businessData.industry || 'general';
@@ -35,9 +36,16 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   const monthlyRevenue = businessData.monthlyRevenue || '10k-50k';
   const adBudget = businessData.monthlyAdBudget || '500-2k';
 
-  // Use AI copywriting recommendations if available
+  // Use correct data path: data.insights.copywritingRecommendations
   const aiCopyRecommendations = data.insights?.copywritingRecommendations?.[0];
   const hasAICopywriting = !!aiCopyRecommendations;
+
+  // Use correct data path: data.insights.budgetStrategy
+  const aiBudgetStrategy = data.insights?.budgetStrategy?.[0];
+  const hasAIBudgetStrategy = !!aiBudgetStrategy;
+
+  console.log('Has AI copywriting:', hasAICopywriting);
+  console.log('Has AI budget strategy:', hasAIBudgetStrategy);
 
   // AI Awareness Stage Display
   const renderAwarenessStages = () => {
@@ -52,7 +60,9 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
         <div className="space-y-3">
           {Object.entries(aiCopyRecommendations.awarenessStageVariations).map(([stage, copy]) => (
             <div key={stage} className="border-l-4 border-blue-400 pl-3">
-              <Badge variant="outline" className="mb-1 capitalize">{stage.replace(/([A-Z])/g, ' $1').trim()}</Badge>
+              <Badge variant="outline" className="mb-1 capitalize">
+                {stage.replace(/([A-Z])/g, ' $1').trim()}
+              </Badge>
               <p className="text-sm text-gray-700 font-medium">{copy as string}</p>
             </div>
           ))}
@@ -124,6 +134,68 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
           <div className="mt-3 p-2 bg-white rounded border">
             <span className="text-sm font-medium">Statistical Requirements: </span>
             <span className="text-sm text-gray-600">{aiCopyRecommendations.abTestingFramework.statisticalSignificance}</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // AI Budget Strategy Display
+  const renderBudgetStrategy = () => {
+    if (!aiBudgetStrategy) return null;
+
+    return (
+      <div className="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border">
+        <h4 className="font-semibold mb-3 flex items-center">
+          <DollarSign className="h-4 w-4 mr-2 text-yellow-600" />
+          AI Budget Strategy & Allocation
+        </h4>
+        
+        {/* Platform Allocations */}
+        {aiBudgetStrategy.allocation && (
+          <div className="space-y-3 mb-4">
+            {aiBudgetStrategy.allocation.map((platform: any, index: number) => (
+              <div key={index} className="p-3 bg-white rounded border border-yellow-200">
+                <div className="flex justify-between items-center mb-2">
+                  <h5 className="font-medium text-yellow-800">{platform.platform}</h5>
+                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                    {platform.percentage}% - ${platform.dailySpend}/day
+                  </Badge>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">{platform.reasoning}</p>
+                
+                {/* Day-parting Strategy */}
+                {platform.dayPartingStrategy && (
+                  <div className="grid grid-cols-3 gap-2 text-xs mt-2">
+                    <div className="bg-blue-50 p-2 rounded">
+                      <span className="font-medium">Morning:</span>
+                      <p>{platform.dayPartingStrategy.morning}</p>
+                    </div>
+                    <div className="bg-green-50 p-2 rounded">
+                      <span className="font-medium">Afternoon:</span>
+                      <p>{platform.dayPartingStrategy.afternoon}</p>
+                    </div>
+                    <div className="bg-purple-50 p-2 rounded">
+                      <span className="font-medium">Evening:</span>
+                      <p>{platform.dayPartingStrategy.evening}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ROAS Targets */}
+        {aiBudgetStrategy.roasTargets && (
+          <div className="p-3 bg-white rounded border border-orange-200">
+            <h5 className="font-medium text-orange-800 mb-2">ROAS Targets</h5>
+            {aiBudgetStrategy.roasTargets.map((target: any, index: number) => (
+              <div key={index} className="flex justify-between items-center">
+                <span className="text-sm">{target.timeframe}</span>
+                <span className="font-medium text-orange-700">{target.target}x ROAS</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -203,31 +275,49 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
               <DollarSign className="h-5 w-5" />
               <span>Budget Strategy</span>
             </CardTitle>
-            <CardDescription>Optimized spending recommendations for your budget</CardDescription>
+            <CardDescription>
+              {hasAIBudgetStrategy ? 'AI-optimized spending recommendations' : 'Template budget recommendations'}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Label className="text-sm font-medium text-muted-foreground">Recommended Strategy</Label>
-              <p className="text-sm bg-green-50 p-2 rounded border border-green-200">{getBudgetStrategy()}</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground">Budget Allocation</Label>
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span>Primary Platform (Facebook/Google)</span>
-                  <span className="font-semibold">60%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Secondary Platform (Instagram/TikTok)</span>
-                  <span className="font-semibold">25%</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Testing & Optimization</span>
-                  <span className="font-semibold">15%</span>
+            {hasAIBudgetStrategy ? (
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">AI Budget Allocation</Label>
+                <div className="space-y-2 mt-2">
+                  {aiBudgetStrategy.allocation?.map((platform: any, index: number) => (
+                    <div key={index} className="flex justify-between text-sm">
+                      <span>{platform.platform}</span>
+                      <span className="font-semibold">{platform.percentage}%</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            ) : (
+              <>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Recommended Strategy</Label>
+                  <p className="text-sm bg-green-50 p-2 rounded border border-green-200">{getBudgetStrategy()}</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Budget Allocation</Label>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span>Primary Platform (Facebook/Google)</span>
+                      <span className="font-semibold">60%</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Secondary Platform (Instagram/TikTok)</span>
+                      <span className="font-semibold">25%</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Testing & Optimization</span>
+                      <span className="font-semibold">15%</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="grid grid-cols-2 gap-4 text-center">
               <div className="p-3 bg-blue-50 rounded">
@@ -340,6 +430,9 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
               <p className="text-sm text-gray-600">AI copywriting analysis not available - using template recommendations</p>
             </div>
           )}
+
+          {/* AI Budget Strategy */}
+          {renderBudgetStrategy()}
         </CardContent>
       </Card>
 
