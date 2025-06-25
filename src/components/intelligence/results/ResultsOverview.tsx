@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   const [selectedCopyType, setSelectedCopyType] = useState<'website' | 'ads' | 'email' | 'social'>('website');
   
   console.log('Results Overview - AI Data:', data);
-  console.log('Copywriting Recommendations:', data.copywritingRecommendations);
+  console.log('Copywriting Recommendations:', data.insights?.copywritingRecommendations);
   
   const businessData = data.formData || {};
   const industry = businessData.industry || 'general';
@@ -35,7 +36,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   const adBudget = businessData.monthlyAdBudget || '500-2k';
 
   // Use AI copywriting recommendations if available
-  const aiCopyRecommendations = data.copywritingRecommendations?.[0];
+  const aiCopyRecommendations = data.insights?.copywritingRecommendations?.[0];
   const hasAICopywriting = !!aiCopyRecommendations;
 
   // AI Awareness Stage Display
@@ -128,8 +129,6 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
       </div>
     );
   };
-
-  const currentRecommendations = generateCopywritingRecommendations(selectedCopyType);
 
   const getRevenueInsight = () => {
     const insights: Record<string, string> = {

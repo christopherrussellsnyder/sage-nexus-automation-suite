@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Download, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Download, RefreshCw, AlertTriangle } from 'lucide-react';
 import { downloadJSON } from '@/utils/downloadUtils';
 import ResultsOverview from './results/ResultsOverview';
 import PlatformRecommendations from './results/PlatformRecommendations';
@@ -22,13 +22,13 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
   console.log('=== INTELLIGENCE RESULTS DEBUG ===');
   console.log('Full data object:', data);
   console.log('AI Generated flag:', data.aiGenerated);
-  console.log('Platform Recommendations:', data.platformRecommendations);
-  console.log('Monthly Plan length:', data.monthlyPlan?.length);
-  console.log('Copywriting Recommendations:', data.copywritingRecommendations);
-  console.log('Competitor Insights:', data.competitorInsights);
-  console.log('Metric Optimization:', data.metricOptimization);
-  console.log('Budget Strategy:', data.budgetStrategy);
-  console.log('Industry Insights:', data.industryInsights);
+  console.log('Platform Recommendations:', data.insights?.platformRecommendations);
+  console.log('Monthly Plan length:', data.insights?.monthlyPlan?.length);
+  console.log('Copywriting Recommendations:', data.insights?.copywritingRecommendations);
+  console.log('Competitor Insights:', data.insights?.competitorInsights);
+  console.log('Metric Optimization:', data.insights?.metricOptimization);
+  console.log('Budget Strategy:', data.insights?.budgetStrategy);
+  console.log('Industry Insights:', data.insights?.industryInsights);
   console.log('Intelligence Mode:', intelligenceMode);
   console.log('Business Type:', businessType);
 
@@ -36,14 +36,14 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
   const validateAIData = (data: any) => {
     const checks = {
       hasAIFlag: data.aiGenerated === true,
-      hasInsights: !!data,
-      hasPlatforms: !!data.platformRecommendations?.length,
-      hasMonthlyPlan: !!data.monthlyPlan?.length,
-      hasCopywriting: !!data.copywritingRecommendations?.length,
-      hasCompetitors: !!data.competitorInsights?.length,
-      hasMetrics: !!data.metricOptimization?.length,
-      hasBudget: !!data.budgetStrategy?.length,
-      hasIndustry: !!data.industryInsights?.length
+      hasInsights: !!data.insights,
+      hasPlatforms: !!data.insights?.platformRecommendations?.length,
+      hasMonthlyPlan: !!data.insights?.monthlyPlan?.length,
+      hasCopywriting: !!data.insights?.copywritingRecommendations?.length,
+      hasCompetitors: !!data.insights?.competitorInsights?.length,
+      hasMetrics: !!data.insights?.metricOptimization?.length,
+      hasBudget: !!data.insights?.budgetStrategy?.length,
+      hasIndustry: !!data.insights?.industryInsights?.length
     };
     console.log('AI Data Validation Results:', checks);
     return checks;
@@ -123,12 +123,12 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
               </Badge>
               {dataValidation.hasPlatforms && (
                 <Badge variant="outline" className="bg-green-50 text-green-700">
-                  ✓ Platforms ({data.platformRecommendations?.length})
+                  ✓ Platforms ({data.insights?.platformRecommendations?.length})
                 </Badge>
               )}
               {dataValidation.hasMonthlyPlan && (
                 <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                  ✓ Calendar ({data.monthlyPlan?.length} days)
+                  ✓ Calendar ({data.insights?.monthlyPlan?.length} days)
                 </Badge>
               )}
             </div>
@@ -194,10 +194,10 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
             <CardContent>
               <div className="space-y-2 text-sm font-mono">
                 <div>AI Generated: {String(data.aiGenerated)}</div>
-                <div>Platform Count: {data.platformRecommendations?.length || 0}</div>
-                <div>Monthly Plan Days: {data.monthlyPlan?.length || 0}</div>
-                <div>Copywriting Sections: {data.copywritingRecommendations?.length || 0}</div>
-                <div>Competitor Count: {data.competitorInsights?.length || 0}</div>
+                <div>Platform Count: {data.insights?.platformRecommendations?.length || 0}</div>
+                <div>Monthly Plan Days: {data.insights?.monthlyPlan?.length || 0}</div>
+                <div>Copywriting Sections: {data.insights?.copywritingRecommendations?.length || 0}</div>
+                <div>Competitor Count: {data.insights?.competitorInsights?.length || 0}</div>
                 <div>Intelligence Mode: {intelligenceMode}</div>
               </div>
             </CardContent>
