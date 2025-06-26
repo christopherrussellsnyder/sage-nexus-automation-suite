@@ -25,12 +25,19 @@ import BusinessTypeSelector from './intelligence/BusinessTypeSelector';
 const IntelligenceDashboard = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'wizard' | 'results'>('overview');
   const [intelligenceData, setIntelligenceData] = useState(null);
-  const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | null>(null);
+  const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | 'copywriting' | null>(null);
   const [intelligenceMode, setIntelligenceMode] = useState<'full' | 'copywriting' | 'marketing' | 'competitor'>('full');
 
   const handleBusinessTypeSelect = (type: any) => {
     setBusinessType(type);
     setActiveSection('wizard');
+    
+    // Set intelligence mode based on business type
+    if (type === 'copywriting') {
+      setIntelligenceMode('copywriting');
+    } else {
+      setIntelligenceMode('full');
+    }
   };
 
   const handleIntelligenceGenerated = (data: any) => {
@@ -73,17 +80,19 @@ const IntelligenceDashboard = () => {
                 <span>Intelligence Wizard</span>
               </Button>
               
-              {/* Intelligence Mode Selector */}
-              <select
-                value={intelligenceMode}
-                onChange={(e) => setIntelligenceMode(e.target.value as any)}
-                className="px-3 py-1 border rounded text-sm"
-              >
-                <option value="full">Full Intelligence</option>
-                <option value="copywriting">Copywriting Only</option>
-                <option value="marketing">Marketing Only</option>
-                <option value="competitor">Competitor Analysis</option>
-              </select>
+              {/* Intelligence Mode Selector - Hidden for copywriting type */}
+              {businessType !== 'copywriting' && (
+                <select
+                  value={intelligenceMode}
+                  onChange={(e) => setIntelligenceMode(e.target.value as any)}
+                  className="px-3 py-1 border rounded text-sm"
+                >
+                  <option value="full">Full Intelligence</option>
+                  <option value="copywriting">Copywriting Only</option>
+                  <option value="marketing">Marketing Only</option>
+                  <option value="competitor">Competitor Analysis</option>
+                </select>
+              )}
             </>
           )}
           {intelligenceData && (
