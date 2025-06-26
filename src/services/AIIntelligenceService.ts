@@ -21,6 +21,14 @@ interface IntelligenceRequest {
 }
 
 export class AIIntelligenceService {
+  static saveApiKey(apiKey: string) {
+    localStorage.setItem('openai_api_key', apiKey);
+  }
+
+  static getApiKey(): string | null {
+    return localStorage.getItem('openai_api_key');
+  }
+
   static async generateIntelligence(request: IntelligenceRequest) {
     const prompt = this.buildPrompt(request);
     
