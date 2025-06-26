@@ -162,7 +162,7 @@ const UnifiedIntelligenceWizard = ({
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
       const intelligenceData = {
-        businessType: businessType as 'ecommerce' | 'agency' | 'sales' | 'copywriting',
+        businessType: businessType,
         formData,
         intelligenceMode,
         generatedAt: new Date().toISOString(),
