@@ -29,6 +29,18 @@ const Index = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'ecommerce' | 'agency' | 'sales'>('overview');
   const copy = useCopySettings();
 
+  // Handler to properly map Dashboard component expectations to our state
+  const handleSetActiveSection = (section: 'ecommerce' | 'agency' | 'sales' | 'copywriting' | 'overview') => {
+    if (section === 'copywriting') {
+      // Redirect copywriting requests to intelligence section
+      setActiveSection('intelligence');
+    } else if (section === 'overview') {
+      setActiveSection('overview');
+    } else {
+      setActiveSection(section as 'ecommerce' | 'agency' | 'sales');
+    }
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'intelligence':
@@ -40,7 +52,7 @@ const Index = () => {
       case 'sales':
         return <SalesDashboard />;
       default:
-        return <Dashboard setActiveSection={setActiveSection} />;
+        return <Dashboard setActiveSection={handleSetActiveSection} />;
     }
   };
 
