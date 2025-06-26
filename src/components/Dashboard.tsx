@@ -246,7 +246,7 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
             {copy.ctaDescription}
           </p>
           <div className="flex justify-center space-x-4">
-            <Button variant="secondary" size="lg" onClick={() => setActiveSection('copywriting')} className="button-glow">
+            <Button variant="secondary" size="lg" onClick={() => setActiveSection('ecommerce')} className="button-glow">
               <Crown className="h-4 w-4 mr-2" />
               {copy.ctaPrimaryButton}
             </Button>
