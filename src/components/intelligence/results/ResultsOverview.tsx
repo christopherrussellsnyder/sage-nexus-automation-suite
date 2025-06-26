@@ -20,7 +20,8 @@ import {
   Zap,
   Brain,
   Eye,
-  CheckCircle2
+  CheckCircle2,
+  Copy
 } from 'lucide-react';
 
 interface ResultsOverviewProps {
@@ -52,7 +53,418 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   console.log('Has AI copywriting:', hasAICopywriting);
   console.log('Has AI budget strategy:', hasAIBudgetStrategy);
 
-  // Enhanced AI Awareness Stage Display
+  // Copy to clipboard function
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  // Enhanced copywriting display with different copy types
+  const renderCopyTypeContent = () => {
+    if (!hasAICopywriting) return null;
+
+    const copyTypes = aiCopyRecommendations.copyTypes || {};
+    
+    switch (selectedCopyType) {
+      case 'website':
+        return (
+          <div className="space-y-6">
+            <div className="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200">
+              <h4 className="text-lg font-bold text-blue-800 mb-4 flex items-center">
+                <Globe className="h-5 w-5 mr-2" />
+                Website Copy Variations
+              </h4>
+              
+              {/* Headlines */}
+              <div className="mb-6">
+                <h5 className="font-semibold text-blue-700 mb-3">Headlines</h5>
+                <div className="grid gap-3">
+                  {copyTypes.website?.headlines?.map((headline: string, index: number) => (
+                    <div key={index} className="p-3 bg-white rounded-lg border border-blue-200 flex justify-between items-center">
+                      <span className="font-medium">{headline}</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyToClipboard(headline)}
+                        className="ml-2"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )) || [
+                    "Transform Your Business Operations with AI-Powered Automation",
+                    "Stop Wasting Time on Manual Processes - Automate Everything",
+                    "The Ultimate Solution for Streamlined Business Efficiency"
+                  ].map((headline, index) => (
+                    <div key={index} className="p-3 bg-white rounded-lg border border-blue-200 flex justify-between items-center">
+                      <span className="font-medium">{headline}</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyToClipboard(headline)}
+                        className="ml-2"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Website Sections */}
+              <div>
+                <h5 className="font-semibold text-blue-700 mb-3">Page Sections</h5>
+                <div className="space-y-4">
+                  {copyTypes.website?.sections?.map((section: any, index: number) => (
+                    <div key={index} className="p-4 bg-white rounded-lg border border-blue-200">
+                      <div className="flex justify-between items-start mb-2">
+                        <Badge variant="outline" className="text-blue-700 border-blue-300">
+                          {section.sectionType}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyToClipboard(`${section.headline}\n\n${section.body}\n\n${section.cta}`)}
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <h6 className="font-bold text-gray-800 mb-2">{section.headline}</h6>
+                      <p className="text-sm text-gray-600 mb-3">{section.body}</p>
+                      <div className="bg-blue-50 p-2 rounded border border-blue-200">
+                        <span className="text-xs font-medium text-blue-700">CTA: </span>
+                        <span className="text-sm font-semibold text-blue-800">{section.cta}</span>
+                      </div>
+                    </div>
+                  )) || [
+                    {
+                      sectionType: "Hero Section",
+                      headline: "Revolutionize Your Business with Smart Automation",
+                      body: "Join thousands of businesses that have transformed their operations with our cutting-edge automation platform. Streamline processes, reduce costs, and scale efficiently.",
+                      cta: "Start Your Free Trial Today"
+                    },
+                    {
+                      sectionType: "Features Section",
+                      headline: "Everything You Need to Automate Success",
+                      body: "Our comprehensive platform includes workflow automation, data integration, and intelligent reporting - all designed to help your business operate at peak efficiency.",
+                      cta: "Explore All Features"
+                    }
+                  ].map((section, index) => (
+                    <div key={index} className="p-4 bg-white rounded-lg border border-blue-200">
+                      <div className="flex justify-between items-start mb-2">
+                        <Badge variant="outline" className="text-blue-700 border-blue-300">
+                          {section.sectionType}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyToClipboard(`${section.headline}\n\n${section.body}\n\n${section.cta}`)}
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <h6 className="font-bold text-gray-800 mb-2">{section.headline}</h6>
+                      <p className="text-sm text-gray-600 mb-3">{section.body}</p>
+                      <div className="bg-blue-50 p-2 rounded border border-blue-200">
+                        <span className="text-xs font-medium text-blue-700">CTA: </span>
+                        <span className="text-sm font-semibold text-blue-800">{section.cta}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'ads':
+        return (
+          <div className="space-y-6">
+            <div className="p-5 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border-2 border-purple-200">
+              <h4 className="text-lg font-bold text-purple-800 mb-4 flex items-center">
+                <Megaphone className="h-5 w-5 mr-2" />
+                Ad Copy Variations by Platform
+              </h4>
+              
+              {copyTypes.ads?.platforms?.map((platform: any, index: number) => (
+                <div key={index} className="mb-6 p-4 bg-white rounded-lg border border-purple-200">
+                  <h5 className="font-bold text-purple-700 mb-3 flex items-center">
+                    <Target className="h-4 w-4 mr-2" />
+                    {platform.platform} Ads
+                  </h5>
+                  <div className="space-y-3">
+                    {platform.adVariations?.map((ad: any, adIndex: number) => (
+                      <div key={adIndex} className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                        <div className="flex justify-between items-start mb-2">
+                          <Badge variant="outline" className="text-purple-700 border-purple-300">
+                            {ad.format}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => copyToClipboard(`${ad.headline}\n\n${ad.body}\n\n${ad.cta}`)}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <h6 className="font-bold text-gray-800 mb-2">{ad.headline}</h6>
+                        <p className="text-sm text-gray-600 mb-2">{ad.body}</p>
+                        <div className="bg-purple-100 p-2 rounded border border-purple-300">
+                          <span className="text-xs font-medium text-purple-700">CTA: </span>
+                          <span className="text-sm font-semibold text-purple-800">{ad.cta}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )) || [
+                {
+                  platform: "Facebook/Meta",
+                  adVariations: [
+                    {
+                      headline: "Stop Wasting Hours on Manual Tasks",
+                      body: "Automate your business processes and focus on what matters most. Join 10,000+ businesses already saving 20+ hours per week.",
+                      cta: "Get Started Free",
+                      format: "Single Image"
+                    },
+                    {
+                      headline: "Your Competition is Already Automating",
+                      body: "Don't get left behind. Our platform helps businesses increase efficiency by 300% while reducing operational costs.",
+                      cta: "See How It Works",
+                      format: "Video Ad"
+                    }
+                  ]
+                },
+                {
+                  platform: "Google Ads",
+                  adVariations: [
+                    {
+                      headline: "Business Automation Software | Free Trial",
+                      body: "Streamline operations, reduce costs, boost productivity. Try our award-winning automation platform free for 14 days.",
+                      cta: "Start Free Trial",
+                      format: "Search Ad"
+                    }
+                  ]
+                }
+              ].map((platform, index) => (
+                <div key={index} className="mb-6 p-4 bg-white rounded-lg border border-purple-200">
+                  <h5 className="font-bold text-purple-700 mb-3 flex items-center">
+                    <Target className="h-4 w-4 mr-2" />
+                    {platform.platform} Ads
+                  </h5>
+                  <div className="space-y-3">
+                    {platform.adVariations.map((ad: any, adIndex: number) => (
+                      <div key={adIndex} className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                        <div className="flex justify-between items-start mb-2">
+                          <Badge variant="outline" className="text-purple-700 border-purple-300">
+                            {ad.format}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => copyToClipboard(`${ad.headline}\n\n${ad.body}\n\n${ad.cta}`)}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <h6 className="font-bold text-gray-800 mb-2">{ad.headline}</h6>
+                        <p className="text-sm text-gray-600 mb-2">{ad.body}</p>
+                        <div className="bg-purple-100 p-2 rounded border border-purple-300">
+                          <span className="text-xs font-medium text-purple-700">CTA: </span>
+                          <span className="text-sm font-semibold text-purple-800">{ad.cta}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'email':
+        return (
+          <div className="space-y-6">
+            <div className="p-5 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border-2 border-green-200">
+              <h4 className="text-lg font-bold text-green-800 mb-4 flex items-center">
+                <Mail className="h-5 w-5 mr-2" />
+                Email Marketing Sequences
+              </h4>
+              
+              <div className="space-y-4">
+                {copyTypes.email?.sequences?.map((email: any, index: number) => (
+                  <div key={index} className="p-4 bg-white rounded-lg border border-green-200">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline" className="text-green-700 border-green-300">
+                          {email.emailType}
+                        </Badge>
+                        <Badge variant="outline" className="text-green-600 border-green-300">
+                          {email.timing}
+                        </Badge>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyToClipboard(`Subject: ${email.subject}\n\n${email.body}`)}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <h6 className="font-bold text-gray-800 mb-2">Subject: {email.subject}</h6>
+                    <div className="bg-green-50 p-3 rounded border border-green-200">
+                      <p className="text-sm text-gray-700 whitespace-pre-line">{email.body}</p>
+                    </div>
+                  </div>
+                )) || [
+                  {
+                    emailType: "Welcome Email",
+                    subject: "Welcome to the Future of Business Automation",
+                    body: "Hi [Name],\n\nThanks for joining thousands of forward-thinking business owners who are transforming their operations with automation.\n\nOver the next few days, I'll share exactly how businesses like yours are:\n• Saving 20+ hours per week\n• Reducing operational costs by 40%\n• Scaling without adding overhead\n\nYour automation journey starts now.\n\nBest regards,\n[Your Name]",
+                    timing: "Immediate"
+                  },
+                  {
+                    emailType: "Educational Email",
+                    subject: "The #1 Mistake Most Businesses Make with Automation",
+                    body: "Hi [Name],\n\nI see this mistake all the time...\n\nBusinesses try to automate everything at once and end up overwhelmed.\n\nThe secret? Start with ONE process that takes you the most time.\n\nFor most of our clients, that's lead management. Here's how we automated it:\n\n[Case study details]\n\nReady to identify your automation opportunity?\n\n[CTA Button]\n\nBest,\n[Your Name]",
+                    timing: "Day 2"
+                  },
+                  {
+                    emailType: "Social Proof Email",
+                    subject: "How [Client Name] Doubled Revenue with Automation",
+                    body: "Hi [Name],\n\nJust got off a call with [Client Name], and I had to share this with you...\n\nSix months ago, they were drowning in manual processes. Today, they've:\n• Doubled their monthly revenue\n• Cut operational costs by 45%\n• Freed up 30 hours per week\n\nThe best part? It took just 4 weeks to implement.\n\nWant to see how they did it?\n\n[CTA Button]\n\nBest,\n[Your Name]",
+                    timing: "Day 5"
+                  }
+                ].map((email, index) => (
+                  <div key={index} className="p-4 bg-white rounded-lg border border-green-200">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline" className="text-green-700 border-green-300">
+                          {email.emailType}
+                        </Badge>
+                        <Badge variant="outline" className="text-green-600 border-green-300">
+                          {email.timing}
+                        </Badge>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => copyToClipboard(`Subject: ${email.subject}\n\n${email.body}`)}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <h6 className="font-bold text-gray-800 mb-2">Subject: {email.subject}</h6>
+                    <div className="bg-green-50 p-3 rounded border border-green-200">
+                      <p className="text-sm text-gray-700 whitespace-pre-line">{email.body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'social':
+        return (
+          <div className="space-y-6">
+            <div className="p-5 bg-gradient-to-br from-orange-50 to-red-50 rounded-xl border-2 border-orange-200">
+              <h4 className="text-lg font-bold text-orange-800 mb-4 flex items-center">
+                <Share2 className="h-5 w-5 mr-2" />
+                Social Media Content
+              </h4>
+              
+              {copyTypes.social?.platforms?.map((platform: any, index: number) => (
+                <div key={index} className="mb-6 p-4 bg-white rounded-lg border border-orange-200">
+                  <h5 className="font-bold text-orange-700 mb-3 flex items-center">
+                    <Share2 className="h-4 w-4 mr-2" />
+                    {platform.platform} Posts
+                  </h5>
+                  <div className="space-y-3">
+                    {platform.posts?.map((post: any, postIndex: number) => (
+                      <div key={postIndex} className="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                        <div className="flex justify-between items-start mb-2">
+                          <Badge variant="outline" className="text-orange-700 border-orange-300">
+                            {post.contentType}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => copyToClipboard(`${post.caption}\n\n${post.hashtags?.join(' ')}`)}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <p className="text-sm text-gray-700 mb-3 whitespace-pre-line">{post.caption}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {post.hashtags?.map((hashtag: string, hashIndex: number) => (
+                            <Badge key={hashIndex} variant="outline" className="text-xs text-orange-600 border-orange-300">
+                              {hashtag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )) || [
+                {
+                  platform: "LinkedIn",
+                  posts: [
+                    {
+                      caption: "The biggest lie in business:\n\n\"We don't have time to automate.\"\n\nThe truth? You don't have time NOT to automate.\n\nEvery hour spent on manual tasks is an hour stolen from growth.\n\nStart with ONE process. Automate it. Then move to the next.\n\nWhat process would you automate first?",
+                      hashtags: ["#BusinessAutomation", "#Productivity", "#Efficiency", "#BusinessGrowth"],
+                      contentType: "Educational"
+                    },
+                    {
+                      caption: "CLIENT SPOTLIGHT 🎯\n\nMeet Sarah, who runs a digital marketing agency.\n\n6 months ago:\n• Working 70+ hours/week\n• Drowning in client requests\n• Revenue plateau at $15K/month\n\nToday:\n• Works 40 hours/week\n• Clients love the streamlined process\n• Revenue: $45K/month\n\nThe difference? She automated her client onboarding, reporting, and communication.\n\nAutomation isn't just about efficiency—it's about scaling your impact.",
+                      hashtags: ["#ClientSuccess", "#Automation", "#DigitalMarketing", "#ScaleBusiness"],
+                      contentType: "Case Study"
+                    }
+                  ]
+                }
+              ].map((platform, index) => (
+                <div key={index} className="mb-6 p-4 bg-white rounded-lg border border-orange-200">
+                  <h5 className="font-bold text-orange-700 mb-3 flex items-center">
+                    <Share2 className="h-4 w-4 mr-2" />
+                    {platform.platform} Posts
+                  </h5>
+                  <div className="space-y-3">
+                    {platform.posts.map((post: any, postIndex: number) => (
+                      <div key={postIndex} className="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                        <div className="flex justify-between items-start mb-2">
+                          <Badge variant="outline" className="text-orange-700 border-orange-300">
+                            {post.contentType}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => copyToClipboard(`${post.caption}\n\n${post.hashtags?.join(' ')}`)}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <p className="text-sm text-gray-700 mb-3 whitespace-pre-line">{post.caption}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {post.hashtags?.map((hashtag: string, hashIndex: number) => (
+                            <Badge key={hashIndex} variant="outline" className="text-xs text-orange-600 border-orange-300">
+                              {hashtag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   const renderAwarenessStages = () => {
     if (!aiCopyRecommendations?.awarenessStageVariations) return null;
 
@@ -79,7 +491,6 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
     );
   };
 
-  // Enhanced AI Emotional Triggers Display
   const renderEmotionalTriggers = () => {
     if (!aiCopyRecommendations?.emotionalTriggers) return null;
 
@@ -109,7 +520,6 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
     );
   };
 
-  // Enhanced A/B Testing Framework Display
   const renderABTestingFramework = () => {
     if (!aiCopyRecommendations?.abTestingFramework) return null;
 
@@ -159,11 +569,10 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
     );
   };
 
-  // Enhanced Crisis Management Display
   const renderCrisisManagement = () => {
     const crisisData = aiBudgetStrategy?.crisisManagement || {
-      underperformanceThreshold: 2.0,
-      actions: [
+      performanceThreshold: 2.0,
+      automatedActions: [
         'Pause underperforming ad sets immediately',
         'Reallocate budget to top-performing campaigns',
         'Activate emergency remarketing sequences',
@@ -189,11 +598,11 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
             <div className="flex items-center justify-between mb-4">
               <h5 className="font-bold text-red-800 text-lg">Performance Alert Threshold</h5>
               <Badge className="bg-red-500 text-white text-lg font-bold px-4 py-2">
-                ROAS &lt; {crisisData.underperformanceThreshold}x
+                ROAS &lt; {crisisData.performanceThreshold}x
               </Badge>
             </div>
             <p className="text-sm text-gray-600 bg-red-50 p-3 rounded border border-red-200">
-              <strong>Trigger:</strong> When campaign ROAS drops below {crisisData.underperformanceThreshold}x for 48 consecutive hours, automatic crisis protocols activate.
+              <strong>Trigger:</strong> When campaign ROAS drops below {crisisData.performanceThreshold}x for 48 consecutive hours, automatic crisis protocols activate.
             </p>
           </div>
           
@@ -203,7 +612,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
               Automated Crisis Actions
             </h5>
             <div className="grid md:grid-cols-2 gap-3">
-              {crisisData.actions.map((action: string, index: number) => (
+              {crisisData.automatedActions.map((action: string, index: number) => (
                 <div key={index} className="flex items-start space-x-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
                   <div className="bg-orange-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
                     {index + 1}
@@ -232,80 +641,6 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
             </div>
           </div>
         </div>
-      </div>
-    );
-  };
-
-  // Enhanced AI Budget Strategy Display
-  const renderBudgetStrategy = () => {
-    if (!aiBudgetStrategy) return null;
-
-    return (
-      <div className="mt-6 p-5 bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50 rounded-xl border-2 border-yellow-200">
-        <h4 className="text-lg font-bold mb-4 flex items-center text-yellow-800">
-          <DollarSign className="h-5 w-5 mr-2" />
-          AI Budget Strategy & Allocation
-        </h4>
-        
-        {/* Platform Allocations */}
-        {aiBudgetStrategy.allocation && (
-          <div className="space-y-4 mb-6">
-            {aiBudgetStrategy.allocation.map((platform: any, index: number) => (
-              <div key={index} className="p-4 bg-white rounded-lg border-2 border-yellow-200 shadow-sm">
-                <div className="flex justify-between items-center mb-3">
-                  <h5 className="font-bold text-yellow-800 text-base">{platform.platform}</h5>
-                  <div className="flex space-x-2">
-                    <Badge className="bg-yellow-100 text-yellow-800 font-bold text-sm">
-                      {platform.percentage}%
-                    </Badge>
-                    <Badge variant="outline" className="border-yellow-400 text-yellow-700 font-semibold">
-                      ${platform.dailySpend}/day
-                    </Badge>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 mb-3 leading-relaxed">{platform.reasoning}</p>
-                
-                {/* Enhanced Day-parting Strategy */}
-                {platform.dayPartingStrategy && (
-                  <div className="grid grid-cols-3 gap-3 text-xs mt-3">
-                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                      <span className="font-bold text-blue-800">Morning:</span>
-                      <p className="text-blue-700 mt-1">{platform.dayPartingStrategy.morning}</p>
-                    </div>
-                    <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                      <span className="font-bold text-green-800">Afternoon:</span>
-                      <p className="text-green-700 mt-1">{platform.dayPartingStrategy.afternoon}</p>
-                    </div>
-                    <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
-                      <span className="font-bold text-purple-800">Evening:</span>
-                      <p className="text-purple-700 mt-1">{platform.dayPartingStrategy.evening}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Enhanced ROAS Targets */}
-        {aiBudgetStrategy.roasTargets && (
-          <div className="p-4 bg-white rounded-lg border-2 border-orange-200">
-            <h5 className="font-bold text-orange-800 mb-3 flex items-center">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              ROAS Targets & Timeline
-            </h5>
-            <div className="grid gap-3">
-              {aiBudgetStrategy.roasTargets.map((target: any, index: number) => (
-                <div key={index} className="flex justify-between items-center p-2 bg-orange-50 rounded">
-                  <span className="text-sm font-medium">{target.timeframe}</span>
-                  <Badge className="bg-orange-500 text-white font-bold">
-                    {target.target}x ROAS
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     );
   };
@@ -465,10 +800,30 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="website">Website Copy</SelectItem>
-                  <SelectItem value="ads">Ad Copy</SelectItem>
-                  <SelectItem value="email">Email Marketing</SelectItem>
-                  <SelectItem value="social">Social Content</SelectItem>
+                  <SelectItem value="website">
+                    <div className="flex items-center space-x-2">
+                      <Globe className="h-4 w-4" />
+                      <span>Website Copy</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="ads">
+                    <div className="flex items-center space-x-2">
+                      <Megaphone className="h-4 w-4" />
+                      <span>Ad Copy</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="email">
+                    <div className="flex items-center space-x-2">
+                      <Mail className="h-4 w-4" />
+                      <span>Email Marketing</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="social">
+                    <div className="flex items-center space-x-2">
+                      <Share2 className="h-4 w-4" />
+                      <span>Social Content</span>
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -483,83 +838,19 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
         <CardContent>
           {hasAICopywriting ? (
             <div className="space-y-6">
-              {/* Enhanced AI Competitor Analysis */}
-              {aiCopyRecommendations.competitorAnalysis && (
-                <div className="p-5 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border-2 border-orange-200">
-                  <h4 className="text-lg font-bold text-orange-800 mb-4 flex items-center">
-                    <Globe className="h-5 w-5 mr-2" />
-                    AI Competitor Copy Analysis
-                  </h4>
-                  <div className="space-y-4">
-                    <div className="p-3 bg-white rounded-lg border border-orange-200">
-                      <span className="font-bold text-orange-800">Common Approaches: </span> 
-                      <p className="text-sm mt-1">{aiCopyRecommendations.competitorAnalysis.commonApproaches}</p>
-                    </div>
-                    <div className="p-3 bg-white rounded-lg border border-red-200">
-                      <span className="font-bold text-red-800">Your Improved Strategy: </span> 
-                      <p className="text-sm text-red-700 font-medium mt-1">{aiCopyRecommendations.competitorAnalysis.improvedStrategy}</p>
-                    </div>
-                    <div className="p-3 bg-white rounded-lg border border-green-200">
-                      <span className="font-bold text-green-800">Key Differentiators: </span> 
-                      <p className="text-sm text-green-700 mt-1">{aiCopyRecommendations.competitorAnalysis.differentiationPoints}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Copy Type Content */}
+              {renderCopyTypeContent()}
 
               {/* Enhanced AI Components */}
               {renderAwarenessStages()}
               {renderEmotionalTriggers()}
               {renderABTestingFramework()}
-
-              {/* Enhanced AI Power Words */}
-              {aiCopyRecommendations.powerWords && (
-                <div className="p-5 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border-2 border-yellow-200">
-                  <h4 className="text-lg font-bold text-yellow-800 mb-4 flex items-center">
-                    <Zap className="h-5 w-5 mr-2" />
-                    High-Converting Power Words
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {aiCopyRecommendations.powerWords.map((word: string, index: number) => (
-                      <Badge key={index} className="bg-yellow-500 text-white font-semibold text-sm px-3 py-1">
-                        {word}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Enhanced AI Funnel Copy */}
-              {aiCopyRecommendations.funnelCopy && (
-                <div className="p-5 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border-2 border-indigo-200">
-                  <h4 className="text-lg font-bold text-indigo-800 mb-4 flex items-center">
-                    <Share2 className="h-5 w-5 mr-2" />
-                    AI Funnel Copy Strategy
-                  </h4>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {Object.entries(aiCopyRecommendations.funnelCopy).map(([stage, copy]) => (
-                      <div key={stage} className="p-4 bg-white rounded-lg border-2 border-indigo-200">
-                        <Badge variant="outline" className="mb-3 capitalize font-semibold text-indigo-700 border-indigo-300">
-                          {stage}
-                        </Badge>
-                        <p className="text-sm text-gray-600 leading-relaxed">{copy as string}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           ) : (
             <div className="p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600">AI copywriting analysis not available - using template recommendations</p>
             </div>
           )}
-
-          {/* Enhanced AI Budget Strategy */}
-          {renderBudgetStrategy()}
-          
-          {/* Enhanced Crisis Management */}
-          {renderCrisisManagement()}
         </CardContent>
       </Card>
 
