@@ -1,3 +1,4 @@
+
 interface IntelligenceRequest {
   formData: {
     businessName: string;
@@ -20,6 +21,14 @@ interface IntelligenceRequest {
 }
 
 export class AIIntelligenceService {
+  static saveApiKey(apiKey: string) {
+    localStorage.setItem('openai_api_key', apiKey);
+  }
+
+  static getApiKey(): string | null {
+    return localStorage.getItem('openai_api_key');
+  }
+
   static async generateIntelligence(request: IntelligenceRequest) {
     console.log('Generating AI intelligence with request:', request);
     
