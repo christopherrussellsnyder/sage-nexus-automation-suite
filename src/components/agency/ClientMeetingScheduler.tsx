@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,19 +55,28 @@ const ClientMeetingScheduler = () => {
   const [newMeeting, setNewMeeting] = useState({
     clientName: '',
     title: '',
-    type: '',
+    type: '' as 'strategy' | 'review' | 'kickoff' | 'presentation' | 'check-in' | '',
     date: '',
     time: '',
     duration: 60,
     location: '',
-    meetingType: '',
+    meetingType: '' as 'in-person' | 'video' | 'phone' | '',
     agenda: ''
   });
 
   const handleScheduleMeeting = () => {
+    if (!newMeeting.type || !newMeeting.meetingType) return;
+    
     const meeting: Meeting = {
       id: Date.now().toString(),
-      ...newMeeting,
+      clientName: newMeeting.clientName,
+      title: newMeeting.title,
+      type: newMeeting.type,
+      date: newMeeting.date,
+      time: newMeeting.time,
+      duration: newMeeting.duration,
+      location: newMeeting.location,
+      meetingType: newMeeting.meetingType,
       agenda: newMeeting.agenda.split('\n').filter(item => item.trim()),
       status: 'scheduled'
     };
@@ -137,7 +145,7 @@ const ClientMeetingScheduler = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="type">Meeting Type</Label>
-                <Select value={newMeeting.type} onValueChange={(value) => setNewMeeting({...newMeeting, type: value})}>
+                <Select value={newMeeting.type} onValueChange={(value: 'strategy' | 'review' | 'kickoff' | 'presentation' | 'check-in') => setNewMeeting({...newMeeting, type: value})}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select meeting type" />
                   </SelectTrigger>
@@ -174,7 +182,7 @@ const ClientMeetingScheduler = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="meetingType">Format</Label>
-                <Select value={newMeeting.meetingType} onValueChange={(value) => setNewMeeting({...newMeeting, meetingType: value})}>
+                <Select value={newMeeting.meetingType} onValueChange={(value: 'in-person' | 'video' | 'phone') => setNewMeeting({...newMeeting, meetingType: value})}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select format" />
                   </SelectTrigger>

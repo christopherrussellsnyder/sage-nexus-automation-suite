@@ -1,59 +1,41 @@
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import WebsiteCopyGenerator from '@/components/copy-generation/WebsiteCopyGenerator';
-import { ArrowLeft } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Globe, ArrowRight } from 'lucide-react';
 
 const WebsiteCopy = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      navigate('/login');
-      return;
-    }
-
-    const user = JSON.parse(userData);
-    if (!user.isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-
-    if (!user.onboardingCompleted) {
-      navigate('/survey');
-      return;
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center space-x-4 mb-8">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => navigate('/dashboard')}
-            className="flex items-center space-x-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Dashboard</span>
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Website Copy Generator</h1>
-            <p className="text-muted-foreground">
-              Generate high-converting website copy with section-by-section breakdowns
-            </p>
+    <div className="container mx-auto px-4 py-8">
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <Globe className="h-12 w-12 text-primary" />
           </div>
-        </div>
-        
-        <WebsiteCopyGenerator />
-      </div>
+          <CardTitle className="text-2xl">Website Copy</CardTitle>
+          <CardDescription>
+            Website copywriting has been integrated into our Intelligence Suite
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-center space-y-4">
+          <p className="text-muted-foreground">
+            All copywriting and website content features are now available through our 
+            unified Intelligence dashboard with AI-powered personalization and optimization.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={() => navigate('/')} className="flex items-center space-x-2">
+              <span>Go to Intelligence Suite</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" onClick={() => navigate(-1)}>
+              Go Back
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
