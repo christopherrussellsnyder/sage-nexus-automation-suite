@@ -1,7 +1,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Brain, User, LogOut } from 'lucide-react';
+import { Brain, User, LogOut, ChevronDown, PenTool, Globe, Megaphone, Mail, Share2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +37,36 @@ const Header = ({ user }: HeaderProps) => {
           <a href="/features" className="text-gray-600 hover:text-gray-900">{copy.featuresLabel}</a>
           <a href="/pricing" className="text-gray-600 hover:text-gray-900">{copy.pricingLabel}</a>
           <a href="/about" className="text-gray-600 hover:text-gray-900">{copy.aboutLabel}</a>
+          
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center space-x-1">
+                  <PenTool className="h-4 w-4" />
+                  <span>{copy.copywritingToolsLabel}</span>
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={() => navigate('/website-copy')}>
+                  <Globe className="h-4 w-4 mr-2" />
+                  Website Copy
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/ad-copy')}>
+                  <Megaphone className="h-4 w-4 mr-2" />
+                  Ad Copy
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/email-sequences')}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email Sequences
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/social-content')}>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Social Content
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </nav>
 
         <div className="flex items-center space-x-4">
