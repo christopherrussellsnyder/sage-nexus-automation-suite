@@ -3,11 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { 
   ShoppingCart, 
   Target, 
-  TrendingUp
+  TrendingUp,
+  PenTool
 } from 'lucide-react';
 
 interface BusinessTypeSelectorProps {
-  onSelect: (type: 'ecommerce' | 'agency' | 'sales') => void;
+  onSelect: (type: 'ecommerce' | 'agency' | 'sales' | 'copywriting') => void;
 }
 
 const BusinessTypeSelector = ({ onSelect }: BusinessTypeSelectorProps) => {
@@ -35,13 +36,21 @@ const BusinessTypeSelector = ({ onSelect }: BusinessTypeSelectorProps) => {
       icon: TrendingUp,
       color: 'bg-purple-500',
       features: ['Prospect Analysis', 'Deal Pipeline', 'Email Sequences', 'Conversion Metrics']
+    },
+    {
+      type: 'copywriting' as const,
+      title: 'Copywriting Professional',
+      description: 'AI-powered copy optimization, messaging strategy, and conversion-focused content creation',
+      icon: PenTool,
+      color: 'bg-orange-500',
+      features: ['Copy Analysis', 'Message Testing', 'Conversion Copy', 'Brand Voice']
     }
   ];
 
   return (
     <div>
       <h3 className="text-2xl font-bold mb-4">Choose Your Business Type</h3>
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         {businessTypes.map((business) => (
           <Card 
             key={business.type} 
