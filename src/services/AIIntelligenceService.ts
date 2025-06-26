@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 export interface IntelligenceRequest {
@@ -21,6 +22,14 @@ export interface IntelligenceRequest {
 
 export class AIIntelligenceService {
   private static API_BASE_URL = process.env.NEXT_PUBLIC_AI_SERVICE_URL || 'http://localhost:5000';
+
+  static saveApiKey(apiKey: string): void {
+    localStorage.setItem('openai_api_key', apiKey);
+  }
+
+  static getApiKey(): string | null {
+    return localStorage.getItem('openai_api_key');
+  }
 
   static async generateIntelligence(requestData: IntelligenceRequest): Promise<any> {
     try {
