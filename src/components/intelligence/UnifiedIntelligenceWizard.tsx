@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -160,7 +161,7 @@ const UnifiedIntelligenceWizard = ({
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
       const intelligenceData = {
-        businessType,
+        businessType: businessType as 'ecommerce' | 'agency' | 'sales' | 'copywriting',
         formData,
         intelligenceMode,
         generatedAt: new Date().toISOString(),
