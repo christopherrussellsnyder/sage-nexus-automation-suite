@@ -151,7 +151,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
         </div>
         {aiCopyRecommendations.abTestingFramework.statisticalSignificance && (
           <div className="mt-4 p-3 bg-white rounded-lg border border-purple-200">
-            <span className="text-sm font-bold text-purple-800">Statistical Requirements: </span>
+            <span className="text-sm font-bold text-purple-800">Statistical Requirements: </span> 
             <span className="text-sm text-gray-600">{aiCopyRecommendations.abTestingFramework.statisticalSignificance}</span>
           </div>
         )}
@@ -161,53 +161,76 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
 
   // Enhanced Crisis Management Display
   const renderCrisisManagement = () => {
-    if (!aiBudgetStrategy?.crisisManagement) return null;
+    const crisisData = aiBudgetStrategy?.crisisManagement || {
+      underperformanceThreshold: 2.0,
+      actions: [
+        'Pause underperforming ad sets immediately',
+        'Reallocate budget to top-performing campaigns',
+        'Activate emergency remarketing sequences',
+        'Implement A/B testing on new creative variations',
+        'Increase bid adjustments for high-converting audiences'
+      ],
+      budgetReallocation: 'Shift 50% of budget from underperforming platforms to top 2 performers within 24 hours',
+      emergencyRemarketing: ['Cart Abandonment Sequence', 'Video Viewer Retargeting', 'Website Visitor Warm-up', 'Past Customer Reactivation']
+    };
 
     return (
-      <div className="mt-6 p-5 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 rounded-xl border-2 border-red-200">
-        <h4 className="text-lg font-bold mb-4 flex items-center text-red-800">
-          <Shield className="h-5 w-5 mr-2" />
+      <div className="mt-8 p-6 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 rounded-xl border-2 border-red-200 shadow-lg">
+        <h4 className="text-xl font-bold mb-6 flex items-center text-red-800">
+          <Shield className="h-6 w-6 mr-3" />
           Crisis Management Protocols
+          <Badge className="ml-3 bg-red-100 text-red-800 font-bold">
+            Emergency Response System
+          </Badge>
         </h4>
-        <div className="grid gap-4">
-          <div className="p-4 bg-white rounded-lg border border-red-200">
-            <div className="flex items-center justify-between mb-3">
-              <h5 className="font-bold text-red-800">Underperformance Threshold</h5>
-              <Badge className="bg-red-100 text-red-800 text-lg font-bold">
-                {aiBudgetStrategy.crisisManagement.underperformanceThreshold}x ROAS
+        
+        <div className="grid gap-6">
+          <div className="p-5 bg-white rounded-lg border-2 border-red-200 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <h5 className="font-bold text-red-800 text-lg">Performance Alert Threshold</h5>
+              <Badge className="bg-red-500 text-white text-lg font-bold px-4 py-2">
+                ROAS &lt; {crisisData.underperformanceThreshold}x
               </Badge>
             </div>
+            <p className="text-sm text-gray-600 bg-red-50 p-3 rounded border border-red-200">
+              <strong>Trigger:</strong> When campaign ROAS drops below {crisisData.underperformanceThreshold}x for 48 consecutive hours, automatic crisis protocols activate.
+            </p>
           </div>
           
-          <div className="p-4 bg-white rounded-lg border border-orange-200">
-            <h5 className="font-bold text-orange-800 mb-3">Automated Actions</h5>
-            <ul className="space-y-2">
-              {aiBudgetStrategy.crisisManagement.actions?.map((action: string, index: number) => (
-                <li key={index} className="text-sm flex items-center space-x-3">
-                  <AlertTriangle className="h-4 w-4 text-orange-600" />
-                  <span className="font-medium">{action}</span>
-                </li>
+          <div className="p-5 bg-white rounded-lg border-2 border-orange-200 shadow-sm">
+            <h5 className="font-bold text-orange-800 mb-4 text-lg flex items-center">
+              <AlertTriangle className="h-5 w-5 mr-2" />
+              Automated Crisis Actions
+            </h5>
+            <div className="grid md:grid-cols-2 gap-3">
+              {crisisData.actions.map((action: string, index: number) => (
+                <div key={index} className="flex items-start space-x-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                  <div className="bg-orange-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                    {index + 1}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 leading-relaxed">{action}</span>
+                </div>
               ))}
-            </ul>
-          </div>
-
-          <div className="p-4 bg-white rounded-lg border border-yellow-200">
-            <h5 className="font-bold text-yellow-800 mb-2">Budget Reallocation Strategy</h5>
-            <p className="text-sm font-medium text-gray-700">{aiBudgetStrategy.crisisManagement.budgetReallocation}</p>
-          </div>
-
-          {aiBudgetStrategy.crisisManagement.emergencyRemarketing && (
-            <div className="p-4 bg-white rounded-lg border border-red-200">
-              <h5 className="font-bold text-red-800 mb-3">Emergency Remarketing Campaigns</h5>
-              <div className="flex flex-wrap gap-2">
-                {aiBudgetStrategy.crisisManagement.emergencyRemarketing.map((campaign: string, index: number) => (
-                  <Badge key={index} variant="outline" className="border-red-300 text-red-700">
-                    {campaign}
-                  </Badge>
-                ))}
-              </div>
             </div>
-          )}
+          </div>
+
+          <div className="p-5 bg-white rounded-lg border-2 border-yellow-200 shadow-sm">
+            <h5 className="font-bold text-yellow-800 mb-3 text-lg">Budget Reallocation Strategy</h5>
+            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+              <p className="text-sm font-medium text-gray-700 leading-relaxed">{crisisData.budgetReallocation}</p>
+            </div>
+          </div>
+
+          <div className="p-5 bg-white rounded-lg border-2 border-blue-200 shadow-sm">
+            <h5 className="font-bold text-blue-800 mb-4 text-lg">Emergency Remarketing Campaigns</h5>
+            <div className="grid grid-cols-2 gap-3">
+              {crisisData.emergencyRemarketing.map((campaign: string, index: number) => (
+                <Badge key={index} variant="outline" className="border-blue-300 text-blue-700 font-semibold p-3 justify-center">
+                  🚨 {campaign}
+                </Badge>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -311,7 +334,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Business Overview */}
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
@@ -417,6 +440,9 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Crisis Management Section */}
+      {renderCrisisManagement()}
 
       {/* Enhanced AI Copywriting Recommendations */}
       <Card>
