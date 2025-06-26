@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,11 +22,13 @@ interface Step {
 interface UnifiedIntelligenceWizardProps {
   businessType: 'ecommerce' | 'agency' | 'sales';
   onIntelligenceGenerated: (data: any) => void;
-  intelligenceMode?: 'full' | 'marketing' | 'competitor';
+  intelligenceMode?: 'full' | 'copywriting' | 'marketing' | 'competitor';
 }
 
 interface FormData {
   [key: string]: any;
+  copyType?: string;
+  copywritingChallenges?: string;
 }
 
 const UnifiedIntelligenceWizard = ({ 
@@ -51,10 +52,22 @@ const UnifiedIntelligenceWizard = ({
       {
         id: 1,
         title: 'Business Information',
-        description: 'Basic business details and copywriting requirements',
+        description: 'Basic business details and industry information',
         status: getStatus(1)
       }
     ];
+
+    if (intelligenceMode === 'copywriting') {
+      return [
+        ...baseSteps,
+        {
+          id: 2,
+          title: 'Copy Requirements',
+          description: 'Specific copywriting needs and target messaging',
+          status: getStatus(2)
+        }
+      ];
+    }
 
     if (intelligenceMode === 'marketing') {
       return [
@@ -68,31 +81,31 @@ const UnifiedIntelligenceWizard = ({
         {
           id: 3,
           title: 'Goals & Objectives',
-          description: 'Business goals and copy objectives',
+          description: 'Business goals and success metrics',
           status: getStatus(3)
         }
       ];
     }
 
-    // Full intelligence mode (includes comprehensive copywriting)
+    // Full intelligence mode
     return [
       ...baseSteps,
       {
         id: 2,
         title: 'Current Metrics',
-        description: 'Performance metrics and copy performance',
+        description: 'Performance metrics and key challenges',
         status: getStatus(2)
       },
       {
         id: 3,
         title: 'Goals & Objectives',
-        description: 'Business goals and copy objectives',
+        description: 'Business goals and success metrics',
         status: getStatus(3)
       },
       {
         id: 4,
         title: 'Competitive Analysis',
-        description: 'Competitor information and copy analysis',
+        description: 'Competitor information and market positioning',
         status: getStatus(4)
       }
     ];
@@ -123,7 +136,7 @@ const UnifiedIntelligenceWizard = ({
     setLoading(true);
     
     try {
-      console.log('Starting AI intelligence generation with comprehensive copywriting...');
+      console.log('Starting AI intelligence generation...');
       
       const aiRequest = {
         formData: {
@@ -138,20 +151,10 @@ const UnifiedIntelligenceWizard = ({
           goals: formData.goals,
           timeline: formData.timeline,
           competitorData: formData.competitorData,
-          currentMetrics: formData.currentMetrics,
-          // Always include copywriting requirements
-          copywritingNeeds: {
-            website: true,
-            ads: true,
-            email: true,
-            social: true,
-            targetTone: formData.targetTone || 'professional',
-            brandVoice: formData.brandVoice || 'authoritative'
-          }
+          currentMetrics: formData.currentMetrics
         },
         intelligenceMode,
-        businessType,
-        includeCopywriting: true // Always include comprehensive copywriting
+        businessType
       };
 
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
@@ -165,7 +168,7 @@ const UnifiedIntelligenceWizard = ({
         insights: aiIntelligence
       };
       
-      console.log('AI intelligence with copywriting generated successfully');
+      console.log('AI intelligence generated successfully');
       onIntelligenceGenerated(intelligenceData);
       
     } catch (error) {
@@ -191,6 +194,42 @@ const UnifiedIntelligenceWizard = ({
           />
         );
       case 2:
+        if (intelligenceMode === 'copywriting') {
+          return (
+            <Card>
+              <CardHeader>
+                <CardTitle>Copy Requirements</CardTitle>
+                <CardDescription>Tell us about your specific copywriting needs</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">What type of copy do you need?</label>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    value={formData.copyType || ''}
+                    onChange={(e) => handleFieldChange('copyType', e.target.value)}
+                  >
+                    <option value="">Select copy type</option>
+                    <option value="website">Website Copy</option>
+                    <option value="ads">Ad Copy</option>
+                    <option value="email">Email Marketing</option>
+                    <option value="social">Social Media Content</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Current challenges with your copy</label>
+                  <textarea 
+                    className="w-full p-2 border rounded"
+                    rows={3}
+                    value={formData.copywritingChallenges || ''}
+                    onChange={(e) => handleFieldChange('copywritingChallenges', e.target.value)}
+                    placeholder="e.g., Low conversion rates, unclear messaging, not resonating with audience..."
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          );
+        }
         return (
           <CurrentMetricsForm 
             data={formData} 
@@ -221,16 +260,18 @@ const UnifiedIntelligenceWizard = ({
 
   if (loading) {
     return <IntelligenceLoading businessType={businessType} />;
-  };
+  }
 
   const getModeTitle = () => {
     switch (intelligenceMode) {
+      case 'copywriting':
+        return 'Copywriting Intelligence Setup';
       case 'marketing':
-        return 'Marketing + Copy Intelligence Setup';
+        return 'Marketing Intelligence Setup';
       case 'competitor':
-        return 'Competitor + Copy Intelligence Setup';
+        return 'Competitor Intelligence Setup';
       default:
-        return 'Full Intelligence + Copy Suite Setup';
+        return 'Full Intelligence Setup';
     }
   };
 
@@ -242,7 +283,7 @@ const UnifiedIntelligenceWizard = ({
           {getModeTitle()}
         </h2>
         <p className="text-muted-foreground">
-          Complete the setup to receive AI-powered {intelligenceMode === 'full' ? 'comprehensive' : intelligenceMode} insights with advanced copywriting analysis
+          Complete the setup to receive AI-powered personalized {intelligenceMode === 'full' ? 'comprehensive' : intelligenceMode} insights
         </p>
         <Progress value={progress} className="w-full max-w-md mx-auto" />
       </div>
@@ -274,7 +315,7 @@ const UnifiedIntelligenceWizard = ({
                   {currentStep === maxSteps ? (
                     <>
                       <Sparkles className="h-4 w-4 mr-2" />
-                      Generate Intelligence + Copy
+                      Generate AI Intelligence
                     </>
                   ) : (
                     <>
