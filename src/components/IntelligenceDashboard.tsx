@@ -26,7 +26,7 @@ const IntelligenceDashboard = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'wizard' | 'results'>('overview');
   const [intelligenceData, setIntelligenceData] = useState(null);
   const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | null>(null);
-  const [intelligenceMode, setIntelligenceMode] = useState<'full' | 'copywriting' | 'marketing' | 'competitor'>('full');
+  const [intelligenceMode, setIntelligenceMode] = useState<'full' | 'marketing' | 'competitor'>('full');
 
   const handleBusinessTypeSelect = (type: any) => {
     setBusinessType(type);
@@ -51,7 +51,7 @@ const IntelligenceDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">Unified Intelligence Suite</h2>
-          <p className="text-muted-foreground">AI-powered insights and optimization across all business functions</p>
+          <p className="text-muted-foreground">AI-powered insights, copywriting, and optimization across all business functions</p>
         </div>
         <div className="flex space-x-2">
           <Button
@@ -79,9 +79,8 @@ const IntelligenceDashboard = () => {
                 onChange={(e) => setIntelligenceMode(e.target.value as any)}
                 className="px-3 py-1 border rounded text-sm"
               >
-                <option value="full">Full Intelligence</option>
-                <option value="copywriting">Copywriting Only</option>
-                <option value="marketing">Marketing Only</option>
+                <option value="full">Full Intelligence + Copy</option>
+                <option value="marketing">Marketing Focus</option>
                 <option value="competitor">Competitor Analysis</option>
               </select>
             </>
