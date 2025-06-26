@@ -25,7 +25,7 @@ interface BusinessFormData {
 interface IntelligenceRequest {
   formData: BusinessFormData;
   intelligenceMode: 'full' | 'copywriting' | 'marketing' | 'competitor';
-  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
+  businessType: 'ecommerce' | 'agency' | 'sales';
 }
 
 interface AIGeneratedContent {

@@ -25,10 +25,10 @@ import BusinessTypeSelector from './intelligence/BusinessTypeSelector';
 const IntelligenceDashboard = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'wizard' | 'results'>('overview');
   const [intelligenceData, setIntelligenceData] = useState(null);
-  const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | 'copywriting' | null>(null);
+  const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | null>(null);
   const [intelligenceMode, setIntelligenceMode] = useState<'full' | 'copywriting' | 'marketing' | 'competitor'>('full');
 
-  const handleBusinessTypeSelect = (type: 'ecommerce' | 'agency' | 'sales' | 'copywriting') => {
+  const handleBusinessTypeSelect = (type: any) => {
     setBusinessType(type);
     setActiveSection('wizard');
   };

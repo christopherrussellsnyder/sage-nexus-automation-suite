@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,7 @@ import {
   Zap,
   Target,
   Rocket,
+  PenTool,
   Crown,
   BarChart3,
   Clock,
@@ -25,7 +27,7 @@ import {
 import { useCopySettings } from '@/hooks/useCopySettings';
 
 interface DashboardProps {
-  setActiveSection: (section: 'overview' | 'ecommerce' | 'agency' | 'sales') => void;
+  setActiveSection: (section: 'overview' | 'ecommerce' | 'agency' | 'sales' | 'copywriting') => void;
 }
 
 const Dashboard = ({ setActiveSection }: DashboardProps) => {
@@ -58,6 +60,15 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
       color: 'bg-primary',
       features: [copy.salesFeature1, copy.salesFeature2, copy.salesFeature3, copy.salesFeature4],
       stats: { [copy.salesStat1Key]: copy.salesStat1Value, [copy.salesStat2Key]: copy.salesStat2Value }
+    },
+    {
+      section: 'copywriting' as const,
+      title: copy.copywritingTitle,
+      description: copy.copywritingDescription,
+      icon: PenTool,
+      color: 'bg-accent',
+      features: [copy.copywritingFeature1, copy.copywritingFeature2, copy.copywritingFeature3, copy.copywritingFeature4],
+      stats: { [copy.copywritingStat1Key]: copy.copywritingStat1Value, [copy.copywritingStat2Key]: copy.copywritingStat2Value }
     }
   ];
 
@@ -246,7 +257,7 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
             {copy.ctaDescription}
           </p>
           <div className="flex justify-center space-x-4">
-            <Button variant="secondary" size="lg" onClick={() => setActiveSection('ecommerce')} className="button-glow">
+            <Button variant="secondary" size="lg" onClick={() => setActiveSection('copywriting')} className="button-glow">
               <Crown className="h-4 w-4 mr-2" />
               {copy.ctaPrimaryButton}
             </Button>

@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +13,7 @@ import IndustryInsights from './results/IndustryInsights';
 
 interface IntelligenceResultsProps {
   data: any;
-  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting' | null;
+  businessType: string | null;
   onBack: () => void;
 }
 
