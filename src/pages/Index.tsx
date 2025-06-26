@@ -29,6 +29,10 @@ const Index = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'ecommerce' | 'agency' | 'sales'>('overview');
   const copy = useCopySettings();
 
+  const handleSetActiveSection = (section: 'ecommerce' | 'agency' | 'sales' | 'overview') => {
+    setActiveSection(section);
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'intelligence':
@@ -40,7 +44,7 @@ const Index = () => {
       case 'sales':
         return <SalesDashboard />;
       default:
-        return <Dashboard setActiveSection={setActiveSection} />;
+        return <Dashboard setActiveSection={handleSetActiveSection} />;
     }
   };
 
