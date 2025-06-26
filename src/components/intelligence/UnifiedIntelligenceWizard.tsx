@@ -20,7 +20,7 @@ interface Step {
 }
 
 interface UnifiedIntelligenceWizardProps {
-  businessType: 'ecommerce' | 'agency' | 'sales';
+  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
   onIntelligenceGenerated: (data: any) => void;
   intelligenceMode?: 'full' | 'copywriting' | 'marketing' | 'competitor';
 }
@@ -29,6 +29,7 @@ interface FormData {
   [key: string]: any;
   copyType?: string;
   copywritingChallenges?: string;
+  copywritingGoals?: string;
 }
 
 const UnifiedIntelligenceWizard = ({ 
@@ -52,12 +53,12 @@ const UnifiedIntelligenceWizard = ({
       {
         id: 1,
         title: 'Business Information',
-        description: 'Basic business details and industry information',
+        description: businessType === 'copywriting' ? 'Copywriting business details and specialization' : 'Basic business details and industry information',
         status: getStatus(1)
       }
     ];
 
-    if (intelligenceMode === 'copywriting') {
+    if (intelligenceMode === 'copywriting' || businessType === 'copywriting') {
       return [
         ...baseSteps,
         {
@@ -151,7 +152,10 @@ const UnifiedIntelligenceWizard = ({
           goals: formData.goals,
           timeline: formData.timeline,
           competitorData: formData.competitorData,
-          currentMetrics: formData.currentMetrics
+          currentMetrics: formData.currentMetrics,
+          copyType: formData.copyType,
+          copywritingChallenges: formData.copywritingChallenges,
+          copywritingGoals: formData.copywritingGoals
         },
         intelligenceMode,
         businessType
@@ -194,36 +198,50 @@ const UnifiedIntelligenceWizard = ({
           />
         );
       case 2:
-        if (intelligenceMode === 'copywriting') {
+        if (intelligenceMode === 'copywriting' || businessType === 'copywriting') {
           return (
             <Card>
               <CardHeader>
-                <CardTitle>Copy Requirements</CardTitle>
-                <CardDescription>Tell us about your specific copywriting needs</CardDescription>
+                <CardTitle>Copywriting Requirements</CardTitle>
+                <CardDescription>Tell us about your specific copywriting needs and challenges</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">What type of copy do you need?</label>
+                  <label className="text-sm font-medium">What type of copy do you need most?</label>
                   <select 
                     className="w-full p-2 border rounded"
                     value={formData.copyType || ''}
                     onChange={(e) => handleFieldChange('copyType', e.target.value)}
                   >
                     <option value="">Select copy type</option>
-                    <option value="website">Website Copy</option>
-                    <option value="ads">Ad Copy</option>
-                    <option value="email">Email Marketing</option>
+                    <option value="website">Website Copy & Landing Pages</option>
+                    <option value="ads">Ad Copy & Social Media Ads</option>
+                    <option value="email">Email Marketing & Sequences</option>
                     <option value="social">Social Media Content</option>
+                    <option value="sales">Sales Copy & Proposals</option>
+                    <option value="product">Product Descriptions</option>
+                    <option value="blog">Blog Posts & Articles</option>
+                    <option value="video">Video Scripts & Content</option>
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Current challenges with your copy</label>
+                  <label className="text-sm font-medium">Current copywriting challenges</label>
+                  <textarea 
+                    className="w-full p-2 border rounded"
+                    rows={4}
+                    value={formData.copywritingChallenges || ''}
+                    onChange={(e) => handleFieldChange('copywritingChallenges', e.target.value)}
+                    placeholder="e.g., Low conversion rates, unclear messaging, not resonating with audience, difficulty creating compelling headlines, inconsistent brand voice, time-consuming content creation..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Primary copywriting goals</label>
                   <textarea 
                     className="w-full p-2 border rounded"
                     rows={3}
-                    value={formData.copywritingChallenges || ''}
-                    onChange={(e) => handleFieldChange('copywritingChallenges', e.target.value)}
-                    placeholder="e.g., Low conversion rates, unclear messaging, not resonating with audience..."
+                    value={formData.copywritingGoals || ''}
+                    onChange={(e) => handleFieldChange('copywritingGoals', e.target.value)}
+                    placeholder="e.g., Increase conversion rates, improve brand messaging, create consistent voice, generate more leads, reduce bounce rates..."
                   />
                 </div>
               </CardContent>
@@ -263,6 +281,9 @@ const UnifiedIntelligenceWizard = ({
   }
 
   const getModeTitle = () => {
+    if (businessType === 'copywriting') {
+      return 'Copywriting Intelligence Setup';
+    }
     switch (intelligenceMode) {
       case 'copywriting':
         return 'Copywriting Intelligence Setup';
@@ -275,6 +296,13 @@ const UnifiedIntelligenceWizard = ({
     }
   };
 
+  const getModeDescription = () => {
+    if (businessType === 'copywriting') {
+      return 'Complete the setup to receive AI-powered copywriting insights, templates, and optimization strategies';
+    }
+    return `Complete the setup to receive AI-powered personalized ${intelligenceMode === 'full' ? 'comprehensive' : intelligenceMode} insights`;
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -283,7 +311,7 @@ const UnifiedIntelligenceWizard = ({
           {getModeTitle()}
         </h2>
         <p className="text-muted-foreground">
-          Complete the setup to receive AI-powered personalized {intelligenceMode === 'full' ? 'comprehensive' : intelligenceMode} insights
+          {getModeDescription()}
         </p>
         <Progress value={progress} className="w-full max-w-md mx-auto" />
       </div>
