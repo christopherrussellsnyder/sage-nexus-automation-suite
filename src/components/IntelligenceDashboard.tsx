@@ -28,7 +28,7 @@ const IntelligenceDashboard = () => {
   const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | 'copywriting' | null>(null);
   const [intelligenceMode, setIntelligenceMode] = useState<'full' | 'copywriting' | 'marketing' | 'competitor'>('full');
 
-  const handleBusinessTypeSelect = (type: 'ecommerce' | 'agency' | 'sales' | 'copywriting') => {
+  const handleBusinessTypeSelect = (type: any) => {
     setBusinessType(type);
     setActiveSection('wizard');
     

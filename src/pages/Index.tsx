@@ -26,7 +26,7 @@ import Footer from "@/components/Footer";
 import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'ecommerce' | 'agency' | 'sales' | 'copywriting'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'ecommerce' | 'agency' | 'sales'>('overview');
   const copy = useCopySettings();
 
   const renderContent = () => {

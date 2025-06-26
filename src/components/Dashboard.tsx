@@ -27,7 +27,7 @@ import {
 import { useCopySettings } from '@/hooks/useCopySettings';
 
 interface DashboardProps {
-  setActiveSection: (section: 'ecommerce' | 'agency' | 'sales' | 'copywriting' | 'overview' | 'intelligence') => void;
+  setActiveSection: (section: 'overview' | 'ecommerce' | 'agency' | 'sales' | 'copywriting') => void;
 }
 
 const Dashboard = ({ setActiveSection }: DashboardProps) => {

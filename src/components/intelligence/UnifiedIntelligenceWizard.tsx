@@ -20,7 +20,7 @@ interface Step {
 }
 
 interface UnifiedIntelligenceWizardProps {
-  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
+  businessType: 'ecommerce' | 'agency' | 'sales';
   onIntelligenceGenerated: (data: any) => void;
   intelligenceMode?: 'full' | 'copywriting' | 'marketing' | 'competitor';
 }
@@ -154,13 +154,13 @@ const UnifiedIntelligenceWizard = ({
           currentMetrics: formData.currentMetrics
         },
         intelligenceMode,
-        businessType: businessType
+        businessType
       };
 
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
       const intelligenceData = {
-        businessType: businessType,
+        businessType,
         formData,
         intelligenceMode,
         generatedAt: new Date().toISOString(),
@@ -260,7 +260,7 @@ const UnifiedIntelligenceWizard = ({
 
   if (loading) {
     return <IntelligenceLoading businessType={businessType} />;
-  };
+  }
 
   const getModeTitle = () => {
     switch (intelligenceMode) {
