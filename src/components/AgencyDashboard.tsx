@@ -11,28 +11,29 @@ import {
   Target,
   Calendar,
   Mail,
-  Search,
+  UserPlus,
   TrendingUp,
   DollarSign,
   UserCheck
 } from "lucide-react";
-import LeadManagement from './agency/LeadManagement';
-import LeadScoringDashboard from './agency/LeadScoringDashboard';
-import ClientTracker from './agency/ClientTracker';
+import LeadGeneration from './agency/LeadGeneration';
+import ClientScoringDashboard from './agency/ClientScoringDashboard';
+import ClientProjectTracker from './agency/ClientProjectTracker';
 import ClientSequenceBuilder from './agency/ClientSequenceBuilder';
 import ClientMeetingScheduler from './agency/ClientMeetingScheduler';
-import ClientResearcher from './agency/ClientResearcher';
 
 const AgencyDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'scoring' | 'clients' | 'sequences' | 'meetings' | 'research'>('clients');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'scoring' | 'projects' | 'sequences' | 'meetings'>('overview');
   const [leads, setLeads] = useState<any[]>([]);
 
   const handleNurtureLead = (lead: any) => {
-    console.log('Nurturing lead:', lead);
+    console.log('Adding lead to nurture sequence:', lead);
+    // Implementation would add lead to email sequence
   };
 
   const handleScheduleMeeting = (lead: any) => {
-    console.log('Scheduling meeting with:', lead);
+    console.log('Scheduling meeting with lead:', lead);
+    // Implementation would open meeting scheduler with lead data
   };
 
   const handleLeadAdded = (lead: any) => {
@@ -76,7 +77,7 @@ const AgencyDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Agency Suite</h2>
+          <h2 className="text-3xl font-bold">Agency Management Suite</h2>
           <p className="text-muted-foreground">Comprehensive client management and business intelligence</p>
         </div>
         <div className="flex space-x-2">
@@ -93,8 +94,8 @@ const AgencyDashboard = () => {
             onClick={() => setActiveTab('leads')}
             className="flex items-center space-x-2"
           >
-            <UserCheck className="h-4 w-4" />
-            <span>Lead Management</span>
+            <UserPlus className="h-4 w-4" />
+            <span>Lead Generation</span>
           </Button>
           <Button
             variant={activeTab === 'scoring' ? 'default' : 'outline'}
@@ -102,11 +103,11 @@ const AgencyDashboard = () => {
             className="flex items-center space-x-2"
           >
             <Target className="h-4 w-4" />
-            <span>Lead Scoring</span>
+            <span>Client Scoring</span>
           </Button>
           <Button
-            variant={activeTab === 'clients' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('clients')}
+            variant={activeTab === 'projects' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('projects')}
             className="flex items-center space-x-2"
           >
             <Building2 className="h-4 w-4" />
@@ -118,7 +119,7 @@ const AgencyDashboard = () => {
             className="flex items-center space-x-2"
           >
             <Mail className="h-4 w-4" />
-            <span>Nurture Sequences</span>
+            <span>Email Sequences</span>
           </Button>
           <Button
             variant={activeTab === 'meetings' ? 'default' : 'outline'}
@@ -127,14 +128,6 @@ const AgencyDashboard = () => {
           >
             <Calendar className="h-4 w-4" />
             <span>Client Meetings</span>
-          </Button>
-          <Button
-            variant={activeTab === 'research' ? 'default' : 'outline'}
-            onClick={() => setActiveTab('research')}
-            className="flex items-center space-x-2"
-          >
-            <Search className="h-4 w-4" />
-            <span>Client Research</span>
           </Button>
           <Button className="flex items-center space-x-2">
             <RefreshCw className="h-4 w-4" />
@@ -235,19 +228,19 @@ const AgencyDashboard = () => {
 
       {/* Tab Content */}
       {activeTab === 'leads' && (
-        <LeadManagement onLeadAdded={handleLeadAdded} />
+        <LeadGeneration onLeadAdded={handleLeadAdded} />
       )}
 
       {activeTab === 'scoring' && (
-        <LeadScoringDashboard 
+        <ClientScoringDashboard 
           leads={leads}
           onNurtureLead={handleNurtureLead}
           onScheduleMeeting={handleScheduleMeeting}
         />
       )}
 
-      {activeTab === 'clients' && (
-        <ClientTracker />
+      {activeTab === 'projects' && (
+        <ClientProjectTracker />
       )}
 
       {activeTab === 'sequences' && (
@@ -256,10 +249,6 @@ const AgencyDashboard = () => {
 
       {activeTab === 'meetings' && (
         <ClientMeetingScheduler />
-      )}
-
-      {activeTab === 'research' && (
-        <ClientResearcher />
       )}
     </div>
   );

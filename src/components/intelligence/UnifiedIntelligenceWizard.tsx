@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,7 +21,7 @@ interface Step {
 }
 
 interface UnifiedIntelligenceWizardProps {
-  businessType: 'ecommerce' | 'agency' | 'sales';
+  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
   onIntelligenceGenerated: (data: any) => void;
   intelligenceMode?: 'full' | 'copywriting' | 'marketing' | 'competitor';
 }
@@ -151,7 +152,9 @@ const UnifiedIntelligenceWizard = ({
           goals: formData.goals,
           timeline: formData.timeline,
           competitorData: formData.competitorData,
-          currentMetrics: formData.currentMetrics
+          currentMetrics: formData.currentMetrics,
+          copyType: formData.copyType,
+          copywritingChallenges: formData.copywritingChallenges
         },
         intelligenceMode,
         businessType
