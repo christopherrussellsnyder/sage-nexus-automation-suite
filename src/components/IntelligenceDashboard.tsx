@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,7 +27,7 @@ const IntelligenceDashboard = () => {
   const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | 'copywriting' | null>(null);
   const [intelligenceMode, setIntelligenceMode] = useState<'full' | 'copywriting' | 'marketing' | 'competitor'>('full');
 
-  const handleBusinessTypeSelect = (type: any) => {
+  const handleBusinessTypeSelect = (type: 'ecommerce' | 'agency' | 'sales' | 'copywriting') => {
     setBusinessType(type);
     setActiveSection('wizard');
     
