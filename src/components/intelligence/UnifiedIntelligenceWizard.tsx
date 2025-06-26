@@ -20,7 +20,7 @@ interface Step {
 }
 
 interface UnifiedIntelligenceWizardProps {
-  businessType: 'ecommerce' | 'agency' | 'sales';
+  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
   onIntelligenceGenerated: (data: any) => void;
   intelligenceMode?: 'full' | 'copywriting' | 'marketing' | 'competitor';
 }
@@ -260,7 +260,7 @@ const UnifiedIntelligenceWizard = ({
 
   if (loading) {
     return <IntelligenceLoading businessType={businessType} />;
-  }
+  };
 
   const getModeTitle = () => {
     switch (intelligenceMode) {
