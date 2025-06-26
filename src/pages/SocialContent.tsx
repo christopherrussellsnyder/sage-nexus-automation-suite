@@ -1,41 +1,61 @@
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import SocialContentGenerator from '@/components/copy-generation/SocialContentGenerator';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Share2, ArrowRight } from 'lucide-react';
+import { useCopySettings } from '@/hooks/useCopySettings';
 
 const SocialContent = () => {
   const navigate = useNavigate();
+  const copy = useCopySettings();
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      navigate('/login');
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    if (!user.isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    if (!user.onboardingCompleted) {
+      navigate('/survey');
+      return;
+    }
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <Share2 className="h-12 w-12 text-primary" />
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center space-x-4 mb-8">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>{copy.backToDashboard}</span>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">{copy.socialContentTitle}</h1>
+            <p className="text-muted-foreground">
+              {copy.socialContentDescription}
+            </p>
           </div>
-          <CardTitle className="text-2xl">Social Content</CardTitle>
-          <CardDescription>
-            Social media content generation has been integrated into our Intelligence Suite
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p className="text-muted-foreground">
-            All copywriting and social media content features are now available through our 
-            unified Intelligence dashboard with AI-powered personalization.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={() => navigate('/')} className="flex items-center space-x-2">
-              <span>Go to Intelligence Suite</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" onClick={() => navigate(-1)}>
-              Go Back
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+        
+        <SocialContentGenerator />
+      </div>
     </div>
   );
 };

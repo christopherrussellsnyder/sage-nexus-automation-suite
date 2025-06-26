@@ -2,45 +2,75 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight } from "lucide-react";
+import { Crown, ArrowRight } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
-interface FeatureCardProps {
+interface Feature {
   title: string;
   description: string;
   icon: any;
   color: string;
-  features: string[];
-  onClick: () => void;
+  path: string;
+  remaining: number;
+  used: number;
 }
 
-const FeatureCard = ({ title, description, icon: Icon, color, features, onClick }: FeatureCardProps) => {
+interface FeatureCardProps {
+  feature: Feature;
+  isPremium: boolean;
+}
+
+const FeatureCard = ({ feature, isPremium }: FeatureCardProps) => {
+  const navigate = useNavigate();
+
   return (
     <Card className="relative group hover:shadow-lg transition-all duration-300">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <div className={`p-3 rounded-lg ${color} text-white`}>
-            <Icon className="h-6 w-6" />
+          <div className={`p-3 rounded-lg ${feature.color} text-white`}>
+            <feature.icon className="h-6 w-6" />
           </div>
+          {!isPremium && (
+            <Badge variant={feature.remaining > 0 ? "secondary" : "destructive"}>
+              {feature.remaining}/{5} left
+            </Badge>
+          )}
+          {isPremium && (
+            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+              <Crown className="h-3 w-3 mr-1" />
+              Unlimited
+            </Badge>
+          )}
         </div>
-        <CardTitle className="text-xl">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="text-xl">{feature.title}</CardTitle>
+        <CardDescription>{feature.description}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <div className="space-y-1">
-            {features.map((feature, index) => (
-              <div key={index} className="text-sm text-muted-foreground flex items-center">
-                <span className="text-green-500 mr-2">✓</span>
-                {feature}
-              </div>
-            ))}
-          </div>
+          {!isPremium && (
+            <div className="text-sm text-muted-foreground">
+              Used {feature.used} of 5 free generations
+            </div>
+          )}
           <Button 
             className="w-full group"
-            onClick={onClick}
+            onClick={() => {
+              console.log(`Navigating to: ${feature.path}`);
+              navigate(feature.path);
+            }}
+            disabled={!isPremium && feature.remaining === 0}
           >
-            Start Creating
-            <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            {!isPremium && feature.remaining === 0 ? (
+              <>
+                <Crown className="h-4 w-4 mr-2" />
+                Upgrade to Continue
+              </>
+            ) : (
+              <>
+                Start Creating
+                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
           </Button>
         </div>
       </CardContent>
