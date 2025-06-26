@@ -99,115 +99,83 @@ CRITICAL REQUIREMENTS:
 
 You must respond with VALID JSON only. No markdown formatting, no code blocks, just pure JSON.
 
-Generate the response as this EXACT JSON structure with 30 days of content:
+Generate a focused response with this structure (limit each day to essential information):
 
 {
   "platformRecommendations": [
     {
       "platform": "LinkedIn",
       "priority": 1,
-      "reasoning": "LinkedIn is optimal for B2B targeting with professional decision-makers and executives",
+      "reasoning": "Optimal for B2B targeting with professional decision-makers",
       "expectedMetrics": {
         "roas": 4.2,
         "cpm": 15.0,
         "cpc": 3.5,
-        "conversionRate": 3.8,
-        "reach": 12000,
-        "engagementRate": 2.1
+        "conversionRate": 3.8
       },
-      "budgetAllocation": 40,
-      "targetingParameters": {
-        "demographics": ["Business owners, CEOs, decision-makers aged 35-55"],
-        "interests": ["Business automation, AI technology, productivity tools"],
-        "behaviors": ["Active LinkedIn users, content engagers, B2B decision-makers"],
-        "customAudiences": ["Lookalike audiences from existing customers, website visitors"]
-      },
-      "dayPartingStrategy": {
-        "morning": "9AM-12PM: 35% budget for business hours engagement",
-        "afternoon": "1PM-5PM: 45% budget for peak professional activity",
-        "evening": "6PM-9PM: 20% budget for after-hours planning"
-      },
-      "scalingTriggers": ["ROAS above 4.0", "Conversion rate above 3.5%", "CPA below $85"]
+      "budgetAllocation": 40
     }
   ],
-  "monthlyPlan": ${JSON.stringify(Array.from({ length: 30 }, (_, i) => ({
-    day: i + 1,
-    platform: ["LinkedIn", "Google Ads", "Facebook", "Instagram", "TikTok"][i % 5],
-    contentType: i % 2 === 0 ? "ad" : "organic",
-    hook: `Day ${i + 1}: ${formData.businessName} transforms ${formData.industry} operations`,
-    body: `Discover how ${formData.businessName} helps ${formData.targetAudience} achieve ${formData.uniqueValue || 'operational excellence'} through innovative solutions.`,
-    cta: ["Book consultation", "Get free audit", "Start free trial", "Learn more", "Contact us"][i % 5],
-    visualSuggestion: `Professional ${formData.industry} visual showing transformation results`,
-    targetAudience: formData.targetAudience,
-    keyMessage: `${formData.uniqueValue || 'Innovation'} for ${formData.industry}`,
-    hashtags: [`#${formData.industry}`, "#BusinessGrowth", "#Innovation"],
-    expectedMetrics: {
-      reach: Math.floor(Math.random() * 10000) + 3000,
-      engagement: Math.floor(Math.random() * 500) + 200,
-      cost: Math.floor(Math.random() * 150) + 50,
-      conversions: Math.floor(Math.random() * 20) + 8
-    },
-    strategicReasoning: `Day ${i + 1} focuses on ${["awareness", "consideration", "conversion", "retention", "advocacy"][i % 5]}`
-  })))},
+  "monthlyPlan": [
+    ${Array.from({ length: 5 }, (_, i) => `
+    {
+      "day": ${i + 1},
+      "platform": "${['LinkedIn', 'Google Ads', 'Facebook', 'Instagram', 'TikTok'][i]}",
+      "contentType": "${i % 2 === 0 ? 'ad' : 'organic'}",
+      "hook": "Day ${i + 1}: ${formData.businessName} transforms ${formData.industry}",
+      "body": "Brief description for ${formData.targetAudience}",
+      "cta": "${['Book consultation', 'Get free audit', 'Start trial', 'Learn more', 'Contact us'][i]}",
+      "expectedMetrics": {
+        "reach": ${Math.floor(Math.random() * 10000) + 3000},
+        "engagement": ${Math.floor(Math.random() * 500) + 200}
+      }
+    }`).join(',')}
+  ],
   "budgetStrategy": [
     {
       "category": "Platform Advertising",
-      "monthlyBudget": parseInt(formData.monthlyAdBudget?.replace(/[^0-9]/g, '') || '5000'),
+      "monthlyBudget": ${parseInt(formData.monthlyAdBudget?.replace(/[^0-9]/g, '') || '5000')},
       "allocation": [
         {
           "platform": "LinkedIn",
           "percentage": 40,
-          "dailySpend": Math.round((parseInt(formData.monthlyAdBudget?.replace(/[^0-9]/g, '') || '5000') * 0.4) / 30),
-          "reasoning": "Highest ROI for B2B targeting and professional audience engagement"
+          "reasoning": "Highest ROI for B2B targeting"
         }
-      ],
-      "crisisManagement": {
-        "underperformanceThreshold": 2.5,
-        "actions": ["Pause underperforming ad sets", "Increase budget to top performers"],
-        "budgetReallocation": "Shift 30% of budget from underperforming platforms to top performer"
-      }
+      ]
     }
   ],
   "copywritingRecommendations": [
     {
       "copyType": "Executive Outreach",
       "awarenessStageVariations": {
-        "unaware": "Did you know that ${formData.industry} businesses waste 35% of their time on tasks that could be automated?",
-        "problemAware": "Tired of spending hours on repetitive tasks that keep you from growing your business?",
-        "solutionAware": "AI automation is transforming how ${formData.industry} companies operate - here's how it works",
-        "productAware": "See how ${formData.businessName} helps ${formData.industry} businesses save 20+ hours per week",
-        "mostAware": "Ready to implement solutions? ${formData.businessName} can have your system running in 2 weeks"
-      },
-      "emotionalTriggers": [
-        {
-          "trigger": "Time scarcity and overwhelm",
-          "implementation": "Use urgent language about time waste and missed opportunities",
-          "expectedImpact": "25% higher response rates"
-        }
-      ],
-      "powerWords": ["Transform", "Eliminate", "Streamline", "Accelerate", "Optimize"]
+        "unaware": "Did you know ${formData.industry} businesses waste time on manual tasks?",
+        "problemAware": "Tired of repetitive tasks keeping you from growth?",
+        "solutionAware": "AI automation transforms ${formData.industry} operations",
+        "productAware": "${formData.businessName} helps save 20+ hours weekly",
+        "mostAware": "Ready to implement? ${formData.businessName} delivers in 2 weeks"
+      }
     }
   ],
   "metricOptimization": [
     {
       "metric": "Lead Conversion Rate",
-      "currentAnalysis": "Optimization needed for ${formData.industry} targeting",
-      "targetImprovement": "Increase conversion rate by 40% within 60 days",
-      "actionSteps": ["Implement industry-specific landing pages", "Add social proof", "Optimize funnel flow"]
+      "currentAnalysis": "Optimization needed for ${formData.industry}",
+      "targetImprovement": "Increase by 40% within 60 days",
+      "actionSteps": ["Industry-specific landing pages", "Add social proof"]
     }
   ],
   "competitorInsights": [
     {
       "competitor": "Generic ${formData.industry} providers",
-      "weaknesses": ["Lack of specialization", "Generic messaging", "Poor follow-up"],
-      "opportunities": ["Industry-specific expertise", "Personalized approach", "Better service delivery"]
+      "weaknesses": ["Lack specialization", "Generic messaging"],
+      "opportunities": ["Industry expertise", "Personalized approach"]
     }
   ],
   "industryInsights": [
     {
-      "trend": "Growing demand for ${formData.industry} solutions",
-      "impact": "Increased market opportunity for specialized providers",
-      "actionableAdvice": "Position as industry specialist with proven expertise"
+      "trend": "Growing ${formData.industry} automation demand",
+      "impact": "Increased market opportunity",
+      "actionableAdvice": "Position as industry specialist"
     }
   ]
 }`;
@@ -225,7 +193,7 @@ Generate the response as this EXACT JSON structure with 30 days of content:
         messages: [
           {
             role: 'system',
-            content: 'You are a business intelligence analyst. You must respond with valid JSON only. No markdown formatting, no code blocks, just pure JSON that can be parsed directly.'
+            content: 'You are a business intelligence analyst. You must respond with valid JSON only. No markdown formatting, no code blocks, just pure JSON that can be parsed directly. Keep responses concise but comprehensive.'
           },
           {
             role: 'user',
@@ -233,7 +201,7 @@ Generate the response as this EXACT JSON structure with 30 days of content:
           }
         ],
         temperature: 0.3,
-        max_tokens: 4000
+        max_tokens: 6000
       }),
     });
 
@@ -260,16 +228,21 @@ Generate the response as this EXACT JSON structure with 30 days of content:
       // Clean the response to ensure it's valid JSON
       const cleanedResponse = aiResponse.trim();
       
-      // Remove any potential markdown formatting
-      const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        console.error('No JSON object found in AI response');
-        console.error('Raw response:', aiResponse);
-        throw new Error('No JSON object found in AI response');
+      // Try to parse directly first
+      try {
+        intelligenceData = JSON.parse(cleanedResponse);
+      } catch (directParseError) {
+        // If direct parsing fails, try to extract JSON object
+        const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+          console.error('No JSON object found in AI response');
+          console.error('Raw response:', aiResponse.substring(0, 1000) + '...');
+          throw new Error('No valid JSON object found in AI response');
+        }
+        
+        const jsonContent = jsonMatch[0];
+        intelligenceData = JSON.parse(jsonContent);
       }
-      
-      const jsonContent = jsonMatch[0];
-      intelligenceData = JSON.parse(jsonContent);
       
       console.log('Successfully parsed AI response');
       console.log('Monthly plan entries:', intelligenceData.monthlyPlan?.length || 0);
@@ -296,6 +269,33 @@ Generate the response as this EXACT JSON structure with 30 days of content:
       if (!intelligenceData.industryInsights) {
         intelligenceData.industryInsights = [];
       }
+
+      // Generate remaining days if needed (up to 30)
+      if (intelligenceData.monthlyPlan && intelligenceData.monthlyPlan.length < 30) {
+        const platforms = ['LinkedIn', 'Facebook', 'Instagram', 'Google Ads', 'TikTok'];
+        const ctas = ['Book consultation', 'Get free audit', 'Start trial', 'Learn more', 'Contact us'];
+        
+        for (let day = intelligenceData.monthlyPlan.length + 1; day <= 30; day++) {
+          const platform = platforms[day % platforms.length];
+          const cta = ctas[day % ctas.length];
+          
+          intelligenceData.monthlyPlan.push({
+            day,
+            platform,
+            contentType: day % 2 === 0 ? 'organic' : 'ad',
+            hook: `Day ${day}: ${formData.businessName} enhances ${formData.industry} efficiency`,
+            body: `Discover how ${formData.businessName} helps ${formData.targetAudience} achieve better results`,
+            cta,
+            expectedMetrics: {
+              reach: Math.floor(Math.random() * 8000) + 3000,
+              engagement: Math.floor(Math.random() * 400) + 200,
+              cost: Math.floor(Math.random() * 150) + 50,
+              conversions: Math.floor(Math.random() * 15) + 5
+            },
+            strategicReasoning: `Day ${day} focuses on ${['awareness', 'consideration', 'conversion'][day % 3]}`
+          });
+        }
+      }
       
       // Add metadata
       intelligenceData.generatedAt = new Date().toISOString();
@@ -305,7 +305,7 @@ Generate the response as this EXACT JSON structure with 30 days of content:
       
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
-      console.error('Raw AI response:', aiResponse);
+      console.error('Raw AI response (first 1000 chars):', aiResponse.substring(0, 1000));
       throw new Error('AI generated invalid response format. Please try again.');
     }
 
