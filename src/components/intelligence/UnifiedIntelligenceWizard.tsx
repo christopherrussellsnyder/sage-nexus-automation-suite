@@ -146,7 +146,7 @@ const UnifiedIntelligenceWizard = ({
           productService: formData.productService || '',
           uniqueValue: formData.uniqueValue || '',
           monthlyRevenue: formData.monthlyRevenue || '',
-          businessType: businessType as 'ecommerce' | 'agency' | 'sales' | 'copywriting',
+          businessType: businessType,
           currentChallenges: formData.currentChallenges,
           goals: formData.goals,
           timeline: formData.timeline,
@@ -154,13 +154,13 @@ const UnifiedIntelligenceWizard = ({
           currentMetrics: formData.currentMetrics
         },
         intelligenceMode,
-        businessType: businessType as 'ecommerce' | 'agency' | 'sales' | 'copywriting'
+        businessType: businessType
       };
 
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
       const intelligenceData = {
-        businessType: businessType as 'ecommerce' | 'agency' | 'sales' | 'copywriting',
+        businessType: businessType,
         formData,
         intelligenceMode,
         generatedAt: new Date().toISOString(),
