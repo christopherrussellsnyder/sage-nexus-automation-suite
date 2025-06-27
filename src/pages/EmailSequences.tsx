@@ -4,11 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import AIEmailSequenceBuilder from '@/components/sales/AIEmailSequenceBuilder';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCopySettings } from '@/hooks/useCopySettings';
 
 const EmailSequences = () => {
   const navigate = useNavigate();
-  const copy = useCopySettings();
 
   useEffect(() => {
     checkAuth();
@@ -49,7 +47,7 @@ const EmailSequences = () => {
           <div>
             <h1 className="text-3xl font-bold">AI Email Sequences</h1>
             <p className="text-muted-foreground">
-              Create high-converting email sequences powered by AI
+              Create high-converting email sequences powered by AI with comprehensive business intelligence
             </p>
           </div>
         </div>
