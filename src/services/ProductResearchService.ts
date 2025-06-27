@@ -36,6 +36,7 @@ interface WeeklyResearchData {
   nextUpdate: string;
   totalStoresScanned: number;
   qualifiedProducts: number;
+  dataSource: 'live_api' | 'enhanced_mock';
 }
 
 export class ProductResearchService {
@@ -68,10 +69,12 @@ export class ProductResearchService {
 
   static async fetchWeeklyProducts(): Promise<WeeklyResearchData> {
     try {
-      const response = await fetch('/api/weekly-product-research', {
+      // Call the Supabase Edge Function for weekly product research
+      const response = await fetch('https://qtckfvprvpxbbteinxve.supabase.co/functions/v1/weekly-product-research', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0Y2tmdnBydnB4YmJ0ZWlueHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMjY0MTcsImV4cCI6MjA2NDkwMjQxN30.0he21MpcO1l-pdiMcfekTtzlSiVRNYSaDWjHa_SFFBs`
         },
         body: JSON.stringify({
           criteria: {
@@ -95,7 +98,8 @@ export class ProductResearchService {
         lastFetched: new Date().toISOString(),
         nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         totalStoresScanned: data.totalStoresScanned || 1000,
-        qualifiedProducts: data.products.length
+        qualifiedProducts: data.products.length,
+        dataSource: data.dataSource || 'live_api'
       };
 
       // Store the data locally
@@ -138,7 +142,7 @@ export class ProductResearchService {
   static async getQualifiedProducts(): Promise<ProductResearchAPI[]> {
     // Check if we need fresh data
     if (this.shouldFetchNewData()) {
-      console.log('Fetching fresh weekly product data...');
+      console.log('Fetching fresh weekly product data from API...');
       const freshData = await this.fetchWeeklyProducts();
       return freshData.products;
     }
@@ -156,5 +160,10 @@ export class ProductResearchService {
   static getLastUpdateTime(): string | null {
     const stored = this.getStoredResearch();
     return stored?.lastFetched || null;
+  }
+
+  static getDataSource(): string | null {
+    const stored = this.getStoredResearch();
+    return stored?.dataSource || null;
   }
 }

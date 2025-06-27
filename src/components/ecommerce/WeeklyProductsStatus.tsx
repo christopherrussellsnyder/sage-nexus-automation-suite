@@ -4,13 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, RefreshCw, Clock, TrendingUp, CheckCircle } from 'lucide-react';
+import { Calendar, RefreshCw, Clock, TrendingUp, CheckCircle, Database, Zap } from 'lucide-react';
 import { ProductResearchService } from '@/services/ProductResearchService';
 import { useToast } from '@/hooks/use-toast';
 
 const WeeklyProductsStatus = () => {
   const [lastUpdate, setLastUpdate] = useState<string | null>(null);
   const [nextUpdate, setNextUpdate] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [daysUntilUpdate, setDaysUntilUpdate] = useState<number>(0);
   const { toast } = useToast();
@@ -24,9 +25,11 @@ const WeeklyProductsStatus = () => {
   const updateStatus = () => {
     const lastUpdateTime = ProductResearchService.getLastUpdateTime();
     const nextUpdateTime = ProductResearchService.getNextUpdateTime();
+    const source = ProductResearchService.getDataSource();
     
     setLastUpdate(lastUpdateTime);
     setNextUpdate(nextUpdateTime);
+    setDataSource(source);
 
     if (nextUpdateTime) {
       const now = new Date();
@@ -43,8 +46,8 @@ const WeeklyProductsStatus = () => {
       await ProductResearchService.fetchWeeklyProducts();
       updateStatus();
       toast({
-        title: "Products Updated",
-        description: "Successfully fetched fresh product data from high-revenue stores",
+        title: "Products Updated Successfully",
+        description: "Fetched fresh product data from high-revenue Shopify stores via live API",
       });
     } catch (error) {
       toast({
@@ -79,15 +82,33 @@ const WeeklyProductsStatus = () => {
     return Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
   };
 
+  const getDataSourceBadge = () => {
+    if (dataSource === 'live_api') {
+      return (
+        <Badge variant="default" className="bg-green-100 text-green-800">
+          <Zap className="h-3 w-3 mr-1" />
+          Live API Data
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="secondary">
+        <Database className="h-3 w-3 mr-1" />
+        Enhanced Mock Data
+      </Badge>
+    );
+  };
+
   return (
     <Card className="mb-6">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <TrendingUp className="h-5 w-5" />
           <span>Weekly Product Research Status</span>
+          {getDataSourceBadge()}
         </CardTitle>
         <CardDescription>
-          Automated weekly scanning of 1000+ high-revenue Shopify stores ($300K-$2M revenue)
+          Automated weekly scanning of 1000+ high-revenue Shopify stores ($300K-$2M revenue) with direct product links
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -143,7 +164,10 @@ const WeeklyProductsStatus = () => {
 
         <div className="flex items-center justify-between pt-4 border-t">
           <div className="text-sm text-muted-foreground">
-            Products are automatically refreshed weekly with new data from qualified stores
+            {dataSource === 'live_api' 
+              ? 'Products sourced via live API with direct Shopify store links' 
+              : 'Using enhanced mock data - configure API key for live data'
+            }
           </div>
           <Button 
             onClick={handleForceRefresh}
