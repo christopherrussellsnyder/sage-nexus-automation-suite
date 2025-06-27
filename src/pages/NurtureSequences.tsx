@@ -1,14 +1,12 @@
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AIEmailSequenceBuilder from '@/components/sales/AIEmailSequenceBuilder';
+import AgencyNurtureSequences from '@/components/agency/AgencyNurtureSequences';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCopySettings } from '@/hooks/useCopySettings';
 
-const EmailSequences = () => {
+const NurtureSequences = () => {
   const navigate = useNavigate();
-  const copy = useCopySettings();
 
   useEffect(() => {
     checkAuth();
@@ -47,17 +45,17 @@ const EmailSequences = () => {
             <span>Back to Dashboard</span>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">AI Email Sequences</h1>
+            <h1 className="text-3xl font-bold">Client Nurture Sequences</h1>
             <p className="text-muted-foreground">
-              Create high-converting email sequences powered by AI
+              AI-powered email sequences for client onboarding, retention, and growth
             </p>
           </div>
         </div>
         
-        <AIEmailSequenceBuilder />
+        <AgencyNurtureSequences />
       </div>
     </div>
   );
 };
 
-export default EmailSequences;
+export default NurtureSequences;

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,35 +18,39 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import FAQ from "./pages/FAQ";
 import Pricing from "./pages/Pricing";
+import NurtureSequences from '@/pages/NurtureSequences';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/survey" element={<Survey />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/ad-copy" element={<AdCopy />} />
-          <Route path="/email-sequences" element={<EmailSequences />} />
-          <Route path="/social-content" element={<SocialContent />} />
-          <Route path="/website-copy" element={<WebsiteCopy />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/pricing" element={<Pricing />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/survey" element={<Survey />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/ad-copy" element={<AdCopy />} />
+            <Route path="/email-sequences" element={<EmailSequences />} />
+            <Route path="/social-content" element={<SocialContent />} />
+            <Route path="/website-copy" element={<WebsiteCopy />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/nurture-sequences" element={<NurtureSequences />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
