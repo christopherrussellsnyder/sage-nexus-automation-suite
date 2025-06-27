@@ -1,5 +1,4 @@
-
-import { EmailSequence, EmailTemplate, SequenceGenerationRequest } from '@/types/emailSequence';
+import { EmailSequence, EmailTemplate, SequenceGenerationRequest, PersonalizationTag } from '@/types/emailSequence';
 
 export class EmailSequenceService {
   private static readonly STORAGE_KEY = 'email_sequences';
