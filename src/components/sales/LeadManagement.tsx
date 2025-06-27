@@ -17,70 +17,81 @@ import {
   Filter,
   MoreHorizontal,
   Edit,
-  Trash2
+  Star,
+  Target
 } from 'lucide-react';
 
-interface ClientTrackerProps {
+interface LeadManagementProps {
   onBack: () => void;
 }
 
-const ClientTracker = ({ onBack }: ClientTrackerProps) => {
+const LeadManagement = ({ onBack }: LeadManagementProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Mock client data
-  const clients = [
+  // Mock lead data
+  const leads = [
     {
       id: 1,
-      name: 'Acme Corporation',
-      contact: 'John Smith',
-      email: 'john@acme.com',
+      name: 'Sarah Williams',
+      company: 'Digital Solutions Inc',
+      email: 'sarah@digitalsolutions.com',
       phone: '+1 (555) 123-4567',
-      status: 'active',
-      value: 50000,
-      projects: 3,
+      status: 'hot',
+      score: 85,
+      value: 45000,
+      source: 'Website',
       lastContact: '2024-01-15',
-      satisfaction: 95
+      nextAction: 'Follow-up call'
     },
     {
       id: 2,
-      name: 'TechStart Inc',
-      contact: 'Sarah Johnson',
-      email: 'sarah@techstart.com',
+      name: 'Michael Chen',
+      company: 'TechFlow Corp',
+      email: 'michael@techflow.com',
       phone: '+1 (555) 987-6543',
-      status: 'active',
-      value: 75000,
-      projects: 2,
+      status: 'warm',
+      score: 72,
+      value: 32000,
+      source: 'LinkedIn',
       lastContact: '2024-01-12',
-      satisfaction: 88
+      nextAction: 'Send proposal'
     },
     {
       id: 3,
-      name: 'Global Solutions',
-      contact: 'Mike Wilson',
-      email: 'mike@globalsolutions.com',
+      name: 'Emma Rodriguez',
+      company: 'StartupHub',
+      email: 'emma@startuphub.com',
       phone: '+1 (555) 456-7890',
-      status: 'pending',
-      value: 30000,
-      projects: 1,
-      lastContact: '2024-01-10',
-      satisfaction: 92
+      status: 'cold',
+      score: 45,
+      value: 18000,
+      source: 'Referral',
+      lastContact: '2024-01-08',
+      nextAction: 'Qualifying call'
     }
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'inactive': return 'bg-red-100 text-red-800';
+      case 'hot': return 'bg-red-100 text-red-800';
+      case 'warm': return 'bg-yellow-100 text-yellow-800';
+      case 'cold': return 'bg-blue-100 text-blue-800';
+      case 'qualified': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const filteredClients = clients.filter(client => {
-    const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         client.contact.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || client.status === statusFilter;
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  const filteredLeads = leads.filter(lead => {
+    const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         lead.company.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -90,16 +101,16 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
       <div className="flex items-center justify-between">
         <div>
           <Button variant="outline" onClick={onBack}>
-            ← Back to Agency Overview
+            ← Back to Sales Overview
           </Button>
-          <h2 className="text-2xl font-bold mt-4">Client Management</h2>
+          <h2 className="text-2xl font-bold mt-4">Lead Management</h2>
           <p className="text-muted-foreground">
-            Manage your client relationships and track project progress
+            Track and manage your sales pipeline with automated lead scoring
           </p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
-          Add Client
+          Add Lead
         </Button>
       </div>
 
@@ -108,10 +119,21 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Users className="h-5 w-5 text-blue-500" />
+              <Target className="h-5 w-5 text-blue-500" />
               <div>
-                <p className="text-2xl font-bold">24</p>
-                <p className="text-sm text-muted-foreground">Total Clients</p>
+                <p className="text-2xl font-bold">156</p>
+                <p className="text-sm text-muted-foreground">Total Leads</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Star className="h-5 w-5 text-red-500" />
+              <div>
+                <p className="text-2xl font-bold">28</p>
+                <p className="text-sm text-muted-foreground">Hot Leads</p>
               </div>
             </div>
           </CardContent>
@@ -121,8 +143,8 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
             <div className="flex items-center space-x-2">
               <TrendingUp className="h-5 w-5 text-green-500" />
               <div>
-                <p className="text-2xl font-bold">18</p>
-                <p className="text-sm text-muted-foreground">Active Projects</p>
+                <p className="text-2xl font-bold">34%</p>
+                <p className="text-sm text-muted-foreground">Conversion Rate</p>
               </div>
             </div>
           </CardContent>
@@ -132,19 +154,8 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
             <div className="flex items-center space-x-2">
               <DollarSign className="h-5 w-5 text-purple-500" />
               <div>
-                <p className="text-2xl font-bold">$147K</p>
-                <p className="text-sm text-muted-foreground">Total Value</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-orange-500" />
-              <div>
-                <p className="text-2xl font-bold">94%</p>
-                <p className="text-sm text-muted-foreground">Satisfaction</p>
+                <p className="text-2xl font-bold">$425K</p>
+                <p className="text-sm text-muted-foreground">Pipeline Value</p>
               </div>
             </div>
           </CardContent>
@@ -156,7 +167,7 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search clients..."
+            placeholder="Search leads..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -168,60 +179,65 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="hot">Hot</SelectItem>
+            <SelectItem value="warm">Warm</SelectItem>
+            <SelectItem value="cold">Cold</SelectItem>
+            <SelectItem value="qualified">Qualified</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Clients Table */}
+      {/* Leads Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Client List</CardTitle>
+          <CardTitle>Lead Pipeline</CardTitle>
           <CardDescription>
-            Manage your client relationships and track key metrics
+            Manage your leads with automated scoring and qualification
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {filteredClients.map((client) => (
-              <div key={client.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            {filteredLeads.map((lead) => (
+              <div key={lead.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                       <Users className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">{client.name}</h3>
-                      <p className="text-sm text-muted-foreground">{client.contact}</p>
+                      <h3 className="font-semibold">{lead.name}</h3>
+                      <p className="text-sm text-muted-foreground">{lead.company}</p>
                       <div className="flex items-center space-x-4 mt-1">
                         <span className="text-xs text-muted-foreground flex items-center">
                           <Mail className="h-3 w-3 mr-1" />
-                          {client.email}
+                          {lead.email}
                         </span>
                         <span className="text-xs text-muted-foreground flex items-center">
                           <Phone className="h-3 w-3 mr-1" />
-                          {client.phone}
+                          {lead.phone}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-6">
                     <div className="text-center">
-                      <p className="font-semibold">${client.value.toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground">Total Value</p>
+                      <p className={`font-semibold ${getScoreColor(lead.score)}`}>{lead.score}</p>
+                      <p className="text-xs text-muted-foreground">Score</p>
                     </div>
                     <div className="text-center">
-                      <p className="font-semibold">{client.projects}</p>
-                      <p className="text-xs text-muted-foreground">Projects</p>
+                      <p className="font-semibold">${lead.value.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">Value</p>
                     </div>
                     <div className="text-center">
-                      <p className="font-semibold">{client.satisfaction}%</p>
-                      <p className="text-xs text-muted-foreground">Satisfaction</p>
+                      <p className="font-semibold">{lead.source}</p>
+                      <p className="text-xs text-muted-foreground">Source</p>
                     </div>
-                    <Badge className={getStatusColor(client.status)}>
-                      {client.status}
+                    <div className="text-center">
+                      <p className="font-semibold">{lead.nextAction}</p>
+                      <p className="text-xs text-muted-foreground">Next Action</p>
+                    </div>
+                    <Badge className={getStatusColor(lead.status)}>
+                      {lead.status}
                     </Badge>
                     <div className="flex space-x-2">
                       <Button size="sm" variant="outline">
@@ -242,4 +258,4 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
   );
 };
 
-export default ClientTracker;
+export default LeadManagement;

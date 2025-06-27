@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,9 +29,13 @@ import { EmailSequenceAIService } from '@/services/EmailSequenceAIService';
 import SequenceWizard from '@/components/shared/SequenceWizard';
 import AdvancedEmailEditor from '@/components/shared/AdvancedEmailEditor';
 import { useToast } from '@/hooks/use-toast';
+import LeadManagement from '@/components/sales/LeadManagement';
+import MeetingScheduler from '@/components/sales/MeetingScheduler';
+import SalesAnalytics from '@/components/sales/SalesAnalytics';
+import ProposalGenerator from '@/components/sales/ProposalGenerator';
 
 const SalesDashboard = () => {
-  const [activeSection, setActiveSection] = useState<'overview' | 'email-sequences'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'email-sequences' | 'leads' | 'scheduling' | 'analytics' | 'proposals'>('overview');
   const [sequences, setSequences] = useState<EnhancedEmailSequence[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [selectedSequence, setSelectedSequence] = useState<EnhancedEmailSequence | null>(null);
@@ -107,6 +110,22 @@ const SalesDashboard = () => {
     };
     return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
+
+  if (activeSection === 'leads') {
+    return <LeadManagement onBack={() => setActiveSection('overview')} />;
+  }
+
+  if (activeSection === 'scheduling') {
+    return <MeetingScheduler onBack={() => setActiveSection('overview')} />;
+  }
+
+  if (activeSection === 'analytics') {
+    return <SalesAnalytics onBack={() => setActiveSection('overview')} />;
+  }
+
+  if (activeSection === 'proposals') {
+    return <ProposalGenerator onBack={() => setActiveSection('overview')} />;
+  }
 
   if (activeSection === 'email-sequences') {
     return (
@@ -410,7 +429,7 @@ const SalesDashboard = () => {
         </Card>
 
         {/* Lead Management */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('leads')}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -434,7 +453,7 @@ const SalesDashboard = () => {
         </Card>
 
         {/* Call Scheduling */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('scheduling')}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -458,7 +477,7 @@ const SalesDashboard = () => {
         </Card>
 
         {/* Sales Analytics */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('analytics')}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-orange-100 rounded-lg">
@@ -481,32 +500,8 @@ const SalesDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* CRM Integration */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-indigo-100 rounded-lg">
-                <Settings className="h-6 w-6 text-indigo-600" />
-              </div>
-              <div>
-                <CardTitle className="text-lg">CRM Integration</CardTitle>
-                <Badge variant="outline" className="mt-1">Integration</Badge>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription className="mb-4">
-              Seamless integration with popular CRM platforms for data synchronization
-            </CardDescription>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Connected to Salesforce</span>
-              <Button size="sm" variant="outline">Configure</Button>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Proposal Generator */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('proposals')}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-red-100 rounded-lg">

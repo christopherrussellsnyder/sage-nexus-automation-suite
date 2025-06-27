@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,9 +27,13 @@ import { EmailSequenceAIService } from '@/services/EmailSequenceAIService';
 import SequenceWizard from '@/components/shared/SequenceWizard';
 import AdvancedEmailEditor from '@/components/shared/AdvancedEmailEditor';
 import { useToast } from '@/hooks/use-toast';
+import ClientTracker from '@/components/agency/ClientTracker';
+import ProjectTracker from '@/components/agency/ProjectTracker';
+import AnalyticsDashboard from '@/components/agency/AnalyticsDashboard';
+import ProposalGenerator from '@/components/agency/ProposalGenerator';
 
 const AgencyDashboard = () => {
-  const [activeSection, setActiveSection] = useState<'overview' | 'nurture'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'nurture' | 'clients' | 'projects' | 'analytics' | 'proposals'>('overview');
   const [sequences, setSequences] = useState<EnhancedEmailSequence[]>([]);
   const [showWizard, setShowWizard] = useState(false);
   const [selectedSequence, setSelectedSequence] = useState<EnhancedEmailSequence | null>(null);
@@ -114,6 +117,22 @@ const AgencyDashboard = () => {
     };
     return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
+
+  if (activeSection === 'clients') {
+    return <ClientTracker onBack={() => setActiveSection('overview')} />;
+  }
+
+  if (activeSection === 'projects') {
+    return <ProjectTracker onBack={() => setActiveSection('overview')} />;
+  }
+
+  if (activeSection === 'analytics') {
+    return <AnalyticsDashboard onBack={() => setActiveSection('overview')} />;
+  }
+
+  if (activeSection === 'proposals') {
+    return <ProposalGenerator onBack={() => setActiveSection('overview')} />;
+  }
 
   if (activeSection === 'nurture') {
     return (
@@ -395,7 +414,7 @@ const AgencyDashboard = () => {
         </Card>
 
         {/* Client Management */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('clients')}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -419,7 +438,7 @@ const AgencyDashboard = () => {
         </Card>
 
         {/* Project Tracking */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('projects')}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -443,7 +462,7 @@ const AgencyDashboard = () => {
         </Card>
 
         {/* Performance Analytics */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('analytics')}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-orange-100 rounded-lg">
@@ -466,32 +485,8 @@ const AgencyDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Communication Hub */}
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-indigo-100 rounded-lg">
-                <MessageSquare className="h-6 w-6 text-indigo-600" />
-              </div>
-              <div>
-                <CardTitle className="text-lg">Communication Hub</CardTitle>
-                <Badge variant="outline" className="mt-1">Integration</Badge>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CardDescription className="mb-4">
-              Centralized communication with clients across email, phone, and messaging platforms
-            </CardDescription>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">12 unread messages</span>
-              <Button size="sm" variant="outline">Open Hub</Button>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Proposal Generator */}
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setActiveSection('proposals')}>
           <CardHeader>
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-red-100 rounded-lg">
