@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Users, 
   Search, 
@@ -19,6 +22,20 @@ import {
   Edit,
   Trash2
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+interface Client {
+  id: number;
+  name: string;
+  contact: string;
+  email: string;
+  phone: string;
+  status: string;
+  value: number;
+  projects: number;
+  lastContact: string;
+  satisfaction: number;
+}
 
 interface ClientTrackerProps {
   onBack: () => void;
@@ -27,9 +44,22 @@ interface ClientTrackerProps {
 const ClientTracker = ({ onBack }: ClientTrackerProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showAddClient, setShowAddClient] = useState(false);
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [newClient, setNewClient] = useState({
+    name: '',
+    contact: '',
+    email: '',
+    phone: '',
+    status: 'active',
+    value: 0,
+    projects: 0,
+    satisfaction: 90
+  });
+  const { toast } = useToast();
 
   // Mock client data
-  const clients = [
+  const [clients, setClients] = useState<Client[]>([
     {
       id: 1,
       name: 'Acme Corporation',
@@ -66,7 +96,86 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
       lastContact: '2024-01-10',
       satisfaction: 92
     }
-  ];
+  ]);
+
+  const handleAddClient = () => {
+    if (!newClient.name || !newClient.contact || !newClient.email) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const client: Client = {
+      id: Date.now(),
+      ...newClient,
+      lastContact: new Date().toISOString().split('T')[0]
+    };
+
+    setClients(prev => [...prev, client]);
+    setNewClient({
+      name: '',
+      contact: '',
+      email: '',
+      phone: '',
+      status: 'active',
+      value: 0,
+      projects: 0,
+      satisfaction: 90
+    });
+    setShowAddClient(false);
+
+    toast({
+      title: "Client Added",
+      description: `${client.name} has been added successfully`,
+    });
+  };
+
+  const handleEditClient = (client: Client) => {
+    setEditingClient(client);
+    setNewClient({
+      name: client.name,
+      contact: client.contact,
+      email: client.email,
+      phone: client.phone,
+      status: client.status,
+      value: client.value,
+      projects: client.projects,
+      satisfaction: client.satisfaction
+    });
+  };
+
+  const handleUpdateClient = () => {
+    if (!editingClient) return;
+
+    const updatedClient = {
+      ...editingClient,
+      ...newClient
+    };
+
+    setClients(prev => prev.map(client => 
+      client.id === editingClient.id ? updatedClient : client
+    ));
+
+    setEditingClient(null);
+    setNewClient({
+      name: '',
+      contact: '',
+      email: '',
+      phone: '',
+      status: 'active',
+      value: 0,
+      projects: 0,
+      satisfaction: 90
+    });
+
+    toast({
+      title: "Client Updated",
+      description: `${updatedClient.name} has been updated successfully`,
+    });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -97,11 +206,167 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
             Manage your client relationships and track project progress
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Client
-        </Button>
+        <Dialog open={showAddClient} onOpenChange={setShowAddClient}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Client
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Client</DialogTitle>
+              <DialogDescription>
+                Add a new client to your database
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="name">Company Name *</Label>
+                <Input
+                  id="name"
+                  value={newClient.name}
+                  onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+                  placeholder="Acme Corporation"
+                />
+              </div>
+              <div>
+                <Label htmlFor="contact">Contact Person *</Label>
+                <Input
+                  id="contact"
+                  value={newClient.contact}
+                  onChange={(e) => setNewClient({ ...newClient, contact: e.target.value })}
+                  placeholder="John Smith"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={newClient.email}
+                  onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                  placeholder="john@acme.com"
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <Input
+                  id="phone"
+                  value={newClient.phone}
+                  onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+              <div>
+                <Label htmlFor="value">Project Value</Label>
+                <Input
+                  id="value"
+                  type="number"
+                  value={newClient.value}
+                  onChange={(e) => setNewClient({ ...newClient, value: parseInt(e.target.value) || 0 })}
+                  placeholder="50000"
+                />
+              </div>
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <Select value={newClient.status} onValueChange={(value) => setNewClient({ ...newClient, status: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex space-x-2">
+                <Button onClick={handleAddClient} className="flex-1">Add Client</Button>
+                <Button variant="outline" onClick={() => setShowAddClient(false)}>Cancel</Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
+
+      {/* Edit Client Dialog */}
+      <Dialog open={!!editingClient} onOpenChange={() => setEditingClient(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Client</DialogTitle>
+            <DialogDescription>
+              Update client information
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-name">Company Name *</Label>
+              <Input
+                id="edit-name"
+                value={newClient.name}
+                onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+                placeholder="Acme Corporation"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-contact">Contact Person *</Label>
+              <Input
+                id="edit-contact"
+                value={newClient.contact}
+                onChange={(e) => setNewClient({ ...newClient, contact: e.target.value })}
+                placeholder="John Smith"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-email">Email *</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={newClient.email}
+                onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                placeholder="john@acme.com"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-phone">Phone</Label>
+              <Input
+                id="edit-phone"
+                value={newClient.phone}
+                onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                placeholder="+1 (555) 123-4567"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-value">Project Value</Label>
+              <Input
+                id="edit-value"
+                type="number"
+                value={newClient.value}
+                onChange={(e) => setNewClient({ ...newClient, value: parseInt(e.target.value) || 0 })}
+                placeholder="50000"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-status">Status</Label>
+              <Select value={newClient.status} onValueChange={(value) => setNewClient({ ...newClient, status: value })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex space-x-2">
+              <Button onClick={handleUpdateClient} className="flex-1">Update Client</Button>
+              <Button variant="outline" onClick={() => setEditingClient(null)}>Cancel</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Summary Cards */}
       <div className="grid md:grid-cols-4 gap-4">
@@ -110,7 +375,7 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
             <div className="flex items-center space-x-2">
               <Users className="h-5 w-5 text-blue-500" />
               <div>
-                <p className="text-2xl font-bold">24</p>
+                <p className="text-2xl font-bold">{clients.length}</p>
                 <p className="text-sm text-muted-foreground">Total Clients</p>
               </div>
             </div>
@@ -132,7 +397,7 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
             <div className="flex items-center space-x-2">
               <DollarSign className="h-5 w-5 text-purple-500" />
               <div>
-                <p className="text-2xl font-bold">$147K</p>
+                <p className="text-2xl font-bold">${clients.reduce((sum, client) => sum + client.value, 0).toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground">Total Value</p>
               </div>
             </div>
@@ -224,7 +489,7 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
                       {client.status}
                     </Badge>
                     <div className="flex space-x-2">
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleEditClient(client)}>
                         <Edit className="h-3 w-3" />
                       </Button>
                       <Button size="sm" variant="outline">

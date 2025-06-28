@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
   FileText, 
   Plus, 
@@ -20,6 +21,18 @@ import {
   User,
   Settings
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+interface Proposal {
+  id: number;
+  title: string;
+  client: string;
+  value: number;
+  status: string;
+  createdAt: string;
+  template: string;
+  content?: string;
+}
 
 interface ProposalGeneratorProps {
   onBack: () => void;
@@ -27,6 +40,8 @@ interface ProposalGeneratorProps {
 
 const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
   const [showNewProposal, setShowNewProposal] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
   const [formData, setFormData] = useState({
     clientName: '',
     projectTitle: '',
@@ -35,6 +50,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
     timeline: '',
     description: ''
   });
+  const { toast } = useToast();
 
   // Mock proposal templates
   const templates = [
@@ -65,7 +81,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
   ];
 
   // Mock existing proposals
-  const proposals = [
+  const [proposals, setProposals] = useState<Proposal[]>([
     {
       id: 1,
       title: 'Acme Corp Website Redesign',
@@ -73,7 +89,8 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       value: 35000,
       status: 'sent',
       createdAt: '2024-01-15',
-      template: 'Website Redesign'
+      template: 'Website Redesign',
+      content: 'Comprehensive website redesign proposal for Acme Corporation...'
     },
     {
       id: 2,
@@ -82,7 +99,8 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       value: 18000,
       status: 'approved',
       createdAt: '2024-01-12',
-      template: 'Brand Identity Package'
+      template: 'Brand Identity Package',
+      content: 'Complete brand identity package for TechStart Inc...'
     },
     {
       id: 3,
@@ -91,9 +109,10 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       value: 45000,
       status: 'draft',
       createdAt: '2024-01-10',
-      template: 'Digital Marketing Campaign'
+      template: 'Digital Marketing Campaign',
+      content: 'Digital marketing campaign proposal for Global Solutions...'
     }
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -107,6 +126,77 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleGenerateProposal = () => {
+    if (!formData.clientName || !formData.projectTitle || !formData.projectType) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newProposal: Proposal = {
+      id: Date.now(),
+      title: `${formData.clientName} ${formData.projectTitle}`,
+      client: formData.clientName,
+      value: parseInt(formData.budget) || 0,
+      status: 'draft',
+      createdAt: new Date().toISOString().split('T')[0],
+      template: formData.projectType,
+      content: `Proposal for ${formData.projectTitle}\n\nClient: ${formData.clientName}\nProject Type: ${formData.projectType}\nBudget: $${formData.budget}\nTimeline: ${formData.timeline}\n\nDescription:\n${formData.description}`
+    };
+
+    setProposals(prev => [...prev, newProposal]);
+    setFormData({
+      clientName: '',
+      projectTitle: '',
+      projectType: '',
+      budget: '',
+      timeline: '',
+      description: ''
+    });
+    setShowNewProposal(false);
+
+    toast({
+      title: "Proposal Generated",
+      description: `Proposal for ${newProposal.client} has been created successfully`,
+    });
+  };
+
+  const handlePreview = (proposal: Proposal) => {
+    setSelectedProposal(proposal);
+    setShowPreview(true);
+  };
+
+  const handleDownload = (proposal: Proposal) => {
+    const content = proposal.content || `Proposal: ${proposal.title}`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${proposal.title.replace(/\s+/g, '_')}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Download Started",
+      description: `${proposal.title} is being downloaded`,
+    });
+  };
+
+  const handleEdit = (proposal: Proposal) => {
+    setFormData({
+      clientName: proposal.client,
+      projectTitle: proposal.title.replace(proposal.client, '').trim(),
+      projectType: proposal.template,
+      budget: proposal.value.toString(),
+      timeline: '',
+      description: proposal.content || ''
+    });
+    setShowNewProposal(true);
   };
 
   if (showNewProposal) {
@@ -123,9 +213,9 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
               Generate a professional proposal with AI assistance
             </p>
           </div>
-          <Button>
+          <Button onClick={handleGenerateProposal}>
             <Sparkles className="h-4 w-4 mr-2" />
-            Generate with AI
+            Generate Proposal
           </Button>
         </div>
 
@@ -138,7 +228,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Client Name</label>
+                <label className="text-sm font-medium">Client Name *</label>
                 <Input
                   placeholder="Enter client name"
                   value={formData.clientName}
@@ -146,7 +236,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Project Title</label>
+                <label className="text-sm font-medium">Project Title *</label>
                 <Input
                   placeholder="Enter project title"
                   value={formData.projectTitle}
@@ -154,16 +244,16 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Project Type</label>
+                <label className="text-sm font-medium">Project Type *</label>
                 <Select value={formData.projectType} onValueChange={(value) => handleInputChange('projectType', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select project type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="web-design">Web Design</SelectItem>
-                    <SelectItem value="branding">Branding</SelectItem>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                    <SelectItem value="consulting">Consulting</SelectItem>
+                    <SelectItem value="Website Redesign">Website Redesign</SelectItem>
+                    <SelectItem value="Brand Identity Package">Brand Identity Package</SelectItem>
+                    <SelectItem value="Digital Marketing Campaign">Digital Marketing Campaign</SelectItem>
+                    <SelectItem value="Custom Development">Custom Development</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -171,7 +261,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
                 <div>
                   <label className="text-sm font-medium">Budget</label>
                   <Input
-                    placeholder="$25,000"
+                    placeholder="25000"
                     value={formData.budget}
                     onChange={(e) => handleInputChange('budget', e.target.value)}
                   />
@@ -205,7 +295,13 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
             <CardContent>
               <div className="space-y-3">
                 {templates.map((template) => (
-                  <div key={template.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div 
+                    key={template.id} 
+                    className={`border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
+                      formData.projectType === template.name ? 'ring-2 ring-blue-500' : ''
+                    }`}
+                    onClick={() => handleInputChange('projectType', template.name)}
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold">{template.name}</h4>
                       <Badge variant="outline">{template.category}</Badge>
@@ -227,24 +323,53 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
             </CardContent>
           </Card>
         </div>
-
-        {/* Actions */}
-        <div className="flex justify-center space-x-4">
-          <Button variant="outline">
-            <Eye className="h-4 w-4 mr-2" />
-            Preview
-          </Button>
-          <Button>
-            <FileText className="h-4 w-4 mr-2" />
-            Generate Proposal
-          </Button>
-        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
+      {/* Preview Dialog */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Proposal Preview</DialogTitle>
+            <DialogDescription>
+              {selectedProposal?.title}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <h3 className="text-xl font-bold mb-4">{selectedProposal?.title}</h3>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <strong>Client:</strong> {selectedProposal?.client}
+                  </div>
+                  <div>
+                    <strong>Value:</strong> ${selectedProposal?.value.toLocaleString()}
+                  </div>
+                  <div>
+                    <strong>Status:</strong> {selectedProposal?.status}
+                  </div>
+                  <div>
+                    <strong>Created:</strong> {selectedProposal?.createdAt}
+                  </div>
+                </div>
+                <div>
+                  <strong>Content:</strong>
+                  <div className="mt-2 p-4 bg-white rounded border">
+                    <pre className="whitespace-pre-wrap text-sm">
+                      {selectedProposal?.content || 'No content available'}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -269,7 +394,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
             <div className="flex items-center space-x-2">
               <FileText className="h-5 w-5 text-blue-500" />
               <div>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-2xl font-bold">{proposals.length}</p>
                 <p className="text-sm text-muted-foreground">Total Proposals</p>
               </div>
             </div>
@@ -280,7 +405,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
             <div className="flex items-center space-x-2">
               <Send className="h-5 w-5 text-green-500" />
               <div>
-                <p className="text-2xl font-bold">8</p>
+                <p className="text-2xl font-bold">{proposals.filter(p => p.status === 'sent').length}</p>
                 <p className="text-sm text-muted-foreground">Sent</p>
               </div>
             </div>
@@ -291,7 +416,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
             <div className="flex items-center space-x-2">
               <Copy className="h-5 w-5 text-purple-500" />
               <div>
-                <p className="text-2xl font-bold">5</p>
+                <p className="text-2xl font-bold">{proposals.filter(p => p.status === 'approved').length}</p>
                 <p className="text-sm text-muted-foreground">Approved</p>
               </div>
             </div>
@@ -302,7 +427,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
             <div className="flex items-center space-x-2">
               <DollarSign className="h-5 w-5 text-orange-500" />
               <div>
-                <p className="text-2xl font-bold">$285K</p>
+                <p className="text-2xl font-bold">${proposals.reduce((sum, p) => sum + p.value, 0).toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground">Total Value</p>
               </div>
             </div>
@@ -349,13 +474,13 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
                       {proposal.status}
                     </Badge>
                     <div className="flex space-x-2">
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handlePreview(proposal)}>
                         <Eye className="h-3 w-3" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleEdit(proposal)}>
                         <Edit className="h-3 w-3" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" onClick={() => handleDownload(proposal)}>
                         <Download className="h-3 w-3" />
                       </Button>
                     </div>

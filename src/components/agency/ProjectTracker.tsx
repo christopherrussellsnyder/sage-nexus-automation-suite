@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Calendar, 
   Search, 
@@ -19,6 +22,22 @@ import {
   MoreHorizontal,
   Edit
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+interface Project {
+  id: number;
+  name: string;
+  client: string;
+  status: string;
+  progress: number;
+  budget: number;
+  spent: number;
+  startDate: string;
+  deadline: string;
+  team: string[];
+  priority: string;
+  description?: string;
+}
 
 interface ProjectTrackerProps {
   onBack: () => void;
@@ -27,9 +46,25 @@ interface ProjectTrackerProps {
 const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showNewProject, setShowNewProject] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [newProject, setNewProject] = useState({
+    name: '',
+    client: '',
+    status: 'planning',
+    progress: 0,
+    budget: 0,
+    spent: 0,
+    startDate: '',
+    deadline: '',
+    team: [''],
+    priority: 'medium',
+    description: ''
+  });
+  const { toast } = useToast();
 
   // Mock project data
-  const projects = [
+  const [projects, setProjects] = useState<Project[]>([
     {
       id: 1,
       name: 'Website Redesign',
@@ -69,7 +104,96 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
       team: ['Sarah Wilson', 'David Brown'],
       priority: 'high'
     }
-  ];
+  ]);
+
+  const handleAddProject = () => {
+    if (!newProject.name || !newProject.client || !newProject.deadline) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const project: Project = {
+      id: Date.now(),
+      ...newProject,
+      team: newProject.team.filter(member => member.trim() !== '')
+    };
+
+    setProjects(prev => [...prev, project]);
+    setNewProject({
+      name: '',
+      client: '',
+      status: 'planning',
+      progress: 0,
+      budget: 0,
+      spent: 0,
+      startDate: '',
+      deadline: '',
+      team: [''],
+      priority: 'medium',
+      description: ''
+    });
+    setShowNewProject(false);
+
+    toast({
+      title: "Project Created",
+      description: `${project.name} has been created successfully`,
+    });
+  };
+
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project);
+    setNewProject({
+      name: project.name,
+      client: project.client,
+      status: project.status,
+      progress: project.progress,
+      budget: project.budget,
+      spent: project.spent,
+      startDate: project.startDate,
+      deadline: project.deadline,
+      team: project.team.length > 0 ? project.team : [''],
+      priority: project.priority,
+      description: project.description || ''
+    });
+  };
+
+  const handleUpdateProject = () => {
+    if (!editingProject) return;
+
+    const updatedProject = {
+      ...editingProject,
+      ...newProject,
+      team: newProject.team.filter(member => member.trim() !== '')
+    };
+
+    setProjects(prev => prev.map(project => 
+      project.id === editingProject.id ? updatedProject : project
+    ));
+
+    setEditingProject(null);
+    setNewProject({
+      name: '',
+      client: '',
+      status: 'planning',
+      progress: 0,
+      budget: 0,
+      spent: 0,
+      startDate: '',
+      deadline: '',
+      team: [''],
+      priority: 'medium',
+      description: ''
+    });
+
+    toast({
+      title: "Project Updated",
+      description: `${updatedProject.name} has been updated successfully`,
+    });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -97,6 +221,135 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
     return matchesSearch && matchesStatus;
   });
 
+  const ProjectForm = ({ isEdit = false }: { isEdit?: boolean }) => (
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="project-name">Project Name *</Label>
+        <Input
+          id="project-name"
+          value={newProject.name}
+          onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+          placeholder="Website Redesign"
+        />
+      </div>
+      <div>
+        <Label htmlFor="client">Client *</Label>
+        <Input
+          id="client"
+          value={newProject.client}
+          onChange={(e) => setNewProject({ ...newProject, client: e.target.value })}
+          placeholder="Acme Corporation"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="status">Status</Label>
+          <Select value={newProject.status} onValueChange={(value) => setNewProject({ ...newProject, status: value })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="planning">Planning</SelectItem>
+              <SelectItem value="in-progress">In Progress</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="on-hold">On Hold</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="priority">Priority</Label>
+          <Select value={newProject.priority} onValueChange={(value) => setNewProject({ ...newProject, priority: value })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="low">Low</SelectItem>
+              <SelectItem value="medium">Medium</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="budget">Budget</Label>
+          <Input
+            id="budget"
+            type="number"
+            value={newProject.budget}
+            onChange={(e) => setNewProject({ ...newProject, budget: parseInt(e.target.value) || 0 })}
+            placeholder="25000"
+          />
+        </div>
+        <div>
+          <Label htmlFor="progress">Progress (%)</Label>
+          <Input
+            id="progress"
+            type="number"
+            min="0"
+            max="100"
+            value={newProject.progress}
+            onChange={(e) => setNewProject({ ...newProject, progress: parseInt(e.target.value) || 0 })}
+            placeholder="75"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="start-date">Start Date</Label>
+          <Input
+            id="start-date"
+            type="date"
+            value={newProject.startDate}
+            onChange={(e) => setNewProject({ ...newProject, startDate: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="deadline">Deadline *</Label>
+          <Input
+            id="deadline"
+            type="date"
+            value={newProject.deadline}
+            onChange={(e) => setNewProject({ ...newProject, deadline: e.target.value })}
+          />
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="team">Team Members (comma separated)</Label>
+        <Input
+          id="team"
+          value={newProject.team.join(', ')}
+          onChange={(e) => setNewProject({ ...newProject, team: e.target.value.split(',').map(name => name.trim()) })}
+          placeholder="John Doe, Jane Smith"
+        />
+      </div>
+      <div>
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          value={newProject.description}
+          onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+          placeholder="Project description..."
+          rows={3}
+        />
+      </div>
+      <div className="flex space-x-2">
+        <Button onClick={isEdit ? handleUpdateProject : handleAddProject} className="flex-1">
+          {isEdit ? 'Update Project' : 'Create Project'}
+        </Button>
+        <Button variant="outline" onClick={() => {
+          if (isEdit) {
+            setEditingProject(null);
+          } else {
+            setShowNewProject(false);
+          }
+        }}>
+          Cancel
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -110,11 +363,37 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
             Track project progress, deadlines, and deliverables
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Project
-        </Button>
+        <Dialog open={showNewProject} onOpenChange={setShowNewProject}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              New Project
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Create New Project</DialogTitle>
+              <DialogDescription>
+                Add a new project to track progress and deliverables
+              </DialogDescription>
+            </DialogHeader>
+            <ProjectForm />
+          </DialogContent>
+        </Dialog>
       </div>
+
+      {/* Edit Project Dialog */}
+      <Dialog open={!!editingProject} onOpenChange={() => setEditingProject(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Project</DialogTitle>
+            <DialogDescription>
+              Update project information and progress
+            </DialogDescription>
+          </DialogHeader>
+          <ProjectForm isEdit={true} />
+        </DialogContent>
+      </Dialog>
 
       {/* Summary Cards */}
       <div className="grid md:grid-cols-4 gap-4">
@@ -123,7 +402,7 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
             <div className="flex items-center space-x-2">
               <Calendar className="h-5 w-5 text-blue-500" />
               <div>
-                <p className="text-2xl font-bold">18</p>
+                <p className="text-2xl font-bold">{projects.filter(p => p.status !== 'completed').length}</p>
                 <p className="text-sm text-muted-foreground">Active Projects</p>
               </div>
             </div>
@@ -134,7 +413,7 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
             <div className="flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
               <div>
-                <p className="text-2xl font-bold">24</p>
+                <p className="text-2xl font-bold">{projects.filter(p => p.status === 'completed').length}</p>
                 <p className="text-sm text-muted-foreground">Completed</p>
               </div>
             </div>
@@ -145,7 +424,9 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
             <div className="flex items-center space-x-2">
               <AlertCircle className="h-5 w-5 text-orange-500" />
               <div>
-                <p className="text-2xl font-bold">3</p>
+                <p className="text-2xl font-bold">
+                  {projects.filter(p => new Date(p.deadline) < new Date() && p.status !== 'completed').length}
+                </p>
                 <p className="text-sm text-muted-foreground">Overdue</p>
               </div>
             </div>
@@ -156,7 +437,7 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
             <div className="flex items-center space-x-2">
               <DollarSign className="h-5 w-5 text-purple-500" />
               <div>
-                <p className="text-2xl font-bold">$180K</p>
+                <p className="text-2xl font-bold">${projects.reduce((sum, project) => sum + project.budget, 0).toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground">Total Budget</p>
               </div>
             </div>
@@ -243,7 +524,7 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
 
               {/* Actions */}
               <div className="flex justify-between pt-2">
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" onClick={() => handleEditProject(project)}>
                   <Edit className="h-3 w-3 mr-1" />
                   Edit
                 </Button>
