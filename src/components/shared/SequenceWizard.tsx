@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -98,8 +97,8 @@ const SequenceWizard = ({ type, onComplete, onCancel }: SequenceWizardProps) => 
         senderTitle: formData.senderTitle || '',
         companyName: formData.companyName || formData.businessName || '',
         contactInfo: formData.contactInfo || '',
-        emailCount: formData.emailCount || 5,
-        sequenceLength: formData.sequenceLength || 14,
+        emailCount: type === 'agency' ? 15 : (formData.emailCount || 5),
+        sequenceLength: type === 'agency' ? 30 : (formData.sequenceLength || 14),
         triggerType: formData.triggerType || 'manual'
       };
       onComplete(completeData);
@@ -282,17 +281,26 @@ const SequenceWizard = ({ type, onComplete, onCancel }: SequenceWizardProps) => 
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="emailCount">Number of Emails</Label>
-                <Input
-                  id="emailCount"
-                  type="number"
-                  min="3"
-                  max="10"
-                  value={formData.emailCount || 5}
-                  onChange={(e) => handleFieldChange('emailCount', parseInt(e.target.value) || 5)}
-                />
-              </div>
+              {type === 'sales' && (
+                <div className="space-y-2">
+                  <Label htmlFor="emailCount">Number of Emails</Label>
+                  <Input
+                    id="emailCount"
+                    type="number"
+                    min="3"
+                    max="15"
+                    value={formData.emailCount || 5}
+                    onChange={(e) => handleFieldChange('emailCount', parseInt(e.target.value) || 5)}
+                  />
+                </div>
+              )}
+              {type === 'agency' && (
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Client Nurture Sequence:</strong> Will generate 15 comprehensive emails over 30 days for optimal client retention and growth.
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         );

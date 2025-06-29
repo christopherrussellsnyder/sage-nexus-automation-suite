@@ -34,10 +34,12 @@ export class AIIntelligenceService {
     try {
       console.log('Starting AI intelligence generation...');
       
+      // Updated endpoint path to match the actual Supabase function path
       const response = await fetch('/supabase/functions/v1/generate-intelligence', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`,
         },
         body: JSON.stringify(request)
       });
@@ -46,6 +48,11 @@ export class AIIntelligenceService {
       console.log('Response headers:', response.headers);
 
       if (!response.ok) {
+        // Handle different error types
+        if (response.status === 404) {
+          throw new Error('Intelligence generation service is currently unavailable. Please try again later.');
+        }
+        
         const errorText = await response.text();
         console.error('API request failed:', response.status, errorText);
         throw new Error(`API request failed: ${response.status} - ${errorText}`);
@@ -56,6 +63,12 @@ export class AIIntelligenceService {
         const textResponse = await response.text();
         console.error('Invalid content type. Expected JSON, got:', contentType);
         console.error('Response text:', textResponse.substring(0, 500));
+        
+        // Check if response is HTML (common 404 response)
+        if (textResponse.includes('<!DOCTYPE') || textResponse.includes('<html>')) {
+          throw new Error('Intelligence generation service is not available. The API endpoint may not be properly configured.');
+        }
+        
         throw new Error('Server returned invalid response format. Expected JSON.');
       }
 
@@ -65,6 +78,16 @@ export class AIIntelligenceService {
       return this.parseResponse(data, request);
     } catch (error) {
       console.error('AI Intelligence Service Error:', error);
+      
+      // Provide more specific error messages
+      if (error.message.includes('Failed to fetch')) {
+        throw new Error('Network error: Unable to connect to intelligence generation service. Please check your internet connection and try again.');
+      }
+      
+      if (error.message.includes('404') || error.message.includes('not available')) {
+        throw new Error('Intelligence generation service is temporarily unavailable. Please contact support if this issue persists.');
+      }
+      
       throw new Error(`Failed to generate AI intelligence: ${error.message}`);
     }
   }
