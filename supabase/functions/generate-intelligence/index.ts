@@ -270,7 +270,7 @@ Respond with ONLY valid JSON in this exact structure (no markdown, no code block
           "percentage": 10,
           "amount": ${Math.floor(parseInt(formData.monthlyAdBudget?.replace(/[^0-9]/g, '') || '5000') * 0.10)},
           "reasoning": "Brand awareness and visual storytelling",
-          "expectedROI": "3.2x return, ${Math.floor(parseInt(formData.monthlyAdBudget?.replace /[^0-9]/g, '') || '5000') * 0.10 * 3.2)} revenue"
+          "expectedROI": "3.2x return, ${Math.floor(parseInt(formData.monthlyAdBudget?.replace(/[^0-9]/g, '') || '5000') * 0.10 * 3.2)} revenue"
         }
       ],
       "optimizationStrategy": "Start with 70% budget on proven platforms (Facebook, Google), scale winners after 2 weeks",
