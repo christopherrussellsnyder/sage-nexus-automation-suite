@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Download, RefreshCw, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Download, RefreshCw, AlertTriangle, CheckCircle, Info } from 'lucide-react';
 import { downloadJSON } from '@/utils/downloadUtils';
 import ResultsOverview from './results/ResultsOverview';
 import PlatformRecommendations from './results/PlatformRecommendations';
@@ -20,54 +20,86 @@ interface IntelligenceResultsProps {
 const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResultsProps) => {
   const intelligenceMode = data.intelligenceMode || 'full';
 
-  // Enhanced debug logging for data validation
-  console.log('=== INTELLIGENCE RESULTS DEBUG ===');
-  console.log('Full data object:', data);
-  console.log('Data structure check:');
-  console.log('- data.insights exists:', !!data.insights);
-  console.log('- Platform Recommendations:', data.insights?.platformRecommendations?.length || 0);
-  console.log('- Monthly Plan:', data.insights?.monthlyPlan?.length || 0);
-  console.log('- Copywriting Recommendations:', data.insights?.copywritingRecommendations?.length || 0);
-  console.log('- Competitor Insights:', data.insights?.competitorInsights?.length || 0);
-  console.log('- Metric Optimization:', data.insights?.metricOptimization?.length || 0);
-  console.log('- Budget Strategy:', data.insights?.budgetStrategy?.length || 0);
-  console.log('- Industry Insights:', data.insights?.industryInsights?.length || 0);
-  console.log('Intelligence Mode:', intelligenceMode);
-  console.log('Business Type:', businessType);
-
-  // Enhanced data validation helper
-  const validateAIData = (data: any) => {
-    const checks = {
-      hasInsights: !!data.insights,
-      hasPlatforms: !!data.insights?.platformRecommendations?.length,
-      hasMonthlyPlan: !!data.insights?.monthlyPlan?.length,
-      hasCopywriting: !!data.insights?.copywritingRecommendations?.length,
-      hasCompetitors: !!data.insights?.competitorInsights?.length,
-      hasMetrics: !!data.insights?.metricOptimization?.length,
-      hasBudget: !!data.insights?.budgetStrategy?.length,
-      hasIndustry: !!data.insights?.industryInsights?.length,
-      totalSections: 0
+  // Enhanced data validation with better detection
+  const validateIntelligenceData = (data: any) => {
+    const insights = data.insights || {};
+    
+    const sectionChecks = {
+      platformRecommendations: {
+        exists: !!insights.platformRecommendations?.length,
+        count: insights.platformRecommendations?.length || 0,
+        quality: insights.platformRecommendations?.some((p: any) => p.targetingParameters) ? 'high' : 'basic'
+      },
+      monthlyPlan: {
+        exists: !!insights.monthlyPlan?.length,
+        count: insights.monthlyPlan?.length || 0,
+        quality: insights.monthlyPlan?.length >= 30 ? 'complete' : 'partial'
+      },
+      copywritingRecommendations: {
+        exists: !!insights.copywritingRecommendations?.length,
+        count: insights.copywritingRecommendations?.length || 0,
+        quality: insights.copywritingRecommendations?.some((c: any) => c.awarenessStageVariations) ? 'detailed' : 'basic'
+      },
+      competitorInsights: {
+        exists: !!insights.competitorInsights?.length,
+        count: insights.competitorInsights?.length || 0,
+        quality: insights.competitorInsights?.some((c: any) => c.marketingTactics) ? 'comprehensive' : 'basic'
+      },
+      industryInsights: {
+        exists: !!insights.industryInsights?.length,
+        count: insights.industryInsights?.length || 0,
+        quality: insights.industryInsights?.some((i: any) => i.economicFactors) ? 'advanced' : 'basic'
+      },
+      budgetStrategy: {
+        exists: !!insights.budgetStrategy?.length,
+        count: insights.budgetStrategy?.length || 0,
+        quality: insights.budgetStrategy?.some((b: any) => b.allocation) ? 'detailed' : 'basic'
+      },
+      metricOptimization: {
+        exists: !!insights.metricOptimization?.length,
+        count: insights.metricOptimization?.length || 0,
+        quality: insights.metricOptimization?.some((m: any) => m.improvementStrategies) ? 'actionable' : 'basic'
+      }
     };
-    
-    // Count valid sections
-    checks.totalSections = Object.values(checks).filter(Boolean).length - 1; // -1 for totalSections itself
-    
-    console.log('AI Data Validation Results:', checks);
-    return checks;
+
+    const totalSections = Object.keys(sectionChecks).length;
+    const completedSections = Object.values(sectionChecks).filter(section => section.exists).length;
+    const highQualitySections = Object.values(sectionChecks).filter(section => 
+      section.quality === 'high' || section.quality === 'complete' || 
+      section.quality === 'detailed' || section.quality === 'comprehensive' || 
+      section.quality === 'advanced' || section.quality === 'actionable'
+    ).length;
+
+    return {
+      sectionChecks,
+      completedSections,
+      totalSections,
+      completionRate: completedSections / totalSections,
+      qualityScore: highQualitySections / totalSections,
+      isAIGenerated: data.isAIGenerated || completedSections >= 5,
+      dataQuality: data.dataQuality || {
+        completeness: completedSections / totalSections,
+        aiContentRatio: highQualitySections / totalSections,
+        sectionsGenerated: completedSections
+      }
+    };
   };
 
-  // Run validation
-  const dataValidation = validateAIData(data);
-  const isAIGenerated = dataValidation.hasInsights && dataValidation.totalSections > 0;
+  const validation = validateIntelligenceData(data);
+
+  console.log('=== ENHANCED INTELLIGENCE RESULTS DEBUG ===');
+  console.log('Full data object:', data);
+  console.log('Validation results:', validation);
+  console.log('Data quality metrics:', validation.dataQuality);
 
   const handleExport = () => {
     const exportData = {
       ...data,
       exportedAt: new Date().toISOString(),
-      dataValidation: dataValidation
+      validation: validation
     };
     
-    const filename = `intelligence-report-${intelligenceMode}-${new Date().toISOString().split('T')[0]}.json`;
+    const filename = `intelligence-report-${intelligenceMode}-${data.businessName?.replace(/\s+/g, '-') || 'business'}-${new Date().toISOString().split('T')[0]}.json`;
     downloadJSON(exportData, filename);
   };
 
@@ -104,9 +136,21 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
     return sectionMapping[section]?.includes(intelligenceMode) || false;
   };
 
+  const getQualityBadgeColor = (score: number) => {
+    if (score >= 0.8) return 'bg-green-100 text-green-800';
+    if (score >= 0.6) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-red-100 text-red-800';
+  };
+
+  const getQualityLabel = (score: number) => {
+    if (score >= 0.8) return 'High Quality';
+    if (score >= 0.6) return 'Good Quality';
+    return 'Basic Quality';
+  };
+
   return (
     <div className="space-y-6">
-      {/* Enhanced Header with debugging info */}
+      {/* Enhanced Header with quality metrics */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button onClick={onBack} variant="outline" size="sm">
@@ -127,24 +171,15 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
               <Badge variant="outline">
                 Mode: {intelligenceMode.charAt(0).toUpperCase() + intelligenceMode.slice(1)}
               </Badge>
-              <Badge variant={isAIGenerated ? "default" : "secondary"}>
-                {isAIGenerated ? "AI Generated" : "Template Data"}
+              <Badge variant={validation.isAIGenerated ? "default" : "secondary"}>
+                {validation.isAIGenerated ? "AI Generated" : "Template Data"}
               </Badge>
-              {dataValidation.hasPlatforms && (
-                <Badge variant="outline" className="bg-green-50 text-green-700">
-                  ✓ Platforms ({data.insights?.platformRecommendations?.length})
-                </Badge>
-              )}
-              {dataValidation.hasMonthlyPlan && (
-                <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                  ✓ Calendar ({data.insights?.monthlyPlan?.length} days)
-                </Badge>
-              )}
-              {dataValidation.hasCopywriting && (
-                <Badge variant="outline" className="bg-purple-50 text-purple-700">
-                  ✓ Copywriting ({data.insights?.copywritingRecommendations?.length})
-                </Badge>
-              )}
+              <Badge className={getQualityBadgeColor(validation.qualityScore)}>
+                {getQualityLabel(validation.qualityScore)}
+              </Badge>
+              <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                {validation.completedSections}/{validation.totalSections} Sections
+              </Badge>
             </div>
           </div>
         </div>
@@ -161,18 +196,86 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
         </div>
       </div>
 
-      {/* Enhanced Data Quality Alert */}
-      {!isAIGenerated && (
+      {/* Enhanced Quality Status */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                validation.completionRate >= 0.8 ? 'bg-green-100 text-green-800' : 
+                validation.completionRate >= 0.6 ? 'bg-yellow-100 text-yellow-800' : 
+                'bg-red-100 text-red-800'
+              }`}>
+                <CheckCircle className="h-4 w-4 mr-1" />
+                {Math.round(validation.completionRate * 100)}% Complete
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Section Coverage</p>
+            </div>
+            <div className="text-center">
+              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getQualityBadgeColor(validation.dataQuality.aiContentRatio)}`}>
+                <Info className="h-4 w-4 mr-1" />
+                {Math.round(validation.dataQuality.aiContentRatio * 100)}% AI Content
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">AI vs Template Ratio</p>
+            </div>
+            <div className="text-center">
+              <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                <AlertTriangle className="h-4 w-4 mr-1" />
+                {validation.dataQuality.sectionsGenerated} Active Sections
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Generated Sections</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Section Status Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Intelligence Sections Status</CardTitle>
+          <CardDescription>Overview of generated content quality by section</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-3">
+            {Object.entries(validation.sectionChecks).map(([section, check]) => (
+              <div key={section} className="flex items-center justify-between p-2 border rounded">
+                <div>
+                  <span className="font-medium capitalize">{section.replace(/([A-Z])/g, ' $1')}</span>
+                  <span className="text-sm text-muted-foreground ml-2">({check.count} items)</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Badge variant={check.exists ? "default" : "secondary"} className="text-xs">
+                    {check.quality}
+                  </Badge>
+                  {check.exists ? (
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Data Quality Alert */}
+      {validation.completionRate < 0.7 && (
         <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
           <div className="flex items-start space-x-3">
             <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-amber-800">Template Data Notice</h3>
+              <h3 className="font-semibold text-amber-800">Incomplete Intelligence Generation</h3>
               <p className="text-sm text-amber-700 mt-1">
-                This report is using template data because AI-generated insights are not available. 
-                Valid AI sections detected: {dataValidation.totalSections}/8. 
-                Please regenerate the report for personalized intelligence.
+                This report has {Math.round(validation.completionRate * 100)}% completion rate with {validation.qualityScore < 0.5 ? 'limited' : 'moderate'} AI-generated content. 
+                Consider regenerating for more comprehensive insights.
               </p>
+              <div className="mt-2">
+                <Button onClick={handleRegenerate} size="sm" variant="outline" className="text-amber-800 border-amber-300">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Regenerate Report
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -212,17 +315,18 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm font-mono">
-                <div>AI Generated: {String(isAIGenerated)}</div>
-                <div>Has Insights Object: {String(dataValidation.hasInsights)}</div>
-                <div>Platform Count: {data.insights?.platformRecommendations?.length || 0}</div>
-                <div>Monthly Plan Days: {data.insights?.monthlyPlan?.length || 0}</div>
-                <div>Copywriting Sections: {data.insights?.copywritingRecommendations?.length || 0}</div>
-                <div>Competitor Count: {data.insights?.competitorInsights?.length || 0}</div>
-                <div>Metric Count: {data.insights?.metricOptimization?.length || 0}</div>
-                <div>Budget Strategy Count: {data.insights?.budgetStrategy?.length || 0}</div>
-                <div>Industry Insights Count: {data.insights?.industryInsights?.length || 0}</div>
+                <div>AI Generated: {String(validation.isAIGenerated)}</div>
+                <div>Completion Rate: {Math.round(validation.completionRate * 100)}%</div>
+                <div>Quality Score: {Math.round(validation.qualityScore * 100)}%</div>
+                <div>Platform Count: {validation.sectionChecks.platformRecommendations.count}</div>
+                <div>Monthly Plan Days: {validation.sectionChecks.monthlyPlan.count}</div>
+                <div>Copywriting Sections: {validation.sectionChecks.copywritingRecommendations.count}</div>
+                <div>Competitor Count: {validation.sectionChecks.competitorInsights.count}</div>
+                <div>Industry Count: {validation.sectionChecks.industryInsights.count}</div>
+                <div>Budget Count: {validation.sectionChecks.budgetStrategy.count}</div>
+                <div>Metrics Count: {validation.sectionChecks.metricOptimization.count}</div>
                 <div>Intelligence Mode: {intelligenceMode}</div>
-                <div>Valid Sections: {dataValidation.totalSections}/8</div>
+                <div>Business Type: {businessType}</div>
               </div>
             </CardContent>
           </Card>
