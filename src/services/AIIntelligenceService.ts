@@ -39,7 +39,6 @@ export class AIIntelligenceService {
         businessType: request.businessType
       });
       
-      // Use the full Supabase URL for the edge function
       const supabaseUrl = 'https://qtckfvprvpxbbteinxve.supabase.co';
       const response = await fetch(`${supabaseUrl}/functions/v1/generate-intelligence`, {
         method: 'POST',
@@ -57,7 +56,6 @@ export class AIIntelligenceService {
         const errorText = await response.text();
         console.error('API request failed:', response.status, errorText);
         
-        // Handle different error types with more specific messages
         if (response.status === 404) {
           throw new Error('Intelligence generation service is currently unavailable. The edge function may not be deployed properly.');
         } else if (response.status === 401) {
@@ -77,7 +75,6 @@ export class AIIntelligenceService {
         console.error('Invalid content type. Expected JSON, got:', contentType);
         console.error('Response text:', textResponse.substring(0, 500));
         
-        // Check if response is HTML (common 404 response)
         if (textResponse.includes('<!DOCTYPE') || textResponse.includes('<html>')) {
           throw new Error('Intelligence generation service is not available. The API endpoint may not be properly configured.');
         }
@@ -87,22 +84,13 @@ export class AIIntelligenceService {
 
       const data = await response.json();
       console.log('Successfully received intelligence data');
-      console.log('Data structure validation:', {
-        hasInsights: !!data.insights,
-        hasPlatforms: !!data.insights?.platformRecommendations?.length,
-        hasMonthlyPlan: !!data.insights?.monthlyPlan?.length,
-        hasCopywriting: !!data.insights?.copywritingRecommendations?.length,
-        hasCompetitors: !!data.insights?.competitorInsights?.length,
-        hasIndustry: !!data.insights?.industryInsights?.length,
-        hasBudget: !!data.insights?.budgetStrategy?.length,
-        hasMetrics: !!data.insights?.metricOptimization?.length
-      });
+      console.log('Raw data structure:', data);
       
+      // Process the data correctly
       return this.processIntelligenceData(data, request);
     } catch (error) {
       console.error('AI Intelligence Service Error:', error);
       
-      // Provide more specific error messages
       if (error.message.includes('Failed to fetch')) {
         throw new Error('Network error: Unable to connect to intelligence generation service. Please check your internet connection and try again.');
       }
@@ -116,27 +104,29 @@ export class AIIntelligenceService {
   }
 
   private static processIntelligenceData(data: any, request: IntelligenceRequest) {
-    // Enhanced data processing with validation and enrichment
+    console.log('Processing intelligence data...');
+    console.log('Input data:', data);
+    
+    // The AI data comes in data.insights
     const insights = data.insights || {};
     
-    // Validate that we have actual AI-generated content
-    const isAIGenerated = this.validateAIContent(insights);
-    
-    console.log('Processing intelligence data:', {
-      isAIGenerated,
-      platformCount: insights.platformRecommendations?.length || 0,
-      monthlyPlanDays: insights.monthlyPlan?.length || 0,
-      copywritingCount: insights.copywritingRecommendations?.length || 0,
-      competitorCount: insights.competitorInsights?.length || 0,
-      industryCount: insights.industryInsights?.length || 0,
-      budgetCount: insights.budgetStrategy?.length || 0,
-      metricsCount: insights.metricOptimization?.length || 0
+    // Log what we received
+    console.log('AI Insights received:', {
+      platformRecommendations: insights.platformRecommendations?.length || 0,
+      monthlyPlan: insights.monthlyPlan?.length || 0,
+      copywritingRecommendations: insights.copywritingRecommendations?.length || 0,
+      competitorInsights: insights.competitorInsights?.length || 0,
+      industryInsights: insights.industryInsights?.length || 0,
+      budgetStrategy: insights.budgetStrategy?.length || 0,
+      metricOptimization: insights.metricOptimization?.length || 0
     });
+
+    // Validate AI content quality
+    const validation = this.validateAIContent(insights);
+    console.log('Content validation:', validation);
 
     const processedData = {
       insights: {
-        ...insights,
-        // Ensure all required arrays exist
         platformRecommendations: insights.platformRecommendations || [],
         monthlyPlan: insights.monthlyPlan || [],
         budgetStrategy: insights.budgetStrategy || [],
@@ -145,177 +135,82 @@ export class AIIntelligenceService {
         competitorInsights: insights.competitorInsights || [],
         industryInsights: insights.industryInsights || []
       },
-      // Add metadata
       generatedAt: new Date().toISOString(),
       intelligenceMode: request.intelligenceMode,
       businessType: request.businessType,
       businessName: request.formData.businessName,
-      isAIGenerated: isAIGenerated,
+      isAIGenerated: validation.isAIGenerated,
       dataQuality: {
-        completeness: this.calculateCompleteness(insights),
-        aiContentRatio: this.calculateAIContentRatio(insights),
-        sectionsGenerated: this.countGeneratedSections(insights)
+        completeness: validation.completeness,
+        aiContentRatio: validation.aiContentRatio,
+        sectionsGenerated: validation.sectionsGenerated
       }
     };
 
-    // If we don't have enough AI content, add fallback enrichment
-    if (!isAIGenerated || processedData.dataQuality.completeness < 0.7) {
-      console.log('Enriching data due to low AI content quality');
-      processedData.insights = this.enrichWithFallbackData(processedData.insights, request);
-    }
+    console.log('Final processed data:', {
+      totalSections: Object.keys(processedData.insights).length,
+      isAIGenerated: processedData.isAIGenerated,
+      completeness: processedData.dataQuality.completeness,
+      aiContentRatio: processedData.dataQuality.aiContentRatio
+    });
 
     return processedData;
   }
 
-  private static validateAIContent(insights: any): boolean {
-    const validationChecks = {
-      hasPlatforms: !!(insights.platformRecommendations?.length > 0),
-      hasMonthlyPlan: !!(insights.monthlyPlan?.length >= 30),
-      hasCopywriting: !!(insights.copywritingRecommendations?.length > 0),
-      hasCompetitors: !!(insights.competitorInsights?.length > 0),
-      hasIndustry: !!(insights.industryInsights?.length > 0),
-      hasBudget: !!(insights.budgetStrategy?.length > 0),
-      hasMetrics: !!(insights.metricOptimization?.length > 0)
-    };
-
-    const validSections = Object.values(validationChecks).filter(Boolean).length;
-    return validSections >= 5; // At least 5 out of 7 sections should be populated
-  }
-
-  private static calculateCompleteness(insights: any): number {
-    const totalSections = 7;
-    const completedSections = [
-      insights.platformRecommendations?.length > 0,
-      insights.monthlyPlan?.length >= 30,
-      insights.copywritingRecommendations?.length > 0,
-      insights.competitorInsights?.length > 0,
-      insights.industryInsights?.length > 0,
-      insights.budgetStrategy?.length > 0,
-      insights.metricOptimization?.length > 0
-    ].filter(Boolean).length;
-
-    return completedSections / totalSections;
-  }
-
-  private static calculateAIContentRatio(insights: any): number {
-    // Check for AI-specific content patterns vs template patterns
-    const aiIndicators = [
-      insights.platformRecommendations?.some((p: any) => p.targetingParameters),
-      insights.monthlyPlan?.some((d: any) => d.psychologicalTriggers),
-      insights.copywritingRecommendations?.some((c: any) => c.awarenessStageVariations),
-      insights.competitorInsights?.some((c: any) => c.marketingTactics),
-      insights.industryInsights?.some((i: any) => i.economicFactors)
-    ].filter(Boolean).length;
-
-    return aiIndicators / 5;
-  }
-
-  private static countGeneratedSections(insights: any): number {
-    return [
-      insights.platformRecommendations?.length || 0,
-      insights.monthlyPlan?.length || 0,
-      insights.copywritingRecommendations?.length || 0,
-      insights.competitorInsights?.length || 0,
-      insights.industryInsights?.length || 0,
-      insights.budgetStrategy?.length || 0,
-      insights.metricOptimization?.length || 0
-    ].reduce((sum, count) => sum + (count > 0 ? 1 : 0), 0);
-  }
-
-  private static enrichWithFallbackData(insights: any, request: IntelligenceRequest) {
-    console.log('Enriching data with fallback content...');
-    
-    // Only add fallback data if sections are completely empty
-    if (!insights.platformRecommendations?.length) {
-      insights.platformRecommendations = this.generateFallbackPlatforms(request);
-    }
-    
-    if (!insights.monthlyPlan?.length || insights.monthlyPlan.length < 30) {
-      insights.monthlyPlan = this.generateFallbackMonthlyPlan(request);
-    }
-    
-    if (!insights.copywritingRecommendations?.length) {
-      insights.copywritingRecommendations = this.generateFallbackCopywriting(request);
-    }
-    
-    if (!insights.competitorInsights?.length) {
-      insights.competitorInsights = this.generateFallbackCompetitors(request);
-    }
-    
-    if (!insights.industryInsights?.length) {
-      insights.industryInsights = this.generateFallbackIndustry(request);
-    }
-
-    return insights;
-  }
-
-  private static generateFallbackPlatforms(request: IntelligenceRequest) {
-    return [
-      {
-        platform: 'Facebook',
-        priority: 1,
-        reasoning: `Optimal for ${request.formData.businessType} targeting ${request.formData.targetAudience} with comprehensive targeting options`,
-        expectedMetrics: { roas: 4.2, cpm: 12.50, cpc: 1.85, conversionRate: 3.8 },
-        budgetAllocation: 35
-      },
-      {
-        platform: 'Google Ads',
-        priority: 2,
-        reasoning: `High-intent search traffic for ${request.formData.productService} with strong conversion potential`,
-        expectedMetrics: { roas: 5.1, cpm: 25.00, cpc: 3.50, conversionRate: 4.2 },
-        budgetAllocation: 30
-      }
+  private static validateAIContent(insights: any): {
+    isAIGenerated: boolean;
+    completeness: number;
+    aiContentRatio: number;
+    sectionsGenerated: number;
+  } {
+    const sections = [
+      { name: 'platformRecommendations', data: insights.platformRecommendations },
+      { name: 'monthlyPlan', data: insights.monthlyPlan },
+      { name: 'copywritingRecommendations', data: insights.copywritingRecommendations },
+      { name: 'competitorInsights', data: insights.competitorInsights },
+      { name: 'industryInsights', data: insights.industryInsights },
+      { name: 'budgetStrategy', data: insights.budgetStrategy },
+      { name: 'metricOptimization', data: insights.metricOptimization }
     ];
-  }
 
-  private static generateFallbackMonthlyPlan(request: IntelligenceRequest) {
-    const plan = [];
-    for (let day = 1; day <= 30; day++) {
-      plan.push({
-        day,
-        platform: ['Facebook', 'Instagram', 'LinkedIn', 'Google Ads'][day % 4],
-        contentType: day % 2 === 0 ? 'ad' : 'organic',
-        hook: `Day ${day}: ${request.formData.businessName} transforms ${request.formData.industry}`,
-        body: `Discover how ${request.formData.businessName} helps ${request.formData.targetAudience} achieve better results`,
-        cta: ['Book Consultation', 'Get Quote', 'Start Trial', 'Learn More'][day % 4],
-        expectedMetrics: {
-          reach: Math.floor(Math.random() * 8000) + 3000,
-          engagement: Math.floor(Math.random() * 400) + 200
+    let validSections = 0;
+    let qualitySections = 0;
+
+    sections.forEach(section => {
+      const hasData = Array.isArray(section.data) && section.data.length > 0;
+      if (hasData) {
+        validSections++;
+        
+        // Check for AI-specific quality indicators
+        const hasQualityData = section.data.some((item: any) => {
+          // Look for complex objects with multiple properties
+          return item && typeof item === 'object' && Object.keys(item).length > 3;
+        });
+        
+        if (hasQualityData) {
+          qualitySections++;
         }
-      });
-    }
-    return plan;
-  }
-
-  private static generateFallbackCopywriting(request: IntelligenceRequest) {
-    return [{
-      copyType: 'Primary Outreach',
-      awarenessStageVariations: {
-        unaware: `Are ${request.formData.targetAudience} missing growth opportunities?`,
-        problemAware: `Struggling with challenges in ${request.formData.industry}?`,
-        solutionAware: `${request.formData.businessName} offers proven solutions`,
-        productAware: `See why clients choose ${request.formData.businessName}`,
-        mostAware: `Ready to get started with ${request.formData.businessName}?`
       }
-    }];
-  }
+    });
 
-  private static generateFallbackCompetitors(request: IntelligenceRequest) {
-    return [{
-      competitor: `Leading ${request.formData.industry} Provider`,
-      keyStrategies: ['Market leadership', 'Premium positioning', 'Established presence'],
-      strengths: ['Brand recognition', 'Market share', 'Resources'],
-      weaknesses: ['Higher pricing', 'Less flexibility', 'Slower innovation'],
-      opportunities: ['Personalized service', 'Competitive pricing', 'Faster implementation']
-    }];
-  }
+    const completeness = validSections / sections.length;
+    const aiContentRatio = qualitySections / sections.length;
+    const isAIGenerated = validSections >= 4; // At least 4 out of 7 sections should have data
 
-  private static generateFallbackIndustry(request: IntelligenceRequest) {
-    return [{
-      trend: `Growing demand for ${request.formData.productService} in ${request.formData.industry}`,
-      impact: `Increased market opportunities for ${request.formData.businessType} businesses`,
-      opportunity: `Position ${request.formData.businessName} as industry leader`,
-      timeline: 'Growing opportunity over next 12-18 months'
-    }];
+    console.log('Validation results:', {
+      validSections,
+      qualitySections,
+      totalSections: sections.length,
+      completeness,
+      aiContentRatio,
+      isAIGenerated
+    });
+
+    return {
+      isAIGenerated,
+      completeness,
+      aiContentRatio,
+      sectionsGenerated: validSections
+    };
   }
 }

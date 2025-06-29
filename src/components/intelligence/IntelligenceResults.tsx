@@ -20,54 +20,52 @@ interface IntelligenceResultsProps {
 const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResultsProps) => {
   const intelligenceMode = data.intelligenceMode || 'full';
 
-  // Enhanced data validation with better detection
+  // Fixed data validation logic
   const validateIntelligenceData = (data: any) => {
     const insights = data.insights || {};
     
     const sectionChecks = {
       platformRecommendations: {
-        exists: !!insights.platformRecommendations?.length,
+        exists: Array.isArray(insights.platformRecommendations) && insights.platformRecommendations.length > 0,
         count: insights.platformRecommendations?.length || 0,
-        quality: insights.platformRecommendations?.some((p: any) => p.targetingParameters) ? 'high' : 'basic'
+        quality: insights.platformRecommendations?.some((p: any) => p.targetingParameters || p.expectedMetrics) ? 'high' : 'basic'
       },
       monthlyPlan: {
-        exists: !!insights.monthlyPlan?.length,
+        exists: Array.isArray(insights.monthlyPlan) && insights.monthlyPlan.length > 0,
         count: insights.monthlyPlan?.length || 0,
-        quality: insights.monthlyPlan?.length >= 30 ? 'complete' : 'partial'
+        quality: insights.monthlyPlan?.length >= 20 ? 'complete' : insights.monthlyPlan?.length > 0 ? 'partial' : 'basic'
       },
       copywritingRecommendations: {
-        exists: !!insights.copywritingRecommendations?.length,
+        exists: Array.isArray(insights.copywritingRecommendations) && insights.copywritingRecommendations.length > 0,
         count: insights.copywritingRecommendations?.length || 0,
-        quality: insights.copywritingRecommendations?.some((c: any) => c.awarenessStageVariations) ? 'detailed' : 'basic'
+        quality: insights.copywritingRecommendations?.some((c: any) => c.awarenessStageVariations || c.emotionalTriggers) ? 'detailed' : 'basic'
       },
       competitorInsights: {
-        exists: !!insights.competitorInsights?.length,
+        exists: Array.isArray(insights.competitorInsights) && insights.competitorInsights.length > 0,
         count: insights.competitorInsights?.length || 0,
-        quality: insights.competitorInsights?.some((c: any) => c.marketingTactics) ? 'comprehensive' : 'basic'
+        quality: insights.competitorInsights?.some((c: any) => c.marketingTactics || c.keyStrategies) ? 'comprehensive' : 'basic'
       },
       industryInsights: {
-        exists: !!insights.industryInsights?.length,
+        exists: Array.isArray(insights.industryInsights) && insights.industryInsights.length > 0,
         count: insights.industryInsights?.length || 0,
-        quality: insights.industryInsights?.some((i: any) => i.economicFactors) ? 'advanced' : 'basic'
+        quality: insights.industryInsights?.some((i: any) => i.economicFactors || i.actionPlan) ? 'advanced' : 'basic'
       },
       budgetStrategy: {
-        exists: !!insights.budgetStrategy?.length,
+        exists: Array.isArray(insights.budgetStrategy) && insights.budgetStrategy.length > 0,
         count: insights.budgetStrategy?.length || 0,
-        quality: insights.budgetStrategy?.some((b: any) => b.allocation) ? 'detailed' : 'basic'
+        quality: insights.budgetStrategy?.some((b: any) => b.allocation || b.optimizationStrategy) ? 'detailed' : 'basic'
       },
       metricOptimization: {
-        exists: !!insights.metricOptimization?.length,
+        exists: Array.isArray(insights.metricOptimization) && insights.metricOptimization.length > 0,
         count: insights.metricOptimization?.length || 0,
-        quality: insights.metricOptimization?.some((m: any) => m.improvementStrategies) ? 'actionable' : 'basic'
+        quality: insights.metricOptimization?.some((m: any) => m.improvementStrategies || m.implementationTimeline) ? 'actionable' : 'basic'
       }
     };
 
     const totalSections = Object.keys(sectionChecks).length;
     const completedSections = Object.values(sectionChecks).filter(section => section.exists).length;
     const highQualitySections = Object.values(sectionChecks).filter(section => 
-      section.quality === 'high' || section.quality === 'complete' || 
-      section.quality === 'detailed' || section.quality === 'comprehensive' || 
-      section.quality === 'advanced' || section.quality === 'actionable'
+      ['high', 'complete', 'detailed', 'comprehensive', 'advanced', 'actionable'].includes(section.quality)
     ).length;
 
     return {
@@ -76,7 +74,7 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
       totalSections,
       completionRate: completedSections / totalSections,
       qualityScore: highQualitySections / totalSections,
-      isAIGenerated: data.isAIGenerated || completedSections >= 5,
+      isAIGenerated: data.isAIGenerated !== false && completedSections >= 4,
       dataQuality: data.dataQuality || {
         completeness: completedSections / totalSections,
         aiContentRatio: highQualitySections / totalSections,
@@ -87,10 +85,10 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
 
   const validation = validateIntelligenceData(data);
 
-  console.log('=== ENHANCED INTELLIGENCE RESULTS DEBUG ===');
-  console.log('Full data object:', data);
+  console.log('=== INTELLIGENCE RESULTS DEBUG ===');
+  console.log('Raw data:', data);
   console.log('Validation results:', validation);
-  console.log('Data quality metrics:', validation.dataQuality);
+  console.log('Section details:', validation.sectionChecks);
 
   const handleExport = () => {
     const exportData = {
@@ -104,7 +102,6 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
   };
 
   const handleRegenerate = () => {
-    // This would trigger regeneration - for now just refresh
     window.location.reload();
   };
 
@@ -196,7 +193,7 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
         </div>
       </div>
 
-      {/* Enhanced Quality Status */}
+      {/* Quality Status */}
       <Card>
         <CardContent className="pt-6">
           <div className="grid md:grid-cols-3 gap-4">
@@ -259,28 +256,6 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
         </CardContent>
       </Card>
 
-      {/* Data Quality Alert */}
-      {validation.completionRate < 0.7 && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-          <div className="flex items-start space-x-3">
-            <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-amber-800">Incomplete Intelligence Generation</h3>
-              <p className="text-sm text-amber-700 mt-1">
-                This report has {Math.round(validation.completionRate * 100)}% completion rate with {validation.qualityScore < 0.5 ? 'limited' : 'moderate'} AI-generated content. 
-                Consider regenerating for more comprehensive insights.
-              </p>
-              <div className="mt-2">
-                <Button onClick={handleRegenerate} size="sm" variant="outline" className="text-amber-800 border-amber-300">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Regenerate Report
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Results Content */}
       <div className="space-y-6">
         {shouldShowSection('overview') && (
@@ -327,35 +302,6 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
                 <div>Metrics Count: {validation.sectionChecks.metricOptimization.count}</div>
                 <div>Intelligence Mode: {intelligenceMode}</div>
                 <div>Business Type: {businessType}</div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Intelligence mode-specific messages */}
-        {intelligenceMode === 'marketing' && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center space-y-2">
-                <h3 className="font-semibold">Marketing Focus Mode</h3>
-                <p className="text-sm text-muted-foreground">
-                  This report focuses specifically on marketing strategy and campaign recommendations. 
-                  Switch to "Full Intelligence" mode for comprehensive insights including copywriting analysis.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {intelligenceMode === 'copywriting' && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center space-y-2">
-                <h3 className="font-semibold">Copywriting Focus Mode</h3>
-                <p className="text-sm text-muted-foreground">
-                  This report focuses on advanced copywriting strategies and content optimization. 
-                  Switch to "Full Intelligence" mode for platform recommendations and campaign planning.
-                </p>
               </div>
             </CardContent>
           </Card>
