@@ -34,12 +34,13 @@ export class AIIntelligenceService {
     try {
       console.log('Starting AI intelligence generation...');
       
-      // Updated endpoint path to match the actual Supabase function path
-      const response = await fetch('/supabase/functions/v1/generate-intelligence', {
+      // Use the full Supabase URL for the edge function
+      const supabaseUrl = 'https://qtckfvprvpxbbteinxve.supabase.co';
+      const response = await fetch(`${supabaseUrl}/functions/v1/generate-intelligence`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || ''}`,
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0Y2tmdnBydnB4YmJ0ZWlueHZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMjY0MTcsImV4cCI6MjA2NDkwMjQxN30.0he21MpcO1l-pdiMcfekTtzlSiVRNYSaDWjHa_SFFBs`,
         },
         body: JSON.stringify(request)
       });
