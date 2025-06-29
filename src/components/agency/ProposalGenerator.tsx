@@ -20,7 +20,9 @@ import {
   User,
   Settings,
   Mail,
-  Phone
+  Phone,
+  MoreHorizontal,
+  Trash2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
@@ -81,7 +83,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
   });
   const { toast } = useToast();
 
-  // Default templates
+  // Default templates with isCustom property
   const defaultTemplates = [
     {
       id: 1,
@@ -89,7 +91,8 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       description: 'Complete website overhaul with modern design',
       category: 'Web Design',
       estimatedValue: 25000,
-      timeline: '6-8 weeks'
+      timeline: '6-8 weeks',
+      isCustom: false
     },
     {
       id: 2,
@@ -97,7 +100,8 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       description: 'Logo, brand guidelines, and marketing materials',
       category: 'Branding',
       estimatedValue: 15000,
-      timeline: '4-6 weeks'
+      timeline: '4-6 weeks',
+      isCustom: false
     },
     {
       id: 3,
@@ -105,7 +109,8 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       description: 'Multi-channel marketing strategy and execution',
       category: 'Marketing',
       estimatedValue: 40000,
-      timeline: '12 weeks'
+      timeline: '12 weeks',
+      isCustom: false
     }
   ];
 
@@ -293,6 +298,14 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
     });
     setShowSendDialog(false);
     setSelectedProposal(null);
+  };
+
+  const handleDeleteProposal = (proposalId: number) => {
+    setProposals(prev => prev.filter(p => p.id !== proposalId));
+    toast({
+      title: "Proposal Deleted",
+      description: "The proposal has been deleted successfully",
+    });
   };
 
   if (showNewProposal) {
@@ -743,6 +756,13 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
                         }}
                       >
                         <Send className="h-3 w-3" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleDeleteProposal(proposal.id)}
+                      >
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   </div>

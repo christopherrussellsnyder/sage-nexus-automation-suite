@@ -21,7 +21,8 @@ import {
   Settings,
   Target,
   Mail,
-  Phone
+  Phone,
+  Trash2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
@@ -82,7 +83,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
   });
   const { toast } = useToast();
 
-  // Sales-specific templates
+  // Sales-specific templates with isCustom property
   const defaultTemplates = [
     {
       id: 1,
@@ -90,7 +91,8 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       description: 'Comprehensive sales strategy consultation',
       category: 'Consulting',
       estimatedValue: 10000,
-      timeline: '2-4 weeks'
+      timeline: '2-4 weeks',
+      isCustom: false
     },
     {
       id: 2,
@@ -98,7 +100,8 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       description: 'Multi-channel lead generation and qualification',
       category: 'Marketing',
       estimatedValue: 20000,
-      timeline: '8-12 weeks'
+      timeline: '8-12 weeks',
+      isCustom: false
     },
     {
       id: 3,
@@ -106,7 +109,8 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       description: 'Team sales training and process optimization',
       category: 'Training',
       estimatedValue: 15000,
-      timeline: '6-8 weeks'
+      timeline: '6-8 weeks',
+      isCustom: false
     }
   ];
 
@@ -295,6 +299,14 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
     setSelectedProposal(null);
   };
 
+  const handleDeleteProposal = (proposalId: number) => {
+    setProposals(prev => prev.filter(p => p.id !== proposalId));
+    toast({
+      title: "Proposal Deleted",
+      description: "The proposal has been deleted successfully",
+    });
+  };
+
   if (showNewProposal) {
     return (
       <div className="space-y-6">
@@ -385,8 +397,16 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Choose Template</CardTitle>
-              <CardDescription>Select a template to get started quickly</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Choose Template</CardTitle>
+                  <CardDescription>Select a template to get started quickly</CardDescription>
+                </div>
+                <Button variant="outline" onClick={() => setShowNewTemplate(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Template
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -400,7 +420,10 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold">{template.name}</h4>
-                      <Badge variant="outline">{template.category}</Badge>
+                      <div className="flex space-x-2">
+                        <Badge variant="outline">{template.category}</Badge>
+                        {template.isCustom && <Badge variant="secondary">Custom</Badge>}
+                      </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
                     <div className="flex items-center justify-between text-sm">
@@ -496,54 +519,6 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
             </div>
           </DialogContent>
         </Dialog>
-
-        {/* Enhanced Template Selection */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Choose Template</CardTitle>
-                <CardDescription>Select a template to get started quickly</CardDescription>
-              </div>
-              <Button variant="outline" onClick={() => setShowNewTemplate(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create Template
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {templates.map((template) => (
-                <div 
-                  key={template.id} 
-                  className={`border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
-                    formData.projectType === template.name ? 'ring-2 ring-blue-500' : ''
-                  }`}
-                  onClick={() => handleInputChange('projectType', template.name)}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold">{template.name}</h4>
-                    <div className="flex space-x-2">
-                      <Badge variant="outline">{template.category}</Badge>
-                      {template.isCustom && <Badge variant="secondary">Custom</Badge>}
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center">
-                      <DollarSign className="h-3 w-3 mr-1" />
-                      ${template.estimatedValue.toLocaleString()}
-                    </span>
-                    <span className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {template.timeline}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     );
   }
@@ -779,6 +754,13 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
                         }}
                       >
                         <Send className="h-3 w-3" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleDeleteProposal(proposal.id)}
+                      >
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   </div>
