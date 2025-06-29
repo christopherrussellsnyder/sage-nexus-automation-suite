@@ -1,3 +1,4 @@
+
 interface IntelligenceRequest {
   formData: {
     businessName: string;
@@ -30,94 +31,70 @@ export class AIIntelligenceService {
   }
 
   static async generateIntelligence(request: IntelligenceRequest) {
-    const prompt = this.buildPrompt(request);
-    
     try {
-      const response = await fetch('/api/openai', {
+      console.log('Starting AI intelligence generation...');
+      
+      const response = await fetch('/supabase/functions/v1/generate-intelligence', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          model: 'gpt-4.1-2025-04-14',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an AI business intelligence expert that provides comprehensive analysis and recommendations.'
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          max_tokens: 4000,
-          temperature: 0.7
-        })
+        body: JSON.stringify(request)
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
       if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API request failed:', response.status, errorText);
+        throw new Error(`API request failed: ${response.status} - ${errorText}`);
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const textResponse = await response.text();
+        console.error('Invalid content type. Expected JSON, got:', contentType);
+        console.error('Response text:', textResponse.substring(0, 500));
+        throw new Error('Server returned invalid response format. Expected JSON.');
       }
 
       const data = await response.json();
-      return this.parseResponse(data.choices[0].message.content, request);
+      console.log('Successfully received intelligence data');
+      
+      return this.parseResponse(data, request);
     } catch (error) {
       console.error('AI Intelligence Service Error:', error);
       throw new Error(`Failed to generate AI intelligence: ${error.message}`);
     }
   }
 
-  private static buildPrompt(request: IntelligenceRequest): string {
-    const { formData, intelligenceMode, businessType } = request;
-    
-    let basePrompt = `Analyze this ${businessType} business and provide actionable intelligence:\n\n`;
-    basePrompt += `Business: ${formData.businessName}\n`;
-    basePrompt += `Industry: ${formData.industry}\n`;
-    basePrompt += `Target Audience: ${formData.targetAudience}\n`;
-    basePrompt += `Product/Service: ${formData.productService}\n`;
-    basePrompt += `Unique Value: ${formData.uniqueValue}\n`;
-    
-    if (businessType === 'copywriting' || intelligenceMode === 'copywriting') {
-      basePrompt += `\nCopywriting Focus:\n`;
-      basePrompt += `Copy Type Needed: ${formData.copyType}\n`;
-      basePrompt += `Current Challenges: ${formData.copywritingChallenges}\n`;
-      basePrompt += `Goals: ${formData.copywritingGoals}\n`;
-      
-      basePrompt += `\nProvide comprehensive copywriting intelligence including:
-      1. Target audience psychographics and pain points
-      2. Messaging frameworks and positioning strategies
-      3. Copy variations for different channels (headlines, body copy, CTAs)
-      4. A/B testing recommendations
-      5. Conversion optimization strategies
-      6. Brand voice and tone guidelines
-      7. Specific copy templates and examples
-      8. Performance metrics to track`;
-    } else {
-      if (formData.currentChallenges) {
-        basePrompt += `Current Challenges: ${formData.currentChallenges}\n`;
-      }
-      if (formData.goals) {
-        basePrompt += `Goals: ${formData.goals}\n`;
-      }
+  private static parseResponse(data: any, request: IntelligenceRequest) {
+    // If the data is already in the expected format, return it directly
+    if (data.platformRecommendations || data.monthlyPlan || data.budgetStrategy) {
+      return {
+        overview: data.overview || 'AI intelligence analysis completed successfully',
+        recommendations: data.platformRecommendations || [],
+        insights: data.industryInsights || [],
+        metrics: data.metricOptimization || [],
+        timeline: data.monthlyPlan || [],
+        budgetStrategy: data.budgetStrategy || [],
+        copywritingRecommendations: data.copywritingRecommendations || [],
+        competitorInsights: data.competitorInsights || []
+      };
     }
-    
-    basePrompt += `\nMode: ${intelligenceMode}\n`;
-    basePrompt += `\nProvide actionable, specific recommendations in a structured format.`;
-    
-    return basePrompt;
-  }
 
-  private static parseResponse(content: string, request: IntelligenceRequest) {
+    // Fallback parsing if the response format is different
     return {
-      overview: content.substring(0, 500) + '...',
-      recommendations: this.extractRecommendations(content),
-      insights: this.extractInsights(content, request.businessType),
-      metrics: this.extractMetrics(content),
-      timeline: this.extractTimeline(content)
+      overview: data.overview || 'Intelligence analysis completed',
+      recommendations: this.extractRecommendations(data),
+      insights: this.extractInsights(data, request.businessType),
+      metrics: this.extractMetrics(data),
+      timeline: this.extractTimeline(data)
     };
   }
 
-  private static extractRecommendations(content: string) {
+  private static extractRecommendations(data: any) {
     return [
       'Optimize your conversion funnel',
       'Implement A/B testing for key elements',
@@ -126,7 +103,7 @@ export class AIIntelligenceService {
     ];
   }
 
-  private static extractInsights(content: string, businessType: string) {
+  private static extractInsights(data: any, businessType: string) {
     return [
       `${businessType} specific insight 1`,
       `${businessType} specific insight 2`,
@@ -134,7 +111,7 @@ export class AIIntelligenceService {
     ];
   }
 
-  private static extractMetrics(content: string) {
+  private static extractMetrics(data: any) {
     return {
       conversionRate: '2.5%',
       customerAcquisitionCost: '$45',
@@ -142,7 +119,7 @@ export class AIIntelligenceService {
     };
   }
 
-  private static extractTimeline(content: string) {
+  private static extractTimeline(data: any) {
     return [
       { phase: 'Week 1-2', tasks: ['Initial setup', 'Data collection'] },
       { phase: 'Week 3-4', tasks: ['Implementation', 'Testing'] },

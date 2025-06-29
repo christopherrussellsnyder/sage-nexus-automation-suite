@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   FileText, 
   Plus, 
@@ -19,9 +18,23 @@ import {
   DollarSign,
   Calendar,
   User,
-  Settings
+  Settings,
+  Mail,
+  Phone
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Label } from '@/components/ui/label';
+
+interface Template {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  estimatedValue: number;
+  timeline: string;
+  content?: string;
+  isCustom?: boolean;
+}
 
 interface Proposal {
   id: number;
@@ -40,7 +53,9 @@ interface ProposalGeneratorProps {
 
 const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
   const [showNewProposal, setShowNewProposal] = useState(false);
+  const [showNewTemplate, setShowNewTemplate] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showSendDialog, setShowSendDialog] = useState(false);
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
   const [formData, setFormData] = useState({
     clientName: '',
@@ -50,10 +65,24 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
     timeline: '',
     description: ''
   });
+  const [templateData, setTemplateData] = useState({
+    name: '',
+    description: '',
+    category: '',
+    estimatedValue: '',
+    timeline: '',
+    content: ''
+  });
+  const [sendData, setSendData] = useState({
+    method: 'email',
+    recipient: '',
+    subject: '',
+    message: ''
+  });
   const { toast } = useToast();
 
-  // Mock proposal templates
-  const templates = [
+  // Default templates
+  const defaultTemplates = [
     {
       id: 1,
       name: 'Website Redesign',
@@ -79,6 +108,9 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
       timeline: '12 weeks'
     }
   ];
+
+  const [customTemplates, setCustomTemplates] = useState<Template[]>([]);
+  const templates = [...defaultTemplates, ...customTemplates];
 
   // Mock existing proposals
   const [proposals, setProposals] = useState<Proposal[]>([
@@ -199,6 +231,70 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
     setShowNewProposal(true);
   };
 
+  const handleCreateTemplate = () => {
+    if (!templateData.name || !templateData.description) {
+      toast({
+        title: "Error",
+        description: "Please fill in template name and description",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newTemplate: Template = {
+      id: Date.now(),
+      name: templateData.name,
+      description: templateData.description,
+      category: templateData.category || 'Custom',
+      estimatedValue: parseInt(templateData.estimatedValue) || 0,
+      timeline: templateData.timeline,
+      content: templateData.content,
+      isCustom: true
+    };
+
+    setCustomTemplates(prev => [...prev, newTemplate]);
+    setTemplateData({
+      name: '',
+      description: '',
+      category: '',
+      estimatedValue: '',
+      timeline: '',
+      content: ''
+    });
+    setShowNewTemplate(false);
+
+    toast({
+      title: "Template Created",
+      description: `${newTemplate.name} template has been created successfully`,
+    });
+  };
+
+  const handleSendProposal = () => {
+    if (!selectedProposal || !sendData.recipient) {
+      toast({
+        title: "Error",
+        description: "Please fill in recipient information",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Simulate sending proposal
+    toast({
+      title: "Proposal Sent",
+      description: `${selectedProposal.title} has been sent via ${sendData.method} to ${sendData.recipient}`,
+    });
+
+    setSendData({
+      method: 'email',
+      recipient: '',
+      subject: '',
+      message: ''
+    });
+    setShowSendDialog(false);
+    setSelectedProposal(null);
+  };
+
   if (showNewProposal) {
     return (
       <div className="space-y-6">
@@ -287,10 +383,96 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
             </CardContent>
           </Card>
 
+          {/* Custom Template Dialog */}
+          <Dialog open={showNewTemplate} onOpenChange={setShowNewTemplate}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Create Custom Template</DialogTitle>
+                <DialogDescription>
+                  Create a reusable proposal template
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="template-name">Template Name *</Label>
+                    <Input
+                      id="template-name"
+                      value={templateData.name}
+                      onChange={(e) => setTemplateData({ ...templateData, name: e.target.value })}
+                      placeholder="Custom Service Template"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="template-category">Category</Label>
+                    <Input
+                      id="template-category"
+                      value={templateData.category}
+                      onChange={(e) => setTemplateData({ ...templateData, category: e.target.value })}
+                      placeholder="Custom"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="template-description">Description *</Label>
+                  <Input
+                    id="template-description"
+                    value={templateData.description}
+                    onChange={(e) => setTemplateData({ ...templateData, description: e.target.value })}
+                    placeholder="Brief description of the template"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="template-value">Estimated Value</Label>
+                    <Input
+                      id="template-value"
+                      value={templateData.estimatedValue}
+                      onChange={(e) => setTemplateData({ ...templateData, estimatedValue: e.target.value })}
+                      placeholder="25000"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="template-timeline">Timeline</Label>
+                    <Input
+                      id="template-timeline"
+                      value={templateData.timeline}
+                      onChange={(e) => setTemplateData({ ...templateData, timeline: e.target.value })}
+                      placeholder="6-8 weeks"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="template-content">Template Content</Label>
+                  <Textarea
+                    id="template-content"
+                    value={templateData.content}
+                    onChange={(e) => setTemplateData({ ...templateData, content: e.target.value })}
+                    placeholder="Enter the proposal template content..."
+                    rows={6}
+                  />
+                </div>
+                <div className="flex space-x-2">
+                  <Button onClick={handleCreateTemplate} className="flex-1">Create Template</Button>
+                  <Button variant="outline" onClick={() => setShowNewTemplate(false)}>Cancel</Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Enhanced Template Selection */}
           <Card>
             <CardHeader>
-              <CardTitle>Choose Template</CardTitle>
-              <CardDescription>Select a template to get started quickly</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Choose Template</CardTitle>
+                  <CardDescription>Select a template to get started quickly</CardDescription>
+                </div>
+                <Button variant="outline" onClick={() => setShowNewTemplate(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Template
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -304,7 +486,10 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-semibold">{template.name}</h4>
-                      <Badge variant="outline">{template.category}</Badge>
+                      <div className="flex space-x-2">
+                        <Badge variant="outline">{template.category}</Badge>
+                        {template.isCustom && <Badge variant="secondary">Custom</Badge>}
+                      </div>
                     </div>
                     <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
                     <div className="flex items-center justify-between text-sm">
@@ -329,6 +514,72 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Send Proposal Dialog */}
+      <Dialog open={showSendDialog} onOpenChange={setShowSendDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send Proposal</DialogTitle>
+            <DialogDescription>
+              Send {selectedProposal?.title} to your client
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="send-method">Delivery Method</Label>
+              <Select value={sendData.method} onValueChange={(value) => setSendData({ ...sendData, method: value })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="sms">SMS</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="recipient">
+                {sendData.method === 'email' ? 'Email Address' : 'Phone Number'} *
+              </Label>
+              <Input
+                id="recipient"
+                type={sendData.method === 'email' ? 'email' : 'tel'}
+                value={sendData.recipient}
+                onChange={(e) => setSendData({ ...sendData, recipient: e.target.value })}
+                placeholder={sendData.method === 'email' ? 'client@example.com' : '+1 (555) 123-4567'}
+              />
+            </div>
+            {sendData.method === 'email' && (
+              <div>
+                <Label htmlFor="subject">Subject</Label>
+                <Input
+                  id="subject"
+                  value={sendData.subject}
+                  onChange={(e) => setSendData({ ...sendData, subject: e.target.value })}
+                  placeholder={`Proposal: ${selectedProposal?.title}`}
+                />
+              </div>
+            )}
+            <div>
+              <Label htmlFor="message">Message</Label>
+              <Textarea
+                id="message"
+                value={sendData.message}
+                onChange={(e) => setSendData({ ...sendData, message: e.target.value })}
+                placeholder="Add a personal message..."
+                rows={3}
+              />
+            </div>
+            <div className="flex space-x-2">
+              <Button onClick={handleSendProposal} className="flex-1">
+                <Send className="h-4 w-4 mr-2" />
+                Send Proposal
+              </Button>
+              <Button variant="outline" onClick={() => setShowSendDialog(false)}>Cancel</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Preview Dialog */}
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -435,7 +686,7 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
         </Card>
       </div>
 
-      {/* Proposals List */}
+      {/* Enhanced Proposals List */}
       <Card>
         <CardHeader>
           <CardTitle>Recent Proposals</CardTitle>
@@ -482,6 +733,16 @@ const ProposalGenerator = ({ onBack }: ProposalGeneratorProps) => {
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => handleDownload(proposal)}>
                         <Download className="h-3 w-3" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => {
+                          setSelectedProposal(proposal);
+                          setShowSendDialog(true);
+                        }}
+                      >
+                        <Send className="h-3 w-3" />
                       </Button>
                     </div>
                   </div>

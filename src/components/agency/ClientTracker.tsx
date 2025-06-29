@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,6 +22,7 @@ import {
   Trash2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface Client {
   id: number;
@@ -174,6 +174,19 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
     toast({
       title: "Client Updated",
       description: `${updatedClient.name} has been updated successfully`,
+    });
+  };
+
+  const handleDeleteClient = (clientId: number) => {
+    const clientToDelete = clients.find(c => c.id === clientId);
+    if (!clientToDelete) return;
+
+    setClients(prev => prev.filter(client => client.id !== clientId));
+    
+    toast({
+      title: "Client Deleted",
+      description: `${clientToDelete.name} has been removed from your client list`,
+      variant: "destructive",
     });
   };
 
@@ -492,9 +505,19 @@ const ClientTracker = ({ onBack }: ClientTrackerProps) => {
                       <Button size="sm" variant="outline" onClick={() => handleEditClient(client)}>
                         <Edit className="h-3 w-3" />
                       </Button>
-                      <Button size="sm" variant="outline">
-                        <MoreHorizontal className="h-3 w-3" />
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="sm" variant="outline">
+                            <MoreHorizontal className="h-3 w-3" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => handleDeleteClient(client.id)} className="text-red-600">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete Client
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </div>

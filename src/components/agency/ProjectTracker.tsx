@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,9 +19,11 @@ import {
   DollarSign,
   Filter,
   MoreHorizontal,
-  Edit
+  Edit,
+  Trash2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface Project {
   id: number;
@@ -192,6 +193,19 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
     toast({
       title: "Project Updated",
       description: `${updatedProject.name} has been updated successfully`,
+    });
+  };
+
+  const handleDeleteProject = (projectId: number) => {
+    const projectToDelete = projects.find(p => p.id === projectId);
+    if (!projectToDelete) return;
+
+    setProjects(prev => prev.filter(project => project.id !== projectId));
+    
+    toast({
+      title: "Project Deleted",
+      description: `${projectToDelete.name} has been removed from your project list`,
+      variant: "destructive",
     });
   };
 
@@ -528,9 +542,19 @@ const ProjectTracker = ({ onBack }: ProjectTrackerProps) => {
                   <Edit className="h-3 w-3 mr-1" />
                   Edit
                 </Button>
-                <Button size="sm" variant="outline">
-                  <MoreHorizontal className="h-3 w-3" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="outline">
+                      <MoreHorizontal className="h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleDeleteProject(project.id)} className="text-red-600">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Project
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </CardContent>
           </Card>
