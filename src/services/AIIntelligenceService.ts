@@ -80,25 +80,34 @@ export class AIIntelligenceService {
       console.log('API Response received - Status:', response.status);
 
       if (!response.ok) {
-        const errorText = await response.text();
+        let errorText;
+        try {
+          const errorData = await response.json();
+          errorText = JSON.stringify(errorData);
+        } catch {
+          errorText = await response.text();
+        }
+        
         console.error('API Error Details:', {
           status: response.status,
           statusText: response.statusText,
           errorText: errorText
         });
         
-        // Enhanced error messaging
+        // Enhanced error messaging based on status codes
         if (response.status === 400) {
-          throw new Error('Invalid request data. Please check all required fields are filled.');
+          throw new Error('Invalid request data. Please check all required fields are filled and try again.');
         } else if (response.status === 401) {
           throw new Error('API authentication failed. Please check your OpenAI API key configuration.');
         } else if (response.status === 403) {
           throw new Error('Access denied. Please verify your API key has the necessary permissions.');
         } else if (response.status === 429) {
           throw new Error('API rate limit exceeded. Please wait a moment and try again.');
+        } else if (response.status === 500) {
+          throw new Error('Intelligence service temporarily unavailable. Please try again in a few moments.');
         }
         
-        throw new Error(`Intelligence generation failed: ${response.status} - ${errorText}`);
+        throw new Error(`Intelligence generation failed (${response.status}). Please try again.`);
       }
 
       const data = await response.json();
@@ -149,9 +158,9 @@ export class AIIntelligenceService {
       console.log(`Completion Rate: ${Math.round(completionRate * 100)}% (${validSections}/${totalSections} sections)`);
 
       // Ensure minimum data quality
-      if (completionRate < 0.4) { // Less than 40% completion
+      if (completionRate < 0.3) { // Less than 30% completion
         console.warn('Low completion rate detected:', completionRate);
-        console.warn('Available data sections:', validSections);
+        throw new Error('Intelligence generation incomplete. Please try again for better results.');
       }
 
       // Structure final response
@@ -161,10 +170,10 @@ export class AIIntelligenceService {
         intelligenceMode: request.intelligenceMode,
         businessType: request.businessType,
         businessName: request.formData.businessName,
-        isAIGenerated: completionRate >= 0.3, // At least 30% completion to be considered AI-generated
+        isAIGenerated: completionRate >= 0.5, // At least 50% completion to be considered AI-generated
         dataQuality: {
           completeness: completionRate,
-          aiContentRatio: completionRate >= 0.5 ? 1 : completionRate * 2, // Higher ratio for better completion
+          aiContentRatio: completionRate >= 0.7 ? 1 : completionRate * 1.5, // Higher ratio for better completion
           sectionsGenerated: validSections,
           totalSections: totalSections,
           validationDetails: sectionValidation
@@ -188,14 +197,19 @@ export class AIIntelligenceService {
       
       // Enhanced error handling with specific messages
       if (error.message.includes('fetch')) {
-        throw new Error('Network error: Unable to connect to intelligence service. Please check your internet connection.');
+        throw new Error('Network error: Unable to connect to intelligence service. Please check your internet connection and try again.');
       } else if (error.message.includes('JSON')) {
-        throw new Error('Data parsing error: Invalid response from intelligence service. Please try again.');
+        throw new Error('Data processing error: Invalid response from intelligence service. Please try again.');
       } else if (error.message.includes('API key')) {
-        throw new Error('Authentication error: Please ensure your OpenAI API key is properly configured in the project settings.');
+        throw new Error('Authentication error: Please ensure your OpenAI API key is properly configured.');
+      } else if (error.message.includes('rate limit')) {
+        throw new Error('Rate limit exceeded: Please wait a few minutes before trying again.');
+      } else if (error.message.includes('temporarily unavailable')) {
+        throw new Error('Service temporarily unavailable: Please try again in a few moments.');
       }
       
-      throw new Error(`Intelligence generation failed: ${error.message}`);
+      // Return the original error message if it's already user-friendly
+      throw new Error(error.message || 'Intelligence generation failed. Please try again.');
     }
   }
 
