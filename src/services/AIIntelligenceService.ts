@@ -84,9 +84,9 @@ export class AIIntelligenceService {
 
       const data = await response.json();
       console.log('Successfully received intelligence data');
-      console.log('Raw data structure:', data);
+      console.log('Raw API response structure:', Object.keys(data));
       
-      // Process the data correctly
+      // Process the data correctly - fix the double nesting issue
       return this.processIntelligenceData(data, request);
     } catch (error) {
       console.error('AI Intelligence Service Error:', error);
@@ -105,36 +105,52 @@ export class AIIntelligenceService {
 
   private static processIntelligenceData(data: any, request: IntelligenceRequest) {
     console.log('Processing intelligence data...');
-    console.log('Input data:', data);
+    console.log('Input data structure:', Object.keys(data));
     
-    // The AI data comes in data.insights
-    const insights = data.insights || {};
+    // Fix the double nesting issue - extract insights correctly
+    let insights;
+    if (data.insights && data.insights.insights) {
+      // Handle double-nested structure from API
+      console.log('Detected double-nested structure, extracting from insights.insights');
+      insights = data.insights.insights;
+    } else if (data.insights) {
+      // Handle single-nested structure
+      console.log('Using single-nested structure from insights');
+      insights = data.insights;
+    } else {
+      // Fallback to data itself
+      console.log('Using data directly as insights');
+      insights = data;
+    }
     
-    // Log what we received
-    console.log('AI Insights received:', {
-      platformRecommendations: insights.platformRecommendations?.length || 0,
-      monthlyPlan: insights.monthlyPlan?.length || 0,
-      copywritingRecommendations: insights.copywritingRecommendations?.length || 0,
-      competitorInsights: insights.competitorInsights?.length || 0,
-      industryInsights: insights.industryInsights?.length || 0,
-      budgetStrategy: insights.budgetStrategy?.length || 0,
-      metricOptimization: insights.metricOptimization?.length || 0
+    // Log what we received after correction
+    console.log('Processed insights structure:', {
+      platformRecommendations: Array.isArray(insights.platformRecommendations) ? insights.platformRecommendations.length : 'not array',
+      monthlyPlan: Array.isArray(insights.monthlyPlan) ? insights.monthlyPlan.length : 'not array',
+      copywritingRecommendations: Array.isArray(insights.copywritingRecommendations) ? insights.copywritingRecommendations.length : 'not array',
+      competitorInsights: Array.isArray(insights.competitorInsights) ? insights.competitorInsights.length : 'not array',
+      industryInsights: Array.isArray(insights.industryInsights) ? insights.industryInsights.length : 'not array',
+      budgetStrategy: Array.isArray(insights.budgetStrategy) ? insights.budgetStrategy.length : 'not array',
+      metricOptimization: Array.isArray(insights.metricOptimization) ? insights.metricOptimization.length : 'not array'
     });
 
+    // Ensure all arrays exist and are properly formatted
+    const processedInsights = {
+      platformRecommendations: Array.isArray(insights.platformRecommendations) ? insights.platformRecommendations : [],
+      monthlyPlan: Array.isArray(insights.monthlyPlan) ? insights.monthlyPlan : [],
+      budgetStrategy: Array.isArray(insights.budgetStrategy) ? insights.budgetStrategy : [],
+      copywritingRecommendations: Array.isArray(insights.copywritingRecommendations) ? insights.copywritingRecommendations : [],
+      metricOptimization: Array.isArray(insights.metricOptimization) ? insights.metricOptimization : [],
+      competitorInsights: Array.isArray(insights.competitorInsights) ? insights.competitorInsights : [],
+      industryInsights: Array.isArray(insights.industryInsights) ? insights.industryInsights : []
+    };
+
     // Validate AI content quality
-    const validation = this.validateAIContent(insights);
-    console.log('Content validation:', validation);
+    const validation = this.validateAIContent(processedInsights);
+    console.log('Content validation after processing:', validation);
 
     const processedData = {
-      insights: {
-        platformRecommendations: insights.platformRecommendations || [],
-        monthlyPlan: insights.monthlyPlan || [],
-        budgetStrategy: insights.budgetStrategy || [],
-        copywritingRecommendations: insights.copywritingRecommendations || [],
-        metricOptimization: insights.metricOptimization || [],
-        competitorInsights: insights.competitorInsights || [],
-        industryInsights: insights.industryInsights || []
-      },
+      insights: processedInsights, // Return as single-nested structure
       generatedAt: new Date().toISOString(),
       intelligenceMode: request.intelligenceMode,
       businessType: request.businessType,
@@ -147,7 +163,8 @@ export class AIIntelligenceService {
       }
     };
 
-    console.log('Final processed data:', {
+    console.log('Final processed data structure:', {
+      insightsKeys: Object.keys(processedData.insights),
       totalSections: Object.keys(processedData.insights).length,
       isAIGenerated: processedData.isAIGenerated,
       completeness: processedData.dataQuality.completeness,
@@ -180,6 +197,7 @@ export class AIIntelligenceService {
       const hasData = Array.isArray(section.data) && section.data.length > 0;
       if (hasData) {
         validSections++;
+        console.log(`✓ Section ${section.name} has ${section.data.length} items`);
         
         // Check for AI-specific quality indicators
         const hasQualityData = section.data.some((item: any) => {
@@ -190,6 +208,8 @@ export class AIIntelligenceService {
         if (hasQualityData) {
           qualitySections++;
         }
+      } else {
+        console.log(`✗ Section ${section.name} is empty or invalid`);
       }
     });
 
@@ -197,7 +217,7 @@ export class AIIntelligenceService {
     const aiContentRatio = qualitySections / sections.length;
     const isAIGenerated = validSections >= 4; // At least 4 out of 7 sections should have data
 
-    console.log('Validation results:', {
+    console.log('Final validation results:', {
       validSections,
       qualitySections,
       totalSections: sections.length,

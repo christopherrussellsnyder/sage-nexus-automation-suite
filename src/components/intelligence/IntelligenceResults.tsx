@@ -20,8 +20,13 @@ interface IntelligenceResultsProps {
 const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResultsProps) => {
   const intelligenceMode = data.intelligenceMode || 'full';
 
-  // Fixed data validation logic
+  // Fixed data validation logic - check correct data paths
   const validateIntelligenceData = (data: any) => {
+    console.log('=== VALIDATION DEBUG START ===');
+    console.log('Full data structure:', data);
+    console.log('Data.insights structure:', data.insights);
+    console.log('Available keys in data.insights:', data.insights ? Object.keys(data.insights) : 'insights is null/undefined');
+    
     const insights = data.insights || {};
     
     const sectionChecks = {
@@ -62,13 +67,23 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
       }
     };
 
+    // Debug each section check
+    Object.entries(sectionChecks).forEach(([key, check]) => {
+      console.log(`Section ${key}:`, {
+        exists: check.exists,
+        count: check.count,
+        quality: check.quality,
+        rawData: insights[key]?.slice(0, 1) // Show first item for debugging
+      });
+    });
+
     const totalSections = Object.keys(sectionChecks).length;
     const completedSections = Object.values(sectionChecks).filter(section => section.exists).length;
     const highQualitySections = Object.values(sectionChecks).filter(section => 
       ['high', 'complete', 'detailed', 'comprehensive', 'advanced', 'actionable'].includes(section.quality)
     ).length;
 
-    return {
+    const result = {
       sectionChecks,
       completedSections,
       totalSections,
@@ -81,6 +96,11 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
         sectionsGenerated: completedSections
       }
     };
+
+    console.log('Final validation result:', result);
+    console.log('=== VALIDATION DEBUG END ===');
+    
+    return result;
   };
 
   const validation = validateIntelligenceData(data);
