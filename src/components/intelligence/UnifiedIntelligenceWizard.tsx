@@ -137,7 +137,8 @@ const UnifiedIntelligenceWizard = ({
     setLoading(true);
     
     try {
-      console.log('Starting AI intelligence generation...');
+      console.log('=== FORM DATA COLLECTION ===');
+      console.log('Complete form data:', formData);
       
       const aiRequest = {
         formData: {
@@ -148,31 +149,71 @@ const UnifiedIntelligenceWizard = ({
           uniqueValue: formData.uniqueValue || '',
           monthlyRevenue: formData.monthlyRevenue || '',
           businessType: businessType,
-          currentChallenges: formData.currentChallenges,
-          goals: formData.goals,
-          timeline: formData.timeline,
-          competitorData: formData.competitorData,
-          currentMetrics: formData.currentMetrics,
-          copyType: formData.copyType,
-          copywritingChallenges: formData.copywritingChallenges,
-          copywritingGoals: formData.copywritingGoals
+          
+          // Enhanced form data collection
+          currentChallenges: formData.currentChallenges || '',
+          goals: formData.goals || '',
+          timeline: formData.timeline || '',
+          competitorData: formData.competitorData || {},
+          currentMetrics: formData.currentMetrics || {},
+          
+          // Additional metrics
+          monthlyAdBudget: formData.monthlyAdBudget || formData.marketingBudget || '',
+          teamSize: formData.teamSize || '',
+          businessStage: formData.businessStage || '',
+          primaryGoal: formData.primaryGoal || '',
+          monthlyTraffic: formData.monthlyTraffic || '',
+          conversionRate: formData.conversionRate || '',
+          marketingBudget: formData.marketingBudget || '',
+          clientRetentionRate: formData.clientRetentionRate || '',
+          averageProjectValue: formData.averageProjectValue || '',
+          
+          // Goals data
+          primaryGoals: formData.primaryGoals || [],
+          revenueTarget: formData.revenueTarget || '',
+          successMetrics: formData.successMetrics || '',
+          currentObstacles: formData.currentObstacles || '',
+          
+          // Competitor data
+          marketPosition: formData.marketPosition || '',
+          competitiveAdvantage: formData.competitiveAdvantage || '',
+          
+          // Copywriting specific
+          copyType: formData.copyType || '',
+          copywritingChallenges: formData.copywritingChallenges || '',
+          copywritingGoals: formData.copywritingGoals || ''
         },
         intelligenceMode,
         businessType
       };
 
+      console.log('=== AI REQUEST PAYLOAD ===');
+      console.log('Request being sent to AI:', aiRequest);
+
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
+      console.log('=== AI RESPONSE RECEIVED ===');
+      console.log('AI Intelligence response:', aiIntelligence);
+      
+      // Create the final intelligence data structure
       const intelligenceData = {
         businessType,
         formData,
         intelligenceMode,
-        generatedAt: new Date().toISOString(),
-        aiGenerated: true,
-        insights: aiIntelligence
+        generatedAt: aiIntelligence.generatedAt,
+        isAIGenerated: aiIntelligence.isAIGenerated,
+        insights: aiIntelligence.insights, // Direct path without nesting
+        dataQuality: aiIntelligence.dataQuality
       };
       
-      console.log('AI intelligence generated successfully');
+      console.log('=== FINAL INTELLIGENCE DATA ===');
+      console.log('Intelligence data structure:', {
+        keys: Object.keys(intelligenceData),
+        insightsKeys: Object.keys(intelligenceData.insights),
+        isAIGenerated: intelligenceData.isAIGenerated,
+        dataQuality: intelligenceData.dataQuality
+      });
+      
       onIntelligenceGenerated(intelligenceData);
       
     } catch (error) {

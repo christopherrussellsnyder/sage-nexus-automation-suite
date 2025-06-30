@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,14 +19,19 @@ interface IntelligenceResultsProps {
 const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResultsProps) => {
   const intelligenceMode = data.intelligenceMode || 'full';
 
-  // Fixed data validation logic - check correct data paths
+  console.log('=== INTELLIGENCE RESULTS COMPONENT ===');
+  console.log('Full data received:', data);
+  console.log('Data insights:', data.insights);
+  console.log('Is AI Generated from data:', data.isAIGenerated);
+
+  // Enhanced validation that correctly checks data paths
   const validateIntelligenceData = (data: any) => {
     console.log('=== VALIDATION DEBUG START ===');
-    console.log('Full data structure:', data);
-    console.log('Data.insights structure:', data.insights);
-    console.log('Available keys in data.insights:', data.insights ? Object.keys(data.insights) : 'insights is null/undefined');
+    console.log('Validating data structure:', data);
     
     const insights = data.insights || {};
+    console.log('Insights to validate:', insights);
+    console.log('Available insight keys:', Object.keys(insights));
     
     const sectionChecks = {
       platformRecommendations: {
@@ -73,7 +77,7 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
         exists: check.exists,
         count: check.count,
         quality: check.quality,
-        rawData: insights[key]?.slice(0, 1) // Show first item for debugging
+        sampleData: insights[key]?.slice(0, 1)
       });
     });
 
@@ -83,13 +87,18 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
       ['high', 'complete', 'detailed', 'comprehensive', 'advanced', 'actionable'].includes(section.quality)
     ).length;
 
+    // Use the AI service's determination, but validate it
+    const aiGeneratedFromService = data.isAIGenerated;
+    const hasSignificantData = completedSections >= 3; // At least 3 sections with data
+    const finalIsAIGenerated = aiGeneratedFromService && hasSignificantData;
+
     const result = {
       sectionChecks,
       completedSections,
       totalSections,
       completionRate: completedSections / totalSections,
       qualityScore: highQualitySections / totalSections,
-      isAIGenerated: data.isAIGenerated !== false && completedSections >= 4,
+      isAIGenerated: finalIsAIGenerated,
       dataQuality: data.dataQuality || {
         completeness: completedSections / totalSections,
         aiContentRatio: highQualitySections / totalSections,
@@ -97,7 +106,12 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
       }
     };
 
-    console.log('Final validation result:', result);
+    console.log('Final validation result:', {
+      ...result,
+      aiGeneratedFromService,
+      hasSignificantData,
+      finalIsAIGenerated
+    });
     console.log('=== VALIDATION DEBUG END ===');
     
     return result;
@@ -105,10 +119,9 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
 
   const validation = validateIntelligenceData(data);
 
-  console.log('=== INTELLIGENCE RESULTS DEBUG ===');
-  console.log('Raw data:', data);
+  console.log('=== INTELLIGENCE RESULTS SUMMARY ===');
   console.log('Validation results:', validation);
-  console.log('Section details:', validation.sectionChecks);
+  console.log('Section completion details:', validation.sectionChecks);
 
   const handleExport = () => {
     const exportData = {
@@ -322,6 +335,7 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
                 <div>Metrics Count: {validation.sectionChecks.metricOptimization.count}</div>
                 <div>Intelligence Mode: {intelligenceMode}</div>
                 <div>Business Type: {businessType}</div>
+                <div>Data Quality: {JSON.stringify(validation.dataQuality)}</div>
               </div>
             </CardContent>
           </Card>
