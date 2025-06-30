@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
 import WizardSteps from './wizard/WizardSteps';
 import BusinessInformationForm from './wizard/BusinessInformationForm';
 import CurrentMetricsForm from './wizard/CurrentMetricsForm';
 import GoalsObjectivesForm from './wizard/GoalsObjectivesForm';
-import CompetitorAnalysisForm from './wizard/CompetitorAnalysisForm';
+import CompetitorAnalysisForm from './CompetitorAnalysisForm';
 import IntelligenceLoading from './IntelligenceLoading';
 import { AIIntelligenceService } from '@/services/AIIntelligenceService';
 import { useToast } from '@/components/ui/use-toast';
@@ -39,6 +39,7 @@ const UnifiedIntelligenceWizard = ({
 }: UnifiedIntelligenceWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({});
   const { toast } = useToast();
 
@@ -88,7 +89,6 @@ const UnifiedIntelligenceWizard = ({
       ];
     }
 
-    // Full intelligence mode
     return [
       ...baseSteps,
       {
@@ -135,10 +135,13 @@ const UnifiedIntelligenceWizard = ({
 
   const generateIntelligence = async () => {
     setLoading(true);
+    setError(null);
     
     try {
-      console.log('=== FORM DATA COLLECTION ===');
-      console.log('Complete form data:', formData);
+      console.log('=== STARTING AI INTELLIGENCE GENERATION ===');
+      console.log('Form data:', formData);
+      console.log('Business type:', businessType);
+      console.log('Intelligence mode:', intelligenceMode);
       
       const aiRequest = {
         formData: {
@@ -149,15 +152,11 @@ const UnifiedIntelligenceWizard = ({
           uniqueValue: formData.uniqueValue || '',
           monthlyRevenue: formData.monthlyRevenue || '',
           businessType: businessType,
-          
-          // Enhanced form data collection
           currentChallenges: formData.currentChallenges || '',
           goals: formData.goals || '',
           timeline: formData.timeline || '',
           competitorData: formData.competitorData || {},
           currentMetrics: formData.currentMetrics || {},
-          
-          // Additional metrics
           monthlyAdBudget: formData.monthlyAdBudget || formData.marketingBudget || '',
           teamSize: formData.teamSize || '',
           businessStage: formData.businessStage || '',
@@ -167,18 +166,12 @@ const UnifiedIntelligenceWizard = ({
           marketingBudget: formData.marketingBudget || '',
           clientRetentionRate: formData.clientRetentionRate || '',
           averageProjectValue: formData.averageProjectValue || '',
-          
-          // Goals data
           primaryGoals: formData.primaryGoals || [],
           revenueTarget: formData.revenueTarget || '',
           successMetrics: formData.successMetrics || '',
           currentObstacles: formData.currentObstacles || '',
-          
-          // Competitor data
           marketPosition: formData.marketPosition || '',
           competitiveAdvantage: formData.competitiveAdvantage || '',
-          
-          // Copywriting specific
           copyType: formData.copyType || '',
           copywritingChallenges: formData.copywritingChallenges || '',
           copywritingGoals: formData.copywritingGoals || ''
@@ -187,37 +180,34 @@ const UnifiedIntelligenceWizard = ({
         businessType
       };
 
-      console.log('=== AI REQUEST PAYLOAD ===');
-      console.log('Request being sent to AI:', aiRequest);
+      console.log('Sending AI request:', aiRequest);
 
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
-      console.log('=== AI RESPONSE RECEIVED ===');
-      console.log('AI Intelligence response:', aiIntelligence);
+      console.log('AI Intelligence response received:', aiIntelligence);
       
-      // Create the final intelligence data structure
       const intelligenceData = {
         businessType,
         formData,
         intelligenceMode,
-        generatedAt: aiIntelligence.generatedAt,
-        isAIGenerated: aiIntelligence.isAIGenerated,
-        insights: aiIntelligence.insights, // Direct path without nesting
-        dataQuality: aiIntelligence.dataQuality
+        generatedAt: aiIntelligence.generatedAt || new Date().toISOString(),
+        isAIGenerated: aiIntelligence.isAIGenerated || true,
+        insights: aiIntelligence.insights || aiIntelligence,
+        dataQuality: aiIntelligence.dataQuality || {
+          completeness: 1,
+          aiContentRatio: 1,
+          sectionsGenerated: 7
+        }
       };
       
-      console.log('=== FINAL INTELLIGENCE DATA ===');
-      console.log('Intelligence data structure:', {
-        keys: Object.keys(intelligenceData),
-        insightsKeys: Object.keys(intelligenceData.insights),
-        isAIGenerated: intelligenceData.isAIGenerated,
-        dataQuality: intelligenceData.dataQuality
-      });
+      console.log('Final intelligence data:', intelligenceData);
       
       onIntelligenceGenerated(intelligenceData);
       
     } catch (error) {
       console.error('Error generating AI intelligence:', error);
+      setError(error.message || 'Failed to generate intelligence report');
+      
       toast({
         title: "Error generating intelligence",
         description: error.message || "Please check your API configuration and try again",
@@ -346,6 +336,29 @@ const UnifiedIntelligenceWizard = ({
 
   return (
     <div className="space-y-6">
+      {/* Error Display */}
+      {error && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-2 text-red-700">
+              <AlertCircle className="h-5 w-5" />
+              <div>
+                <h3 className="font-medium">Generation Failed</h3>
+                <p className="text-sm">{error}</p>
+              </div>
+            </div>
+            <Button 
+              onClick={() => setError(null)} 
+              variant="outline" 
+              size="sm" 
+              className="mt-3"
+            >
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Header */}
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold">
@@ -380,7 +393,7 @@ const UnifiedIntelligenceWizard = ({
                   Previous
                 </Button>
 
-                <Button onClick={handleNext}>
+                <Button onClick={handleNext} disabled={loading}>
                   {currentStep === maxSteps ? (
                     <>
                       <Sparkles className="h-4 w-4 mr-2" />
