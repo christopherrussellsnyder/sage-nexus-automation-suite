@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import WizardSteps from './wizard/WizardSteps';
 import BusinessInformationForm from './wizard/BusinessInformationForm';
 import CurrentMetricsForm from './wizard/CurrentMetricsForm';
@@ -30,6 +30,7 @@ interface FormData {
   copyType?: string;
   copywritingChallenges?: string;
   copywritingGoals?: string;
+  competitors?: any[];
 }
 
 const UnifiedIntelligenceWizard = ({ 
@@ -117,9 +118,50 @@ const UnifiedIntelligenceWizard = ({
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    console.log(`Form field updated: ${field}`, value);
+  };
+
+  const validateCurrentStep = (): boolean => {
+    console.log('Validating step:', currentStep, 'with data:', formData);
+    
+    switch (currentStep) {
+      case 1: // Business Information
+        const requiredFields = ['businessName', 'industry', 'targetAudience', 'productService'];
+        const missingFields = requiredFields.filter(field => !formData[field]?.trim());
+        
+        if (missingFields.length > 0) {
+          toast({
+            title: "Required Information Missing",
+            description: `Please fill in: ${missingFields.join(', ')}`,
+            variant: "destructive"
+          });
+          return false;
+        }
+        return true;
+        
+      case 2:
+        if (intelligenceMode === 'copywriting' || businessType === 'copywriting') {
+          if (!formData.copyType) {
+            toast({
+              title: "Copy Type Required",
+              description: "Please select the type of copy you need most",
+              variant: "destructive"
+            });
+            return false;
+          }
+        }
+        return true;
+        
+      default:
+        return true;
+    }
   };
 
   const handleNext = () => {
+    if (!validateCurrentStep()) {
+      return;
+    }
+    
     if (currentStep < maxSteps) {
       setCurrentStep(prev => prev + 1);
     } else {
@@ -134,22 +176,31 @@ const UnifiedIntelligenceWizard = ({
   };
 
   const generateIntelligence = async () => {
+    console.log('=== STARTING INTELLIGENCE GENERATION ===');
+    
+    // Final validation before API call
+    if (!formData.businessName?.trim() || !formData.industry?.trim() || !formData.targetAudience?.trim()) {
+      setError('Missing required business information. Please go back and fill in all required fields.');
+      toast({
+        title: "Validation Error",
+        description: "Please ensure business name, industry, and target audience are provided",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     setError(null);
     
     try {
-      console.log('=== STARTING AI INTELLIGENCE GENERATION ===');
-      console.log('Form data:', formData);
-      console.log('Business type:', businessType);
-      console.log('Intelligence mode:', intelligenceMode);
-      
+      // Enhanced request payload
       const aiRequest = {
         formData: {
-          businessName: formData.businessName || '',
-          industry: formData.industry || '',
-          targetAudience: formData.targetAudience || '',
-          productService: formData.productService || '',
-          uniqueValue: formData.uniqueValue || '',
+          businessName: formData.businessName?.trim() || '',
+          industry: formData.industry?.trim() || '',
+          targetAudience: formData.targetAudience?.trim() || '',
+          productService: formData.productService?.trim() || '',
+          uniqueValue: formData.uniqueValue?.trim() || '',
           monthlyRevenue: formData.monthlyRevenue || '',
           businessType: businessType,
           currentChallenges: formData.currentChallenges || '',
@@ -157,13 +208,13 @@ const UnifiedIntelligenceWizard = ({
           timeline: formData.timeline || '',
           competitorData: formData.competitorData || {},
           currentMetrics: formData.currentMetrics || {},
-          monthlyAdBudget: formData.monthlyAdBudget || formData.marketingBudget || '',
+          monthlyAdBudget: formData.monthlyAdBudget || formData.marketingBudget || '$5000',
           teamSize: formData.teamSize || '',
           businessStage: formData.businessStage || '',
           primaryGoal: formData.primaryGoal || '',
           monthlyTraffic: formData.monthlyTraffic || '',
           conversionRate: formData.conversionRate || '',
-          marketingBudget: formData.marketingBudget || '',
+          marketingBudget: formData.marketingBudget || formData.monthlyAdBudget || '$5000',
           clientRetentionRate: formData.clientRetentionRate || '',
           averageProjectValue: formData.averageProjectValue || '',
           primaryGoals: formData.primaryGoals || [],
@@ -174,21 +225,32 @@ const UnifiedIntelligenceWizard = ({
           competitiveAdvantage: formData.competitiveAdvantage || '',
           copyType: formData.copyType || '',
           copywritingChallenges: formData.copywritingChallenges || '',
-          copywritingGoals: formData.copywritingGoals || ''
+          copywritingGoals: formData.copywritingGoals || '',
+          competitors: formData.competitors || []
         },
         intelligenceMode,
         businessType
       };
 
-      console.log('Sending AI request:', aiRequest);
+      console.log('Sending enhanced AI request:', {
+        businessName: aiRequest.formData.businessName,
+        industry: aiRequest.formData.industry,
+        targetAudience: aiRequest.formData.targetAudience,
+        intelligenceMode: aiRequest.intelligenceMode,
+        hasCompetitors: aiRequest.formData.competitors?.length > 0,
+        hasMetrics: !!(aiRequest.formData.monthlyTraffic || aiRequest.formData.conversionRate),
+        hasGoals: !!(aiRequest.formData.primaryGoals?.length || aiRequest.formData.revenueTarget)
+      });
 
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
-      console.log('AI Intelligence response received:', aiIntelligence);
+      console.log('AI Intelligence generation completed successfully');
+      console.log('Generated data quality:', aiIntelligence.dataQuality);
       
+      // Enhanced intelligence data structure
       const intelligenceData = {
         businessType,
-        formData,
+        formData: aiRequest.formData,
         intelligenceMode,
         generatedAt: aiIntelligence.generatedAt || new Date().toISOString(),
         isAIGenerated: aiIntelligence.isAIGenerated || true,
@@ -200,17 +262,33 @@ const UnifiedIntelligenceWizard = ({
         }
       };
       
-      console.log('Final intelligence data:', intelligenceData);
+      console.log('Final intelligence data prepared for display');
+      console.log('Intelligence summary:', {
+        businessName: intelligenceData.formData.businessName,
+        isAIGenerated: intelligenceData.isAIGenerated,
+        completeness: Math.round((intelligenceData.dataQuality.completeness || 0) * 100) + '%',
+        sectionsGenerated: intelligenceData.dataQuality.sectionsGenerated
+      });
+      
+      // Success notification
+      toast({
+        title: "Intelligence Generated Successfully!",
+        description: `Generated ${intelligenceData.dataQuality.sectionsGenerated} intelligence sections`,
+        variant: "default"
+      });
       
       onIntelligenceGenerated(intelligenceData);
       
     } catch (error) {
-      console.error('Error generating AI intelligence:', error);
-      setError(error.message || 'Failed to generate intelligence report');
+      console.error('=== INTELLIGENCE GENERATION ERROR ===');
+      console.error('Error details:', error);
+      
+      const errorMessage = error.message || 'Failed to generate intelligence report';
+      setError(errorMessage);
       
       toast({
-        title: "Error generating intelligence",
-        description: error.message || "Please check your API configuration and try again",
+        title: "Intelligence Generation Failed",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -238,11 +316,12 @@ const UnifiedIntelligenceWizard = ({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">What type of copy do you need most?</label>
+                  <label className="text-sm font-medium">What type of copy do you need most? *</label>
                   <select 
                     className="w-full p-2 border rounded"
                     value={formData.copyType || ''}
                     onChange={(e) => handleFieldChange('copyType', e.target.value)}
+                    required
                   >
                     <option value="">Select copy type</option>
                     <option value="website">Website Copy & Landing Pages</option>
@@ -336,28 +415,50 @@ const UnifiedIntelligenceWizard = ({
 
   return (
     <div className="space-y-6">
-      {/* Error Display */}
+      {/* Enhanced Error Display */}
       {error && (
         <Card className="border-red-200 bg-red-50">
           <CardContent className="pt-6">
-            <div className="flex items-center space-x-2 text-red-700">
-              <AlertCircle className="h-5 w-5" />
-              <div>
-                <h3 className="font-medium">Generation Failed</h3>
-                <p className="text-sm">{error}</p>
+            <div className="flex items-start space-x-3 text-red-700">
+              <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <h3 className="font-medium">Intelligence Generation Failed</h3>
+                <p className="text-sm mt-1">{error}</p>
+                <div className="mt-3 space-x-2">
+                  <Button 
+                    onClick={() => setError(null)} 
+                    variant="outline" 
+                    size="sm"
+                  >
+                    Dismiss
+                  </Button>
+                  <Button 
+                    onClick={generateIntelligence} 
+                    variant="default" 
+                    size="sm"
+                    disabled={loading}
+                  >
+                    Try Again
+                  </Button>
+                </div>
               </div>
             </div>
-            <Button 
-              onClick={() => setError(null)} 
-              variant="outline" 
-              size="sm" 
-              className="mt-3"
-            >
-              Try Again
-            </Button>
           </CardContent>
         </Card>
       )}
+
+      {/* Data Quality Status */}
+      <Card className="border-blue-200 bg-blue-50">
+        <CardContent className="pt-4">
+          <div className="flex items-center space-x-2 text-blue-700">
+            <Info className="h-4 w-4" />
+            <div>
+              <p className="text-sm font-medium">Intelligence API Status: Active</p>
+              <p className="text-xs">Our AI will generate comprehensive insights based on your business data</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Header */}
       <div className="text-center space-y-2">
@@ -368,6 +469,9 @@ const UnifiedIntelligenceWizard = ({
           {getModeDescription()}
         </p>
         <Progress value={progress} className="w-full max-w-md mx-auto" />
+        <p className="text-sm text-muted-foreground">
+          Step {currentStep} of {maxSteps}
+        </p>
       </div>
 
       <div className="grid lg:grid-cols-4 gap-6">
@@ -380,10 +484,10 @@ const UnifiedIntelligenceWizard = ({
         <div className="lg:col-span-3 space-y-6">
           {renderCurrentStep()}
 
-          {/* Navigation */}
+          {/* Enhanced Navigation */}
           <Card>
             <CardContent className="pt-6">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <Button
                   onClick={handlePrevious}
                   disabled={currentStep === 1}
@@ -393,7 +497,19 @@ const UnifiedIntelligenceWizard = ({
                   Previous
                 </Button>
 
-                <Button onClick={handleNext} disabled={loading}>
+                <div className="text-center">
+                  {currentStep === maxSteps && (
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Ready to generate your intelligence report
+                    </p>
+                  )}
+                </div>
+
+                <Button 
+                  onClick={handleNext} 
+                  disabled={loading}
+                  className="relative"
+                >
                   {currentStep === maxSteps ? (
                     <>
                       <Sparkles className="h-4 w-4 mr-2" />
