@@ -36,8 +36,8 @@ const IntelligenceLoading = ({ businessType }: IntelligenceLoadingProps) => {
   const CurrentIcon = steps[currentStep].icon;
 
   return (
-    <div className="min-h-screen w-full bg-background p-6">
-      <Card className="max-w-2xl mx-auto">
+    <div className="min-h-screen w-full bg-background flex items-center justify-center p-6">
+      <Card className="max-w-2xl w-full mx-auto">
         <CardContent className="py-12">
           <div className="text-center space-y-6">
             <div className="flex justify-center">
@@ -71,6 +71,13 @@ const IntelligenceLoading = ({ businessType }: IntelligenceLoadingProps) => {
                   }`} />
                 </div>
               ))}
+            </div>
+
+            <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-center space-x-2 text-blue-700">
+                <Sparkles className="h-4 w-4" />
+                <p className="text-sm font-medium">AI is generating comprehensive insights for your business</p>
+              </div>
             </div>
           </div>
         </CardContent>

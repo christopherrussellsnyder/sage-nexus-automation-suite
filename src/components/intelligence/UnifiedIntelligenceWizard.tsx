@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -232,20 +233,11 @@ const UnifiedIntelligenceWizard = ({
         businessType
       };
 
-      console.log('Sending enhanced AI request:', {
-        businessName: aiRequest.formData.businessName,
-        industry: aiRequest.formData.industry,
-        targetAudience: aiRequest.formData.targetAudience,
-        intelligenceMode: aiRequest.intelligenceMode,
-        hasCompetitors: aiRequest.formData.competitors?.length > 0,
-        hasMetrics: !!(aiRequest.formData.monthlyTraffic || aiRequest.formData.conversionRate),
-        hasGoals: !!(aiRequest.formData.primaryGoals?.length || aiRequest.formData.revenueTarget)
-      });
+      console.log('Sending AI request for intelligence generation');
 
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
       console.log('AI Intelligence generation completed successfully');
-      console.log('Generated data quality:', aiIntelligence.dataQuality);
       
       // Enhanced intelligence data structure
       const intelligenceData = {
@@ -262,13 +254,7 @@ const UnifiedIntelligenceWizard = ({
         }
       };
       
-      console.log('Final intelligence data prepared for display');
-      console.log('Intelligence summary:', {
-        businessName: intelligenceData.formData.businessName,
-        isAIGenerated: intelligenceData.isAIGenerated,
-        completeness: Math.round((intelligenceData.dataQuality.completeness || 0) * 100) + '%',
-        sectionsGenerated: intelligenceData.dataQuality.sectionsGenerated
-      });
+      console.log('Intelligence data prepared for display');
       
       // Success notification
       toast({
@@ -386,6 +372,7 @@ const UnifiedIntelligenceWizard = ({
 
   const progress = (currentStep / maxSteps) * 100;
 
+  // Show loading component when loading
   if (loading) {
     return <IntelligenceLoading businessType={businessType} />;
   }
