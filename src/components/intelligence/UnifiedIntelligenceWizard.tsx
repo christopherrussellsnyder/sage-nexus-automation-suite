@@ -7,10 +7,10 @@ import WizardSteps from './wizard/WizardSteps';
 import BusinessInformationForm from './wizard/BusinessInformationForm';
 import CurrentMetricsForm from './wizard/CurrentMetricsForm';
 import GoalsObjectivesForm from './wizard/GoalsObjectivesForm';
-import CompetitorAnalysisForm from './CompetitorAnalysisForm';
+import CompetitorAnalysisForm from './wizard/CompetitorAnalysisForm';
 import IntelligenceLoading from './IntelligenceLoading';
 import { AIIntelligenceService } from '@/services/AIIntelligenceService';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface Step {
   id: number;
