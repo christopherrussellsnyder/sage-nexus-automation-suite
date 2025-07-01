@@ -43,7 +43,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('=== INTELLIGENCE GENERATION EDGE FUNCTION CALLED ===');
+    console.log('=== INTELLIGENCE GENERATION EDGE FUNCTION STARTED ===');
     
     const requestData: IntelligenceRequest = await req.json();
     const { formData, intelligenceMode, businessType } = requestData;
@@ -52,17 +52,27 @@ serve(async (req) => {
       businessName: formData.businessName,
       industry: formData.industry,
       intelligenceMode,
-      businessType,
-      hasTargetAudience: !!formData.targetAudience,
-      hasProductService: !!formData.productService,
-      hasCompetitors: formData.competitors && formData.competitors.length > 0,
-      monthlyBudget: formData.monthlyAdBudget || formData.marketingBudget
+      businessType
     });
+
+    // Validate required fields
+    if (!formData.businessName?.trim()) {
+      throw new Error('Business name is required');
+    }
+    if (!formData.industry?.trim()) {
+      throw new Error('Industry is required');
+    }
+    if (!formData.targetAudience?.trim()) {
+      throw new Error('Target audience is required');
+    }
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
+      console.error('OpenAI API key not found in environment');
       throw new Error('OpenAI API key not configured');
     }
+
+    console.log('OpenAI API key found, proceeding with request');
 
     // Create comprehensive prompt for intelligence generation
     const prompt = `You are an expert business intelligence analyst. Generate a comprehensive business intelligence report for ${formData.businessName}.
@@ -72,47 +82,64 @@ BUSINESS CONTEXT:
 - Industry: ${formData.industry}
 - Business Type: ${businessType}
 - Target Audience: ${formData.targetAudience}
-- Product/Service: ${formData.productService}
+- Product/Service: ${formData.productService || 'Not specified'}
 - Monthly Revenue: ${formData.monthlyRevenue || 'Not specified'}
 - Monthly Ad Budget: ${formData.monthlyAdBudget || formData.marketingBudget || 'Not specified'}
-- Team Size: ${formData.teamSize || 'Not specified'}
-- Business Stage: ${formData.businessStage || 'Not specified'}
-- Primary Goal: ${formData.primaryGoal || 'Not specified'}
-- Current Challenges: ${formData.currentChallenges || 'Not specified'}
-- Monthly Traffic: ${formData.monthlyTraffic || 'Not specified'}
-- Conversion Rate: ${formData.conversionRate || 'Not specified'}
-- Revenue Target: ${formData.revenueTarget || 'Not specified'}
-- Success Metrics: ${formData.successMetrics || 'Not specified'}
-- Current Obstacles: ${formData.currentObstacles || 'Not specified'}
-- Market Position: ${formData.marketPosition || 'Not specified'}
-- Competitive Advantage: ${formData.competitiveAdvantage || 'Not specified'}
 
-Generate a detailed JSON response with exactly these sections (ensure all arrays have multiple items):
+Generate a detailed JSON response with exactly these sections:
 
 {
   "platformRecommendations": [
     {
       "platform": "Facebook",
       "priority": 1,
-      "reasoning": "Detailed explanation for Facebook recommendation",
+      "reasoning": "Detailed explanation why Facebook is recommended",
       "expectedMetrics": {
         "roas": 4.2,
         "cpm": 12.50,
         "cpc": 1.85,
-        "conversionRate": 3.8,
-        "estimatedReach": 45000,
-        "expectedLeads": 180
+        "conversionRate": 3.8
       },
       "budgetAllocation": 35,
       "targetingParameters": {
-        "demographics": "Specific demographic targeting",
-        "interests": ["interest1", "interest2", "interest3"],
-        "behaviors": ["behavior1", "behavior2", "behavior3"],
-        "customAudiences": ["audience1", "audience2", "audience3"],
-        "locations": ["location1", "location2", "location3"]
+        "demographics": "Age 25-45, college-educated professionals",
+        "interests": ["business", "productivity", "technology"],
+        "behaviors": ["online shoppers", "business decision makers"]
+      }
+    },
+    {
+      "platform": "Google Ads",
+      "priority": 2,
+      "reasoning": "High intent traffic from search queries",
+      "expectedMetrics": {
+        "roas": 5.1,
+        "cpm": 18.75,
+        "cpc": 2.25,
+        "conversionRate": 4.2
       },
-      "adFormats": ["format1", "format2", "format3"],
-      "contentStrategy": ["strategy1", "strategy2", "strategy3"]
+      "budgetAllocation": 30,
+      "targetingParameters": {
+        "keywords": ["business software", "productivity tools"],
+        "demographics": "Business professionals",
+        "locations": ["United States", "Canada"]
+      }
+    },
+    {
+      "platform": "LinkedIn",
+      "priority": 3,
+      "reasoning": "B2B focused audience for professional services",
+      "expectedMetrics": {
+        "roas": 3.8,
+        "cpm": 25.00,
+        "cpc": 3.50,
+        "conversionRate": 2.5
+      },
+      "budgetAllocation": 25,
+      "targetingParameters": {
+        "jobTitles": ["CEO", "Marketing Manager", "Business Owner"],
+        "industries": ["Technology", "Consulting", "Finance"],
+        "companySize": ["11-50", "51-200", "201-500"]
+      }
     }
   ],
   "monthlyPlan": [
@@ -120,97 +147,131 @@ Generate a detailed JSON response with exactly these sections (ensure all arrays
       "day": 1,
       "platform": "Facebook",
       "contentType": "ad",
-      "hook": "Compelling hook for day 1",
-      "body": "Detailed body content",
-      "cta": "Strong call to action",
-      "reasoning": "Strategic reasoning",
-      "visualSuggestions": "Visual content suggestions",
-      "expectedMetrics": {
-        "reach": 15000,
-        "engagement": 4.5,
-        "conversions": 45
-      }
+      "hook": "Stop wasting time on manual tasks",
+      "body": "Our ${formData.productService || 'solution'} helps ${formData.targetAudience} save 10+ hours per week",
+      "cta": "Start Your Free Trial",
+      "reasoning": "Focus on pain point and time savings",
+      "visualSuggestions": "Professional person looking frustrated at computer"
+    },
+    {
+      "day": 2,
+      "platform": "Google Ads",
+      "contentType": "search_ad",
+      "hook": "Best ${formData.industry} Solution",
+      "body": "Trusted by 1000+ businesses. Get results in 30 days or money back.",
+      "cta": "Get Started Today",
+      "reasoning": "Build trust with social proof",
+      "visualSuggestions": "Clean, professional landing page"
+    },
+    {
+      "day": 3,
+      "platform": "LinkedIn",
+      "contentType": "sponsored_content",
+      "hook": "How ${formData.businessName} Transforms ${formData.industry}",
+      "body": "Case study: See how we helped Company X achieve 300% ROI",
+      "cta": "Read Full Case Study",
+      "reasoning": "B2B audience loves case studies",
+      "visualSuggestions": "Professional case study graphic"
     }
   ],
   "copywritingRecommendations": [
     {
       "stage": "awareness",
-      "hook": "Attention-grabbing hook",
-      "body": "Compelling body copy",
-      "cta": "Clear call to action",
-      "emotional_triggers": ["trigger1", "trigger2"],
-      "personalization": "Personalization strategy",
-      "urgency_elements": ["element1", "element2"],
-      "social_proof": "Social proof elements",
-      "pain_points": ["pain1", "pain2"],
-      "benefits": ["benefit1", "benefit2"],
-      "objection_handling": "How to handle objections"
+      "hook": "Are you tired of [pain point]?",
+      "body": "Most ${formData.targetAudience} struggle with this exact problem. Here's why...",
+      "cta": "Learn More",
+      "emotional_triggers": ["frustration", "curiosity"],
+      "personalization": "Speak directly to target audience pain points"
+    },
+    {
+      "stage": "consideration",
+      "hook": "Why ${formData.businessName} is different",
+      "body": "Unlike other solutions, we focus on [unique value proposition]",
+      "cta": "See How It Works",
+      "emotional_triggers": ["hope", "excitement"],
+      "personalization": "Address specific industry challenges"
     }
   ],
   "competitorInsights": [
     {
-      "competitor": "Competitor Name",
-      "keyStrategy": "Their main strategy",
-      "performanceMetric": "Key performance indicator",
-      "applicationForUser": "How to apply this insight",
-      "strengths": ["strength1", "strength2"],
-      "weaknesses": ["weakness1", "weakness2"],
-      "opportunities": ["opportunity1", "opportunity2"],
-      "marketShare": "Estimated market share",
-      "pricingStrategy": "Their pricing approach"
+      "competitor": "Main Competitor A",
+      "keyStrategy": "Heavy focus on social media advertising",
+      "performanceMetric": "High engagement but low conversion",
+      "applicationForUser": "Focus on conversion optimization rather than just engagement"
+    },
+    {
+      "competitor": "Main Competitor B",
+      "keyStrategy": "Premium pricing strategy",
+      "performanceMetric": "High profit margins but limited market reach",
+      "applicationForUser": "Consider value-based pricing to capture market share"
     }
   ],
   "industryInsights": [
     {
-      "trend": "Industry trend name",
-      "impact": "Impact on business",
-      "opportunity": "Opportunity description",
-      "recommendation": "Specific recommendation",
-      "timeline": "Implementation timeline",
-      "resources_needed": ["resource1", "resource2"],
-      "success_metrics": ["metric1", "metric2"],
-      "risk_factors": ["risk1", "risk2"]
+      "trend": "Digital transformation acceleration",
+      "impact": "Increased demand for ${formData.productService || 'digital solutions'}",
+      "opportunity": "Position as essential business tool",
+      "recommendation": "Emphasize digital-first approach in messaging"
+    },
+    {
+      "trend": "Remote work normalization",
+      "impact": "Changed how businesses operate",
+      "opportunity": "Appeal to distributed teams",
+      "recommendation": "Highlight collaboration and remote-friendly features"
     }
   ],
   "budgetStrategy": [
     {
       "category": "Paid Advertising",
       "allocation": 40,
-      "reasoning": "Why this allocation",
+      "reasoning": "Primary growth driver",
       "expectedROI": 3.5,
-      "implementation": "How to implement",
-      "monitoring": "How to monitor",
-      "optimization": "Optimization strategy",
-      "timeline": "Implementation timeline",
-      "kpis": ["kpi1", "kpi2", "kpi3"]
+      "implementation": "Start with Facebook and Google Ads"
+    },
+    {
+      "category": "Content Marketing",
+      "allocation": 25,
+      "reasoning": "Long-term SEO and authority building",
+      "expectedROI": 2.8,
+      "implementation": "Blog posts, case studies, whitepapers"
+    },
+    {
+      "category": "Email Marketing",
+      "allocation": 15,
+      "reasoning": "High ROI for nurturing leads",
+      "expectedROI": 6.2,
+      "implementation": "Automated sequences and newsletters"
     }
   ],
   "metricOptimization": [
     {
       "metric": "Conversion Rate",
-      "currentValue": "Current performance",
-      "targetValue": "Target performance",
-      "strategy": "Optimization strategy",
-      "tactics": ["tactic1", "tactic2", "tactic3"],
-      "timeline": "Expected timeline",
-      "resources": ["resource1", "resource2"],
-      "expectedImprovement": "Expected improvement percentage",
-      "measurement": "How to measure success"
+      "currentValue": "2.5%",
+      "targetValue": "4.0%",
+      "strategy": "A/B test landing pages and improve call-to-action placement",
+      "timeline": "3 months"
+    },
+    {
+      "metric": "Customer Acquisition Cost",
+      "currentValue": "$150",
+      "targetValue": "$100",
+      "strategy": "Optimize ad targeting and improve organic reach",
+      "timeline": "6 months"
     }
   ]
 }
 
 CRITICAL REQUIREMENTS:
-1. Generate at least 3-4 items in each array
+1. Generate at least 3 items in each array section
 2. Provide specific, actionable recommendations
 3. Include realistic metrics and timelines
 4. Ensure all JSON is valid and properly formatted
-5. Generate 30 days for monthlyPlan (days 1-30)
-6. Make recommendations specific to the business type and industry
-7. Ensure the response is valid JSON without any markdown formatting
-8. Do not include any text before or after the JSON response`;
+5. Make recommendations specific to the business type and industry
+6. Ensure the response is valid JSON without any markdown formatting
+7. Do not include any text before or after the JSON response
+8. All monthlyPlan should have at least 30 days (extend the pattern)`;
 
-    console.log('Sending request to OpenAI with comprehensive prompt');
+    console.log('Sending request to OpenAI API');
 
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -223,7 +284,7 @@ CRITICAL REQUIREMENTS:
         messages: [
           {
             role: 'system',
-            content: 'You are a business intelligence expert. Always respond with valid JSON only, no markdown formatting, no explanatory text before or after the JSON.'
+            content: 'You are a business intelligence expert. Always respond with valid JSON only, no markdown formatting, no explanatory text before or after the JSON. Generate comprehensive business intelligence data.'
           },
           {
             role: 'user',
@@ -241,6 +302,15 @@ CRITICAL REQUIREMENTS:
     if (!openAIResponse.ok) {
       const errorText = await openAIResponse.text();
       console.error('OpenAI API error:', errorText);
+      
+      if (openAIResponse.status === 401) {
+        throw new Error('Invalid OpenAI API key');
+      } else if (openAIResponse.status === 429) {
+        throw new Error('OpenAI API rate limit exceeded');
+      } else if (openAIResponse.status === 500) {
+        throw new Error('OpenAI service error');
+      }
+      
       throw new Error(`OpenAI API error: ${openAIResponse.status}`);
     }
 
@@ -252,12 +322,11 @@ CRITICAL REQUIREMENTS:
 
     let intelligenceData;
     try {
-      // Parse the JSON response directly
       intelligenceData = JSON.parse(aiResponseContent);
       console.log('JSON parsing successful');
     } catch (parseError) {
       console.error('JSON parsing failed:', parseError);
-      console.error('Raw AI response (first 1500 chars):', aiResponseContent.substring(0, 1500));
+      console.error('Raw AI response (first 500 chars):', aiResponseContent.substring(0, 500));
       
       // Try to clean and parse again
       try {
@@ -265,13 +334,28 @@ CRITICAL REQUIREMENTS:
           .replace(/```json\n?/g, '')
           .replace(/```\n?/g, '')
           .replace(/^\s*|\s*$/g, '')
-          .replace(/,(\s*[}\]])/g, '$1'); // Remove trailing commas
+          .replace(/,(\s*[}\]])/g, '$1');
         
         intelligenceData = JSON.parse(cleanedContent);
         console.log('JSON parsing successful after cleaning');
       } catch (secondParseError) {
         console.error('Second JSON parsing attempt failed:', secondParseError);
-        throw new Error('AI generated response could not be parsed as valid JSON. The intelligence service may need adjustment. Please try again.');
+        throw new Error('Failed to parse AI response as valid JSON');
+      }
+    }
+
+    // Extend monthlyPlan to 30 days if needed
+    if (intelligenceData.monthlyPlan && intelligenceData.monthlyPlan.length < 30) {
+      const baseEntries = [...intelligenceData.monthlyPlan];
+      while (intelligenceData.monthlyPlan.length < 30) {
+        const dayNumber = intelligenceData.monthlyPlan.length + 1;
+        const baseEntry = baseEntries[dayNumber % baseEntries.length];
+        intelligenceData.monthlyPlan.push({
+          ...baseEntry,
+          day: dayNumber,
+          hook: `${baseEntry.hook} - Day ${dayNumber}`,
+          reasoning: `${baseEntry.reasoning} - Strategic continuation for day ${dayNumber}`
+        });
       }
     }
 
@@ -329,15 +413,30 @@ CRITICAL REQUIREMENTS:
     console.error('Error message:', error.message);
     console.error('Stack trace:', error.stack);
 
+    // Enhanced error response with specific error types
+    let statusCode = 500;
+    let errorMessage = error.message;
+    
+    if (error.message.includes('OpenAI API key')) {
+      statusCode = 401;
+      errorMessage = 'OpenAI API key not configured or invalid';
+    } else if (error.message.includes('rate limit')) {
+      statusCode = 429;
+      errorMessage = 'API rate limit exceeded. Please try again in a few minutes.';
+    } else if (error.message.includes('required')) {
+      statusCode = 400;
+      errorMessage = error.message;
+    }
+
     return new Response(
       JSON.stringify({
-        error: error.message,
-        details: 'Intelligence generation encountered an error. Please verify your configuration and try again.',
+        error: errorMessage,
+        details: 'Intelligence generation service error',
         timestamp: new Date().toISOString(),
         errorType: error.constructor.name
       }),
       {
-        status: 500,
+        status: statusCode,
         headers: { 
           ...corsHeaders, 
           'Content-Type': 'application/json' 

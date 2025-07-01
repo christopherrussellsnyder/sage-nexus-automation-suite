@@ -68,6 +68,9 @@ export class AIIntelligenceService {
       }
 
       const supabaseUrl = 'https://qtckfvprvpxbbteinxve.supabase.co';
+      
+      console.log('Making API request to edge function...');
+      
       const response = await fetch(`${supabaseUrl}/functions/v1/generate-intelligence`, {
         method: 'POST',
         headers: {
@@ -78,14 +81,24 @@ export class AIIntelligenceService {
       });
 
       console.log('API Response received - Status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
+        let errorData;
         let errorText;
+        
         try {
-          const errorData = await response.json();
-          errorText = JSON.stringify(errorData);
+          const responseText = await response.text();
+          console.log('Error response text:', responseText);
+          
+          try {
+            errorData = JSON.parse(responseText);
+            errorText = errorData.error || errorData.message || responseText;
+          } catch {
+            errorText = responseText;
+          }
         } catch {
-          errorText = await response.text();
+          errorText = `HTTP ${response.status} - ${response.statusText}`;
         }
         
         console.error('API Error Details:', {
@@ -96,18 +109,20 @@ export class AIIntelligenceService {
         
         // Enhanced error messaging based on status codes
         if (response.status === 400) {
-          throw new Error('Invalid request data. Please check all required fields are filled and try again.');
+          throw new Error(errorText || 'Invalid request data. Please check all required fields are filled and try again.');
         } else if (response.status === 401) {
-          throw new Error('API authentication failed. Please check your OpenAI API key configuration.');
+          throw new Error('API authentication failed. Please check your OpenAI API key configuration in Supabase Edge Function Secrets.');
         } else if (response.status === 403) {
           throw new Error('Access denied. Please verify your API key has the necessary permissions.');
         } else if (response.status === 429) {
           throw new Error('API rate limit exceeded. Please wait a moment and try again.');
         } else if (response.status === 500) {
-          throw new Error('Intelligence service temporarily unavailable. Please try again in a few moments.');
+          throw new Error(errorText || 'Intelligence service encountered an error. Please try again.');
+        } else if (response.status === 502 || response.status === 503 || response.status === 504) {
+          throw new Error('Intelligence service is temporarily unavailable. Please try again in a few moments.');
         }
         
-        throw new Error(`Intelligence generation failed (${response.status}). Please try again.`);
+        throw new Error(errorText || `Intelligence generation failed (${response.status}). Please try again.`);
       }
 
       const data = await response.json();
@@ -137,7 +152,7 @@ export class AIIntelligenceService {
       // Comprehensive data validation
       const sectionValidation = {
         platformRecommendations: Array.isArray(intelligenceData.platformRecommendations) && intelligenceData.platformRecommendations.length > 0,
-        monthlyPlan: Array.isArray(intelligenceData.monthlyPlan) && intelligenceData.monthlyPlan.length >= 25, // At least 25 days
+        monthlyPlan: Array.isArray(intelligenceData.monthlyPlan) && intelligenceData.monthlyPlan.length >= 25,
         copywritingRecommendations: Array.isArray(intelligenceData.copywritingRecommendations) && intelligenceData.copywritingRecommendations.length > 0,
         competitorInsights: Array.isArray(intelligenceData.competitorInsights) && intelligenceData.competitorInsights.length > 0,
         industryInsights: Array.isArray(intelligenceData.industryInsights) && intelligenceData.industryInsights.length > 0,
@@ -158,7 +173,7 @@ export class AIIntelligenceService {
       console.log(`Completion Rate: ${Math.round(completionRate * 100)}% (${validSections}/${totalSections} sections)`);
 
       // Ensure minimum data quality
-      if (completionRate < 0.3) { // Less than 30% completion
+      if (completionRate < 0.3) {
         console.warn('Low completion rate detected:', completionRate);
         throw new Error('Intelligence generation incomplete. Please try again for better results.');
       }
@@ -170,10 +185,10 @@ export class AIIntelligenceService {
         intelligenceMode: request.intelligenceMode,
         businessType: request.businessType,
         businessName: request.formData.businessName,
-        isAIGenerated: completionRate >= 0.5, // At least 50% completion to be considered AI-generated
+        isAIGenerated: completionRate >= 0.5,
         dataQuality: {
           completeness: completionRate,
-          aiContentRatio: completionRate >= 0.7 ? 1 : completionRate * 1.5, // Higher ratio for better completion
+          aiContentRatio: completionRate >= 0.7 ? 1 : completionRate * 1.5,
           sectionsGenerated: validSections,
           totalSections: totalSections,
           validationDetails: sectionValidation
@@ -201,7 +216,7 @@ export class AIIntelligenceService {
       } else if (error.message.includes('JSON')) {
         throw new Error('Data processing error: Invalid response from intelligence service. Please try again.');
       } else if (error.message.includes('API key')) {
-        throw new Error('Authentication error: Please ensure your OpenAI API key is properly configured.');
+        throw new Error('Authentication error: Please ensure your OpenAI API key is properly configured in Supabase Edge Function Secrets.');
       } else if (error.message.includes('rate limit')) {
         throw new Error('Rate limit exceeded: Please wait a few minutes before trying again.');
       } else if (error.message.includes('temporarily unavailable')) {
