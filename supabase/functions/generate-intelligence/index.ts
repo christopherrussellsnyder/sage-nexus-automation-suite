@@ -66,18 +66,14 @@ serve(async (req) => {
       throw new Error('Target audience is required');
     }
 
-    // Use the specific OpenAI API key for intelligence generation
+    // Use the updated OpenAI API key directly
     const openAIApiKey = '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';
     
-    if (!openAIApiKey) {
-      console.error('OpenAI API key not found');
-      throw new Error('OpenAI API key not configured');
-    }
-
-    console.log('OpenAI API key configured, proceeding with comprehensive intelligence generation');
+    console.log('OpenAI API key configured successfully');
+    console.log('API key starts with:', openAIApiKey.substring(0, 20) + '...');
 
     // Create comprehensive prompt for complete intelligence generation
-    const prompt = `You are an expert business intelligence analyst. Generate a comprehensive business intelligence report for ${formData.businessName}.
+    const prompt = `You are an expert business intelligence analyst specializing in ${businessType} businesses. Generate a comprehensive business intelligence report for ${formData.businessName}.
 
 BUSINESS CONTEXT:
 Business Name: ${formData.businessName}
@@ -102,7 +98,7 @@ Current Obstacles: ${formData.currentObstacles || 'Not specified'}
 Market Position: ${formData.marketPosition || 'Not specified'}
 Competitive Advantage: ${formData.competitiveAdvantage || 'Not specified'}
 
-Generate a detailed JSON response with exactly these sections. Each section must be fully populated with comprehensive, actionable insights:
+CRITICAL: Generate a comprehensive JSON response with exactly these sections. Each section MUST be fully populated with detailed, actionable insights specific to ${formData.businessName}:
 
 {
   "platformRecommendations": [
@@ -126,7 +122,7 @@ Generate a detailed JSON response with exactly these sections. Each section must
     {
       "platform": "Google Ads",
       "priority": 2,
-      "reasoning": "High intent traffic from search queries relevant to ${formData.productService}",
+      "reasoning": "Search intent targeting for ${formData.productService} in ${formData.industry}",
       "expectedMetrics": {
         "roas": 5.1,
         "cpm": 18.75,
@@ -135,15 +131,15 @@ Generate a detailed JSON response with exactly these sections. Each section must
       },
       "budgetAllocation": 30,
       "targetingParameters": {
-        "keywords": ["${formData.industry} keywords", "product specific keywords"],
-        "demographics": "Business professionals interested in ${formData.productService}",
+        "keywords": ["${formData.industry} specific keywords", "product related keywords"],
+        "demographics": "Business decision makers interested in ${formData.productService}",
         "locations": ["primary market locations"]
       }
     },
     {
       "platform": "LinkedIn",
       "priority": 3,
-      "reasoning": "Professional network perfect for ${businessType} targeting ${formData.targetAudience}",
+      "reasoning": "Professional network targeting for ${businessType} reaching ${formData.targetAudience}",
       "expectedMetrics": {
         "roas": 3.8,
         "cpm": 25.00,
@@ -152,9 +148,9 @@ Generate a detailed JSON response with exactly these sections. Each section must
       },
       "budgetAllocation": 25,
       "targetingParameters": {
-        "jobTitles": ["relevant job titles for ${formData.targetAudience}"],
+        "jobTitles": ["decision maker titles for ${formData.targetAudience}"],
         "industries": ["${formData.industry}", "related industries"],
-        "companySize": ["appropriate company sizes"]
+        "companySize": ["appropriate company sizes for ${businessType}"]
       }
     }
   ],
@@ -162,78 +158,78 @@ Generate a detailed JSON response with exactly these sections. Each section must
     ${Array.from({length: 30}, (_, i) => `{
       "day": ${i + 1},
       "platform": "${['Facebook', 'Google Ads', 'LinkedIn', 'Instagram', 'Twitter'][i % 5]}",
-      "contentType": "${['ad', 'social_post', 'blog_post', 'video', 'infographic'][i % 5]}",
-      "hook": "Day ${i + 1}: Strategic content hook for ${formData.businessName}",
-      "body": "Detailed content body targeting ${formData.targetAudience} with ${formData.productService}",
-      "cta": "Strong call-to-action for ${formData.businessName}",
-      "reasoning": "Strategic reasoning for day ${i + 1} content approach",
-      "visualSuggestions": "Visual recommendations for ${formData.industry} audience"
+      "contentType": "${['ad_campaign', 'social_post', 'blog_content', 'video_content', 'email_campaign'][i % 5]}",
+      "hook": "Day ${i + 1}: Compelling hook for ${formData.businessName} targeting ${formData.targetAudience}",
+      "body": "Detailed content strategy for ${formData.productService} addressing ${formData.currentChallenges || 'key challenges'}",
+      "cta": "Strong call-to-action driving ${formData.primaryGoal || 'business goals'}",
+      "reasoning": "Strategic reasoning for day ${i + 1} content in ${formData.industry} market",
+      "visualSuggestions": "Visual recommendations for ${formData.targetAudience} engagement"
     }`).join(',\n    ')}
   ],
   "copywritingRecommendations": [
     {
       "stage": "awareness",
-      "hook": "Problem-focused hook addressing ${formData.currentChallenges || 'key challenges'} for ${formData.targetAudience}",
-      "body": "Educational content about ${formData.industry} challenges and how ${formData.businessName} addresses them",
-      "cta": "Learn More About Our Solutions",
+      "hook": "Problem-focused hook addressing ${formData.currentChallenges || 'industry challenges'} for ${formData.targetAudience}",
+      "body": "Educational content about ${formData.industry} challenges and how ${formData.businessName} provides solutions",
+      "cta": "Learn More About Our ${formData.productService}",
       "emotional_triggers": ["curiosity", "concern", "hope"],
       "personalization": "Specific messaging for ${formData.targetAudience} in ${formData.industry}"
     },
     {
       "stage": "consideration",
       "hook": "Solution-focused hook highlighting ${formData.competitiveAdvantage || 'unique benefits'} of ${formData.businessName}",
-      "body": "Detailed explanation of ${formData.productService} benefits and how it solves ${formData.targetAudience} problems",
-      "cta": "See How We Can Help",
+      "body": "Detailed explanation of ${formData.productService} benefits and ROI for ${formData.targetAudience}",
+      "cta": "See How We Help ${formData.targetAudience}",
       "emotional_triggers": ["trust", "excitement", "confidence"],
-      "personalization": "Industry-specific messaging for ${formData.industry} professionals"
+      "personalization": "Industry-specific value propositions for ${formData.industry}"
     },
     {
       "stage": "decision",
-      "hook": "Urgency-driven hook with specific offer for ${formData.businessName}",
-      "body": "Compelling reason to choose ${formData.businessName} now with clear value proposition",
-      "cta": "Get Started Today",
-      "emotional_triggers": ["urgency", "fear of missing out", "excitement"],
-      "personalization": "Direct address to ${formData.targetAudience} decision-makers"
+      "hook": "Urgency-driven hook with compelling offer for ${formData.businessName}",
+      "body": "Clear value proposition and reason to choose ${formData.businessName} over competitors",
+      "cta": "Start Your ${formData.productService} Journey Today",
+      "emotional_triggers": ["urgency", "fear_of_missing_out", "excitement"],
+      "personalization": "Direct messaging to ${formData.targetAudience} decision-makers"
     }
   ],
   "competitorInsights": [
     {
-      "competitor": "Main ${formData.industry} Competitor A",
-      "keyStrategy": "Detailed analysis of their primary marketing approach in ${formData.industry}",
-      "performanceMetric": "Observed performance indicators and market share",
+      "competitor": "Leading ${formData.industry} Competitor A",
+      "keyStrategy": "Analysis of primary marketing approach targeting ${formData.targetAudience}",
+      "performanceMetric": "Market share and engagement analysis in ${formData.industry}",
       "applicationForUser": "How ${formData.businessName} can differentiate using ${formData.competitiveAdvantage || 'unique strengths'}"
     },
     {
-      "competitor": "Main ${formData.industry} Competitor B",
-      "keyStrategy": "Analysis of their positioning strategy targeting ${formData.targetAudience}",
-      "performanceMetric": "Market share and engagement metrics",
+      "competitor": "Major ${formData.industry} Competitor B",
+      "keyStrategy": "Their positioning strategy and pricing model for ${formData.productService} alternatives",
+      "performanceMetric": "Revenue growth and customer acquisition metrics",
       "applicationForUser": "Specific tactics ${formData.businessName} should adopt or avoid"
     },
     {
-      "competitor": "Emerging ${formData.industry} Competitor",
-      "keyStrategy": "Their innovative approach or technology in ${formData.industry}",
-      "performanceMetric": "Growth rate and market penetration",
-      "applicationForUser": "Opportunities for ${formData.businessName} to stay ahead"
+      "competitor": "Emerging ${formData.industry} Player",
+      "keyStrategy": "Innovative approach or technology disrupting ${formData.industry}",
+      "performanceMetric": "Growth rate and market penetration speed",
+      "applicationForUser": "Strategic opportunities for ${formData.businessName} to stay competitive"
     }
   ],
   "industryInsights": [
     {
-      "trend": "Major ${formData.industry} industry trend affecting ${formData.targetAudience}",
-      "impact": "How this trend affects ${formData.targetAudience} buying behavior and ${formData.productService} demand",
+      "trend": "Digital transformation trend affecting ${formData.industry} and ${formData.targetAudience}",
+      "impact": "How this trend changes ${formData.targetAudience} buying behavior and ${formData.productService} demand",
       "opportunity": "Specific opportunity for ${formData.businessName} to capitalize on this trend",
-      "recommendation": "Actionable steps to implement this opportunity"
+      "recommendation": "Actionable implementation steps for ${formData.businessName}"
     },
     {
-      "trend": "Technology adoption in ${formData.industry} sector",
-      "impact": "Changes in customer expectations for ${formData.productService}",
-      "opportunity": "How ${formData.businessName} can address new needs",
-      "recommendation": "Implementation strategy for ${formData.businessName}"
-    },
-    {
-      "trend": "Market consolidation or fragmentation in ${formData.industry}",
-      "impact": "Competitive landscape changes affecting ${formData.targetAudience}",
+      "trend": "Market consolidation patterns in ${formData.industry}",
+      "impact": "Competitive landscape changes affecting ${formData.targetAudience} choices",
       "opportunity": "Market positioning opportunity for ${formData.businessName}",
-      "recommendation": "Strategic positioning recommendation"
+      "recommendation": "Strategic positioning recommendation for competitive advantage"
+    },
+    {
+      "trend": "Technology adoption in ${formData.industry} affecting ${formData.productService}",
+      "impact": "Changing customer expectations and service delivery methods",
+      "opportunity": "Innovation opportunity for ${formData.businessName}",
+      "recommendation": "Technology integration strategy for ${formData.businessName}"
     }
   ],
   "budgetStrategy": [
@@ -242,33 +238,33 @@ Generate a detailed JSON response with exactly these sections. Each section must
       "allocation": 40,
       "reasoning": "Primary growth driver for ${businessType} targeting ${formData.targetAudience}",
       "expectedROI": 3.5,
-      "implementation": "Start with Facebook and Google Ads focusing on ${formData.primaryGoal || 'growth'}"
+      "implementation": "Focus on Facebook and Google Ads optimized for ${formData.primaryGoal || 'revenue growth'}"
     },
     {
       "category": "Content Marketing",
       "allocation": 25,
-      "reasoning": "Long-term SEO and authority building in ${formData.industry}",
+      "reasoning": "Long-term authority building in ${formData.industry} for ${formData.targetAudience}",
       "expectedROI": 2.8,
-      "implementation": "Create ${formData.industry}-specific content addressing ${formData.currentChallenges || 'common challenges'}"
+      "implementation": "Create ${formData.industry}-specific content addressing ${formData.currentChallenges || 'market challenges'}"
     },
     {
       "category": "Email Marketing",
       "allocation": 15,
-      "reasoning": "High ROI for nurturing ${formData.targetAudience}",
+      "reasoning": "High ROI channel for nurturing ${formData.targetAudience} leads",
       "expectedROI": 6.2,
-      "implementation": "Automated sequences for ${formData.businessType} funnel"
+      "implementation": "Automated sequences for ${businessType} customer journey"
     },
     {
       "category": "Social Media Marketing",
       "allocation": 10,
-      "reasoning": "Brand building and community engagement",
+      "reasoning": "Brand building and community engagement with ${formData.targetAudience}",
       "expectedROI": 2.0,
-      "implementation": "Platform-specific content for ${formData.targetAudience}"
+      "implementation": "Platform-specific content strategy for ${formData.targetAudience}"
     },
     {
       "category": "SEO & Website Optimization",
       "allocation": 10,
-      "reasoning": "Long-term organic growth for ${formData.productService}",
+      "reasoning": "Long-term organic growth for ${formData.productService} searches",
       "expectedROI": 4.0,
       "implementation": "Optimize for ${formData.industry} keywords and user experience"
     }
@@ -278,41 +274,41 @@ Generate a detailed JSON response with exactly these sections. Each section must
       "metric": "Conversion Rate",
       "currentValue": "${formData.conversionRate || '2.5'}%",
       "targetValue": "4.0%",
-      "strategy": "A/B test landing pages specifically for ${formData.targetAudience} and optimize ${formData.productService} presentation",
+      "strategy": "A/B test landing pages for ${formData.targetAudience} and optimize ${formData.productService} presentation",
       "timeline": "3 months",
-      "implementation": "Start with homepage and primary landing page optimization"
+      "implementation": "Start with homepage and key landing page optimization"
     },
     {
       "metric": "Customer Acquisition Cost",
       "currentValue": "$${formData.averageProjectValue ? (parseInt(formData.averageProjectValue) * 0.15).toString() : '150'}",
       "targetValue": "$100",
-      "strategy": "Optimize ad targeting for ${formData.targetAudience} and improve organic reach through ${formData.industry} content",
+      "strategy": "Optimize targeting for ${formData.targetAudience} and improve organic reach in ${formData.industry}",
       "timeline": "6 months",
       "implementation": "Focus on high-intent keywords and audience refinement"
     },
     {
       "metric": "Monthly Revenue",
-      "currentValue": "${formData.monthlyRevenue || 'Current level'}",
-      "targetValue": "${formData.revenueTarget || 'Target level'}",
-      "strategy": "Increase ${formData.productService} sales through optimized funnel and ${formData.competitiveAdvantage || 'unique positioning'}",
+      "currentValue": "${formData.monthlyRevenue || 'Current baseline'}",
+      "targetValue": "${formData.revenueTarget || 'Target growth'}",
+      "strategy": "Scale ${formData.productService} sales through optimized funnel and ${formData.competitiveAdvantage || 'unique positioning'}",
       "timeline": "12 months",
-      "implementation": "Multi-channel approach with focus on ${formData.primaryGoal || 'revenue growth'}"
+      "implementation": "Multi-channel approach focusing on ${formData.primaryGoal || 'revenue optimization'}"
     }
   ]
 }
 
 CRITICAL REQUIREMENTS:
-1. Generate comprehensive, detailed content for ALL sections
-2. Make each recommendation specific to ${formData.businessName}, ${formData.industry}, and ${formData.targetAudience}
-3. Ensure monthlyPlan has exactly 30 detailed entries
-4. Include realistic metrics and actionable strategies
-5. Reference the specific business context throughout
-6. Ensure all JSON is valid and properly formatted
-7. Make recommendations data-driven and industry-specific
-8. Do not include any text before or after the JSON response
-9. Ensure every field is populated with meaningful, relevant content`;
+- Generate comprehensive, detailed content for ALL sections
+- Make each recommendation specific to ${formData.businessName}, ${formData.industry}, and ${formData.targetAudience}
+- Ensure monthlyPlan has exactly 30 detailed, unique entries
+- Include realistic metrics and actionable strategies
+- Reference specific business context throughout
+- Ensure all JSON is valid and properly formatted
+- Make recommendations data-driven and industry-specific
+- Do not include any text before or after the JSON response
+- Populate every field with meaningful, relevant content`;
 
-    console.log('Sending comprehensive request to OpenAI API');
+    console.log('Sending request to OpenAI API...');
 
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -339,13 +335,15 @@ CRITICAL REQUIREMENTS:
     });
 
     console.log('OpenAI API response status:', openAIResponse.status);
+    console.log('OpenAI API response headers:', Object.fromEntries(openAIResponse.headers.entries()));
 
     if (!openAIResponse.ok) {
       const errorText = await openAIResponse.text();
-      console.error('OpenAI API error:', errorText);
+      console.error('OpenAI API error response:', errorText);
       
       if (openAIResponse.status === 401) {
-        throw new Error('Invalid OpenAI API key - please check your API key');
+        console.error('Authentication failed - API key issue');
+        throw new Error('OpenAI API authentication failed - please verify your API key is valid and has sufficient credits');
       } else if (openAIResponse.status === 429) {
         throw new Error('OpenAI API rate limit exceeded - please try again in a few minutes');
       } else if (openAIResponse.status === 500) {
@@ -357,24 +355,27 @@ CRITICAL REQUIREMENTS:
 
     const openAIData = await openAIResponse.json();
     console.log('OpenAI response received successfully');
+    console.log('Response data structure:', Object.keys(openAIData));
 
     const aiResponseContent = openAIData.choices[0].message.content;
-    console.log('AI response length:', aiResponseContent.length);
+    console.log('AI response content length:', aiResponseContent.length);
+    console.log('AI response preview:', aiResponseContent.substring(0, 200));
 
     let intelligenceData;
     try {
       intelligenceData = JSON.parse(aiResponseContent);
       console.log('JSON parsing successful');
+      console.log('Parsed data keys:', Object.keys(intelligenceData));
     } catch (parseError) {
       console.error('JSON parsing failed:', parseError);
-      console.error('Raw AI response (first 500 chars):', aiResponseContent.substring(0, 500));
+      console.error('Raw AI response (first 1000 chars):', aiResponseContent.substring(0, 1000));
       
       // Enhanced JSON cleaning and parsing
       try {
         const cleanedContent = aiResponseContent
-          .replace(/```json\n?/g, '')
-          .replace(/```\n?/g, '')
-          .replace(/^\s*|\s*$/g, '')
+          .replace(/```json\s*/g, '')
+          .replace(/```\s*/g, '')
+          .replace(/^\s+|\s+$/g, '')
           .replace(/,(\s*[}\]])/g, '$1')
           .replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
         
@@ -382,7 +383,7 @@ CRITICAL REQUIREMENTS:
         console.log('JSON parsing successful after cleaning');
       } catch (secondParseError) {
         console.error('Second JSON parsing attempt failed:', secondParseError);
-        throw new Error('Failed to parse AI response - invalid JSON format');
+        throw new Error('Failed to parse AI response - invalid JSON format received from OpenAI');
       }
     }
 
@@ -401,13 +402,18 @@ CRITICAL REQUIREMENTS:
     requiredSections.forEach(section => {
       const isValid = Array.isArray(intelligenceData[section]) && intelligenceData[section].length > 0;
       validationResults[section] = isValid;
-      console.log(`${section}: ${isValid ? '✓' : '✗'} (${intelligenceData[section]?.length || 0} items)`);
+      console.log(`Validation - ${section}: ${isValid ? '✓' : '✗'} (${intelligenceData[section]?.length || 0} items)`);
     });
 
     const validSections = Object.values(validationResults).filter(Boolean).length;
     const completionRate = validSections / requiredSections.length;
 
     console.log(`Intelligence generation quality: ${Math.round(completionRate * 100)}% complete (${validSections}/${requiredSections.length} sections)`);
+
+    if (completionRate < 0.5) {
+      console.warn('Low completion rate detected:', completionRate);
+      throw new Error('Incomplete intelligence data generated - please try again for better results');
+    }
 
     const response = {
       insights: intelligenceData,
@@ -426,6 +432,7 @@ CRITICAL REQUIREMENTS:
     };
 
     console.log('Intelligence generation completed successfully');
+    console.log('Final response structure:', Object.keys(response));
 
     return new Response(JSON.stringify(response), {
       headers: { 
@@ -443,16 +450,16 @@ CRITICAL REQUIREMENTS:
     let statusCode = 500;
     let errorMessage = error.message;
     
-    if (error.message.includes('OpenAI API key')) {
+    if (error.message.includes('OpenAI API authentication failed')) {
       statusCode = 401;
-      errorMessage = 'OpenAI API key authentication failed - please verify your API key';
+      errorMessage = 'OpenAI API authentication failed - please verify your API key is valid and has sufficient credits';
     } else if (error.message.includes('rate limit')) {
       statusCode = 429;
       errorMessage = 'API rate limit exceeded. Please try again in a few minutes.';
     } else if (error.message.includes('required')) {
       statusCode = 400;
       errorMessage = error.message;
-    } else if (error.message.includes('JSON')) {
+    } else if (error.message.includes('JSON') || error.message.includes('parse')) {
       statusCode = 422;
       errorMessage = 'Data processing error: Invalid response format from AI service';
     }

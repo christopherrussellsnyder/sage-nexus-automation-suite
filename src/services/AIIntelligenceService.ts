@@ -69,7 +69,13 @@ export class AIIntelligenceService {
 
       const supabaseUrl = 'https://qtckfvprvpxbbteinxve.supabase.co';
       
-      console.log('Making API request to edge function with your OpenAI API key...');
+      console.log('Making API request to intelligence generation edge function...');
+      console.log('Request data preview:', {
+        businessName: request.formData.businessName,
+        industry: request.formData.industry,
+        targetAudience: request.formData.targetAudience,
+        businessType: request.businessType
+      });
       
       const response = await fetch(`${supabaseUrl}/functions/v1/generate-intelligence`, {
         method: 'POST',
@@ -110,7 +116,7 @@ export class AIIntelligenceService {
         if (response.status === 400) {
           throw new Error(errorText || 'Invalid request data. Please check all required fields are filled and try again.');
         } else if (response.status === 401) {
-          throw new Error('API authentication failed. Your OpenAI API key may be invalid or expired.');
+          throw new Error('OpenAI API authentication failed. The API key may be invalid, expired, or lack sufficient credits. Please verify your API key.');
         } else if (response.status === 403) {
           throw new Error('Access denied. Please verify your API key has the necessary permissions.');
         } else if (response.status === 422) {
@@ -210,8 +216,8 @@ export class AIIntelligenceService {
         throw new Error('Network error: Unable to connect to intelligence service. Please check your internet connection and try again.');
       } else if (error.message.includes('JSON') || error.message.includes('parsing')) {
         throw new Error('Data processing error: Invalid response from intelligence service. Please try again.');
-      } else if (error.message.includes('API key')) {
-        throw new Error('Authentication error: Your OpenAI API key may be invalid or expired.');
+      } else if (error.message.includes('API key') || error.message.includes('authentication')) {
+        throw new Error('Authentication error: Your OpenAI API key may be invalid, expired, or lack sufficient credits.');
       } else if (error.message.includes('rate limit')) {
         throw new Error('Rate limit exceeded: Please wait a few minutes before trying again.');
       } else if (error.message.includes('temporarily unavailable')) {
