@@ -69,7 +69,7 @@ export class AIIntelligenceService {
 
       const supabaseUrl = 'https://qtckfvprvpxbbteinxve.supabase.co';
       
-      console.log('Making API request to edge function with comprehensive data using your API key...');
+      console.log('Making API request to edge function with your OpenAI API key...');
       
       const response = await fetch(`${supabaseUrl}/functions/v1/generate-intelligence`, {
         method: 'POST',
@@ -113,6 +113,8 @@ export class AIIntelligenceService {
           throw new Error('API authentication failed. Your OpenAI API key may be invalid or expired.');
         } else if (response.status === 403) {
           throw new Error('Access denied. Please verify your API key has the necessary permissions.');
+        } else if (response.status === 422) {
+          throw new Error('Data processing error: Invalid response from intelligence service. Please try again.');
         } else if (response.status === 429) {
           throw new Error('API rate limit exceeded. Please wait a moment and try again.');
         } else if (response.status === 500) {
@@ -192,7 +194,7 @@ export class AIIntelligenceService {
       console.log('=== FINAL INTELLIGENCE DATA SUMMARY ===');
       console.log('Business:', finalData.businessName);
       console.log('Mode:', finalData.intelligenceMode);
-      console.log('AI Generated with your API key:', finalData.isAIGenerated);
+      console.log('AI Generated:', finalData.isAIGenerated);
       console.log('Completion:', Math.round(finalData.dataQuality.completeness * 100) + '%');
       console.log('Valid Sections:', finalData.dataQuality.sectionsGenerated);
 
@@ -206,7 +208,7 @@ export class AIIntelligenceService {
       
       if (error.message.includes('fetch')) {
         throw new Error('Network error: Unable to connect to intelligence service. Please check your internet connection and try again.');
-      } else if (error.message.includes('JSON')) {
+      } else if (error.message.includes('JSON') || error.message.includes('parsing')) {
         throw new Error('Data processing error: Invalid response from intelligence service. Please try again.');
       } else if (error.message.includes('API key')) {
         throw new Error('Authentication error: Your OpenAI API key may be invalid or expired.');
