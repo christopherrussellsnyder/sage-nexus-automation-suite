@@ -25,17 +25,11 @@ import BusinessTypeSelector from './intelligence/BusinessTypeSelector';
 const IntelligenceDashboard = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'wizard' | 'results'>('overview');
   const [intelligenceData, setIntelligenceData] = useState(null);
-  const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | 'copywriting' | null>(null);
+  const [businessType, setBusinessType] = useState<'ecommerce' | 'agency' | 'sales' | null>(null);
   const [intelligenceMode, setIntelligenceMode] = useState<'full' | 'copywriting' | 'marketing' | 'competitor'>('full');
 
   const handleBusinessTypeSelect = (type: any) => {
     setBusinessType(type);
-    // If copywriting business type is selected, force copywriting mode
-    if (type === 'copywriting') {
-      setIntelligenceMode('copywriting');
-    } else {
-      setIntelligenceMode('full');
-    }
     setActiveSection('wizard');
   };
 
@@ -49,21 +43,6 @@ const IntelligenceDashboard = () => {
     setBusinessType(null);
     setIntelligenceData(null);
     setIntelligenceMode('full');
-  };
-
-  // Get available intelligence modes based on business type
-  const getAvailableIntelligenceModes = () => {
-    if (businessType === 'copywriting') {
-      return [
-        { value: 'copywriting', label: 'Copywriting Intelligence' }
-      ];
-    }
-    return [
-      { value: 'full', label: 'Full Intelligence' },
-      { value: 'copywriting', label: 'Copywriting Only' },
-      { value: 'marketing', label: 'Marketing Only' },
-      { value: 'competitor', label: 'Competitor Analysis' }
-    ];
   };
 
   return (
@@ -94,27 +73,17 @@ const IntelligenceDashboard = () => {
                 <span>Intelligence Wizard</span>
               </Button>
               
-              {/* Intelligence Mode Selector - only show if not copywriting business type */}
-              {businessType !== 'copywriting' && (
-                <select
-                  value={intelligenceMode}
-                  onChange={(e) => setIntelligenceMode(e.target.value as any)}
-                  className="px-3 py-1 border rounded text-sm"
-                >
-                  {getAvailableIntelligenceModes().map((mode) => (
-                    <option key={mode.value} value={mode.value}>
-                      {mode.label}
-                    </option>
-                  ))}
-                </select>
-              )}
-              
-              {/* Show current mode for copywriting business type */}
-              {businessType === 'copywriting' && (
-                <Badge variant="default" className="px-3 py-1">
-                  Copywriting Intelligence
-                </Badge>
-              )}
+              {/* Intelligence Mode Selector */}
+              <select
+                value={intelligenceMode}
+                onChange={(e) => setIntelligenceMode(e.target.value as any)}
+                className="px-3 py-1 border rounded text-sm"
+              >
+                <option value="full">Full Intelligence</option>
+                <option value="copywriting">Copywriting Only</option>
+                <option value="marketing">Marketing Only</option>
+                <option value="competitor">Competitor Analysis</option>
+              </select>
             </>
           )}
           {intelligenceData && (

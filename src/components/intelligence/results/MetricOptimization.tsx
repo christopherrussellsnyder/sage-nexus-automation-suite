@@ -2,281 +2,282 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { TrendingUp, Target, DollarSign, Calendar, BarChart3, Calculator, ArrowUpRight, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, Target, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface MetricOptimizationProps {
   data: any;
 }
 
 const MetricOptimization = ({ data }: MetricOptimizationProps) => {
-  console.log('Metric Optimization - Checking data structure:', data);
-  console.log('Metric optimization data:', data.insights?.metricOptimization);
+  const businessType = data.businessType || 'general';
+  const industry = data.formData?.industry || 'general';
 
-  // Use correct data path: data.insights.metricOptimization with enhanced ROI calculations
-  const aiMetricOptimizations = data.insights?.metricOptimization?.map((metric: any) => ({
-    ...metric,
-    roiCalculation: {
-      investmentRequired: Math.floor(Math.random() * 5000) + 2000,
-      expectedReturn: Math.floor(Math.random() * 15000) + 8000,
-      paybackPeriod: Math.floor(Math.random() * 8) + 2,
-      roi: Math.floor(Math.random() * 300) + 150
-    },
-    implementationCost: Math.floor(Math.random() * 3000) + 1000,
-    monthlyRecurringValue: Math.floor(Math.random() * 2000) + 500,
-    riskAssessment: ['Low', 'Medium', 'High'][Math.floor(Math.random() * 3)],
-    successProbability: Math.floor(Math.random() * 30) + 70
-  })) || [];
+  const getOptimizationMetrics = () => {
+    const baseMetrics = [
+      {
+        metric: 'Conversion Rate',
+        targetBenchmark: getTargetByIndustry('conversion', industry),
+        warningThresholds: {
+          poor: 1.0,
+          average: 2.5,
+          good: 4.0,
+          excellent: 6.0
+        },
+        improvementStrategies: [
+          'Optimize landing page load speed and mobile experience',
+          'A/B test headlines and call-to-action buttons',
+          'Implement social proof and testimonials',
+          'Reduce form fields and simplify checkout process',
+          'Add urgency elements like limited-time offers'
+        ],
+        priority: 'High'
+      },
+      {
+        metric: 'Cost Per Click (CPC)',
+        targetBenchmark: getTargetByIndustry('cpc', industry),
+        warningThresholds: {
+          poor: 5.0,
+          average: 3.0,
+          good: 2.0,
+          excellent: 1.0
+        },
+        improvementStrategies: [
+          'Improve ad relevance and quality scores',
+          'Target more specific, long-tail keywords',
+          'Optimize ad scheduling for peak performance hours',
+          'Refine audience targeting to reduce competition',
+          'Use negative keywords to filter irrelevant traffic'
+        ],
+        priority: 'Medium'
+      },
+      {
+        metric: 'Return on Ad Spend (ROAS)',
+        targetBenchmark: getTargetByIndustry('roas', industry),
+        warningThresholds: {
+          poor: 2.0,
+          average: 3.0,
+          good: 4.0,
+          excellent: 5.0
+        },
+        improvementStrategies: [
+          'Focus budget on highest-performing campaigns',
+          'Implement dynamic product ads for better targeting',
+          'Optimize for lifetime value, not just initial purchase',
+          'Use retargeting campaigns to re-engage warm audiences',
+          'Create lookalike audiences based on best customers'
+        ],
+        priority: 'High'
+      },
+      {
+        metric: 'Click-Through Rate (CTR)',
+        targetBenchmark: getTargetByIndustry('ctr', industry),
+        warningThresholds: {
+          poor: 1.0,
+          average: 2.0,
+          good: 3.5,
+          excellent: 5.0
+        },
+        improvementStrategies: [
+          'Test emotional triggers in ad copy',
+          'Use compelling visuals that stand out in feed',
+          'Include specific numbers and benefits in headlines',
+          'Test different ad formats (video, carousel, single image)',
+          'Optimize ad placement and timing for your audience'
+        ],
+        priority: 'Medium'
+      }
+    ];
 
-  // Enhanced template data with ROI calculations
-  const templateMetrics = [
-    {
-      metric: 'Lead Conversion Rate',
-      currentPerformance: '2.1%',
-      targetImprovement: 'Increase to 3.8% (+81% improvement)',
-      actionSteps: [
-        'Implement advanced lead scoring system',
-        'Create personalized landing pages by industry',
-        'Deploy automated nurture sequences',
-        'Add social proof and testimonials',
-        'Optimize form fields and CTA placement'
-      ],
-      timeline: '45-60 days for full implementation',
-      expectedROI: '285% ROI within 6 months',
-      roiCalculation: {
-        investmentRequired: 3500,
-        expectedReturn: 12000,
-        paybackPeriod: 3,
-        roi: 285
-      },
-      implementationCost: 2500,
-      monthlyRecurringValue: 800,
-      riskAssessment: 'Low',
-      successProbability: 85
-    },
-    {
-      metric: 'Customer Acquisition Cost',
-      currentPerformance: '$125 per customer',
-      targetImprovement: 'Reduce to $78 per customer (38% reduction)',
-      actionSteps: [
-        'Optimize ad targeting and audience segmentation',
-        'Implement retargeting campaigns',
-        'Create lookalike audiences from best customers',
-        'Improve organic content strategy',
-        'Enhance referral program incentives'
-      ],
-      timeline: '30-45 days for optimization',
-      expectedROI: '195% ROI within 4 months',
-      roiCalculation: {
-        investmentRequired: 4200,
-        expectedReturn: 10500,
-        paybackPeriod: 4,
-        roi: 195
-      },
-      implementationCost: 3200,
-      monthlyRecurringValue: 650,
-      riskAssessment: 'Medium',
-      successProbability: 78
-    },
-    {
-      metric: 'Email Marketing ROI',
-      currentPerformance: '18:1 return ratio',
-      targetImprovement: 'Increase to 32:1 return ratio (+78% improvement)',
-      actionSteps: [
-        'Segment email lists by behavior and preferences',
-        'Implement dynamic content personalization',
-        'Create automated drip campaigns',
-        'A/B test subject lines and send times',
-        'Integrate with CRM for better tracking'
-      ],
-      timeline: '21-35 days for setup and testing',
-      expectedROI: '420% ROI within 3 months',
-      roiCalculation: {
-        investmentRequired: 2800,
-        expectedReturn: 14500,
-        paybackPeriod: 2,
-        roi: 420
-      },
-      implementationCost: 1800,
-      monthlyRecurringValue: 1200,
-      riskAssessment: 'Low',
-      successProbability: 92
+    // Add business-specific metrics
+    if (businessType === 'ecommerce') {
+      baseMetrics.push({
+        metric: 'Average Order Value (AOV)',
+        targetBenchmark: getTargetByIndustry('aov', industry),
+        warningThresholds: {
+          poor: 50,
+          average: 75,
+          good: 100,
+          excellent: 150
+        },
+        improvementStrategies: [
+          'Implement product bundling strategies',
+          'Add upsell and cross-sell recommendations',
+          'Offer free shipping thresholds',
+          'Create volume discount incentives',
+          'Use exit-intent popups with special offers'
+        ],
+        priority: 'High'
+      });
     }
-  ];
 
-  const metrics = aiMetricOptimizations.length > 0 ? aiMetricOptimizations : templateMetrics;
-  const isAIGenerated = aiMetricOptimizations.length > 0;
+    return baseMetrics;
+  };
 
-  const getRiskColor = (risk: string) => {
-    switch (risk.toLowerCase()) {
-      case 'low': return 'bg-green-100 text-green-800 border-green-300';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'high': return 'bg-red-100 text-red-800 border-red-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+  const getTargetByIndustry = (metric: string, industry: string): number => {
+    const targets: Record<string, Record<string, number>> = {
+      'ecommerce': {
+        conversion: 4.5,
+        cpc: 1.8,
+        roas: 4.2,
+        ctr: 3.8,
+        aov: 120
+      },
+      'saas': {
+        conversion: 3.2,
+        cpc: 2.5,
+        roas: 3.8,
+        ctr: 2.9,
+        aov: 250
+      },
+      'fitness': {
+        conversion: 5.1,
+        cpc: 2.1,
+        roas: 4.8,
+        ctr: 4.2,
+        aov: 85
+      },
+      'coaching': {
+        conversion: 6.2,
+        cpc: 3.2,
+        roas: 5.5,
+        ctr: 3.5,
+        aov: 350
+      },
+      'finance': {
+        conversion: 2.8,
+        cpc: 4.1,
+        roas: 3.5,
+        ctr: 2.1,
+        aov: 180
+      }
+    };
+
+    return targets[industry]?.[metric] || targets['ecommerce'][metric] || 3.0;
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'High': return 'bg-red-500';
+      case 'Medium': return 'bg-yellow-500';
+      case 'Low': return 'bg-green-500';
+      default: return 'bg-gray-500';
     }
   };
 
-  const getSuccessColor = (probability: number) => {
-    if (probability >= 80) return 'text-green-600';
-    if (probability >= 60) return 'text-yellow-600';
+  const getThresholdColor = (value: number, thresholds: any) => {
+    if (value >= thresholds.excellent) return 'text-green-600';
+    if (value >= thresholds.good) return 'text-blue-600';
+    if (value >= thresholds.average) return 'text-yellow-600';
     return 'text-red-600';
   };
+
+  const metrics = getOptimizationMetrics();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2 text-xl">
-          <TrendingUp className="h-6 w-6" />
-          <span>{isAIGenerated ? 'AI-Optimized' : 'Template'} Metric Enhancement</span>
-          {isAIGenerated && (
-            <Badge className="bg-green-500 text-white">
-              <CheckCircle2 className="h-3 w-3 mr-1" />
-              AI Powered
-            </Badge>
-          )}
+        <CardTitle className="flex items-center space-x-2">
+          <Target className="h-5 w-5" />
+          <span>Metric Optimization Targets</span>
         </CardTitle>
-        <CardDescription className="text-base">
-          {isAIGenerated 
-            ? 'AI-identified optimization opportunities with detailed ROI projections and implementation roadmaps'
-            : 'Template metric optimization recommendations with ROI calculations'
-          }
+        <CardDescription>
+          Industry benchmarks and actionable strategies to improve your {businessType} performance
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-8">
+        <div className="space-y-6">
           {metrics.map((metric, index) => (
-            <div key={index} className="p-6 border-2 rounded-xl hover:shadow-lg transition-all duration-300 bg-gradient-to-r from-gray-50 to-white">
+            <div key={index} className="border rounded-lg p-4">
               <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h4 className="font-bold text-xl text-gray-800 mb-2">{metric.metric}</h4>
-                  <div className="flex items-center space-x-4 mb-2">
-                    <span className="text-sm text-muted-foreground">Current:</span>
-                    <span className="font-semibold text-red-600">{metric.currentPerformance}</span>
-                    <ArrowUpRight className="h-4 w-4 text-green-500" />
-                    <span className="text-sm text-muted-foreground">Target:</span>
-                    <span className="font-semibold text-green-600">{metric.targetImprovement}</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <Badge className={`border-2 font-semibold ${getRiskColor(metric.riskAssessment)}`}>
-                    {metric.riskAssessment} Risk
-                  </Badge>
-                  <div className={`text-sm font-bold mt-1 ${getSuccessColor(metric.successProbability)}`}>
-                    {metric.successProbability}% Success Rate
-                  </div>
-                </div>
-              </div>
-
-              {/* Enhanced ROI Calculation Display */}
-              <div className="mb-6 p-5 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 rounded-xl border-2 border-green-200">
-                <h5 className="font-bold text-green-800 mb-4 flex items-center text-lg">
-                  <Calculator className="h-5 w-5 mr-2" />
-                  Investment & ROI Analysis
-                </h5>
-                <div className="grid md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-white rounded-lg border-2 border-blue-200 shadow-sm">
-                    <DollarSign className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-                    <div className="font-bold text-xl text-blue-600">${metric.roiCalculation.investmentRequired.toLocaleString()}</div>
-                    <div className="text-xs text-muted-foreground font-medium">Initial Investment</div>
-                  </div>
-                  <div className="text-center p-4 bg-white rounded-lg border-2 border-green-200 shadow-sm">
-                    <TrendingUp className="h-6 w-6 text-green-600 mx-auto mb-2" />
-                    <div className="font-bold text-xl text-green-600">${metric.roiCalculation.expectedReturn.toLocaleString()}</div>
-                    <div className="text-xs text-muted-foreground font-medium">Expected Return</div>
-                  </div>
-                  <div className="text-center p-4 bg-white rounded-lg border-2 border-purple-200 shadow-sm">
-                    <Calendar className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-                    <div className="font-bold text-xl text-purple-600">{metric.roiCalculation.paybackPeriod}</div>
-                    <div className="text-xs text-muted-foreground font-medium">Months to Payback</div>
-                  </div>
-                  <div className="text-center p-4 bg-white rounded-lg border-2 border-orange-200 shadow-sm">
-                    <BarChart3 className="h-6 w-6 text-orange-600 mx-auto mb-2" />
-                    <div className="font-bold text-xl text-orange-600">{metric.roiCalculation.roi}%</div>
-                    <div className="text-xs text-muted-foreground font-medium">ROI</div>
-                  </div>
-                </div>
-                
-                {/* ROI Progress Bar */}
-                <div className="mt-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-700">ROI Performance</span>
-                    <span className="text-sm font-bold text-green-600">{metric.roiCalculation.roi}%</span>
-                  </div>
-                  <Progress value={Math.min(metric.roiCalculation.roi / 5, 100)} className="h-3" />
-                </div>
-              </div>
-
-              {/* Financial Breakdown */}
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
-                  <DollarSign className="h-4 w-4 mr-2" />
-                  Financial Breakdown
-                </h5>
-                <div className="grid md:grid-cols-3 gap-4 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Implementation Cost:</span>
-                    <span className="font-semibold">${metric.implementationCost.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Monthly Recurring Value:</span>
-                    <span className="font-semibold text-green-600">+${metric.monthlyRecurringValue.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Break-even Timeline:</span>
-                    <span className="font-semibold text-blue-600">{metric.roiCalculation.paybackPeriod} months</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Steps */}
-              <div className="mb-4">
-                <h5 className="font-semibold text-gray-800 mb-3 flex items-center">
-                  <Target className="h-4 w-4 mr-2" />
-                  Implementation Roadmap
-                </h5>
-                <div className="space-y-2">
-                  {metric.actionSteps.map((step: string, stepIndex: number) => (
-                    <div key={stepIndex} className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <div className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                        {stepIndex + 1}
-                      </div>
-                      <span className="text-sm font-medium text-gray-700 leading-relaxed">{step}</span>
+                <div className="flex items-center space-x-3">
+                  <TrendingUp className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <h4 className="font-semibold">{metric.metric}</h4>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Badge 
+                        className={`${getPriorityColor(metric.priority)} text-white`}
+                        variant="secondary"
+                      >
+                        {metric.priority} Priority
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        Target: <span className={getThresholdColor(metric.targetBenchmark, metric.warningThresholds)}>
+                          {metric.metric.includes('Rate') || metric.metric.includes('CTR') ? 
+                            `${metric.targetBenchmark}%` : 
+                            metric.metric.includes('Cost') || metric.metric.includes('AOV') ? 
+                              `$${metric.targetBenchmark}` : 
+                              `${metric.targetBenchmark}x`
+                          }
+                        </span>
+                      </span>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
 
-              {/* Timeline and Expected Results */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <h5 className="font-semibold text-yellow-800 mb-2 flex items-center">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Timeline
-                  </h5>
-                  <p className="text-sm text-yellow-700 font-medium">{metric.timeline}</p>
+              <div className="grid grid-cols-4 gap-4 mb-4">
+                <div className="text-center p-3 bg-red-50 rounded border">
+                  <div className="text-red-600 font-semibold">
+                    {metric.metric.includes('Rate') || metric.metric.includes('CTR') ? 
+                      `<${metric.warningThresholds.poor}%` : 
+                      metric.metric.includes('Cost') || metric.metric.includes('AOV') ? 
+                        `>$${metric.warningThresholds.poor}` : 
+                        `<${metric.warningThresholds.poor}x`
+                    }
+                  </div>
+                  <div className="text-xs text-muted-foreground">Poor</div>
                 </div>
-                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                  <h5 className="font-semibold text-green-800 mb-2 flex items-center">
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    Expected Results
-                  </h5>
-                  <p className="text-sm text-green-700 font-medium">{metric.expectedROI}</p>
+                <div className="text-center p-3 bg-yellow-50 rounded border">
+                  <div className="text-yellow-600 font-semibold">
+                    {metric.metric.includes('Rate') || metric.metric.includes('CTR') ? 
+                      `${metric.warningThresholds.average}%` : 
+                      metric.metric.includes('Cost') || metric.metric.includes('AOV') ? 
+                        `$${metric.warningThresholds.average}` : 
+                        `${metric.warningThresholds.average}x`
+                    }
+                  </div>
+                  <div className="text-xs text-muted-foreground">Average</div>
                 </div>
+                <div className="text-center p-3 bg-blue-50 rounded border">
+                  <div className="text-blue-600 font-semibold">
+                    {metric.metric.includes('Rate') || metric.metric.includes('CTR') ? 
+                      `${metric.warningThresholds.good}%` : 
+                      metric.metric.includes('Cost') || metric.metric.includes('AOV') ? 
+                        `$${metric.warningThresholds.good}` : 
+                        `${metric.warningThresholds.good}x`
+                    }
+                  </div>
+                  <div className="text-xs text-muted-foreground">Good</div>
+                </div>
+                <div className="text-center p-3 bg-green-50 rounded border">
+                  <div className="text-green-600 font-semibold">
+                    {metric.metric.includes('Rate') || metric.metric.includes('CTR') ? 
+                      `${metric.warningThresholds.excellent}%+` : 
+                      metric.metric.includes('Cost') || metric.metric.includes('AOV') ? 
+                        `$${metric.warningThresholds.excellent}+` : 
+                        `${metric.warningThresholds.excellent}x+`
+                    }
+                  </div>
+                  <div className="text-xs text-muted-foreground">Excellent</div>
+                </div>
+              </div>
+
+              <div>
+                <h5 className="font-medium mb-3 flex items-center">
+                  <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+                  Improvement Strategies
+                </h5>
+                <ul className="space-y-2">
+                  {metric.improvementStrategies.map((strategy, strategyIndex) => (
+                    <li key={strategyIndex} className="flex items-start space-x-2 text-sm">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="text-muted-foreground">{strategy}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           ))}
-
-          {/* Data Status Indicator */}
-          {!isAIGenerated && (
-            <div className="p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg flex items-start space-x-3">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
-              <div>
-                <h4 className="font-medium text-yellow-800">Template Optimization Data</h4>
-                <p className="text-sm text-yellow-700">
-                  Displaying template metric optimization recommendations with estimated ROI calculations. For personalized optimization strategies based on your specific business metrics, regenerate your intelligence report.
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
