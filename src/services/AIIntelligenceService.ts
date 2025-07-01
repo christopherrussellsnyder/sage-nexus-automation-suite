@@ -69,7 +69,7 @@ export class AIIntelligenceService {
 
       const supabaseUrl = 'https://qtckfvprvpxbbteinxve.supabase.co';
       
-      console.log('Making API request to edge function...');
+      console.log('Making API request to edge function with comprehensive data...');
       
       const response = await fetch(`${supabaseUrl}/functions/v1/generate-intelligence`, {
         method: 'POST',
@@ -107,11 +107,10 @@ export class AIIntelligenceService {
           errorText: errorText
         });
         
-        // Enhanced error messaging based on status codes
         if (response.status === 400) {
           throw new Error(errorText || 'Invalid request data. Please check all required fields are filled and try again.');
         } else if (response.status === 401) {
-          throw new Error('API authentication failed. Please check your OpenAI API key configuration in Supabase Edge Function Secrets.');
+          throw new Error('API authentication failed. The OpenAI API key is configured but may be invalid or expired.');
         } else if (response.status === 403) {
           throw new Error('Access denied. Please verify your API key has the necessary permissions.');
         } else if (response.status === 429) {
@@ -134,15 +133,12 @@ export class AIIntelligenceService {
         insightsKeys: data?.insights ? Object.keys(data.insights) : []
       });
       
-      // Enhanced data extraction and validation
       let intelligenceData = data;
       
-      // Handle nested insights structure
       if (data.insights) {
-        console.log('Extracting insights from nested structure');
+        console.log('Using insights from API response');
         intelligenceData = data.insights;
         
-        // Handle double-nested structure
         if (data.insights.insights) {
           console.log('Detected double-nested insights - extracting');
           intelligenceData = data.insights.insights;
@@ -172,13 +168,11 @@ export class AIIntelligenceService {
 
       console.log(`Completion Rate: ${Math.round(completionRate * 100)}% (${validSections}/${totalSections} sections)`);
 
-      // Ensure minimum data quality
-      if (completionRate < 0.3) {
+      if (completionRate < 0.4) {
         console.warn('Low completion rate detected:', completionRate);
         throw new Error('Intelligence generation incomplete. Please try again for better results.');
       }
 
-      // Structure final response
       const finalData = {
         insights: intelligenceData,
         generatedAt: new Date().toISOString(),
@@ -210,20 +204,18 @@ export class AIIntelligenceService {
       console.error('Error message:', error.message);
       console.error('Full error:', error);
       
-      // Enhanced error handling with specific messages
       if (error.message.includes('fetch')) {
         throw new Error('Network error: Unable to connect to intelligence service. Please check your internet connection and try again.');
       } else if (error.message.includes('JSON')) {
         throw new Error('Data processing error: Invalid response from intelligence service. Please try again.');
       } else if (error.message.includes('API key')) {
-        throw new Error('Authentication error: Please ensure your OpenAI API key is properly configured in Supabase Edge Function Secrets.');
+        throw new Error('Authentication error: OpenAI API key is configured but may be invalid or expired.');
       } else if (error.message.includes('rate limit')) {
         throw new Error('Rate limit exceeded: Please wait a few minutes before trying again.');
       } else if (error.message.includes('temporarily unavailable')) {
         throw new Error('Service temporarily unavailable: Please try again in a few moments.');
       }
       
-      // Return the original error message if it's already user-friendly
       throw new Error(error.message || 'Intelligence generation failed. Please try again.');
     }
   }

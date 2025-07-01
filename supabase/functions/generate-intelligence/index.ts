@@ -66,13 +66,15 @@ serve(async (req) => {
       throw new Error('Target audience is required');
     }
 
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    // Use the specific API key provided
+    const openAIApiKey = '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';
+    
     if (!openAIApiKey) {
-      console.error('OpenAI API key not found in environment');
+      console.error('OpenAI API key not found');
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('OpenAI API key found, proceeding with request');
+    console.log('OpenAI API key configured, proceeding with request');
 
     // Create comprehensive prompt for intelligence generation
     const prompt = `You are an expert business intelligence analyst. Generate a comprehensive business intelligence report for ${formData.businessName}.
@@ -85,15 +87,29 @@ BUSINESS CONTEXT:
 - Product/Service: ${formData.productService || 'Not specified'}
 - Monthly Revenue: ${formData.monthlyRevenue || 'Not specified'}
 - Monthly Ad Budget: ${formData.monthlyAdBudget || formData.marketingBudget || 'Not specified'}
+- Team Size: ${formData.teamSize || 'Not specified'}
+- Business Stage: ${formData.businessStage || 'Not specified'}
+- Primary Goal: ${formData.primaryGoal || 'Not specified'}
+- Current Challenges: ${formData.currentChallenges || 'Not specified'}
+- Monthly Traffic: ${formData.monthlyTraffic || 'Not specified'}
+- Conversion Rate: ${formData.conversionRate || 'Not specified'}
+- Marketing Budget: ${formData.marketingBudget || 'Not specified'}
+- Client Retention Rate: ${formData.clientRetentionRate || 'Not specified'}
+- Average Project Value: ${formData.averageProjectValue || 'Not specified'}
+- Revenue Target: ${formData.revenueTarget || 'Not specified'}
+- Success Metrics: ${formData.successMetrics || 'Not specified'}
+- Current Obstacles: ${formData.currentObstacles || 'Not specified'}
+- Market Position: ${formData.marketPosition || 'Not specified'}
+- Competitive Advantage: ${formData.competitiveAdvantage || 'Not specified'}
 
-Generate a detailed JSON response with exactly these sections:
+Generate a detailed JSON response with exactly these sections. Each section must be fully populated with comprehensive, actionable insights:
 
 {
   "platformRecommendations": [
     {
       "platform": "Facebook",
       "priority": 1,
-      "reasoning": "Detailed explanation why Facebook is recommended",
+      "reasoning": "Detailed explanation why Facebook is recommended for ${formData.businessName} in the ${formData.industry} industry targeting ${formData.targetAudience}",
       "expectedMetrics": {
         "roas": 4.2,
         "cpm": 12.50,
@@ -102,15 +118,15 @@ Generate a detailed JSON response with exactly these sections:
       },
       "budgetAllocation": 35,
       "targetingParameters": {
-        "demographics": "Age 25-45, college-educated professionals",
-        "interests": ["business", "productivity", "technology"],
-        "behaviors": ["online shoppers", "business decision makers"]
+        "demographics": "Specific demographics for ${formData.targetAudience}",
+        "interests": ["relevant interest 1", "relevant interest 2", "relevant interest 3"],
+        "behaviors": ["relevant behavior 1", "relevant behavior 2"]
       }
     },
     {
       "platform": "Google Ads",
       "priority": 2,
-      "reasoning": "High intent traffic from search queries",
+      "reasoning": "High intent traffic from search queries relevant to ${formData.productService}",
       "expectedMetrics": {
         "roas": 5.1,
         "cpm": 18.75,
@@ -119,15 +135,15 @@ Generate a detailed JSON response with exactly these sections:
       },
       "budgetAllocation": 30,
       "targetingParameters": {
-        "keywords": ["business software", "productivity tools"],
-        "demographics": "Business professionals",
-        "locations": ["United States", "Canada"]
+        "keywords": ["${formData.industry} keywords", "product specific keywords"],
+        "demographics": "Business professionals interested in ${formData.productService}",
+        "locations": ["primary market locations"]
       }
     },
     {
       "platform": "LinkedIn",
       "priority": 3,
-      "reasoning": "B2B focused audience for professional services",
+      "reasoning": "Professional network perfect for ${businessType} targeting ${formData.targetAudience}",
       "expectedMetrics": {
         "roas": 3.8,
         "cpm": 25.00,
@@ -136,9 +152,9 @@ Generate a detailed JSON response with exactly these sections:
       },
       "budgetAllocation": 25,
       "targetingParameters": {
-        "jobTitles": ["CEO", "Marketing Manager", "Business Owner"],
-        "industries": ["Technology", "Consulting", "Finance"],
-        "companySize": ["11-50", "51-200", "201-500"]
+        "jobTitles": ["relevant job titles for ${formData.targetAudience}"],
+        "industries": ["${formData.industry}", "related industries"],
+        "companySize": ["appropriate company sizes"]
       }
     }
   ],
@@ -147,131 +163,166 @@ Generate a detailed JSON response with exactly these sections:
       "day": 1,
       "platform": "Facebook",
       "contentType": "ad",
-      "hook": "Stop wasting time on manual tasks",
-      "body": "Our ${formData.productService || 'solution'} helps ${formData.targetAudience} save 10+ hours per week",
-      "cta": "Start Your Free Trial",
-      "reasoning": "Focus on pain point and time savings",
-      "visualSuggestions": "Professional person looking frustrated at computer"
+      "hook": "Compelling hook addressing ${formData.currentChallenges || 'key pain points'}",
+      "body": "Detailed body copy explaining how ${formData.businessName} solves problems for ${formData.targetAudience}",
+      "cta": "Strong call-to-action",
+      "reasoning": "Strategic reasoning for this approach on day 1",
+      "visualSuggestions": "Specific visual recommendations"
     },
     {
       "day": 2,
       "platform": "Google Ads",
       "contentType": "search_ad",
-      "hook": "Best ${formData.industry} Solution",
-      "body": "Trusted by 1000+ businesses. Get results in 30 days or money back.",
-      "cta": "Get Started Today",
-      "reasoning": "Build trust with social proof",
-      "visualSuggestions": "Clean, professional landing page"
-    },
-    {
-      "day": 3,
-      "platform": "LinkedIn",
-      "contentType": "sponsored_content",
-      "hook": "How ${formData.businessName} Transforms ${formData.industry}",
-      "body": "Case study: See how we helped Company X achieve 300% ROI",
-      "cta": "Read Full Case Study",
-      "reasoning": "B2B audience loves case studies",
-      "visualSuggestions": "Professional case study graphic"
+      "hook": "Search-optimized headline for ${formData.productService}",
+      "body": "Compelling description highlighting unique value proposition",
+      "cta": "Action-oriented CTA",
+      "reasoning": "Why this search strategy works for day 2",
+      "visualSuggestions": "Landing page optimization suggestions"
     }
   ],
   "copywritingRecommendations": [
     {
       "stage": "awareness",
-      "hook": "Are you tired of [pain point]?",
-      "body": "Most ${formData.targetAudience} struggle with this exact problem. Here's why...",
-      "cta": "Learn More",
-      "emotional_triggers": ["frustration", "curiosity"],
-      "personalization": "Speak directly to target audience pain points"
+      "hook": "Problem-focused hook for ${formData.targetAudience}",
+      "body": "Educational content addressing ${formData.currentChallenges || 'industry challenges'}",
+      "cta": "Soft CTA for engagement",
+      "emotional_triggers": ["specific emotions for ${formData.targetAudience}"],
+      "personalization": "Specific personalization for ${formData.industry}"
     },
     {
       "stage": "consideration",
-      "hook": "Why ${formData.businessName} is different",
-      "body": "Unlike other solutions, we focus on [unique value proposition]",
-      "cta": "See How It Works",
-      "emotional_triggers": ["hope", "excitement"],
-      "personalization": "Address specific industry challenges"
+      "hook": "Solution-focused hook highlighting ${formData.competitiveAdvantage || 'unique benefits'}",
+      "body": "Detailed explanation of ${formData.productService} benefits",
+      "cta": "Consideration-stage CTA",
+      "emotional_triggers": ["trust", "excitement", "confidence"],
+      "personalization": "Industry-specific messaging for ${formData.industry}"
+    },
+    {
+      "stage": "decision",
+      "hook": "Urgency-driven hook with specific offer",
+      "body": "Compelling reason to choose ${formData.businessName} now",
+      "cta": "Strong conversion CTA",
+      "emotional_triggers": ["urgency", "fear of missing out"],
+      "personalization": "Direct address to ${formData.targetAudience} decision-makers"
     }
   ],
   "competitorInsights": [
     {
-      "competitor": "Main Competitor A",
-      "keyStrategy": "Heavy focus on social media advertising",
-      "performanceMetric": "High engagement but low conversion",
-      "applicationForUser": "Focus on conversion optimization rather than just engagement"
+      "competitor": "Main Industry Competitor A",
+      "keyStrategy": "Detailed analysis of their primary marketing approach",
+      "performanceMetric": "Observed performance indicators",
+      "applicationForUser": "How ${formData.businessName} can differentiate using ${formData.competitiveAdvantage || 'unique strengths'}"
     },
     {
-      "competitor": "Main Competitor B",
-      "keyStrategy": "Premium pricing strategy",
-      "performanceMetric": "High profit margins but limited market reach",
-      "applicationForUser": "Consider value-based pricing to capture market share"
+      "competitor": "Main Industry Competitor B",
+      "keyStrategy": "Analysis of their positioning strategy",
+      "performanceMetric": "Market share and engagement metrics",
+      "applicationForUser": "Specific tactics ${formData.businessName} should adopt or avoid"
+    },
+    {
+      "competitor": "Emerging Competitor",
+      "keyStrategy": "Their innovative approach or technology",
+      "performanceMetric": "Growth rate and market penetration",
+      "applicationForUser": "Opportunities for ${formData.businessName} to stay ahead"
     }
   ],
   "industryInsights": [
     {
-      "trend": "Digital transformation acceleration",
-      "impact": "Increased demand for ${formData.productService || 'digital solutions'}",
-      "opportunity": "Position as essential business tool",
-      "recommendation": "Emphasize digital-first approach in messaging"
+      "trend": "Major ${formData.industry} industry trend",
+      "impact": "How this affects ${formData.targetAudience} buying behavior",
+      "opportunity": "Specific opportunity for ${formData.businessName}",
+      "recommendation": "Actionable steps to capitalize on this trend"
     },
     {
-      "trend": "Remote work normalization",
-      "impact": "Changed how businesses operate",
-      "opportunity": "Appeal to distributed teams",
-      "recommendation": "Highlight collaboration and remote-friendly features"
+      "trend": "Technology adoption in ${formData.industry}",
+      "impact": "Changes in customer expectations",
+      "opportunity": "How ${formData.productService} can address new needs",
+      "recommendation": "Implementation strategy for ${formData.businessName}"
+    },
+    {
+      "trend": "Market consolidation or fragmentation",
+      "impact": "Competitive landscape changes",
+      "opportunity": "Market positioning opportunity",
+      "recommendation": "Strategic positioning for ${formData.businessName}"
     }
   ],
   "budgetStrategy": [
     {
       "category": "Paid Advertising",
       "allocation": 40,
-      "reasoning": "Primary growth driver",
+      "reasoning": "Primary growth driver for ${businessType} targeting ${formData.targetAudience}",
       "expectedROI": 3.5,
-      "implementation": "Start with Facebook and Google Ads"
+      "implementation": "Start with Facebook and Google Ads focusing on ${formData.primaryGoal || 'growth'}"
     },
     {
       "category": "Content Marketing",
       "allocation": 25,
-      "reasoning": "Long-term SEO and authority building",
+      "reasoning": "Long-term SEO and authority building in ${formData.industry}",
       "expectedROI": 2.8,
-      "implementation": "Blog posts, case studies, whitepapers"
+      "implementation": "Create ${formData.industry}-specific content addressing ${formData.currentChallenges || 'common challenges'}"
     },
     {
       "category": "Email Marketing",
       "allocation": 15,
-      "reasoning": "High ROI for nurturing leads",
+      "reasoning": "High ROI for nurturing ${formData.targetAudience}",
       "expectedROI": 6.2,
-      "implementation": "Automated sequences and newsletters"
+      "implementation": "Automated sequences for ${formData.businessType} funnel"
+    },
+    {
+      "category": "Social Media Marketing",
+      "allocation": 10,
+      "reasoning": "Brand building and community engagement",
+      "expectedROI": 2.0,
+      "implementation": "Platform-specific content for ${formData.targetAudience}"
+    },
+    {
+      "category": "SEO & Website Optimization",
+      "allocation": 10,
+      "reasoning": "Long-term organic growth for ${formData.productService}",
+      "expectedROI": 4.0,
+      "implementation": "Optimize for ${formData.industry} keywords and user experience"
     }
   ],
   "metricOptimization": [
     {
       "metric": "Conversion Rate",
-      "currentValue": "2.5%",
+      "currentValue": "${formData.conversionRate || '2.5'}%",
       "targetValue": "4.0%",
-      "strategy": "A/B test landing pages and improve call-to-action placement",
-      "timeline": "3 months"
+      "strategy": "A/B test landing pages specifically for ${formData.targetAudience} and optimize ${formData.productService} presentation",
+      "timeline": "3 months",
+      "implementation": "Start with homepage and primary landing page optimization"
     },
     {
       "metric": "Customer Acquisition Cost",
-      "currentValue": "$150",
+      "currentValue": "$${formData.averageProjectValue ? (parseInt(formData.averageProjectValue) * 0.15).toString() : '150'}",
       "targetValue": "$100",
-      "strategy": "Optimize ad targeting and improve organic reach",
-      "timeline": "6 months"
+      "strategy": "Optimize ad targeting for ${formData.targetAudience} and improve organic reach through ${formData.industry} content",
+      "timeline": "6 months",
+      "implementation": "Focus on high-intent keywords and audience refinement"
+    },
+    {
+      "metric": "Monthly Revenue",
+      "currentValue": "${formData.monthlyRevenue || 'Current level'}",
+      "targetValue": "${formData.revenueTarget || 'Target level'}",
+      "strategy": "Increase ${formData.productService} sales through optimized funnel and ${formData.competitiveAdvantage || 'unique positioning'}",
+      "timeline": "12 months",
+      "implementation": "Multi-channel approach with focus on ${formData.primaryGoal || 'revenue growth'}"
     }
   ]
 }
 
 CRITICAL REQUIREMENTS:
-1. Generate at least 3 items in each array section
-2. Provide specific, actionable recommendations
-3. Include realistic metrics and timelines
-4. Ensure all JSON is valid and properly formatted
-5. Make recommendations specific to the business type and industry
-6. Ensure the response is valid JSON without any markdown formatting
-7. Do not include any text before or after the JSON response
-8. All monthlyPlan should have at least 30 days (extend the pattern)`;
+1. Generate comprehensive, detailed content for ALL sections
+2. Make each recommendation specific to ${formData.businessName}, ${formData.industry}, and ${formData.targetAudience}
+3. Ensure monthlyPlan has at least 30 detailed entries
+4. Include realistic metrics and actionable strategies
+5. Reference the specific business context throughout
+6. Ensure all JSON is valid and properly formatted
+7. Make recommendations data-driven and industry-specific
+8. Do not include any text before or after the JSON response
+9. Ensure every field is populated with meaningful, relevant content`;
 
-    console.log('Sending request to OpenAI API');
+    console.log('Sending request to OpenAI API with comprehensive prompt');
 
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -284,7 +335,7 @@ CRITICAL REQUIREMENTS:
         messages: [
           {
             role: 'system',
-            content: 'You are a business intelligence expert. Always respond with valid JSON only, no markdown formatting, no explanatory text before or after the JSON. Generate comprehensive business intelligence data.'
+            content: 'You are a business intelligence expert. Always respond with valid JSON only, no markdown formatting, no explanatory text before or after the JSON. Generate comprehensive, detailed business intelligence data with every field fully populated.'
           },
           {
             role: 'user',
@@ -344,17 +395,26 @@ CRITICAL REQUIREMENTS:
       }
     }
 
-    // Extend monthlyPlan to 30 days if needed
+    // Extend monthlyPlan to 30 days
     if (intelligenceData.monthlyPlan && intelligenceData.monthlyPlan.length < 30) {
       const baseEntries = [...intelligenceData.monthlyPlan];
+      const platforms = ['Facebook', 'Google Ads', 'LinkedIn', 'Instagram', 'Twitter'];
+      const contentTypes = ['ad', 'social_post', 'blog_post', 'video', 'infographic'];
+      
       while (intelligenceData.monthlyPlan.length < 30) {
         const dayNumber = intelligenceData.monthlyPlan.length + 1;
-        const baseEntry = baseEntries[dayNumber % baseEntries.length];
+        const platform = platforms[dayNumber % platforms.length];
+        const contentType = contentTypes[dayNumber % contentTypes.length];
+        
         intelligenceData.monthlyPlan.push({
-          ...baseEntry,
           day: dayNumber,
-          hook: `${baseEntry.hook} - Day ${dayNumber}`,
-          reasoning: `${baseEntry.reasoning} - Strategic continuation for day ${dayNumber}`
+          platform: platform,
+          contentType: contentType,
+          hook: `Day ${dayNumber}: Strategic ${contentType} for ${formData.businessName}`,
+          body: `Targeted content for ${formData.targetAudience} addressing ${formData.currentChallenges || 'key challenges'} with ${formData.productService}`,
+          cta: `Engage with ${formData.businessName}`,
+          reasoning: `Strategic ${contentType} on ${platform} to maintain engagement and drive ${formData.primaryGoal || 'business growth'}`,
+          visualSuggestions: `${platform}-optimized visuals for ${formData.industry} audience`
         });
       }
     }
@@ -413,7 +473,6 @@ CRITICAL REQUIREMENTS:
     console.error('Error message:', error.message);
     console.error('Stack trace:', error.stack);
 
-    // Enhanced error response with specific error types
     let statusCode = 500;
     let errorMessage = error.message;
     
