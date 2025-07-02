@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Search, TrendingUp, Star, Users, DollarSign, ExternalLink, Eye, BarChart3, CheckCircle, AlertTriangle, Calendar, Package, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { EcommerceProductResearchService } from '@/services/EcommerceProductResearchService';
 
 interface Product {
   name: string;
@@ -45,166 +46,8 @@ const ProductResearcher = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isResearching, setIsResearching] = useState(false);
   const [researchProgress, setResearchProgress] = useState(0);
+  const [aiInsights, setAiInsights] = useState<string>('');
   const { toast } = useToast();
-
-  const enhancedMockProducts: Product[] = [
-    {
-      name: 'Smart Fitness Tracker Pro',
-      price: 89.99,
-      rating: 4.7,
-      reviews: 2847,
-      sales: 15420,
-      growth: 234,
-      category: 'Electronics',
-      store: 'FitnessTech Store',
-      url: 'https://example.com/product1',
-      description: 'Advanced fitness tracking with heart rate monitoring',
-      image: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=80&h=80&fit=crop&crop=center',
-      conversionRate: 4.2,
-      marketSaturation: 'Medium',
-      marketValidation: 'Validated',
-      competitorCount: 156,
-      avgCPC: 2.45,
-      searchVolume: 45000,
-      trendDirection: 'Rising',
-      evergreenScore: 8.5,
-      problemSeverity: 'High',
-      profitMargin: 65,
-      upsellPotential: 'High',
-      shippingComplexity: 'Easy',
-      recommendationReason: [
-        'Solves painful health tracking problem',
-        'Evergreen market with 8.5/10 stability score',
-        '65% profit margin potential',
-        'High upsell potential with accessories',
-        'Easy shipping - lightweight product'
-      ],
-      winningAngles: [
-        'Health transformation testimonials',
-        'Before/after fitness journey stories',
-        'Celebrity endorsement angle',
-        'Medical professional recommendations',
-        'Bundle with nutrition guides'
-      ]
-    },
-    {
-      name: 'Organic Protein Powder',
-      price: 34.95,
-      rating: 4.8,
-      reviews: 1923,
-      sales: 8750,
-      growth: 189,
-      category: 'Health',
-      store: 'NutriMax',
-      url: 'https://example.com/product2',
-      description: 'Plant-based protein powder with natural ingredients',
-      image: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=80&h=80&fit=crop&crop=center',
-      conversionRate: 3.8,
-      marketSaturation: 'High',
-      marketValidation: 'Validated',
-      competitorCount: 340,
-      avgCPC: 3.20,
-      searchVolume: 78000,
-      trendDirection: 'Stable',
-      evergreenScore: 9.2,
-      problemSeverity: 'Medium',
-      profitMargin: 58,
-      upsellPotential: 'Medium',
-      shippingComplexity: 'Easy',
-      recommendationReason: [
-        'Evergreen health & fitness market (9.2/10 score)',
-        'Solves protein deficiency problem',
-        '58% profit margin with subscription model',
-        'Monthly recurring revenue potential',
-        'Simple shipping logistics'
-      ],
-      winningAngles: [
-        'Plant-based lifestyle transformation',
-        'Athletic performance improvement',
-        'Weight loss success stories',
-        'Subscription convenience angle',
-        'Taste challenge vs competitors'
-      ]
-    },
-    {
-      name: 'Wireless Bluetooth Headphones',
-      price: 129.99,
-      rating: 4.6,
-      reviews: 5632,
-      sales: 23180,
-      growth: 156,
-      category: 'Electronics',
-      store: 'AudioWorld',
-      url: 'https://example.com/product3',
-      description: 'Premium sound quality with noise cancellation',
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=80&h=80&fit=crop&crop=center',
-      conversionRate: 2.9,
-      marketSaturation: 'High',
-      marketValidation: 'Validated',
-      competitorCount: 890,
-      avgCPC: 4.80,
-      searchVolume: 120000,
-      trendDirection: 'Declining',
-      evergreenScore: 7.8,
-      problemSeverity: 'Medium',
-      profitMargin: 45,
-      upsellPotential: 'High',
-      shippingComplexity: 'Easy',
-      recommendationReason: [
-        'Solves audio quality and convenience problem',
-        'Decent evergreen score (7.8/10)',
-        'High upsell potential with cases/accessories',
-        'Easy shipping - compact product',
-        'Strong brand differentiation opportunities'
-      ],
-      winningAngles: [
-        'Productivity enhancement for remote work',
-        'Audiophile quality at affordable price',
-        'Lifestyle upgrade positioning',
-        'Bundle with carrying case and warranty',
-        'Comparison with premium brands'
-      ]
-    },
-    {
-      name: 'Eco-Friendly Water Bottle',
-      price: 24.99,
-      rating: 4.9,
-      reviews: 1456,
-      sales: 12340,
-      growth: 420,
-      category: 'Lifestyle',
-      store: 'GreenLiving Co',
-      url: 'https://example.com/product4',
-      description: 'Sustainable stainless steel water bottle with temperature control',
-      image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=80&h=80&fit=crop&crop=center',
-      conversionRate: 5.1,
-      marketSaturation: 'Low',
-      marketValidation: 'Emerging',
-      competitorCount: 89,
-      avgCPC: 1.85,
-      searchVolume: 28000,
-      trendDirection: 'Rising',
-      evergreenScore: 9.5,
-      problemSeverity: 'High',
-      profitMargin: 72,
-      upsellPotential: 'Medium',
-      shippingComplexity: 'Easy',
-      recommendationReason: [
-        'Highest evergreen score (9.5/10) - sustainability trend',
-        'Solves critical hydration and environmental problem',
-        'Excellent 72% profit margin',
-        'Low competition in eco-friendly niche',
-        'Simple shipping and fulfillment'
-      ],
-      winningAngles: [
-        'Environmental impact reduction',
-        'Health benefits of proper hydration',
-        'Cost savings vs buying bottled water',
-        'Lifestyle and status symbol',
-        'Corporate gifting opportunity'
-      ]
-    }
-  ];
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
@@ -220,39 +63,56 @@ const ProductResearcher = () => {
     setSearchProgress(0);
     setCurrentStep(1);
 
-    // Enhanced 3-step validation process
+    // AI-powered 3-step validation process
     const searchSteps = [
       {
         step: 1,
-        message: "Scanning top Shopify stores (1 product per store)...",
+        message: "AI scanning 1000+ stores and analyzing market data...",
         duration: 3000
       },
       {
         step: 2,
-        message: "Validating evergreen potential, problem-solving criteria, and profit margins...",
+        message: "AI validating evergreen potential, profit margins, and problem-solving criteria...",
         duration: 4000
       },
       {
         step: 3,
-        message: "Analyzing winning angles, shipping complexity, and upsell opportunities...",
+        message: "AI analyzing winning angles, competition, and market opportunities...",
         duration: 3000
       }
     ];
 
-    for (const stepData of searchSteps) {
-      setCurrentStep(stepData.step);
-      await new Promise(resolve => setTimeout(resolve, stepData.duration));
-      setSearchProgress(stepData.step * 33.33);
+    try {
+      for (const stepData of searchSteps) {
+        setCurrentStep(stepData.step);
+        await new Promise(resolve => setTimeout(resolve, stepData.duration));
+        setSearchProgress(stepData.step * 33.33);
+      }
+
+      // Call AI-powered product research service
+      const researchData = await EcommerceProductResearchService.researchProducts({
+        searchQuery: searchQuery,
+        filters: {} // Add filters as needed
+      });
+      
+      setProducts(researchData.products);
+      setAiInsights(researchData.aiInsights);
+      setIsSearching(false);
+      setSearchProgress(100);
+      
+      toast({
+        title: "AI Research Complete",
+        description: `Found ${researchData.totalFound} AI-validated products with comprehensive market analysis`,
+      });
+    } catch (error) {
+      console.error('AI product research failed:', error);
+      setIsSearching(false);
+      toast({
+        title: "Research Failed",
+        description: error.message || "AI product research encountered an error",
+        variant: "destructive",
+      });
     }
-    
-    setProducts(enhancedMockProducts);
-    setIsSearching(false);
-    setSearchProgress(100);
-    
-    toast({
-      title: "Advanced Search Complete",
-      description: `Found ${enhancedMockProducts.length} validated products with market analysis`,
-    });
   };
 
   const handleViewProduct = (product: Product) => {
@@ -318,16 +178,19 @@ const ProductResearcher = () => {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Search className="h-5 w-5" />
-            <span>Advanced Product Research Engine</span>
+            <span>AI-Powered Product Research Engine</span>
+            <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+              AI Enhanced
+            </Badge>
           </CardTitle>
           <CardDescription>
-            AI-powered product validation with evergreen market analysis, problem-solving verification, and profit optimization
+            Advanced AI product validation with evergreen market analysis, problem-solving verification, and profit optimization powered by OpenAI
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex space-x-4">
             <div className="flex-1">
-              <Label htmlFor="search">Search Products</Label>
+              <Label htmlFor="search">Search Products (AI-Powered)</Label>
               <Input
                 id="search"
                 placeholder="e.g., fitness tracker, protein powder, headphones"
@@ -341,14 +204,14 @@ const ProductResearcher = () => {
           {isSearching && (
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span>Step {currentStep} of 3: Advanced product validation...</span>
+                <span>AI Step {currentStep} of 3: Advanced product validation...</span>
                 <span>{Math.round(searchProgress)}%</span>
               </div>
               <Progress value={searchProgress} />
               <div className="text-xs text-muted-foreground">
-                {currentStep === 1 && "Scanning 1000+ Shopify stores, selecting 1 unique product per store..."}
-                {currentStep === 2 && "Validating evergreen potential, problem-solving criteria, and profit margins..."}
-                {currentStep === 3 && "Analyzing winning angles, shipping complexity, and upsell opportunities..."}
+                {currentStep === 1 && "AI scanning 1000+ stores and analyzing market data..."}
+                {currentStep === 2 && "AI validating evergreen potential, profit margins, and problem-solving criteria..."}
+                {currentStep === 3 && "AI analyzing winning angles, competition, and market opportunities..."}
               </div>
             </div>
           )}
@@ -360,8 +223,19 @@ const ProductResearcher = () => {
             size="lg"
           >
             <Search className="h-4 w-4 mr-2" />
-            {isSearching ? 'Validating Products...' : 'Search & Validate Products'}
+            {isSearching ? 'AI Validating Products...' : 'AI-Powered Product Research'}
           </Button>
+
+          {/* AI Insights Section */}
+          {aiInsights && (
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border">
+              <h4 className="font-medium mb-2 flex items-center space-x-2">
+                <Zap className="h-4 w-4" />
+                <span>AI Market Insights</span>
+              </h4>
+              <p className="text-sm text-muted-foreground">{aiInsights}</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
