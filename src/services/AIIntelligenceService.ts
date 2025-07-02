@@ -114,10 +114,10 @@ interface IndustryInsight {
 
 export class AIIntelligenceService {
   static async generateIntelligence(request: IntelligenceRequest): Promise<AIGeneratedContent> {
-    console.log('Generating AI intelligence for:', request.formData.businessName);
+    console.log('Generating intelligence for:', request.formData.businessName);
 
     try {
-      // Call the Supabase Edge Function
+      // Call the Supabase Edge Function (now returns mock data instead of using AI)
       const { data, error } = await supabase.functions.invoke('generate-intelligence', {
         body: request
       });
@@ -134,13 +134,13 @@ export class AIIntelligenceService {
       console.log('Intelligence generated successfully');
       return data as AIGeneratedContent;
     } catch (error) {
-      console.error('Error generating AI intelligence:', error);
+      console.error('Error generating intelligence:', error);
       throw error;
     }
   }
 
   static saveApiKey(apiKey: string): void {
-    // API key is now handled securely through Supabase secrets
-    console.log('API key is managed through Supabase secrets - no action needed');
+    // No longer needed since we're not using AI APIs
+    console.log('API key management disabled - using mock data generation');
   }
 }

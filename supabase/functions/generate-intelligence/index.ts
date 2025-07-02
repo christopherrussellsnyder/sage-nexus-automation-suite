@@ -1,8 +1,5 @@
 
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -35,206 +32,146 @@ serve(async (req) => {
   }
 
   try {
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY in Supabase secrets.');
-    }
-
     const request: IntelligenceRequest = await req.json();
     const { formData, intelligenceMode, businessType } = request;
 
-    const baseContext = `
-Business Context:
-- Business Name: ${formData.businessName}
-- Industry: ${formData.industry}
-- Business Type: ${businessType}
-- Target Audience: ${formData.targetAudience}
-- Product/Service: ${formData.productService}
-- Unique Value Proposition: ${formData.uniqueValue}
-- Monthly Revenue: ${formData.monthlyRevenue}
-- Current Challenges: ${formData.currentChallenges || 'Not specified'}
-- Goals: ${formData.goals?.join(', ') || 'Not specified'}
-- Timeline: ${formData.timeline || 'Not specified'}
-`;
+    // Generate mock intelligence data without using any AI/API
+    const mockIntelligenceData = {
+      platformRecommendations: [
+        {
+          platform: 'Facebook',
+          priority: 1,
+          reasoning: `Based on ${formData.industry} industry targeting ${formData.targetAudience}`,
+          expectedMetrics: { roas: 3.2, cpm: 8.5, conversionRate: 2.8, reach: 15000 },
+          budgetAllocation: 35
+        },
+        {
+          platform: 'Instagram',
+          priority: 2,
+          reasoning: `Visual platform ideal for ${formData.productService} promotion`,
+          expectedMetrics: { roas: 2.8, cpm: 12.0, conversionRate: 2.4, reach: 12000 },
+          budgetAllocation: 25
+        },
+        {
+          platform: 'Google',
+          priority: 3,
+          reasoning: `High-intent traffic for ${formData.businessName}`,
+          expectedMetrics: { roas: 4.1, cpm: 15.2, conversionRate: 3.5, reach: 8000 },
+          budgetAllocation: 30
+        }
+      ],
+      monthlyPlan: Array.from({ length: 30 }, (_, i) => ({
+        day: i + 1,
+        platform: ['Facebook', 'Instagram', 'Google', 'TikTok'][i % 4],
+        contentType: i % 2 === 0 ? 'ad' : 'organic',
+        hook: `Day ${i + 1} hook for ${formData.businessName}`,
+        body: `Content targeting ${formData.targetAudience} in ${formData.industry}`,
+        cta: 'Get Started Today',
+        visualSuggestion: `${formData.productService} showcase visual`,
+        targetAudience: formData.targetAudience,
+        keyMessage: `Strategic message for ${formData.uniqueValue}`,
+        expectedMetrics: { reach: 12000, engagement: 450, cost: 85, conversions: 8 },
+        strategicReasoning: `Day ${i + 1} focuses on ${formData.industry} market engagement`
+      })),
+      budgetStrategy: [
+        {
+          category: 'Monthly Marketing Budget',
+          monthlyBudget: parseInt(formData.monthlyRevenue) * 0.1 || 5000,
+          allocation: [
+            { platform: 'Facebook', percentage: 35, dailySpend: 58, reasoning: 'Primary audience platform' },
+            { platform: 'Instagram', percentage: 25, dailySpend: 42, reasoning: 'Visual content engagement' },
+            { platform: 'Google', percentage: 30, dailySpend: 50, reasoning: 'High-intent traffic' },
+            { platform: 'TikTok', percentage: 10, dailySpend: 17, reasoning: 'Emerging audience' }
+          ],
+          optimizationTips: [
+            'Start with proven platforms',
+            'Test new audiences gradually',
+            'Monitor ROI closely',
+            'Scale successful campaigns'
+          ]
+        }
+      ],
+      copywritingRecommendations: [
+        {
+          copyType: 'Primary Messaging',
+          recommendations: [
+            `Emphasize ${formData.uniqueValue} in headlines`,
+            `Address ${formData.targetAudience} pain points directly`,
+            'Include social proof and testimonials',
+            'Use action-oriented language'
+          ],
+          examples: [
+            { 
+              before: 'We offer great products', 
+              after: `${formData.businessName} delivers ${formData.uniqueValue}`, 
+              improvement: 'More specific and value-focused' 
+            }
+          ],
+          emotionalTriggers: ['urgency', 'social proof', 'authority', 'scarcity']
+        }
+      ],
+      metricOptimization: [
+        {
+          metric: 'Conversion Rate',
+          currentPerformance: '2.3%',
+          targetImprovement: '4.1%',
+          actionSteps: [
+            'Optimize landing pages for mobile',
+            'Add social proof elements',
+            'Simplify checkout process',
+            'A/B test call-to-action buttons'
+          ],
+          timeline: '30-60 days',
+          expectedROI: '78% increase in conversions'
+        },
+        {
+          metric: 'Customer Acquisition Cost',
+          currentPerformance: '$45',
+          targetImprovement: '$32',
+          actionSteps: [
+            'Improve ad targeting',
+            'Optimize landing page conversion',
+            'Implement retargeting campaigns',
+            'Focus on high-performing platforms'
+          ],
+          timeline: '45-90 days',
+          expectedROI: '29% reduction in CAC'
+        }
+      ],
+      competitorInsights: [
+        {
+          competitor: `${formData.industry} Market Leader`,
+          strengths: ['Brand recognition', 'Large marketing budget', 'Established audience'],
+          weaknesses: ['Generic messaging', 'Poor customer service', 'Slow innovation'],
+          opportunities: [
+            `Emphasize ${formData.uniqueValue}`,
+            'Focus on personalized service',
+            'Target underserved segments'
+          ],
+          strategicRecommendations: [
+            'Differentiate through unique value proposition',
+            'Build strong customer relationships',
+            'Innovate faster than competitors'
+          ]
+        }
+      ],
+      industryInsights: [
+        {
+          trend: `Digital Transformation in ${formData.industry}`,
+          impact: 'High - reshaping customer expectations',
+          actionableAdvice: 'Implement digital-first customer experience',
+          timeline: 'Next 6 months'
+        },
+        {
+          trend: 'Personalization at Scale',
+          impact: 'Medium - improving conversion rates',
+          actionableAdvice: 'Use data to personalize marketing messages',
+          timeline: 'Next 3 months'
+        }
+      ]
+    };
 
-    const fullPrompt = `${baseContext}
-
-Generate a comprehensive ${intelligenceMode} intelligence report that includes:
-
-1. PLATFORM RECOMMENDATIONS (Rank Facebook, Instagram, TikTok, Google, LinkedIn if B2B):
-   - Priority ranking with detailed reasoning
-   - Expected metrics (ROAS, CPM, conversion rate, reach)
-   - Budget allocation percentages
-   - Platform-specific strategies
-
-2. 30-DAY CONTENT CALENDAR:
-   - Daily content for each recommended platform
-   - Mix of ad and organic content based on business goals
-   - Compelling hooks, body copy, and CTAs
-   - Visual suggestions and hashtags
-   - Strategic reasoning for each piece
-   - Expected performance metrics
-
-3. BUDGET STRATEGY:
-   - Monthly budget breakdown by category
-   - Platform-specific daily spend recommendations
-   - ROI optimization tips
-   - Scaling strategies
-
-4. COPYWRITING RECOMMENDATIONS:
-   - Industry-specific messaging strategies
-   - Before/after copy examples
-   - Emotional triggers that convert
-   - A/B testing suggestions
-
-5. METRIC OPTIMIZATION:
-   - Current performance analysis
-   - Improvement targets and timelines
-   - Actionable steps for key metrics
-   - Expected ROI from optimizations
-
-6. COMPETITOR INSIGHTS:
-   - Competitive analysis and positioning
-   - Market opportunities
-   - Differentiation strategies
-
-7. INDUSTRY INSIGHTS:
-   - Current trends and their impact
-   - Actionable advice for staying competitive
-   - Future-proofing strategies
-
-Make everything specific to ${formData.industry} industry targeting ${formData.targetAudience}. 
-Focus on actionable, implementable strategies that align with their ${formData.monthlyRevenue} revenue level.
-Ensure all content reflects their unique value proposition: ${formData.uniqueValue}
-
-Respond in a structured JSON format with the following structure:
-{
-  "platformRecommendations": [...],
-  "monthlyPlan": [...],
-  "budgetStrategy": [...],
-  "copywritingRecommendations": [...],
-  "metricOptimization": [...],
-  "competitorInsights": [...],
-  "industryInsights": [...]
-}`;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert marketing strategist and copywriter. Generate detailed, actionable marketing intelligence reports in valid JSON format. Focus on practical, implementable strategies that drive real business results.'
-          },
-          {
-            role: 'user',
-            content: fullPrompt
-          }
-        ],
-        temperature: 0.3,
-        max_tokens: 4000
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('OpenAI API error:', errorData);
-      
-      if (response.status === 401) {
-        throw new Error('Invalid API key. Please check your OpenAI API key configuration.');
-      } else if (response.status === 429) {
-        throw new Error('API rate limit exceeded. Please try again later.');
-      } else {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-    }
-
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
-
-    // Try to parse as JSON first, fallback to structured parsing if needed
-    let intelligenceData;
-    try {
-      intelligenceData = JSON.parse(aiResponse);
-    } catch (error) {
-      console.log('JSON parsing failed, using fallback structure');
-      // Create fallback structured response
-      intelligenceData = {
-        platformRecommendations: [
-          {
-            platform: 'Facebook',
-            priority: 1,
-            reasoning: 'AI-generated reasoning based on business context',
-            expectedMetrics: { roas: 3.2, cpm: 8.5, conversionRate: 2.8, reach: 15000 },
-            budgetAllocation: 35
-          }
-        ],
-        monthlyPlan: Array.from({ length: 30 }, (_, i) => ({
-          day: i + 1,
-          platform: ['Facebook', 'Instagram', 'TikTok', 'Google'][i % 4],
-          contentType: i % 2 === 0 ? 'ad' : 'organic',
-          hook: `Day ${i + 1} AI-generated hook for ${formData.businessName}`,
-          body: `AI-generated content for ${formData.industry} targeting ${formData.targetAudience}`,
-          cta: 'Get Started Today',
-          visualSuggestion: 'AI-suggested visual content',
-          targetAudience: formData.targetAudience,
-          keyMessage: `Strategic message for day ${i + 1}`,
-          expectedMetrics: { reach: 12000, engagement: 450, cost: 85, conversions: 8 },
-          strategicReasoning: `AI-generated reasoning for day ${i + 1}`
-        })),
-        budgetStrategy: [
-          {
-            category: 'Monthly Marketing Budget',
-            monthlyBudget: 5000,
-            allocation: [
-              { platform: 'Facebook', percentage: 35, dailySpend: 58, reasoning: 'Highest ROI platform' }
-            ],
-            optimizationTips: ['Start with proven platforms', 'Test new audiences']
-          }
-        ],
-        copywritingRecommendations: [
-          {
-            copyType: 'Primary Messaging',
-            recommendations: ['Lead with emotional triggers', 'Include social proof'],
-            examples: [{ before: 'Generic copy', after: 'Targeted copy', improvement: 'Added specificity' }],
-            emotionalTriggers: ['urgency', 'social proof']
-          }
-        ],
-        metricOptimization: [
-          {
-            metric: 'Conversion Rate',
-            currentPerformance: '2.3%',
-            targetImprovement: '4.1%',
-            actionSteps: ['Optimize landing pages', 'Add social proof'],
-            timeline: '30-60 days',
-            expectedROI: '78% increase'
-          }
-        ],
-        competitorInsights: [
-          {
-            competitor: 'Market Leader',
-            strengths: ['Brand recognition'],
-            weaknesses: ['Generic messaging'],
-            opportunities: ['Personalized approach'],
-            strategicRecommendations: ['Emphasize unique value']
-          }
-        ],
-        industryInsights: [
-          {
-            trend: `AI Integration in ${formData.industry}`,
-            impact: 'High - transforming expectations',
-            actionableAdvice: 'Implement AI-powered personalization',
-            timeline: 'Next 6 months'
-          }
-        ]
-      };
-    }
-
-    return new Response(JSON.stringify(intelligenceData), {
+    return new Response(JSON.stringify(mockIntelligenceData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
