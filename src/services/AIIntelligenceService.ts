@@ -117,7 +117,7 @@ export class AIIntelligenceService {
     console.log('Generating AI-powered intelligence for:', request.formData.businessName);
 
     try {
-      // Call the Supabase Edge Function with intelligence-specific API key
+      // Call the Supabase Edge Function which uses the INTELLIGENCE_API_KEY secret
       const { data, error } = await supabase.functions.invoke('generate-intelligence', {
         body: request
       });
@@ -140,7 +140,7 @@ export class AIIntelligenceService {
   }
 
   static saveApiKey(apiKey: string): void {
-    // API keys are now handled at the service level for specific features
-    console.log('API keys are managed per feature - Intelligence API key configured');
+    // API keys are now managed through Supabase secrets
+    console.log('API keys are managed through Supabase secrets - Intelligence API key configured');
   }
 }

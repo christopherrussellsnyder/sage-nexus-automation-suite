@@ -6,8 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// E-commerce product research specific API key
-const ECOMMERCE_API_KEY = "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";
+// Get E-commerce API key from Supabase secrets
+const ECOMMERCE_API_KEY = Deno.env.get('ECOMMERCE_API_KEY');
 
 interface ProductResearchRequest {
   searchQuery: string;
@@ -29,6 +29,10 @@ serve(async (req) => {
     const { searchQuery, filters } = request;
 
     console.log('Researching products for query:', searchQuery);
+
+    if (!ECOMMERCE_API_KEY) {
+      throw new Error('E-commerce API key not configured');
+    }
 
     // Create prompt for product research
     const systemPrompt = `You are an expert e-commerce product researcher. Generate detailed product analysis with market validation, evergreen potential, profit margins, and winning marketing angles.`;

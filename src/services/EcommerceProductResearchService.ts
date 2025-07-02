@@ -50,7 +50,7 @@ export class EcommerceProductResearchService {
     console.log('Starting AI-powered product research for:', request.searchQuery);
 
     try {
-      // Call the Supabase Edge Function with e-commerce-specific API key
+      // Call the Supabase Edge Function which uses the ECOMMERCE_API_KEY secret
       const { data, error } = await supabase.functions.invoke('ecommerce-product-research', {
         body: request
       });
@@ -73,7 +73,7 @@ export class EcommerceProductResearchService {
   }
 
   static saveApiKey(apiKey: string): void {
-    // API keys are now handled at the service level for e-commerce research
-    console.log('API keys are managed per feature - E-commerce API key configured');
+    // API keys are now managed through Supabase secrets
+    console.log('API keys are managed through Supabase secrets - E-commerce API key configured');
   }
 }

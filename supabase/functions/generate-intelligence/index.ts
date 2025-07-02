@@ -6,8 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Intelligence-specific API key
-const INTELLIGENCE_API_KEY = "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";
+// Get Intelligence API key from Supabase secrets
+const INTELLIGENCE_API_KEY = Deno.env.get('INTELLIGENCE_API_KEY');
 
 interface IntelligenceRequest {
   formData: {
@@ -39,6 +39,10 @@ serve(async (req) => {
     const { formData, intelligenceMode, businessType } = request;
 
     console.log('Generating intelligence for:', formData.businessName);
+
+    if (!INTELLIGENCE_API_KEY) {
+      throw new Error('Intelligence API key not configured');
+    }
 
     // Create comprehensive prompt for OpenAI
     const systemPrompt = `You are a strategic business intelligence AI that provides comprehensive marketing and business insights. Generate detailed, actionable recommendations based on the business information provided.`;
