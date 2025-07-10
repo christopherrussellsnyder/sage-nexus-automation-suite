@@ -23,13 +23,18 @@ interface IntelligenceRequest {
 }
 
 interface AIGeneratedContent {
-  platformRecommendations: PlatformRecommendation[];
-  monthlyPlan: DailyContent[];
-  budgetStrategy: BudgetRecommendation[];
-  copywritingRecommendations: CopywritingInsight[];
-  metricOptimization: MetricOptimization[];
-  competitorInsights: CompetitorInsight[];
-  industryInsights: IndustryInsight[];
+  generatedAt: string;
+  intelligenceMode: string;
+  businessType: string;
+  aiGeneratedContent?: string;
+  fullAIResponse?: string;
+  platformRecommendations?: PlatformRecommendation[];
+  monthlyPlan?: DailyContent[];
+  budgetStrategy?: BudgetRecommendation[];
+  copywritingRecommendations?: CopywritingInsight[];
+  metricOptimization?: MetricOptimization[];
+  competitorInsights?: CompetitorInsight[];
+  industryInsights?: IndustryInsight[];
 }
 
 interface PlatformRecommendation {
@@ -135,6 +140,38 @@ export class AIIntelligenceService {
       return data as AIGeneratedContent;
     } catch (error) {
       console.error('Error generating AI intelligence:', error);
+      throw error;
+    }
+  }
+
+  static async generateCopywritingIntelligence(request: IntelligenceRequest): Promise<AIGeneratedContent> {
+    console.log('Generating AI-powered copywriting intelligence for:', request.formData.businessName);
+
+    // Set the intelligence mode to copywriting
+    const copywritingRequest = {
+      ...request,
+      intelligenceMode: 'copywriting' as const
+    };
+
+    try {
+      // Use the same edge function but with copywriting mode
+      const { data, error } = await supabase.functions.invoke('generate-intelligence', {
+        body: copywritingRequest
+      });
+
+      if (error) {
+        console.error('Copywriting intelligence generation error:', error);
+        throw new Error(error.message || 'Failed to generate copywriting intelligence');
+      }
+
+      if (!data) {
+        throw new Error('No copywriting intelligence data received from AI generation');
+      }
+
+      console.log('AI copywriting intelligence generated successfully');
+      return data as AIGeneratedContent;
+    } catch (error) {
+      console.error('Error generating copywriting intelligence:', error);
       throw error;
     }
   }

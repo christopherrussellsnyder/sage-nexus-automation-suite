@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ import {
 } from 'lucide-react';
 import EcommerceDashboard from './EcommerceDashboard';
 import SalesDashboard from './SalesDashboard';
-import CopywritingDashboard from './CopywritingDashboard';
+import CopywritingIntelligenceDashboard from './CopywritingIntelligenceDashboard';
 import IntelligenceDashboard from './IntelligenceDashboard';
 
 const FeatureDashboard = () => {
@@ -53,8 +52,8 @@ const FeatureDashboard = () => {
     },
     {
       id: 'copywriting',
-      title: 'AI Copywriting',
-      description: 'Content generation and optimization tools',
+      title: 'AI Copywriting Intelligence',
+      description: 'AI-powered copywriting strategies and optimization',
       icon: PenTool,
       color: 'bg-gradient-to-br from-orange-500 to-red-600',
       badge: 'POPULAR',
@@ -82,7 +81,7 @@ const FeatureDashboard = () => {
       case 'sales':
         return <SalesDashboard />;
       case 'copywriting':
-        return <CopywritingDashboard />;
+        return <CopywritingIntelligenceDashboard />;
       default:
         return <IntelligenceDashboard />;
     }
