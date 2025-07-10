@@ -33,7 +33,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   const getCurrentCopyRecommendations = () => {
     return copywritingRecs.find((rec: any) => rec.copyType === selectedCopyType) || {
       copyType: selectedCopyType,
-      recommendations: ['API-generated recommendations not available'],
+      recommendations: ['No recommendations available for this copy type'],
       examples: [],
       emotionalTriggers: []
     };
@@ -75,7 +75,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
             
             <div>
               <Label className="text-sm font-medium text-muted-foreground">Unique Value Proposition</Label>
-              <p className="text-sm bg-gray-50 p-2 rounded">{businessData.uniqueValue || 'N/A'}</p>
+              <p className="text-sm bg-gray-50 p-2 rounded">{businessData.uniqueValue || businessData.productService || 'N/A'}</p>
             </div>
           </CardContent>
         </Card>
@@ -89,12 +89,12 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
             <CardDescription>Budget recommendations from AI analysis</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {budgetStrategy.recommendedStrategy ? (
+            {budgetStrategy && Object.keys(budgetStrategy).length > 0 ? (
               <>
                 <div>
                   <Label className="text-sm font-medium text-muted-foreground">Recommended Strategy</Label>
                   <p className="text-sm bg-green-50 p-2 rounded border border-green-200">
-                    {budgetStrategy.recommendedStrategy}
+                    {budgetStrategy.recommendedStrategy || 'Strategy not provided'}
                   </p>
                 </div>
 
@@ -128,6 +128,15 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
                     <div className="text-xs text-muted-foreground">Target CPM</div>
                   </div>
                 </div>
+
+                {budgetStrategy.reasoning && (
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">AI Reasoning</Label>
+                    <p className="text-sm bg-blue-50 p-2 rounded border border-blue-200">
+                      {budgetStrategy.reasoning}
+                    </p>
+                  </div>
+                )}
               </>
             ) : (
               <p className="text-sm text-muted-foreground">AI budget strategy not generated. Please regenerate the report.</p>
@@ -234,7 +243,7 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
             <div className="flex items-center space-x-2">
               <Users className="h-5 w-5 text-blue-600" />
               <div>
-                <p className="text-2xl font-bold">AI</p>
+                <p className="text-2xl font-bold">API</p>
                 <p className="text-xs text-muted-foreground">Generated</p>
               </div>
             </div>
@@ -270,8 +279,8 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
             <div className="flex items-center space-x-2">
               <Calendar className="h-5 w-5 text-orange-600" />
               <div>
-                <p className="text-2xl font-bold">API</p>
-                <p className="text-xs text-muted-foreground">Powered</p>
+                <p className="text-2xl font-bold">100%</p>
+                <p className="text-xs text-muted-foreground">API Powered</p>
               </div>
             </div>
           </CardContent>

@@ -159,17 +159,9 @@ const UnifiedIntelligenceWizard = ({
 
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
-      const intelligenceData = {
-        businessType,
-        formData,
-        intelligenceMode,
-        generatedAt: new Date().toISOString(),
-        aiGenerated: true,
-        insights: aiIntelligence
-      };
-      
+      // Pass the AI intelligence data directly - don't wrap it in another object
       console.log('AI intelligence generated successfully');
-      onIntelligenceGenerated(intelligenceData);
+      onIntelligenceGenerated(aiIntelligence);
       
     } catch (error) {
       console.error('Error generating AI intelligence:', error);

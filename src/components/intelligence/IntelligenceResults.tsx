@@ -17,7 +17,9 @@ interface IntelligenceResultsProps {
 }
 
 const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResultsProps) => {
-  const intelligenceMode = data.intelligenceMode || 'full';
+  // Extract the actual API insights data
+  const intelligenceData = data.insights || data;
+  const intelligenceMode = intelligenceData.intelligenceMode || data.intelligenceMode || 'full';
 
   const handleExport = () => {
     const exportData = {
@@ -56,7 +58,7 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
       monthlyPlan: ['full', 'marketing'],
       metrics: ['full', 'marketing'],
       competitors: ['full', 'competitor'],
-      copywriting: ['full', 'copywriting'] // Only show for full and copywriting modes
+      copywriting: ['full', 'copywriting']
     };
     
     return sectionMapping[section]?.includes(intelligenceMode) || false;
@@ -75,9 +77,9 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
             <h2 className="text-2xl font-bold">{getModeTitle()}</h2>
             <p className="text-muted-foreground">
               Generated for {businessType?.charAt(0).toUpperCase() + businessType?.slice(1)} business
-              {data.generatedAt && (
+              {intelligenceData.generatedAt && (
                 <span className="ml-2">
-                  on {new Date(data.generatedAt).toLocaleDateString()}
+                  on {new Date(intelligenceData.generatedAt).toLocaleDateString()}
                 </span>
               )}
             </p>
@@ -102,23 +104,23 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
       {/* Results Content */}
       <div className="space-y-6">
         {shouldShowSection('overview') && (
-          <ResultsOverview data={data} businessType={businessType} />
+          <ResultsOverview data={intelligenceData} businessType={businessType} />
         )}
         
         {shouldShowSection('platforms') && (
-          <PlatformRecommendations data={data} />
+          <PlatformRecommendations data={intelligenceData} />
         )}
         
         {shouldShowSection('monthlyPlan') && (
-          <MonthlyPlan data={data} />
+          <MonthlyPlan data={intelligenceData} />
         )}
         
         {shouldShowSection('metrics') && (
-          <MetricOptimization data={data} />
+          <MetricOptimization data={intelligenceData} />
         )}
         
         {shouldShowSection('competitors') && (
-          <CompetitorInsights data={data} />
+          <CompetitorInsights data={intelligenceData} />
         )}
 
         {/* Marketing-specific message */}
