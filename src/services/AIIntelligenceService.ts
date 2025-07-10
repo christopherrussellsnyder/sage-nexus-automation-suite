@@ -26,26 +26,37 @@ interface AIGeneratedContent {
   generatedAt: string;
   intelligenceMode: string;
   businessType: string;
+  formData: BusinessFormData;
+  budgetStrategy: {
+    recommendedStrategy: string;
+    monthlyBudgetAllocation: {
+      primaryPlatform: string;
+      secondaryPlatform: string;
+      testing: string;
+    };
+    expectedROAS: string;
+    targetCPM: string;
+    reasoning?: string;
+  };
+  platformRecommendations: PlatformRecommendation[];
+  monthlyPlan: DailyContent[];
+  metricOptimization: MetricOptimization[];
+  competitorInsights: CompetitorInsight[];
+  copywritingRecommendations: CopywritingInsight[];
+  industryInsights: IndustryInsight[];
   aiGeneratedContent?: string;
   fullAIResponse?: string;
-  platformRecommendations?: PlatformRecommendation[];
-  monthlyPlan?: DailyContent[];
-  budgetStrategy?: BudgetRecommendation[];
-  copywritingRecommendations?: CopywritingInsight[];
-  metricOptimization?: MetricOptimization[];
-  competitorInsights?: CompetitorInsight[];
-  industryInsights?: IndustryInsight[];
 }
 
 interface PlatformRecommendation {
   platform: string;
   priority: number;
+  score: number;
   reasoning: string;
   expectedMetrics: {
     roas: number;
     cpm: number;
     conversionRate: number;
-    reach: number;
   };
   budgetAllocation: number;
 }
@@ -60,7 +71,6 @@ interface DailyContent {
   visualSuggestion: string;
   targetAudience: string;
   keyMessage: string;
-  hashtags?: string[];
   expectedMetrics: {
     reach: number;
     engagement: number;
@@ -70,16 +80,21 @@ interface DailyContent {
   strategicReasoning: string;
 }
 
-interface BudgetRecommendation {
-  category: string;
-  monthlyBudget: number;
-  allocation: {
-    platform: string;
-    percentage: number;
-    dailySpend: number;
-    reasoning: string;
-  }[];
-  optimizationTips: string[];
+interface MetricOptimization {
+  metric: string;
+  currentBenchmark: string;
+  targetBenchmark: string;
+  improvementStrategies: string[];
+  timeline: string;
+  expectedROI: string;
+}
+
+interface CompetitorInsight {
+  competitor: string;
+  strengths: string[];
+  weaknesses: string[];
+  opportunities: string[];
+  strategicRecommendations: string[];
 }
 
 interface CopywritingInsight {
@@ -93,23 +108,6 @@ interface CopywritingInsight {
   emotionalTriggers: string[];
 }
 
-interface MetricOptimization {
-  metric: string;
-  currentPerformance: string;
-  targetImprovement: string;
-  actionSteps: string[];
-  timeline: string;
-  expectedROI: string;
-}
-
-interface CompetitorInsight {
-  competitor: string;
-  strengths: string[];
-  weaknesses: string[];
-  opportunities: string[];
-  strategicRecommendations: string[];
-}
-
 interface IndustryInsight {
   trend: string;
   impact: string;
@@ -119,6 +117,7 @@ interface IndustryInsight {
 
 export class AIIntelligenceService {
   static async generateIntelligence(request: IntelligenceRequest): Promise<AIGeneratedContent> {
+    console.log('Starting AI intelligence generation...');
     console.log('Generating AI-powered intelligence for:', request.formData.businessName);
 
     try {
@@ -136,7 +135,30 @@ export class AIIntelligenceService {
         throw new Error('No intelligence data received from AI generation');
       }
 
+      // Validate that all required sections are present
+      const requiredSections = [
+        'budgetStrategy',
+        'platformRecommendations', 
+        'monthlyPlan',
+        'metricOptimization',
+        'competitorInsights',
+        'copywritingRecommendations'
+      ];
+
+      const missingSections = requiredSections.filter(section => !data[section] || 
+        (Array.isArray(data[section]) && data[section].length === 0));
+
+      if (missingSections.length > 0) {
+        console.warn('Missing sections in AI response:', missingSections);
+        // Continue with partial data rather than failing
+      }
+
       console.log('AI intelligence generated successfully');
+      console.log('Generated sections:', Object.keys(data).filter(key => 
+        ['budgetStrategy', 'platformRecommendations', 'monthlyPlan', 'metricOptimization', 
+         'competitorInsights', 'copywritingRecommendations'].includes(key)
+      ));
+
       return data as AIGeneratedContent;
     } catch (error) {
       console.error('Error generating AI intelligence:', error);
@@ -153,27 +175,7 @@ export class AIIntelligenceService {
       intelligenceMode: 'copywriting' as const
     };
 
-    try {
-      // Use the same edge function but with copywriting mode
-      const { data, error } = await supabase.functions.invoke('generate-intelligence', {
-        body: copywritingRequest
-      });
-
-      if (error) {
-        console.error('Copywriting intelligence generation error:', error);
-        throw new Error(error.message || 'Failed to generate copywriting intelligence');
-      }
-
-      if (!data) {
-        throw new Error('No copywriting intelligence data received from AI generation');
-      }
-
-      console.log('AI copywriting intelligence generated successfully');
-      return data as AIGeneratedContent;
-    } catch (error) {
-      console.error('Error generating copywriting intelligence:', error);
-      throw error;
-    }
+    return this.generateIntelligence(copywritingRequest);
   }
 
   static saveApiKey(apiKey: string): void {
