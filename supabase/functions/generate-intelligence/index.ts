@@ -44,72 +44,125 @@ serve(async (req) => {
       throw new Error('Intelligence API key not configured');
     }
 
-    // Create comprehensive prompt for OpenAI based on intelligence mode
-    let systemPrompt = '';
-    let userPrompt = '';
+    // Create comprehensive structured prompt for OpenAI
+    const systemPrompt = `You are an expert business intelligence AI that provides comprehensive marketing and business insights. You MUST respond with a valid JSON object that includes ALL required sections with specific data and metrics.`;
+    
+    const userPrompt = `
+    Generate comprehensive business intelligence for:
+    
+    Business: ${formData.businessName}
+    Industry: ${formData.industry}
+    Business Type: ${businessType}
+    Target Audience: ${formData.targetAudience}
+    Product/Service: ${formData.productService}
+    Unique Value: ${formData.uniqueValue}
+    Monthly Revenue: ${formData.monthlyRevenue}
+    Current Challenges: ${formData.currentChallenges || 'Not specified'}
+    Goals: ${formData.goals?.join(', ') || 'Not specified'}
+    Timeline: ${formData.timeline || 'Not specified'}
+    
+    Intelligence Mode: ${intelligenceMode}
+    
+    You MUST provide a structured JSON response with ALL of these sections filled with specific, actionable data:
 
-    if (intelligenceMode === 'copywriting') {
-      systemPrompt = `You are an expert copywriting strategist and AI assistant. You specialize in creating high-converting copy, analyzing market psychology, and providing actionable copywriting recommendations based on business data.`;
-      
-      userPrompt = `
-      Generate comprehensive copywriting intelligence for:
-      
-      Business: ${formData.businessName}
-      Industry: ${formData.industry}
-      Business Type: ${businessType}
-      Target Audience: ${formData.targetAudience}
-      Product/Service: ${formData.productService}
-      Unique Value: ${formData.uniqueValue}
-      Monthly Revenue: ${formData.monthlyRevenue}
-      Current Challenges: ${formData.currentChallenges || 'Not specified'}
-      Goals: ${formData.goals?.join(', ') || 'Not specified'}
-      Timeline: ${formData.timeline || 'Not specified'}
-      
-      Please provide detailed copywriting intelligence including:
-      1. Headlines and hooks that convert for this specific audience
-      2. Email sequence frameworks with specific subject lines and content
-      3. Ad copy variations for different platforms (Facebook, Google, LinkedIn, TikTok)
-      4. Website copy architecture with specific sections and messaging
-      5. Social media content strategies with post examples
-      6. Psychological triggers and emotional messaging frameworks
-      7. Competitor copy analysis and differentiation strategies
-      8. A/B testing recommendations for copy optimization
-      
-      Format the response as a comprehensive JSON object with structured sections for each copywriting area.
-      `;
-    } else {
-      systemPrompt = `You are a strategic business intelligence AI that provides comprehensive marketing and business insights. Generate detailed, actionable recommendations based on the business information provided.`;
-
-      userPrompt = `
-      Generate comprehensive business intelligence for:
-      
-      Business: ${formData.businessName}
-      Industry: ${formData.industry}
-      Business Type: ${businessType}
-      Target Audience: ${formData.targetAudience}
-      Product/Service: ${formData.productService}
-      Unique Value: ${formData.uniqueValue}
-      Monthly Revenue: ${formData.monthlyRevenue}
-      Current Challenges: ${formData.currentChallenges || 'Not specified'}
-      Goals: ${formData.goals?.join(', ') || 'Not specified'}
-      Timeline: ${formData.timeline || 'Not specified'}
-      
-      Intelligence Mode: ${intelligenceMode}
-      
-      Please provide a comprehensive analysis including:
-      1. Platform recommendations with specific metrics (ROAS, CPM, conversion rates)
-      2. 30-day content calendar with daily posts
-      3. Budget allocation strategy
-      4. Copywriting recommendations with examples
-      5. Metric optimization strategies
-      6. Competitor insights
-      7. Industry trend analysis
-      
-      Format the response as a structured JSON object that matches the expected interface.
-      `;
+    {
+      "generatedAt": "current timestamp",
+      "intelligenceMode": "${intelligenceMode}",
+      "businessType": "${businessType}",
+      "formData": "include the original form data",
+      "budgetStrategy": {
+        "recommendedStrategy": "specific strategy based on revenue and business type",
+        "monthlyBudgetAllocation": {
+          "primaryPlatform": "percentage and dollar amount",
+          "secondaryPlatform": "percentage and dollar amount", 
+          "testing": "percentage and dollar amount"
+        },
+        "expectedROAS": "specific number",
+        "targetCPM": "specific dollar amount",
+        "reasoning": "detailed explanation of strategy"
+      },
+      "platformRecommendations": [
+        {
+          "platform": "specific platform name",
+          "priority": "number 1-4",
+          "score": "optimization score 1-100",
+          "reasoning": "specific reasoning for this business",
+          "expectedMetrics": {
+            "roas": "specific number",
+            "cpm": "specific dollar amount",
+            "conversionRate": "specific percentage"
+          },
+          "budgetAllocation": "specific percentage"
+        }
+      ],
+      "monthlyPlan": [
+        {
+          "day": "day number",
+          "platform": "specific platform",
+          "contentType": "ad or organic",
+          "hook": "specific hook for this business",
+          "body": "specific body content",
+          "cta": "specific call to action",
+          "visualSuggestion": "specific visual recommendation",
+          "targetAudience": "specific audience segment",
+          "keyMessage": "specific message",
+          "expectedMetrics": {
+            "reach": "estimated reach number",
+            "engagement": "estimated engagement",
+            "cost": "estimated cost",
+            "conversions": "estimated conversions"
+          },
+          "strategicReasoning": "why this content on this day"
+        }
+      ],
+      "metricOptimization": [
+        {
+          "metric": "specific metric name",
+          "currentBenchmark": "current performance number",
+          "targetBenchmark": "target performance number", 
+          "improvementStrategies": ["specific actionable strategies"],
+          "timeline": "specific timeframe",
+          "expectedROI": "specific ROI improvement"
+        }
+      ],
+      "competitorInsights": [
+        {
+          "competitor": "identified competitor name",
+          "strengths": ["specific strengths observed"],
+          "weaknesses": ["specific weaknesses to exploit"],
+          "opportunities": ["specific opportunities"],
+          "strategicRecommendations": ["specific actions to take"]
+        }
+      ],
+      "copywritingRecommendations": [
+        {
+          "copyType": "specific copy type (website/ads/email/social)",
+          "recommendations": ["specific copywriting advice"],
+          "examples": [
+            {
+              "before": "example of current/typical copy",
+              "after": "improved copy example",
+              "improvement": "explanation of improvement"
+            }
+          ],
+          "emotionalTriggers": ["specific triggers for this audience"],
+          "testingStrategy": "A/B testing recommendations"
+        }
+      ],
+      "industryInsights": [
+        {
+          "trend": "specific industry trend",
+          "impact": "impact on this business",
+          "actionableAdvice": "specific actions to take",
+          "timeline": "when to implement"
+        }
+      ]
     }
 
-    // Call OpenAI API using the intelligence-specific key
+    Provide specific, actionable data for ${formData.businessName} in the ${formData.industry} industry. DO NOT use placeholder text or generic examples. All metrics, strategies, and recommendations must be tailored to this specific business context.
+    `;
+
+    // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -138,54 +191,32 @@ serve(async (req) => {
 
     console.log('AI Response received, processing...');
 
-    // Try to parse as JSON first, if it fails, structure the response
+    // Try to parse as JSON
     let intelligenceData;
     try {
       intelligenceData = JSON.parse(aiResponse);
-    } catch (parseError) {
-      console.log('Response not in JSON format, structuring...');
       
-      // Structure the response based on the AI content
+      // Ensure all required fields are present
+      intelligenceData.generatedAt = new Date().toISOString();
+      intelligenceData.intelligenceMode = intelligenceMode;
+      intelligenceData.businessType = businessType;
+      intelligenceData.formData = formData;
+      
+    } catch (parseError) {
+      console.error('Failed to parse JSON response:', parseError);
+      console.log('Raw AI response:', aiResponse);
+      
+      // If JSON parsing fails, create a structured response with the raw content
       intelligenceData = {
         generatedAt: new Date().toISOString(),
         intelligenceMode: intelligenceMode,
         businessType: businessType,
+        formData: formData,
         aiGeneratedContent: aiResponse,
-        
-        // Create structured sections from AI response
-        platformRecommendations: [
-          {
-            platform: 'AI-Recommended Primary Platform',
-            priority: 1,
-            reasoning: 'Based on AI analysis of your business profile',
-            expectedMetrics: { roas: 3.5, cpm: 10.0, conversionRate: 3.2, reach: 15000 },
-            budgetAllocation: 40
-          }
-        ],
-        
-        copywritingRecommendations: [
-          {
-            copyType: 'AI-Generated Strategy',
-            recommendations: ['AI-powered messaging based on your unique value proposition'],
-            examples: [
-              { 
-                before: 'Generic copy', 
-                after: 'AI-optimized copy for your specific audience', 
-                improvement: 'Personalized based on your business data' 
-              }
-            ],
-            emotionalTriggers: ['AI-identified triggers for your audience']
-          }
-        ],
-        
-        fullAIResponse: aiResponse // Include the full AI response for detailed viewing
+        fullAIResponse: aiResponse,
+        error: 'Failed to parse structured response, falling back to raw content'
       };
     }
-
-    // Always add metadata
-    intelligenceData.generatedAt = new Date().toISOString();
-    intelligenceData.intelligenceMode = intelligenceMode;
-    intelligenceData.businessType = businessType;
 
     console.log('Intelligence generated successfully using AI API');
     return new Response(JSON.stringify(intelligenceData), {

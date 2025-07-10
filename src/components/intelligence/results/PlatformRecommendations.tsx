@@ -8,56 +8,7 @@ interface PlatformRecommendationsProps {
 }
 
 const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
-  const platforms = [
-    {
-      name: 'Facebook',
-      priority: 1,
-      score: 92,
-      reasoning: 'Best ROI for your target audience with advanced targeting options and proven conversion rates.',
-      expectedMetrics: {
-        roas: 4.2,
-        cpm: '$12.50',
-        conversionRate: '3.8%'
-      },
-      budgetAllocation: 40
-    },
-    {
-      name: 'Instagram',
-      priority: 2,
-      score: 88,
-      reasoning: 'Strong visual platform ideal for engagement with your demographic and product type.',
-      expectedMetrics: {
-        roas: 3.8,
-        cpm: '$15.20',
-        conversionRate: '3.2%'
-      },
-      budgetAllocation: 30
-    },
-    {
-      name: 'Google Ads',
-      priority: 3,
-      score: 85,
-      reasoning: 'High-intent traffic perfect for capturing customers ready to purchase.',
-      expectedMetrics: {
-        roas: 5.1,
-        cpm: '$22.80',
-        conversionRate: '4.5%'
-      },
-      budgetAllocation: 20
-    },
-    {
-      name: 'TikTok',
-      priority: 4,
-      score: 72,
-      reasoning: 'Emerging platform with lower competition and high engagement rates.',
-      expectedMetrics: {
-        roas: 3.2,
-        cpm: '$8.90',
-        conversionRate: '2.8%'
-      },
-      budgetAllocation: 10
-    }
-  ];
+  const platforms = data.platformRecommendations || [];
 
   const getPriorityColor = (priority: number) => {
     switch (priority) {
@@ -68,54 +19,89 @@ const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
     }
   };
 
+  if (!platforms || platforms.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Platform Recommendations</CardTitle>
+          <CardDescription>
+            AI-generated platform recommendations are not available. Please regenerate the report.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">No AI platform recommendations found in the current report.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Platform Recommendations</CardTitle>
+        <CardTitle>AI Platform Recommendations</CardTitle>
         <CardDescription>
           AI-ranked marketing platforms optimized for your business goals and budget
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {platforms.map((platform, index) => (
+          {platforms.map((platform: any, index: number) => (
             <div key={index} className="p-4 border rounded-lg">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">
-                  <Badge className={`${getPriorityColor(platform.priority)} text-white`}>
-                    #{platform.priority}
+                  <Badge className={`${getPriorityColor(platform.priority || index + 1)} text-white`}>
+                    #{platform.priority || index + 1}
                   </Badge>
                   <div>
-                    <h4 className="font-semibold">{platform.name}</h4>
+                    <h4 className="font-semibold">{platform.platform || 'Platform Name'}</h4>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm text-muted-foreground">Optimization Score:</span>
-                      <span className="text-sm font-medium">{platform.score}/100</span>
+                      <span className="text-sm text-muted-foreground">AI Optimization Score:</span>
+                      <span className="text-sm font-medium">{platform.score || 'N/A'}/100</span>
                     </div>
                   </div>
                 </div>
-                <Badge variant="outline">{platform.budgetAllocation}% Budget</Badge>
+                <Badge variant="outline">{platform.budgetAllocation || 'N/A'}% Budget</Badge>
               </div>
               
-              <Progress value={platform.score} className="mb-3" />
+              {platform.score && (
+                <Progress value={platform.score} className="mb-3" />
+              )}
               
-              <p className="text-sm text-muted-foreground mb-3">{platform.reasoning}</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                {platform.reasoning || 'AI reasoning not available for this platform.'}
+              </p>
               
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="font-semibold text-green-600">{platform.expectedMetrics.roas}x</div>
-                  <div className="text-muted-foreground">ROAS</div>
+              {platform.expectedMetrics && (
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div className="text-center p-2 bg-gray-50 rounded">
+                    <div className="font-semibold text-green-600">
+                      {platform.expectedMetrics.roas || 'N/A'}x
+                    </div>
+                    <div className="text-muted-foreground">ROAS</div>
+                  </div>
+                  <div className="text-center p-2 bg-gray-50 rounded">
+                    <div className="font-semibold text-blue-600">
+                      ${platform.expectedMetrics.cpm || 'N/A'}
+                    </div>
+                    <div className="text-muted-foreground">CPM</div>
+                  </div>
+                  <div className="text-center p-2 bg-gray-50 rounded">
+                    <div className="font-semibold text-purple-600">
+                      {platform.expectedMetrics.conversionRate || 'N/A'}%
+                    </div>
+                    <div className="text-muted-foreground">Conv. Rate</div>
+                  </div>
                 </div>
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="font-semibold text-blue-600">{platform.expectedMetrics.cpm}</div>
-                  <div className="text-muted-foreground">CPM</div>
-                </div>
-                <div className="text-center p-2 bg-gray-50 rounded">
-                  <div className="font-semibold text-purple-600">{platform.expectedMetrics.conversionRate}</div>
-                  <div className="text-muted-foreground">Conv. Rate</div>
-                </div>
-              </div>
+              )}
             </div>
           ))}
+        </div>
+        
+        <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+          <p className="text-sm text-blue-800">
+            <strong>AI-Generated:</strong> These platform recommendations are generated by AI analysis of your business data, 
+            industry trends, and competitive landscape. All metrics and strategies are tailored specifically for your business.
+          </p>
         </div>
       </CardContent>
     </Card>
