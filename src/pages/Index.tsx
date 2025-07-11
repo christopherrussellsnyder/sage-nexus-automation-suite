@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,6 @@ import Dashboard from "@/components/Dashboard";
 import EcommerceDashboard from "@/components/EcommerceDashboard";
 import AgencyDashboard from "@/components/AgencyDashboard";
 import SalesDashboard from "@/components/SalesDashboard";
-import CopywritingDashboard from "@/components/CopywritingDashboard";
 import IntelligenceDashboard from "@/components/IntelligenceDashboard";
 import Footer from "@/components/Footer";
 import { useCopySettings } from '@/hooks/useCopySettings';

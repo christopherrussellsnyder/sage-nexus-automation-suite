@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 interface BusinessFormData {
@@ -19,7 +18,7 @@ interface BusinessFormData {
 interface IntelligenceRequest {
   formData: BusinessFormData;
   intelligenceMode: 'full' | 'copywriting' | 'marketing' | 'competitor';
-  businessType: 'ecommerce' | 'agency' | 'sales';
+  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
 }
 
 interface AIGeneratedContent {

@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -24,7 +25,7 @@ interface IntelligenceRequest {
     currentMetrics?: any;
   };
   intelligenceMode: 'full' | 'copywriting' | 'marketing' | 'competitor';
-  businessType: 'ecommerce' | 'agency' | 'sales';
+  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
 }
 
 serve(async (req) => {
@@ -274,30 +275,34 @@ function calculateRealisticMetrics(formData: any, businessType: string) {
   const monthlyRevenue = parseFloat(formData.monthlyRevenue?.replace(/[^\d.-]/g, '')) || 0;
   const adBudget = parseFloat(formData.monthlyAdBudget?.replace(/[^\d.-]/g, '')) || parseFloat(formData.marketingBudget?.replace(/[^\d.-]/g, '')) || 1000;
   
-  // Calculate target conversion rate
+  // Calculate target conversion rate using the specified formula
   let targetConversionRate;
-  if (currentConversionRate === 0 || currentConversionRate < 1) {
+  if (currentConversionRate >= 0 && currentConversionRate <= 1) {
     targetConversionRate = Math.min(currentConversionRate + 1.75, 8); // +1.5-2%
-  } else if (currentConversionRate >= 1 && currentConversionRate < 3) {
+  } else if (currentConversionRate > 1 && currentConversionRate <= 3) {
     targetConversionRate = Math.min(currentConversionRate + 1.0, 8); // +0.8-1.2%
-  } else {
+  } else if (currentConversionRate > 3) {
     targetConversionRate = Math.min(currentConversionRate + 0.4, 8); // +0.3-0.5%
+  } else {
+    targetConversionRate = 2.0; // Default for new businesses
   }
   
   // Calculate current and target CPA
   const currentConversions = (monthlyRevenue * (currentConversionRate / 100)) || 1;
   const currentCPA = currentConversions > 0 ? Math.round(adBudget / currentConversions) : 75; // Industry benchmark
-  const targetCPA = Math.round(currentCPA * 0.75); // 25% improvement
+  const targetCPA = Math.round(currentCPA * 0.75); // 25% improvement (0.7-0.8 range)
   
-  // Calculate current and target ROAS
+  // Calculate current and target ROAS using the specified formula
   const currentROAS = monthlyRevenue > 0 && adBudget > 0 ? (monthlyRevenue / adBudget) : 0;
   let targetROAS;
   if (currentROAS < 2) {
     targetROAS = 2.75; // 2.5-3x
-  } else if (currentROAS >= 2 && currentROAS < 4) {
+  } else if (currentROAS >= 2 && currentROAS <= 4) {
     targetROAS = currentROAS + 1.25; // +1-1.5x
-  } else {
+  } else if (currentROAS > 4) {
     targetROAS = currentROAS + 0.75; // +0.5-1x
+  } else {
+    targetROAS = 3.0; // Default target
   }
   
   // Calculate revenue target based on user goals
@@ -326,7 +331,8 @@ function generateOptimized30DayPlan(formData: any, businessType: string) {
   const psychologicalTriggers = {
     ecommerce: ['scarcity', 'social proof', 'urgency', 'FOMO'],
     agency: ['authority', 'results', 'expertise', 'trust'],
-    sales: ['success', 'achievement', 'status', 'efficiency']
+    sales: ['success', 'achievement', 'status', 'efficiency'],
+    copywriting: ['credibility', 'results', 'transformation', 'expertise']
   };
   
   const triggers = psychologicalTriggers[businessType] || psychologicalTriggers.ecommerce;
@@ -434,7 +440,7 @@ function createOptimizedFallback(formData: any, businessType: string, intelligen
         improvementStrategies: [
           "Implement 1-2 sentence ad format optimization",
           "Apply Problem-Solution formula for higher engagement",
-          `Utilize ${businessType === 'ecommerce' ? 'scarcity and social proof' : 'authority and results'} psychological triggers`,
+          `Utilize ${businessType === 'ecommerce' ? 'scarcity and social proof' : businessType === 'copywriting' ? 'credibility and results' : 'authority and results'} psychological triggers`,
           "Optimize for 3-8 second read time across all platforms"
         ],
         timeline: "8-12 weeks",
@@ -475,7 +481,7 @@ function createOptimizedFallback(formData: any, businessType: string, intelligen
           "Use Benefit-Proof structure for immediate impact",
           "Implement Social Proof Hook with specific numbers",
           "Optimize all content for 1-2 sentences, 125 character limit",
-          `Include ${businessType === 'ecommerce' ? 'scarcity and urgency' : 'authority and results'} psychological triggers`
+          `Include ${businessType === 'ecommerce' ? 'scarcity and urgency' : businessType === 'copywriting' ? 'credibility and results' : 'authority and results'} psychological triggers`
         ],
         examples: [
           {
@@ -516,6 +522,7 @@ function getIndustryProblem(industry: string): string {
     'fitness': 'slow results and lack of motivation',
     'coaching': 'stagnant growth and unclear direction',
     'agency': 'inconsistent lead generation and client retention',
+    'copywriting': 'poor converting copy and low client results',
     'default': 'poor performance and wasted resources'
   };
   return problems[industry.toLowerCase()] || problems.default;
@@ -525,6 +532,7 @@ function getBenefit(productService: string): string {
   if (productService.toLowerCase().includes('automation')) return 'Automate your workflow and save 20+ hours weekly';
   if (productService.toLowerCase().includes('marketing')) return 'Double your leads in 30 days';
   if (productService.toLowerCase().includes('sales')) return 'Increase revenue by 150%';
+  if (productService.toLowerCase().includes('copy')) return 'Transform your copy conversion rates dramatically';
   return 'Transform your business results dramatically';
 }
 
