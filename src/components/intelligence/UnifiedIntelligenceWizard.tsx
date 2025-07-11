@@ -181,7 +181,7 @@ const UnifiedIntelligenceWizard = ({
           currentMetrics: formData.currentMetrics
         },
         intelligenceMode,
-        businessType
+        businessType: businessType
       };
 
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
