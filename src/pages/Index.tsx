@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ import Footer from "@/components/Footer";
 import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'ecommerce' | 'agency' | 'sales' | 'copywriting'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'ecommerce' | 'agency' | 'sales'>('overview');
   const copy = useCopySettings();
 
   const renderContent = () => {
@@ -41,8 +40,6 @@ const Index = () => {
         return <AgencyDashboard />;
       case 'sales':
         return <SalesDashboard />;
-      case 'copywriting':
-        return <CopywritingDashboard />;
       default:
         return <Dashboard setActiveSection={setActiveSection} />;
     }
@@ -109,15 +106,6 @@ const Index = () => {
               >
                 <Phone className="h-4 w-4" />
                 <span className="hidden sm:inline">{copy.salesTitle}</span>
-              </Button>
-              <Button
-                variant={activeSection === 'copywriting' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setActiveSection('copywriting')}
-                className="flex items-center space-x-2"
-              >
-                <PenTool className="h-4 w-4" />
-                <span className="hidden sm:inline">{copy.copywritingTitle}</span>
               </Button>
             </div>
           </div>

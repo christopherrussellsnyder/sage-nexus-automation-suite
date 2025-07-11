@@ -20,7 +20,7 @@ interface Step {
 }
 
 interface UnifiedIntelligenceWizardProps {
-  businessType: 'ecommerce' | 'agency' | 'sales';
+  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
   onIntelligenceGenerated: (data: any) => void;
   intelligenceMode?: 'full' | 'copywriting' | 'marketing' | 'competitor';
 }
@@ -52,10 +52,37 @@ const UnifiedIntelligenceWizard = ({
       {
         id: 1,
         title: 'Business Information',
-        description: 'Basic business details and industry information',
+        description: businessType === 'copywriting' 
+          ? 'Copywriting business details and service information'
+          : 'Basic business details and industry information',
         status: getStatus(1)
       }
     ];
+
+    // For copywriting business type, use the same full intelligence flow
+    if (businessType === 'copywriting') {
+      return [
+        ...baseSteps,
+        {
+          id: 2,
+          title: 'Current Metrics',
+          description: 'Performance metrics and copywriting challenges',
+          status: getStatus(2)
+        },
+        {
+          id: 3,
+          title: 'Goals & Objectives',
+          description: 'Copywriting goals and success metrics',
+          status: getStatus(3)
+        },
+        {
+          id: 4,
+          title: 'Competitive Analysis',
+          description: 'Competitor copywriters and market positioning',
+          status: getStatus(4)
+        }
+      ];
+    }
 
     if (intelligenceMode === 'copywriting') {
       return [
@@ -186,7 +213,7 @@ const UnifiedIntelligenceWizard = ({
           />
         );
       case 2:
-        if (intelligenceMode === 'copywriting') {
+        if (intelligenceMode === 'copywriting' && businessType !== 'copywriting') {
           return (
             <Card>
               <CardHeader>
@@ -255,6 +282,10 @@ const UnifiedIntelligenceWizard = ({
   }
 
   const getModeTitle = () => {
+    if (businessType === 'copywriting') {
+      return 'Copywriting Intelligence Setup';
+    }
+    
     switch (intelligenceMode) {
       case 'copywriting':
         return 'Copywriting Intelligence Setup';

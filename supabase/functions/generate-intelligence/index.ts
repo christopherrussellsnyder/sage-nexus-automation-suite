@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -44,6 +43,9 @@ serve(async (req) => {
       throw new Error('Intelligence API key not configured');
     }
 
+    // Calculate realistic metric targets based on user data
+    const metricTargets = calculateRealisticMetrics(formData, businessType);
+
     // Create comprehensive structured prompt for OpenAI with advanced ecommerce optimization
     const systemPrompt = `You are an expert business intelligence AI that provides comprehensive marketing and business insights with advanced ecommerce optimization knowledge. You MUST respond with a valid JSON object that includes ALL required sections with specific, actionable data tailored to the business provided.
 
@@ -71,20 +73,13 @@ HIGH-CONVERTING AD FORMULAS:
 2. Benefit-Proof (1-2 sentences): "[Specific benefit/result] with [product name]. [Social proof/urgency]."
 3. Social Proof Hook (2-3 sentences): "[Number] people can't be wrong about [product]. [Specific benefit]. [CTA with urgency]."
 
-PLATFORM-SPECIFIC OPTIMIZATION:
-- Facebook/Instagram Feed: 1-2 sentences, 3-5 seconds read time, 125 characters max
-- Google Shopping/Search: 30 characters per headline, 90 characters per description
-- TikTok: 21-34 seconds optimal, 1 sentence text overlay, first 3 seconds critical
-- YouTube Pre-roll: 6-second bumper (1 sentence + logo), 15-second (2-3 sentences)
+REALISTIC METRIC TARGETS:
+- Conversion Rate: ${metricTargets.conversionRate}
+- CPA Target: ${metricTargets.cpa}
+- ROAS Target: ${metricTargets.roas}
+- Revenue Target: ${metricTargets.revenue}
 
-PSYCHOLOGICAL TRIGGERS BY INDUSTRY:
-- Ecommerce: Scarcity, social proof, immediate gratification
-- SaaS: Efficiency, ROI, competitive advantage
-- Fitness: Transformation, belonging, achievement
-- Coaching: Success, aspiration, problem-solving
-- Agency: Authority, results, expertise
-
-You must incorporate these optimization principles into every piece of content generated.`;
+You must incorporate these optimization principles and realistic targets into every piece of content generated.`;
     
     const userPrompt = `
     Generate comprehensive business intelligence for:
@@ -94,15 +89,17 @@ You must incorporate these optimization principles into every piece of content g
     Business Type: ${businessType}
     Target Audience: ${formData.targetAudience}
     Product/Service: ${formData.productService}
-    Unique Value: ${formData.uniqueValue}
+    Unique Value: ${formData.uniqueValue || 'Not specified'}
     Monthly Revenue: ${formData.monthlyRevenue}
+    Current Conversion Rate: ${formData.conversionRate || '0'}%
+    Monthly Ad Budget: ${formData.monthlyAdBudget || formData.marketingBudget || '1000'}
     Current Challenges: ${formData.currentChallenges || 'Not specified'}
-    Goals: ${formData.goals?.join(', ') || 'Not specified'}
+    Goals: ${formData.goals?.join(', ') || formData.primaryGoals?.join(', ') || 'Not specified'}
     Timeline: ${formData.timeline || 'Not specified'}
     
     Intelligence Mode: ${intelligenceMode}
     
-    You MUST provide a structured JSON response with ALL of these sections filled with specific, actionable data for ${formData.businessName}. Apply the ecommerce optimization guidelines to create the most effective content possible:
+    You MUST provide a structured JSON response with ALL of these sections filled with specific, actionable data for ${formData.businessName}. Apply the ecommerce optimization guidelines and realistic metric targets:
 
     {
       "generatedAt": "${new Date().toISOString()}",
@@ -116,7 +113,7 @@ You must incorporate these optimization principles into every piece of content g
           "secondaryPlatform": "X% ($X,XXX) - [Platform Name] with conversion optimization focus", 
           "testing": "X% ($XXX) - A/B testing budget for ad length, hooks, and psychological triggers"
         },
-        "expectedROAS": "X.X",
+        "expectedROAS": "${metricTargets.roas}",
         "targetCPM": "XX.XX",
         "reasoning": "Detailed explanation incorporating ecommerce optimization principles for ${formData.businessName} targeting ${formData.targetAudience}"
       },
@@ -127,9 +124,9 @@ You must incorporate these optimization principles into every piece of content g
           "score": XX,
           "reasoning": "Platform-specific optimization strategy for ${formData.targetAudience} with 1-2 sentence ad format focus",
           "expectedMetrics": {
-            "roas": X.X,
+            "roas": ${metricTargets.roas},
             "cpm": XX.XX,
-            "conversionRate": X.X,
+            "conversionRate": ${metricTargets.conversionRate},
             "optimalAdLength": "1-2 sentences",
             "readTime": "3-5 seconds",
             "characterLimit": 125
@@ -138,40 +135,12 @@ You must incorporate these optimization principles into every piece of content g
           "optimizationNotes": "Specific optimization tactics for this platform"
         }
       ],
-      "monthlyPlan": [
-        {
-          "day": 1,
-          "platform": "Facebook",
-          "contentType": "ad",
-          "hook": "Optimized hook following proven formulas (Problem-Solution/Benefit-Proof/Social Proof)",
-          "body": "Body content following platform-specific optimization (1-2 sentences, 125 characters max)",
-          "cta": "High-converting CTA with urgency/scarcity elements",
-          "visualSuggestion": "Platform-optimized visual recommendation",
-          "targetAudience": "${formData.targetAudience}",
-          "keyMessage": "Core value proposition with psychological triggers",
-          "expectedMetrics": {
-            "reach": XXXX,
-            "engagement": XXX,
-            "cost": XX,
-            "conversions": XX,
-            "ctr": "X.X%",
-            "readTime": "X seconds"
-          },
-          "strategicReasoning": "Detailed explanation of why this content will work, including psychological triggers, industry-specific insights, and optimization principles applied",
-          "psychologicalTriggers": ["trigger1", "trigger2", "trigger3"],
-          "optimizationPrinciples": ["principle1", "principle2"],
-          "industryBenchmarks": {
-            "expectedCTR": "X.X%",
-            "conversionRate": "X.X%",
-            "engagementRate": "X.X%"
-          }
-        }
-      ],
+      "monthlyPlan": [30 days of optimized content with hook-body-cta structure],
       "metricOptimization": [
         {
           "metric": "Conversion Rate",
-          "currentBenchmark": "X.X%",
-          "targetBenchmark": "X.X%", 
+          "currentBenchmark": "${formData.conversionRate || '0'}%",
+          "targetBenchmark": "${metricTargets.conversionRate}%", 
           "improvementStrategies": [
             "Implement 1-2 sentence ad format optimization",
             "Apply Problem-Solution formula for higher engagement",
@@ -181,71 +150,37 @@ You must incorporate these optimization principles into every piece of content g
           "timeline": "X-X weeks",
           "expectedROI": "XX% increase in conversions",
           "optimizationFocus": "Ecommerce-specific conversion tactics"
+        },
+        {
+          "metric": "Cost Per Acquisition",
+          "currentBenchmark": "${metricTargets.currentCPA}",
+          "targetBenchmark": "${metricTargets.cpa}",
+          "improvementStrategies": [
+            "Refine audience targeting with psychological triggers",
+            "Implement proven ad formulas for better relevance",
+            "Optimize bidding strategies based on performance data",
+            "Use negative keywords to avoid irrelevant traffic"
+          ],
+          "timeline": "6-10 weeks",
+          "expectedROI": "${metricTargets.cpaImprovement}% reduction in acquisition costs"
+        },
+        {
+          "metric": "Return on Ad Spend (ROAS)",
+          "currentBenchmark": "${metricTargets.currentROAS}",
+          "targetBenchmark": "${metricTargets.roas}",
+          "improvementStrategies": [
+            "Focus on high-converting ad formats and psychological triggers",
+            "Implement platform-specific optimization guidelines",
+            "Test proven ecommerce ad formulas systematically",
+            "Optimize for mobile-first experience (80% of traffic)"
+          ],
+          "timeline": "8-12 weeks",
+          "expectedROI": "${metricTargets.roasImprovement}% improvement in ad spend efficiency"
         }
       ],
-      "competitorInsights": [
-        {
-          "competitor": "Top Competitor in ${formData.industry}",
-          "strengths": [
-            "Specific strength analysis with optimization context",
-            "Ad format effectiveness analysis",
-            "Platform-specific performance insights"
-          ],
-          "weaknesses": [
-            "Optimization gaps in ad length/format",
-            "Missing psychological triggers",
-            "Platform-specific weaknesses"
-          ],
-          "opportunities": [
-            "Apply superior optimization principles",
-            "Leverage proven ad formulas they're missing",
-            "Capitalize on psychological trigger gaps"
-          ],
-          "strategicRecommendations": [
-            "Implement optimization strategies they lack",
-            "Use proven ecommerce formulas for competitive advantage",
-            "Focus on platform-specific optimization gaps"
-          ]
-        }
-      ],
-      "copywritingRecommendations": [
-        {
-          "copyType": "ads",
-          "recommendations": [
-            "Apply Problem-Solution formula: 'Tired of [problem]? [Solution] in [timeframe]'",
-            "Use Benefit-Proof structure: '[Benefit] with [product]. [Social proof]'",
-            "Implement Social Proof Hook: '[Number] people can't be wrong'",
-            "Optimize for 1-2 sentences, 125 character limit",
-            "Include psychological triggers: ${formData.industry === 'ecommerce' ? 'scarcity, social proof' : formData.industry === 'saas' ? 'efficiency, ROI' : 'relevant triggers'}"
-          ],
-          "examples": [
-            {
-              "formula": "Problem-Solution",
-              "before": "Generic ad copy",
-              "after": "Optimized ad using proven formula specific to ${formData.businessName}",
-              "improvement": "Specific improvement explanation with metrics",
-              "readTime": "X seconds",
-              "characterCount": XXX
-            }
-          ],
-          "emotionalTriggers": ["Industry-specific triggers"],
-          "optimizationMetrics": {
-            "optimalLength": "1-2 sentences",
-            "readTime": "3-8 seconds",
-            "characterLimit": 125,
-            "expectedCTR": "X.X%"
-          }
-        }
-      ],
-      "industryInsights": [
-        {
-          "trend": "Specific trend in ${formData.industry} with optimization implications",
-          "impact": "How this affects ${formData.businessName} optimization strategy",
-          "actionableAdvice": "Specific optimization tactics to capitalize on this trend",
-          "timeline": "Implementation timeframe",
-          "optimizationOpportunity": "Specific optimization advantage available"
-        }
-      ]
+      "competitorInsights": [Detailed competitor analysis],
+      "copywritingRecommendations": [Platform-optimized copy recommendations],
+      "industryInsights": [Industry-specific trends and opportunities]
     }
 
     CRITICAL REQUIREMENTS:
@@ -253,7 +188,7 @@ You must incorporate these optimization principles into every piece of content g
     2. Each day must include detailed strategicReasoning explaining why it will work
     3. Apply psychological triggers specific to the industry
     4. Follow platform-specific optimization guidelines exactly
-    5. Include industry benchmarks and performance expectations
+    5. Include realistic metric targets based on current performance
     6. Provide specific, actionable optimization recommendations
     7. Replace ALL placeholder text with actual recommendations and metrics
     8. Ensure every ad follows proven high-converting formulas
@@ -332,6 +267,53 @@ You must incorporate these optimization principles into every piece of content g
     });
   }
 });
+
+// Add function to calculate realistic metric targets
+function calculateRealisticMetrics(formData: any, businessType: string) {
+  const currentConversionRate = parseFloat(formData.conversionRate) || 0;
+  const monthlyRevenue = parseFloat(formData.monthlyRevenue?.replace(/[^\d.-]/g, '')) || 0;
+  const adBudget = parseFloat(formData.monthlyAdBudget?.replace(/[^\d.-]/g, '')) || parseFloat(formData.marketingBudget?.replace(/[^\d.-]/g, '')) || 1000;
+  
+  // Calculate target conversion rate
+  let targetConversionRate;
+  if (currentConversionRate === 0 || currentConversionRate < 1) {
+    targetConversionRate = Math.min(currentConversionRate + 1.75, 8); // +1.5-2%
+  } else if (currentConversionRate >= 1 && currentConversionRate < 3) {
+    targetConversionRate = Math.min(currentConversionRate + 1.0, 8); // +0.8-1.2%
+  } else {
+    targetConversionRate = Math.min(currentConversionRate + 0.4, 8); // +0.3-0.5%
+  }
+  
+  // Calculate current and target CPA
+  const currentConversions = (monthlyRevenue * (currentConversionRate / 100)) || 1;
+  const currentCPA = currentConversions > 0 ? Math.round(adBudget / currentConversions) : 75; // Industry benchmark
+  const targetCPA = Math.round(currentCPA * 0.75); // 25% improvement
+  
+  // Calculate current and target ROAS
+  const currentROAS = monthlyRevenue > 0 && adBudget > 0 ? (monthlyRevenue / adBudget) : 0;
+  let targetROAS;
+  if (currentROAS < 2) {
+    targetROAS = 2.75; // 2.5-3x
+  } else if (currentROAS >= 2 && currentROAS < 4) {
+    targetROAS = currentROAS + 1.25; // +1-1.5x
+  } else {
+    targetROAS = currentROAS + 0.75; // +0.5-1x
+  }
+  
+  // Calculate revenue target based on user goals
+  const revenueTarget = formData.revenueTarget || (monthlyRevenue * 2.5);
+  
+  return {
+    conversionRate: targetConversionRate.toFixed(1),
+    currentCPA: `$${currentCPA}`,
+    cpa: `$${targetCPA}`,
+    cpaImprovement: Math.round(((currentCPA - targetCPA) / currentCPA) * 100),
+    currentROAS: currentROAS.toFixed(1),
+    roas: targetROAS.toFixed(1),
+    roasImprovement: Math.round(((targetROAS - currentROAS) / (currentROAS || 1)) * 100),
+    revenue: `$${revenueTarget.toLocaleString()}`
+  };
+}
 
 function generateOptimized30DayPlan(formData: any, businessType: string) {
   const platforms = ['Facebook', 'Instagram', 'Google', 'TikTok'];

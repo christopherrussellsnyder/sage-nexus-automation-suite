@@ -1,13 +1,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  ShoppingCart, 
-  Target, 
-  TrendingUp
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ShoppingCart, Users, Phone, PenTool } from 'lucide-react';
 
 interface BusinessTypeSelectorProps {
-  onSelect: (type: 'ecommerce' | 'agency' | 'sales') => void;
+  onSelect: (type: 'ecommerce' | 'agency' | 'sales' | 'copywriting') => void;
 }
 
 const BusinessTypeSelector = ({ onSelect }: BusinessTypeSelectorProps) => {
@@ -15,59 +12,79 @@ const BusinessTypeSelector = ({ onSelect }: BusinessTypeSelectorProps) => {
     {
       type: 'ecommerce' as const,
       title: 'E-commerce Business',
-      description: 'Product research, competitor analysis, and marketing optimization for online stores',
+      description: 'Online stores, product sales, marketplace sellers',
       icon: ShoppingCart,
-      color: 'bg-blue-500',
-      features: ['Product Research', 'Competitor Analysis', 'Conversion Optimization', 'Marketing Campaigns']
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      features: ['Product optimization', 'Conversion funnels', 'Cart abandonment', 'Upselling strategies']
     },
     {
       type: 'agency' as const,
       title: 'Marketing Agency',
-      description: 'Client management, lead generation, and campaign optimization for agencies',
-      icon: Target,
-      color: 'bg-green-500',
-      features: ['Client Analytics', 'Lead Scoring', 'Campaign Performance', 'ROI Tracking']
+      description: 'Digital agencies, consultants, service providers',
+      icon: Users,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      features: ['Client acquisition', 'Lead generation', 'Service positioning', 'Retention strategies']
     },
     {
       type: 'sales' as const,
-      title: 'Sales Professional',
-      description: 'Prospect research, deal tracking, and conversion optimization for sales teams',
-      icon: TrendingUp,
-      color: 'bg-purple-500',
-      features: ['Prospect Analysis', 'Deal Pipeline', 'Email Sequences', 'Conversion Metrics']
+      title: 'Sales Organization',
+      description: 'B2B sales, lead generation, pipeline management',
+      icon: Phone,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      features: ['Prospect research', 'Email sequences', 'Deal tracking', 'Follow-up automation']
+    },
+    {
+      type: 'copywriting' as const,
+      title: 'Copywriting Business',
+      description: 'Copywriters, content creators, freelance writers',
+      icon: PenTool,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      features: ['Copy optimization', 'Client acquisition', 'Portfolio building', 'Rate optimization']
     }
   ];
 
   return (
-    <div>
-      <h3 className="text-2xl font-bold mb-4">Choose Your Business Type</h3>
-      <div className="grid md:grid-cols-3 gap-4">
+    <div className="space-y-6">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold">Select Your Business Type</h2>
+        <p className="text-muted-foreground">
+          Choose the category that best describes your business to get personalized AI intelligence
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
         {businessTypes.map((business) => (
-          <Card 
-            key={business.type} 
-            className="cursor-pointer hover:shadow-lg transition-shadow" 
-            onClick={() => onSelect(business.type)}
-          >
-            <CardHeader>
-              <div className="flex items-start space-x-4">
-                <div className={`p-3 rounded-lg ${business.color} text-white`}>
-                  <business.icon className="h-6 w-6" />
-                </div>
-                <div className="flex-1">
-                  <CardTitle className="text-xl">{business.title}</CardTitle>
-                  <CardDescription className="mt-2">{business.description}</CardDescription>
-                </div>
-              </div>
+          <Card key={business.type} className="hover:shadow-lg transition-shadow cursor-pointer group">
+            <CardHeader className={`${business.bgColor} group-hover:opacity-90 transition-opacity`}>
+              <CardTitle className="flex items-center space-x-3">
+                <business.icon className={`h-6 w-6 ${business.color}`} />
+                <span>{business.title}</span>
+              </CardTitle>
+              <CardDescription className="text-sm">
+                {business.description}
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-2">
+            <CardContent className="pt-4 space-y-4">
+              <ul className="space-y-2">
                 {business.features.map((feature, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-sm">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <li key={index} className="text-sm flex items-center space-x-2">
+                    <div className={`w-1.5 h-1.5 ${business.color.replace('text-', 'bg-')} rounded-full`}></div>
                     <span>{feature}</span>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
+              
+              <Button 
+                onClick={() => onSelect(business.type)}
+                className="w-full"
+                variant="outline"
+              >
+                Get {business.title} Intelligence
+              </Button>
             </CardContent>
           </Card>
         ))}
