@@ -25,6 +25,14 @@ const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
   console.log('CompetitorInsights - Full data:', data);
   console.log('CompetitorInsights - Competitor insights array:', competitorInsights);
 
+  // Helper function to convert string to array if needed
+  const ensureArray = (value: string | string[] | undefined): string[] => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    // If it's a string, split by common delimiters and clean up
+    return value.split(/[.;,]\s*/).filter(item => item.trim().length > 0);
+  };
+
   if (!competitorInsights || competitorInsights.length === 0) {
     return (
       <Card>
@@ -64,118 +72,126 @@ const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {competitorInsights.map((competitor: any, index: number) => (
-            <Card key={`${competitor.competitor}-${index}`} className="border-l-4 border-l-purple-500">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Badge variant="outline" className="font-medium">
-                      Competitor #{index + 1}
-                    </Badge>
+          {competitorInsights.map((competitor: any, index: number) => {
+            // Convert strings to arrays for processing
+            const strengths = ensureArray(competitor.strengths);
+            const weaknesses = ensureArray(competitor.weaknesses);
+            const opportunities = ensureArray(competitor.opportunities);
+            const strategicRecommendations = ensureArray(competitor.strategicRecommendations);
+
+            return (
+              <Card key={`${competitor.competitor}-${index}`} className="border-l-4 border-l-purple-500">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <Badge variant="outline" className="font-medium">
+                        Competitor #{index + 1}
+                      </Badge>
+                      <div>
+                        <h3 className="font-semibold text-lg flex items-center space-x-2">
+                          <Trophy className="h-5 w-5 text-purple-600" />
+                          <span>{competitor.competitor}</span>
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Strengths */}
+                  {strengths.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-lg flex items-center space-x-2">
-                        <Trophy className="h-5 w-5 text-purple-600" />
-                        <span>{competitor.competitor}</span>
-                      </h3>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Strengths */}
-                {competitor.strengths && competitor.strengths.length > 0 && (
-                  <div>
-                    <div className="flex items-center space-x-2 mb-3">
-                      <Shield className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-700">Competitor Strengths</span>
-                    </div>
-                    <div className="space-y-2">
-                      {competitor.strengths.map((strength: string, strengthIndex: number) => (
-                        <div key={strengthIndex} className="flex items-start space-x-2 bg-green-50 p-3 rounded border border-green-200">
-                          <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-green-700">{strength}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Weaknesses */}
-                {competitor.weaknesses && competitor.weaknesses.length > 0 && (
-                  <div>
-                    <div className="flex items-center space-x-2 mb-3">
-                      <AlertTriangle className="h-4 w-4 text-red-600" />
-                      <span className="text-sm font-medium text-red-700">Competitor Weaknesses</span>
-                    </div>
-                    <div className="space-y-2">
-                      {competitor.weaknesses.map((weakness: string, weaknessIndex: number) => (
-                        <div key={weaknessIndex} className="flex items-start space-x-2 bg-red-50 p-3 rounded border border-red-200">
-                          <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-red-700">{weakness}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Opportunities */}
-                {competitor.opportunities && competitor.opportunities.length > 0 && (
-                  <div>
-                    <div className="flex items-center space-x-2 mb-3">
-                      <Eye className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-700">Market Opportunities</span>
-                    </div>
-                    <div className="space-y-2">
-                      {competitor.opportunities.map((opportunity: string, oppIndex: number) => (
-                        <div key={oppIndex} className="flex items-start space-x-2 bg-blue-50 p-3 rounded border border-blue-200">
-                          <Eye className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-blue-700">{opportunity}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Strategic Recommendations */}
-                {competitor.strategicRecommendations && competitor.strategicRecommendations.length > 0 && (
-                  <div>
-                    <div className="flex items-center space-x-2 mb-3">
-                      <Zap className="h-4 w-4 text-purple-600" />
-                      <span className="text-sm font-medium text-purple-700">AI Strategic Recommendations</span>
-                    </div>
-                    <div className="space-y-2">
-                      {competitor.strategicRecommendations.map((recommendation: string, recIndex: number) => (
-                        <div key={recIndex} className="flex items-start space-x-2 bg-purple-50 p-3 rounded border border-purple-200">
-                          <div className="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                            {recIndex + 1}
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Shield className="h-4 w-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-700">Competitor Strengths</span>
+                      </div>
+                      <div className="space-y-2">
+                        {strengths.map((strength: string, strengthIndex: number) => (
+                          <div key={strengthIndex} className="flex items-start space-x-2 bg-green-50 p-3 rounded border border-green-200">
+                            <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm text-green-700">{strength}</span>
                           </div>
-                          <span className="text-sm text-purple-700">{recommendation}</span>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Summary Card */}
-                <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded border border-gray-200">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-                    <div className="text-center">
-                      <div className="font-semibold text-green-600">{competitor.strengths?.length || 0}</div>
-                      <div className="text-green-500">Strengths</div>
+                  {/* Weaknesses */}
+                  {weaknesses.length > 0 && (
+                    <div>
+                      <div className="flex items-center space-x-2 mb-3">
+                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                        <span className="text-sm font-medium text-red-700">Competitor Weaknesses</span>
+                      </div>
+                      <div className="space-y-2">
+                        {weaknesses.map((weakness: string, weaknessIndex: number) => (
+                          <div key={weaknessIndex} className="flex items-start space-x-2 bg-red-50 p-3 rounded border border-red-200">
+                            <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm text-red-700">{weakness}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <div className="font-semibold text-red-600">{competitor.weaknesses?.length || 0}</div>
-                      <div className="text-red-500">Weaknesses</div>
+                  )}
+
+                  {/* Opportunities */}
+                  {opportunities.length > 0 && (
+                    <div>
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Eye className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-700">Market Opportunities</span>
+                      </div>
+                      <div className="space-y-2">
+                        {opportunities.map((opportunity: string, oppIndex: number) => (
+                          <div key={oppIndex} className="flex items-start space-x-2 bg-blue-50 p-3 rounded border border-blue-200">
+                            <Eye className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                            <span className="text-sm text-blue-700">{opportunity}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="text-center">
-                      <div className="font-semibold text-blue-600">{competitor.opportunities?.length || 0}</div>
-                      <div className="text-blue-500">Opportunities</div>
+                  )}
+
+                  {/* Strategic Recommendations */}
+                  {strategicRecommendations.length > 0 && (
+                    <div>
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Zap className="h-4 w-4 text-purple-600" />
+                        <span className="text-sm font-medium text-purple-700">AI Strategic Recommendations</span>
+                      </div>
+                      <div className="space-y-2">
+                        {strategicRecommendations.map((recommendation: string, recIndex: number) => (
+                          <div key={recIndex} className="flex items-start space-x-2 bg-purple-50 p-3 rounded border border-purple-200">
+                            <div className="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                              {recIndex + 1}
+                            </div>
+                            <span className="text-sm text-purple-700">{recommendation}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Summary Card */}
+                  <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded border border-gray-200">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                      <div className="text-center">
+                        <div className="font-semibold text-green-600">{strengths.length}</div>
+                        <div className="text-green-500">Strengths</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-red-600">{weaknesses.length}</div>
+                        <div className="text-red-500">Weaknesses</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-blue-600">{opportunities.length}</div>
+                        <div className="text-blue-500">Opportunities</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
 
           {/* AI-Generated Notice */}
           <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border border-green-200 mt-6">
