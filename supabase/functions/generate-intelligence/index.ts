@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -23,6 +22,9 @@ interface IntelligenceRequest {
     timeline?: string;
     competitorData?: any;
     currentMetrics?: any;
+    clientDetails?: any; // New field for client information
+    idealCustomerProfile?: any; // New field for sales ideal customer
+    productToSell?: string; // New field for sales product
   };
   intelligenceMode: 'full' | 'copywriting' | 'marketing' | 'competitor';
   businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
@@ -47,157 +49,9 @@ serve(async (req) => {
     // Calculate realistic metric targets based on user data
     const metricTargets = calculateRealisticMetrics(formData, businessType);
 
-    // Create comprehensive structured prompt for OpenAI with advanced ecommerce optimization
-    const systemPrompt = `You are an expert business intelligence AI that provides comprehensive marketing and business insights with advanced ecommerce optimization knowledge. You MUST respond with a valid JSON object that includes ALL required sections with specific, actionable data tailored to the business provided.
-
-CRITICAL ECOMMERCE AD OPTIMIZATION GUIDELINES TO IMPLEMENT:
-
-TOP PERFORMING AD LENGTH STANDARDS:
-- Facebook/Instagram: 1-3 sentences (optimal: 2 sentences)
-- Google Search Ads: 1-2 sentences per headline/description  
-- TikTok/YouTube Shorts: 1-2 punchy sentences
-- YouTube Pre-roll: 2-4 sentences max
-
-VIDEO AD DURATION OPTIMIZATION:
-- TikTok/Instagram Reels: 15-30 seconds (peak performance at 21 seconds)
-- Facebook Video Ads: 15-60 seconds (optimal: 30 seconds)
-- YouTube Pre-roll: 6-30 seconds (skippable after 5 seconds)
-- YouTube Shorts: 15-60 seconds (optimal: 30-45 seconds)
-
-TEXT/IMAGE AD SPECIFICATIONS:
-- Read Time: 3-8 seconds
-- Character Count: 125-150 characters for primary text
-- Headline: 25-40 characters
-
-HIGH-CONVERTING AD FORMULAS:
-1. Problem-Solution (2 sentences): "Tired of [specific problem]? [Product name] solves this in [timeframe] - [social proof/guarantee]."
-2. Benefit-Proof (1-2 sentences): "[Specific benefit/result] with [product name]. [Social proof/urgency]."
-3. Social Proof Hook (2-3 sentences): "[Number] people can't be wrong about [product]. [Specific benefit]. [CTA with urgency]."
-
-REALISTIC METRIC TARGETS:
-- Conversion Rate: ${metricTargets.conversionRate}
-- CPA Target: ${metricTargets.cpa}
-- ROAS Target: ${metricTargets.roas}
-- Revenue Target: ${metricTargets.revenue}
-
-You must incorporate these optimization principles and realistic targets into every piece of content generated.`;
-    
-    const userPrompt = `
-    Generate comprehensive business intelligence for:
-    
-    Business: ${formData.businessName}
-    Industry: ${formData.industry}
-    Business Type: ${businessType}
-    Target Audience: ${formData.targetAudience}
-    Product/Service: ${formData.productService}
-    Unique Value: ${formData.uniqueValue || 'Not specified'}
-    Monthly Revenue: ${formData.monthlyRevenue}
-    Current Conversion Rate: ${formData.conversionRate || '0'}%
-    Monthly Ad Budget: ${formData.monthlyAdBudget || formData.marketingBudget || '1000'}
-    Current Challenges: ${formData.currentChallenges || 'Not specified'}
-    Goals: ${formData.goals?.join(', ') || formData.primaryGoals?.join(', ') || 'Not specified'}
-    Timeline: ${formData.timeline || 'Not specified'}
-    
-    Intelligence Mode: ${intelligenceMode}
-    
-    You MUST provide a structured JSON response with ALL of these sections filled with specific, actionable data for ${formData.businessName}. Apply the ecommerce optimization guidelines and realistic metric targets:
-
-    {
-      "generatedAt": "${new Date().toISOString()}",
-      "intelligenceMode": "${intelligenceMode}",
-      "businessType": "${businessType}",
-      "formData": ${JSON.stringify(formData)},
-      "budgetStrategy": {
-        "recommendedStrategy": "Specific strategy based on ${formData.monthlyRevenue} revenue and ${businessType} business model with optimization focus",
-        "monthlyBudgetAllocation": {
-          "primaryPlatform": "X% ($X,XXX) - [Platform Name] with detailed reasoning based on target audience behavior",
-          "secondaryPlatform": "X% ($X,XXX) - [Platform Name] with conversion optimization focus", 
-          "testing": "X% ($XXX) - A/B testing budget for ad length, hooks, and psychological triggers"
-        },
-        "expectedROAS": "${metricTargets.roas}",
-        "targetCPM": "XX.XX",
-        "reasoning": "Detailed explanation incorporating ecommerce optimization principles for ${formData.businessName} targeting ${formData.targetAudience}"
-      },
-      "platformRecommendations": [
-        {
-          "platform": "Facebook Ads",
-          "priority": 1,
-          "score": XX,
-          "reasoning": "Platform-specific optimization strategy for ${formData.targetAudience} with 1-2 sentence ad format focus",
-          "expectedMetrics": {
-            "roas": ${metricTargets.roas},
-            "cpm": XX.XX,
-            "conversionRate": ${metricTargets.conversionRate},
-            "optimalAdLength": "1-2 sentences",
-            "readTime": "3-5 seconds",
-            "characterLimit": 125
-          },
-          "budgetAllocation": XX,
-          "optimizationNotes": "Specific optimization tactics for this platform"
-        }
-      ],
-      "monthlyPlan": [30 days of optimized content with hook-body-cta structure],
-      "metricOptimization": [
-        {
-          "metric": "Conversion Rate",
-          "currentBenchmark": "${formData.conversionRate || '0'}%",
-          "targetBenchmark": "${metricTargets.conversionRate}%", 
-          "improvementStrategies": [
-            "Implement 1-2 sentence ad format optimization",
-            "Apply Problem-Solution formula for higher engagement",
-            "Utilize psychological triggers specific to ${formData.industry}",
-            "Optimize for 3-8 second read time"
-          ],
-          "timeline": "X-X weeks",
-          "expectedROI": "XX% increase in conversions",
-          "optimizationFocus": "Ecommerce-specific conversion tactics"
-        },
-        {
-          "metric": "Cost Per Acquisition",
-          "currentBenchmark": "${metricTargets.currentCPA}",
-          "targetBenchmark": "${metricTargets.cpa}",
-          "improvementStrategies": [
-            "Refine audience targeting with psychological triggers",
-            "Implement proven ad formulas for better relevance",
-            "Optimize bidding strategies based on performance data",
-            "Use negative keywords to avoid irrelevant traffic"
-          ],
-          "timeline": "6-10 weeks",
-          "expectedROI": "${metricTargets.cpaImprovement}% reduction in acquisition costs"
-        },
-        {
-          "metric": "Return on Ad Spend (ROAS)",
-          "currentBenchmark": "${metricTargets.currentROAS}",
-          "targetBenchmark": "${metricTargets.roas}",
-          "improvementStrategies": [
-            "Focus on high-converting ad formats and psychological triggers",
-            "Implement platform-specific optimization guidelines",
-            "Test proven ecommerce ad formulas systematically",
-            "Optimize for mobile-first experience (80% of traffic)"
-          ],
-          "timeline": "8-12 weeks",
-          "expectedROI": "${metricTargets.roasImprovement}% improvement in ad spend efficiency"
-        }
-      ],
-      "competitorInsights": [Detailed competitor analysis],
-      "copywritingRecommendations": [Platform-optimized copy recommendations],
-      "industryInsights": [Industry-specific trends and opportunities]
-    }
-
-    CRITICAL REQUIREMENTS:
-    1. Generate EXACTLY 30 days of content in monthlyPlan with complete optimization details
-    2. Each day must include detailed strategicReasoning explaining why it will work
-    3. Apply psychological triggers specific to the industry
-    4. Follow platform-specific optimization guidelines exactly
-    5. Include realistic metric targets based on current performance
-    6. Provide specific, actionable optimization recommendations
-    7. Replace ALL placeholder text with actual recommendations and metrics
-    8. Ensure every ad follows proven high-converting formulas
-    9. Optimize content length for each platform (1-2 sentences for most platforms)
-    10. Include scarcity/urgency elements in CTAs where appropriate
-
-    Generate SPECIFIC data for ${formData.businessName}. No generic examples or placeholder text allowed.
-    `;
+    // Create specialized system prompts based on business type
+    const systemPrompt = getSpecializedSystemPrompt(businessType, intelligenceMode, formData, metricTargets);
+    const userPrompt = getSpecializedUserPrompt(businessType, intelligenceMode, formData);
 
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -244,15 +98,15 @@ You must incorporate these optimization principles and realistic targets into ev
       // Ensure monthlyPlan has exactly 30 days
       if (!intelligenceData.monthlyPlan || intelligenceData.monthlyPlan.length < 30) {
         console.log('Generating additional days for 30-day plan...');
-        intelligenceData.monthlyPlan = generateOptimized30DayPlan(formData, businessType);
+        intelligenceData.monthlyPlan = generateSpecialized30DayPlan(formData, businessType);
       }
       
     } catch (parseError) {
       console.error('Failed to parse JSON response:', parseError);
       console.log('Raw AI response:', aiResponse);
       
-      // Create optimized fallback with ecommerce principles
-      intelligenceData = createOptimizedFallback(formData, businessType, intelligenceMode);
+      // Create specialized fallback
+      intelligenceData = createSpecializedFallback(formData, businessType, intelligenceMode);
     }
 
     console.log('Intelligence data structured successfully');
@@ -269,7 +123,116 @@ You must incorporate these optimization principles and realistic targets into ev
   }
 });
 
-// Add function to calculate realistic metric targets
+function getSpecializedSystemPrompt(businessType: string, intelligenceMode: string, formData: any, metricTargets: any): string {
+  const basePrompt = `You are an expert business intelligence AI specialized in ${businessType} businesses.`;
+  
+  switch (businessType) {
+    case 'copywriting':
+      return `${basePrompt} You provide comprehensive copywriting insights including email sequences, ad copy optimization, and psychological triggers. You MUST respond with a valid JSON object that includes:
+      - copywritingRecommendations: Detailed copy strategies and frameworks
+      - emailSequence: 30-day email sequence for client nurturing
+      - monthlyPlan: 30-day content calendar for client advertising
+      - competitorInsights: Analysis of top-performing copy in the client's industry
+      - metricOptimization: Copy performance metrics (CTR, conversion rates, engagement)
+      - industryInsights: Copywriting trends and opportunities
+      
+      DO NOT include budgetStrategy as copywriters don't handle client budgets.`;
+      
+    case 'agency':
+      return `${basePrompt} You provide marketing agency insights including client acquisition and client delivery strategies. You MUST respond with a valid JSON object that includes:
+      - budgetStrategy: Client budget recommendations and agency growth budget
+      - platformRecommendations: Best platforms for both client delivery and agency growth
+      - monthlyPlan: TWO 30-day plans - one for client delivery, one for agency client acquisition
+      - clientDeliveryPlan: Specific 30-day plan for serving existing clients
+      - agencyGrowthPlan: Specific 30-day plan for acquiring new agency clients
+      - metricOptimization: Agency and client performance metrics
+      - competitorInsights: Analysis of competing agencies and client industry
+      - industryInsights: Marketing trends and opportunities`;
+      
+    case 'sales':
+      return `${basePrompt} You provide sales organization insights focused on closing deals and lead conversion. You MUST respond with a valid JSON object that includes:
+      - salesStrategy: Deal closing strategies and lead conversion tactics
+      - emailSequence: 30-day email sequence for nurturing prospects to close
+      - phoneCallScript: Optimized phone scripts for different stages of the sales process
+      - monthlyPlan: 30-day sales activity calendar focused on closing deals
+      - metricOptimization: Sales metrics (close rate, pipeline velocity, deal size)
+      - competitorInsights: Analysis of top sales strategies in the industry
+      - prospectingInsights: Ideal customer profile optimization
+      - industryInsights: Sales trends and psychological triggers for the industry
+      
+      Focus on closing deals, not outreach. Include psychological triggers specific to ${formData.industry || 'the industry'}.`;
+      
+    default: // ecommerce
+      return `${basePrompt} You provide comprehensive ecommerce optimization insights with advanced conversion strategies. You MUST respond with a valid JSON object that includes ALL standard sections with ecommerce-specific optimization.`;
+  }
+}
+
+function getSpecializedUserPrompt(businessType: string, intelligenceMode: string, formData: any): string {
+  const baseInfo = `
+    Business: ${formData.businessName}
+    Industry: ${formData.industry}
+    Business Type: ${businessType}
+    Target Audience: ${formData.targetAudience}
+    Product/Service: ${formData.productService}
+    Unique Value: ${formData.uniqueValue || 'Not specified'}
+    Monthly Revenue: ${formData.monthlyRevenue}
+    Current Challenges: ${formData.currentChallenges || 'Not specified'}
+    Goals: ${formData.goals?.join(', ') || 'Not specified'}
+    Timeline: ${formData.timeline || 'Not specified'}`;
+
+  switch (businessType) {
+    case 'copywriting':
+      return `${baseInfo}
+      
+      Generate comprehensive copywriting intelligence for ${formData.businessName}. Focus on:
+      1. High-converting copy frameworks and psychological triggers
+      2. 30-day email sequence for client nurturing and conversion
+      3. 30-day content calendar for client's advertising campaigns
+      4. Analysis of top-performing copy in ${formData.industry} industry
+      5. Copy performance optimization strategies
+      
+      Client Details: ${formData.clientDetails ? JSON.stringify(formData.clientDetails) : 'Not provided'}
+      
+      Intelligence Mode: ${intelligenceMode}`;
+      
+    case 'agency':
+      return `${baseInfo}
+      
+      Generate comprehensive marketing agency intelligence for ${formData.businessName}. Provide:
+      1. TWO separate 30-day content calendars:
+         - One for delivering results to existing clients
+         - One for acquiring new agency clients
+      2. Client budget optimization strategies
+      3. Agency growth and scaling tactics
+      4. Competitive analysis of other agencies and client industries
+      
+      Client Details: ${formData.clientDetails ? JSON.stringify(formData.clientDetails) : 'Not provided - focus on agency growth strategies'}
+      
+      Intelligence Mode: ${intelligenceMode}`;
+      
+    case 'sales':
+      return `${baseInfo}
+      
+      Generate comprehensive sales intelligence for ${formData.businessName}. Focus on:
+      1. Deal closing strategies and conversion tactics
+      2. 30-day email sequence optimized for closing prospects
+      3. Phone call scripts for different sales stages
+      4. 30-day sales activity calendar focused on closing deals
+      5. Psychological triggers specific to ${formData.industry}
+      
+      Product to Sell: ${formData.productToSell || 'Not specified'}
+      Ideal Customer Profile: ${formData.idealCustomerProfile ? JSON.stringify(formData.idealCustomerProfile) : 'Not provided'}
+      
+      Intelligence Mode: ${intelligenceMode}`;
+      
+    default:
+      return `${baseInfo}
+      
+      Generate comprehensive ecommerce intelligence for ${formData.businessName}.
+      Intelligence Mode: ${intelligenceMode}`;
+  }
+}
+
 function calculateRealisticMetrics(formData: any, businessType: string) {
   const currentConversionRate = parseFloat(formData.conversionRate) || 0;
   const monthlyRevenue = parseFloat(formData.monthlyRevenue?.replace(/[^\d.-]/g, '')) || 0;
@@ -320,201 +283,196 @@ function calculateRealisticMetrics(formData: any, businessType: string) {
   };
 }
 
-function generateOptimized30DayPlan(formData: any, businessType: string) {
+function generateSpecialized30DayPlan(formData: any, businessType: string) {
   const platforms = ['Facebook', 'Instagram', 'Google', 'TikTok'];
-  const adFormulas = [
-    'Problem-Solution',
-    'Benefit-Proof', 
-    'Social Proof Hook'
-  ];
-  
-  const psychologicalTriggers = {
-    ecommerce: ['scarcity', 'social proof', 'urgency', 'FOMO'],
-    agency: ['authority', 'results', 'expertise', 'trust'],
-    sales: ['success', 'achievement', 'status', 'efficiency'],
-    copywriting: ['credibility', 'results', 'transformation', 'expertise']
-  };
-  
-  const triggers = psychologicalTriggers[businessType] || psychologicalTriggers.ecommerce;
-  
   const plan = [];
   
   for (let day = 1; day <= 30; day++) {
     const platform = platforms[day % platforms.length];
-    const formula = adFormulas[day % adFormulas.length];
-    const trigger = triggers[day % triggers.length];
     
-    let hook, body, cta;
-    
-    switch (formula) {
-      case 'Problem-Solution':
-        hook = `Tired of ${getIndustryProblem(formData.industry)}?`;
-        body = `${formData.businessName} solves this in ${getTimeframe(day)} days.`;
-        cta = 'Get Started Today';
+    let content;
+    switch (businessType) {
+      case 'copywriting':
+        content = generateCopywritingContent(day, platform, formData);
         break;
-      case 'Benefit-Proof':
-        hook = `${getBenefit(formData.productService)} with ${formData.businessName}.`;
-        body = `${getSocialProof(day)} customers transformed their business.`;
-        cta = 'Join Them Now';
+      case 'agency':
+        content = generateAgencyContent(day, platform, formData);
         break;
-      case 'Social Proof Hook':
-        hook = `${getSocialProofNumber(day)} people can't be wrong about ${formData.businessName}.`;
-        body = `${getBenefit(formData.productService)} in record time.`;
-        cta = 'Limited Time - Act Now';
+      case 'sales':
+        content = generateSalesContent(day, platform, formData);
         break;
+      default:
+        content = generateEcommerceContent(day, platform, formData);
     }
     
-    plan.push({
-      day,
-      platform,
-      contentType: 'ad',
-      hook,
-      body,
-      cta,
-      visualSuggestion: getOptimizedVisual(platform, formData.productService),
-      targetAudience: formData.targetAudience,
-      keyMessage: formData.uniqueValue || 'Transform your business results',
-      expectedMetrics: {
-        reach: Math.floor(Math.random() * 5000) + 2000,
-        engagement: Math.floor(Math.random() * 300) + 150,
-        cost: Math.floor(Math.random() * 50) + 25,
-        conversions: Math.floor(Math.random() * 20) + 8,
-        ctr: `${(Math.random() * 2 + 1.5).toFixed(1)}%`,
-        readTime: `${Math.floor(Math.random() * 4) + 3} seconds`
-      },
-      strategicReasoning: `Day ${day} uses the ${formula} formula with ${trigger} psychological trigger to maximize engagement among ${formData.targetAudience}. This approach leverages proven ecommerce optimization principles for ${platform}, including optimal sentence length (1-2 sentences) and psychological triggers specific to ${formData.industry} industry.`,
-      psychologicalTriggers: [trigger, 'urgency', 'social proof'],
-      optimizationPrinciples: [`${formula} formula`, 'optimal ad length', 'platform-specific targeting'],
-      industryBenchmarks: {
-        expectedCTR: `${(Math.random() * 1.5 + 1.5).toFixed(1)}%`,
-        conversionRate: `${(Math.random() * 2 + 2.5).toFixed(1)}%`,
-        engagementRate: `${(Math.random() * 3 + 3).toFixed(1)}%`
-      }
-    });
+    plan.push(content);
   }
   
   return plan;
 }
 
-function createOptimizedFallback(formData: any, businessType: string, intelligenceMode: string) {
+function generateCopywritingContent(day: number, platform: string, formData: any) {
   return {
+    day,
+    platform,
+    contentType: 'ad',
+    hook: `Day ${day}: ${getIndustryProblem(formData.industry)} affecting your results?`,
+    body: `${formData.businessName} copywriting transforms your messaging for maximum impact.`,
+    cta: 'Get High-Converting Copy Today',
+    visualSuggestion: 'Before/after results showcase or testimonial graphic',
+    targetAudience: formData.targetAudience,
+    keyMessage: 'Professional copywriting drives real results',
+    expectedMetrics: {
+      reach: Math.floor(Math.random() * 3000) + 1500,
+      engagement: Math.floor(Math.random() * 200) + 100,
+      cost: Math.floor(Math.random() * 40) + 20,
+      conversions: Math.floor(Math.random() * 15) + 5,
+      ctr: `${(Math.random() * 1.5 + 2).toFixed(1)}%`,
+      readTime: `${Math.floor(Math.random() * 3) + 4} seconds`
+    },
+    strategicReasoning: `Day ${day} copywriting content uses problem-solution framework targeting ${formData.targetAudience} with industry-specific pain points.`,
+    copywritingFocus: 'High-converting headlines and persuasive messaging',
+    psychologicalTriggers: ['credibility', 'results', 'transformation']
+  };
+}
+
+function generateAgencyContent(day: number, platform: string, formData: any) {
+  const isClientContent = day % 2 === 0; // Alternate between client and agency content
+  
+  if (isClientContent && formData.clientDetails) {
+    return {
+      day,
+      platform,
+      contentType: 'ad',
+      contentFor: 'client',
+      hook: `Day ${day}: Client Success - ${getIndustryProblem(formData.clientDetails.industry)}`,
+      body: `${formData.clientDetails.businessName || 'Our client'} achieves breakthrough results with strategic marketing.`,
+      cta: 'See Client Success',
+      visualSuggestion: 'Client results and performance metrics',
+      targetAudience: formData.clientDetails.targetAudience || formData.targetAudience,
+      keyMessage: 'Delivering exceptional results for clients',
+      expectedMetrics: {
+        reach: Math.floor(Math.random() * 4000) + 2000,
+        engagement: Math.floor(Math.random() * 250) + 125,
+        cost: Math.floor(Math.random() * 60) + 30,
+        conversions: Math.floor(Math.random() * 20) + 10
+      },
+      strategicReasoning: `Day ${day} client-focused content showcasing agency expertise and client success.`
+    };
+  } else {
+    return {
+      day,
+      platform,
+      contentType: 'ad',
+      contentFor: 'agency',
+      hook: `Day ${day}: Marketing Agency Results That Matter`,
+      body: `${formData.businessName} delivers measurable growth for businesses like yours.`,
+      cta: 'Partner With Us',
+      visualSuggestion: 'Agency case studies and client testimonials',
+      targetAudience: 'Business owners seeking marketing growth',
+      keyMessage: 'Expert marketing agency driving real business growth',
+      expectedMetrics: {
+        reach: Math.floor(Math.random() * 3500) + 1750,
+        engagement: Math.floor(Math.random() * 200) + 100,
+        cost: Math.floor(Math.random() * 50) + 25,
+        conversions: Math.floor(Math.random() * 18) + 8
+      },
+      strategicReasoning: `Day ${day} agency growth content targeting potential clients with proven results.`
+    };
+  }
+}
+
+function generateSalesContent(day: number, platform: string, formData: any) {
+  return {
+    day,
+    platform,
+    contentType: 'sales',
+    hook: `Day ${day}: ${getIndustryProblem(formData.industry)} costing you deals?`,
+    body: `${formData.productToSell || 'Our solution'} helps ${formData.targetAudience} close more deals effectively.`,
+    cta: 'Close More Deals Now',
+    visualSuggestion: 'Sales success stories and testimonials',
+    targetAudience: formData.idealCustomerProfile?.description || formData.targetAudience,
+    keyMessage: 'Professional sales training drives results',
+    expectedMetrics: {
+      reach: Math.floor(Math.random() * 2500) + 1250,
+      engagement: Math.floor(Math.random() * 150) + 75,
+      cost: Math.floor(Math.random() * 35) + 18,
+      conversions: Math.floor(Math.random() * 12) + 6
+    },
+    strategicReasoning: `Day ${day} sales-focused content using industry-specific psychological triggers for ${formData.industry}.`,
+    salesFocus: 'Deal closing and conversion optimization',
+    psychologicalTriggers: ['success', 'achievement', 'status', 'urgency']
+  };
+}
+
+function generateEcommerceContent(day: number, platform: string, formData: any) {
+  return {
+    day,
+    platform,
+    contentType: 'ad',
+    hook: `Day ${day}: ${getIndustryProblem(formData.industry)} solved!`,
+    body: `${formData.businessName} delivers the solution you've been looking for.`,
+    cta: 'Shop Now',
+    visualSuggestion: 'Product showcase and customer reviews',
+    targetAudience: formData.targetAudience,
+    keyMessage: formData.uniqueValue || 'Quality products that deliver results',
+    expectedMetrics: {
+      reach: Math.floor(Math.random() * 5000) + 2500,
+      engagement: Math.floor(Math.random() * 300) + 150,
+      cost: Math.floor(Math.random() * 50) + 25,
+      conversions: Math.floor(Math.random() * 25) + 12
+    },
+    strategicReasoning: `Day ${day} ecommerce content optimized for ${formData.industry} with conversion-focused messaging.`
+  };
+}
+
+function createSpecializedFallback(formData: any, businessType: string, intelligenceMode: string) {
+  const baseData = {
     generatedAt: new Date().toISOString(),
     intelligenceMode,
     businessType,
     formData,
-    budgetStrategy: {
-      recommendedStrategy: `Advanced ecommerce optimization strategy for ${formData.businessName} focusing on high-converting ad formats and psychological triggers`,
-      monthlyBudgetAllocation: {
-        primaryPlatform: "60% ($3,600) - Facebook/Instagram with 1-2 sentence ad optimization",
-        secondaryPlatform: "30% ($1,800) - Google Ads with headline/description optimization",
-        testing: "10% ($600) - A/B testing for ad formulas and psychological triggers"
-      },
-      expectedROAS: "4.2",
-      targetCPM: "15.50",
-      reasoning: "Strategy incorporates proven ecommerce formulas and platform-specific optimization for maximum conversion"
-    },
-    platformRecommendations: [
-      {
-        platform: "Facebook Ads",
-        priority: 1,
-        score: 92,
-        reasoning: `Optimal for ${formData.targetAudience} with 1-2 sentence format and psychological trigger optimization`,
-        expectedMetrics: {
-          roas: 4.2,
-          cpm: 12.50,
-          conversionRate: 3.8,
-          optimalAdLength: "1-2 sentences",
-          readTime: "3-5 seconds",
-          characterLimit: 125
-        },
-        budgetAllocation: 60,
-        optimizationNotes: "Focus on Problem-Solution formula with scarcity triggers"
-      }
-    ],
-    monthlyPlan: generateOptimized30DayPlan(formData, businessType),
-    metricOptimization: [
-      {
-        metric: "Conversion Rate",
-        currentBenchmark: "2.3%",
-        targetBenchmark: "4.8%",
-        improvementStrategies: [
-          "Implement 1-2 sentence ad format optimization",
-          "Apply Problem-Solution formula for higher engagement",
-          `Utilize ${businessType === 'ecommerce' ? 'scarcity and social proof' : businessType === 'copywriting' ? 'credibility and results' : 'authority and results'} psychological triggers`,
-          "Optimize for 3-8 second read time across all platforms"
-        ],
-        timeline: "8-12 weeks",
-        expectedROI: "109% increase in conversions",
-        optimizationFocus: "Advanced ecommerce conversion optimization"
-      }
-    ],
-    competitorInsights: [
-      {
-        competitor: `Leading ${formData.industry} Company`,
-        strengths: [
-          "Strong brand recognition with established ad formats",
-          "High marketing budget for broad reach campaigns",
-          "Established customer base with repeat engagement"
-        ],
-        weaknesses: [
-          "Not utilizing optimal 1-2 sentence ad format",
-          "Missing psychological triggers in messaging",
-          "Outdated platform-specific optimization"
-        ],
-        opportunities: [
-          "Implement superior ad formula optimization",
-          "Leverage psychological triggers they're missing",
-          "Capitalize on their platform-specific gaps"
-        ],
-        strategicRecommendations: [
-          `Position ${formData.businessName} with advanced optimization tactics`,
-          "Use proven ecommerce formulas for competitive advantage",
-          "Focus on psychological trigger gaps in their messaging"
-        ]
-      }
-    ],
-    copywritingRecommendations: [
-      {
-        copyType: "ads",
-        recommendations: [
-          "Apply Problem-Solution formula: 'Tired of [problem]? [Solution] solves this in [timeframe]'",
-          "Use Benefit-Proof structure for immediate impact",
-          "Implement Social Proof Hook with specific numbers",
-          "Optimize all content for 1-2 sentences, 125 character limit",
-          `Include ${businessType === 'ecommerce' ? 'scarcity and urgency' : businessType === 'copywriting' ? 'credibility and results' : 'authority and results'} psychological triggers`
-        ],
-        examples: [
-          {
-            formula: "Problem-Solution",
-            before: "We provide business solutions",
-            after: `Tired of ${getIndustryProblem(formData.industry)}? ${formData.businessName} solves this in 30 days - guaranteed results.`,
-            improvement: "Specific problem identification with time-bound solution and guarantee",
-            readTime: "4 seconds",
-            characterCount: 98
-          }
-        ],
-        emotionalTriggers: ["urgency", "social proof", "problem-solving", "success"],
-        optimizationMetrics: {
-          optimalLength: "1-2 sentences",
-          readTime: "3-8 seconds", 
-          characterLimit: 125,
-          expectedCTR: "2.4%"
-        }
-      }
-    ],
-    industryInsights: [
-      {
-        trend: `Advanced optimization trends in ${formData.industry} focusing on psychological triggers and platform-specific formats`,
-        impact: `Opportunity for ${formData.businessName} to outperform competitors using proven ecommerce optimization`,
-        actionableAdvice: "Implement 1-2 sentence ad formats with psychological triggers for immediate competitive advantage",
-        timeline: "Next 30-60 days for full implementation",
-        optimizationOpportunity: "87% of competitors not using advanced optimization - major advantage available"
-      }
-    ]
+    monthlyPlan: generateSpecialized30DayPlan(formData, businessType),
+    competitorInsights: [],
+    industryInsights: []
   };
+
+  switch (businessType) {
+    case 'copywriting':
+      return {
+        ...baseData,
+        copywritingRecommendations: [],
+        emailSequence: [],
+        metricOptimization: []
+      };
+    case 'agency':
+      return {
+        ...baseData,
+        budgetStrategy: {},
+        platformRecommendations: [],
+        clientDeliveryPlan: [],
+        agencyGrowthPlan: [],
+        metricOptimization: []
+      };
+    case 'sales':
+      return {
+        ...baseData,
+        salesStrategy: {},
+        emailSequence: [],
+        phoneCallScript: {},
+        prospectingInsights: [],
+        metricOptimization: []
+      };
+    default:
+      return {
+        ...baseData,
+        budgetStrategy: {},
+        platformRecommendations: [],
+        metricOptimization: []
+      };
+  }
 }
 
-// Helper functions for content generation
 function getIndustryProblem(industry: string): string {
   const problems = {
     'ecommerce': 'low conversion rates and high cart abandonment',
@@ -526,37 +484,4 @@ function getIndustryProblem(industry: string): string {
     'default': 'poor performance and wasted resources'
   };
   return problems[industry.toLowerCase()] || problems.default;
-}
-
-function getBenefit(productService: string): string {
-  if (productService.toLowerCase().includes('automation')) return 'Automate your workflow and save 20+ hours weekly';
-  if (productService.toLowerCase().includes('marketing')) return 'Double your leads in 30 days';
-  if (productService.toLowerCase().includes('sales')) return 'Increase revenue by 150%';
-  if (productService.toLowerCase().includes('copy')) return 'Transform your copy conversion rates dramatically';
-  return 'Transform your business results dramatically';
-}
-
-function getTimeframe(day: number): number {
-  const timeframes = [7, 14, 21, 30];
-  return timeframes[day % timeframes.length];
-}
-
-function getSocialProof(day: number): number {
-  const baseNumbers = [500, 1000, 2500, 5000, 10000];
-  return baseNumbers[day % baseNumbers.length] + (day * 100);
-}
-
-function getSocialProofNumber(day: number): number {
-  const numbers = [1000, 2500, 5000, 10000, 25000];
-  return numbers[day % numbers.length] + (day * 250);
-}
-
-function getOptimizedVisual(platform: string, productService: string): string {
-  const visuals = {
-    'Facebook': 'High-quality before/after comparison image optimized for News Feed',
-    'Instagram': 'Visually striking carousel showcasing transformation results',
-    'Google': 'Clean product showcase image with clear benefit callout',
-    'TikTok': '21-second video demonstrating quick results with trending audio'
-  };
-  return visuals[platform] || visuals.Facebook;
 }

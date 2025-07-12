@@ -9,6 +9,7 @@ import BusinessInformationForm from './wizard/BusinessInformationForm';
 import CurrentMetricsForm from './wizard/CurrentMetricsForm';
 import GoalsObjectivesForm from './wizard/GoalsObjectivesForm';
 import CompetitorAnalysisForm from './wizard/CompetitorAnalysisForm';
+import ClientInformationForm from './wizard/ClientInformationForm';
 import IntelligenceLoading from './IntelligenceLoading';
 import { AIIntelligenceService } from '@/services/AIIntelligenceService';
 import { useToast } from '@/components/ui/use-toast';
@@ -30,6 +31,9 @@ interface FormData {
   [key: string]: any;
   copyType?: string;
   copywritingChallenges?: string;
+  clientDetails?: any;
+  idealCustomerProfile?: any;
+  productToSell?: string;
 }
 
 const UnifiedIntelligenceWizard = ({ 
@@ -42,7 +46,7 @@ const UnifiedIntelligenceWizard = ({
   const [formData, setFormData] = useState<FormData>({});
   const { toast } = useToast();
 
-  const getStepsForMode = (): Step[] => {
+  const getStepsForBusinessType = (): Step[] => {
     const getStatus = (stepId: number): 'completed' | 'current' | 'upcoming' => {
       if (currentStep > stepId) return 'completed';
       if (currentStep === stepId) return 'current';
@@ -53,93 +57,126 @@ const UnifiedIntelligenceWizard = ({
       {
         id: 1,
         title: 'Business Information',
-        description: businessType === 'copywriting' 
-          ? 'Copywriting business details and service information'
-          : 'Basic business details and industry information',
+        description: getBusinessInfoDescription(),
         status: getStatus(1)
       }
     ];
 
-    // For copywriting business type, use the same full intelligence flow
-    if (businessType === 'copywriting') {
-      return [
-        ...baseSteps,
-        {
-          id: 2,
-          title: 'Current Metrics',
-          description: 'Performance metrics and copywriting challenges',
-          status: getStatus(2)
-        },
-        {
-          id: 3,
-          title: 'Goals & Objectives',
-          description: 'Copywriting goals and success metrics',
-          status: getStatus(3)
-        },
-        {
-          id: 4,
-          title: 'Competitive Analysis',
-          description: 'Competitor copywriters and market positioning',
-          status: getStatus(4)
-        }
-      ];
+    switch (businessType) {
+      case 'copywriting':
+        return [
+          ...baseSteps,
+          {
+            id: 2,
+            title: 'Client Details',
+            description: 'Information about the client you\'re writing copy for',
+            status: getStatus(2)
+          },
+          {
+            id: 3,
+            title: 'Current Metrics',
+            description: 'Copy performance and client challenges',
+            status: getStatus(3)
+          },
+          {
+            id: 4,
+            title: 'Goals & Objectives',
+            description: 'Copywriting goals and success metrics',
+            status: getStatus(4)
+          }
+        ];
+        
+      case 'agency':
+        return [
+          ...baseSteps,
+          {
+            id: 2,
+            title: 'Client Information',
+            description: 'Details about your client (optional - can skip)',
+            status: getStatus(2)
+          },
+          {
+            id: 3,
+            title: 'Current Metrics',
+            description: 'Agency and client performance metrics',
+            status: getStatus(3)
+          },
+          {
+            id: 4,
+            title: 'Goals & Objectives',
+            description: 'Agency growth and client success goals',
+            status: getStatus(4)
+          },
+          {
+            id: 5,
+            title: 'Competitive Analysis',
+            description: 'Agency and client industry competition',
+            status: getStatus(5)
+          }
+        ];
+        
+      case 'sales':
+        return [
+          ...baseSteps,
+          {
+            id: 2,
+            title: 'Ideal Customer Profile',
+            description: 'Details about who you want to sell to',
+            status: getStatus(2)
+          },
+          {
+            id: 3,
+            title: 'Current Metrics',
+            description: 'Sales performance and challenges',
+            status: getStatus(3)
+          },
+          {
+            id: 4,
+            title: 'Goals & Objectives',
+            description: 'Sales goals and success metrics',
+            status: getStatus(4)
+          }
+        ];
+        
+      default: // ecommerce
+        return [
+          ...baseSteps,
+          {
+            id: 2,
+            title: 'Current Metrics',
+            description: 'Performance metrics and key challenges',
+            status: getStatus(2)
+          },
+          {
+            id: 3,
+            title: 'Goals & Objectives',
+            description: 'Business goals and success metrics',
+            status: getStatus(3)
+          },
+          {
+            id: 4,
+            title: 'Competitive Analysis',
+            description: 'Competitor information and market positioning',
+            status: getStatus(4)
+          }
+        ];
     }
-
-    if (intelligenceMode === 'copywriting') {
-      return [
-        ...baseSteps,
-        {
-          id: 2,
-          title: 'Copy Requirements',
-          description: 'Specific copywriting needs and target messaging',
-          status: getStatus(2)
-        }
-      ];
-    }
-
-    if (intelligenceMode === 'marketing') {
-      return [
-        ...baseSteps,
-        {
-          id: 2,
-          title: 'Current Metrics',
-          description: 'Performance metrics and key challenges',
-          status: getStatus(2)
-        },
-        {
-          id: 3,
-          title: 'Goals & Objectives',
-          description: 'Business goals and success metrics',
-          status: getStatus(3)
-        }
-      ];
-    }
-
-    // Full intelligence mode
-    return [
-      ...baseSteps,
-      {
-        id: 2,
-        title: 'Current Metrics',
-        description: 'Performance metrics and key challenges',
-        status: getStatus(2)
-      },
-      {
-        id: 3,
-        title: 'Goals & Objectives',
-        description: 'Business goals and success metrics',
-        status: getStatus(3)
-      },
-      {
-        id: 4,
-        title: 'Competitive Analysis',
-        description: 'Competitor information and market positioning',
-        status: getStatus(4)
-      }
-    ];
   };
 
-  const steps = getStepsForMode();
+  const getBusinessInfoDescription = () => {
+    switch (businessType) {
+      case 'copywriting':
+        return 'Your copywriting business details and services';
+      case 'agency':
+        return 'Your marketing agency information and services';
+      case 'sales':
+        return 'Your sales organization and industry details';
+      default:
+        return 'Basic business details and industry information';
+    }
+  };
+
+  const steps = getStepsForBusinessType();
   const maxSteps = steps.length;
 
   const handleFieldChange = (field: string, value: any) => {
@@ -157,6 +194,12 @@ const UnifiedIntelligenceWizard = ({
   const handlePrevious = () => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
+    }
+  };
+
+  const handleSkipClientInfo = () => {
+    if (businessType === 'agency' && currentStep === 2) {
+      setCurrentStep(prev => prev + 1);
     }
   };
 
@@ -179,7 +222,10 @@ const UnifiedIntelligenceWizard = ({
           goals: formData.goals,
           timeline: formData.timeline,
           competitorData: formData.competitorData,
-          currentMetrics: formData.currentMetrics
+          currentMetrics: formData.currentMetrics,
+          clientDetails: formData.clientDetails,
+          idealCustomerProfile: formData.idealCustomerProfile,
+          productToSell: formData.productToSell
         },
         intelligenceMode,
         businessType: businessType as 'ecommerce' | 'agency' | 'sales' | 'copywriting'
@@ -187,7 +233,6 @@ const UnifiedIntelligenceWizard = ({
 
       const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
-      // Pass the AI intelligence data directly - don't wrap it in another object
       console.log('AI intelligence generated successfully');
       onIntelligenceGenerated(aiIntelligence);
       
@@ -204,75 +249,64 @@ const UnifiedIntelligenceWizard = ({
   };
 
   const renderCurrentStep = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <BusinessInformationForm 
-            data={formData} 
-            onChange={handleFieldChange}
-            businessType={businessType}
-          />
-        );
-      case 2:
-        if (intelligenceMode === 'copywriting' && businessType !== 'copywriting') {
-          return (
-            <Card>
-              <CardHeader>
-                <CardTitle>Copy Requirements</CardTitle>
-                <CardDescription>Tell us about your specific copywriting needs</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">What type of copy do you need?</label>
-                  <select 
-                    className="w-full p-2 border rounded"
-                    value={formData.copyType || ''}
-                    onChange={(e) => handleFieldChange('copyType', e.target.value)}
-                  >
-                    <option value="">Select copy type</option>
-                    <option value="website">Website Copy</option>
-                    <option value="ads">Ad Copy</option>
-                    <option value="email">Email Marketing</option>
-                    <option value="social">Social Media Content</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Current challenges with your copy</label>
-                  <textarea 
-                    className="w-full p-2 border rounded"
-                    rows={3}
-                    value={formData.copywritingChallenges || ''}
-                    onChange={(e) => handleFieldChange('copywritingChallenges', e.target.value)}
-                    placeholder="e.g., Low conversion rates, unclear messaging, not resonating with audience..."
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          );
+    switch (businessType) {
+      case 'copywriting':
+        switch (currentStep) {
+          case 1:
+            return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 2:
+            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 3:
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 4:
+            return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
+          default:
+            return null;
         }
-        return (
-          <CurrentMetricsForm 
-            data={formData} 
-            onChange={handleFieldChange}
-            businessType={businessType}
-          />
-        );
-      case 3:
-        return (
-          <GoalsObjectivesForm 
-            data={formData} 
-            onChange={handleFieldChange}
-          />
-        );
-      case 4:
-        return (
-          <CompetitorAnalysisForm 
-            data={formData} 
-            onChange={handleFieldChange}
-          />
-        );
-      default:
-        return null;
+        
+      case 'agency':
+        switch (currentStep) {
+          case 1:
+            return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 2:
+            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} onSkip={handleSkipClientInfo} />;
+          case 3:
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 4:
+            return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
+          case 5:
+            return <CompetitorAnalysisForm data={formData} onChange={handleFieldChange} />;
+          default:
+            return null;
+        }
+        
+      case 'sales':
+        switch (currentStep) {
+          case 1:
+            return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 2:
+            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 3:
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 4:
+            return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
+          default:
+            return null;
+        }
+        
+      default: // ecommerce
+        switch (currentStep) {
+          case 1:
+            return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 2:
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+          case 3:
+            return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
+          case 4:
+            return <CompetitorAnalysisForm data={formData} onChange={handleFieldChange} />;
+          default:
+            return null;
+        }
     }
   };
 
@@ -283,31 +317,23 @@ const UnifiedIntelligenceWizard = ({
   }
 
   const getModeTitle = () => {
-    if (businessType === 'copywriting') {
-      return 'Copywriting Intelligence Setup';
-    }
+    const businessTitles = {
+      copywriting: 'Copywriting Intelligence Setup',
+      agency: 'Marketing Agency Intelligence Setup',
+      sales: 'Sales Intelligence Setup',
+      ecommerce: 'E-commerce Intelligence Setup'
+    };
     
-    switch (intelligenceMode) {
-      case 'copywriting':
-        return 'Copywriting Intelligence Setup';
-      case 'marketing':
-        return 'Marketing Intelligence Setup';
-      case 'competitor':
-        return 'Competitor Intelligence Setup';
-      default:
-        return 'Full Intelligence Setup';
-    }
+    return businessTitles[businessType] || 'Intelligence Setup';
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold">
-          {getModeTitle()}
-        </h2>
+        <h2 className="text-2xl font-bold">{getModeTitle()}</h2>
         <p className="text-muted-foreground">
-          Complete the setup to receive AI-powered personalized {intelligenceMode === 'full' ? 'comprehensive' : intelligenceMode} insights
+          Complete the setup to receive AI-powered personalized insights for your {businessType} business
         </p>
         <Progress value={progress} className="w-full max-w-md mx-auto" />
       </div>
