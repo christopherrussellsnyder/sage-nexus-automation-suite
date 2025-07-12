@@ -5,38 +5,11 @@ import { Target, TrendingUp, AlertTriangle, Users } from 'lucide-react';
 
 interface CompetitorInsightsProps {
   data: any;
-  businessType?: string;
 }
 
-const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => {
+const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
   const insights = data.competitorInsights || {};
   const competitors = data.competitors || [];
-
-  const getInsightsTitle = () => {
-    switch (businessType) {
-      case 'copywriting':
-        return 'Copywriting Competitive Intelligence';
-      case 'agency':
-        return 'Agency Competitive Intelligence';
-      case 'sales':
-        return 'Sales Competitive Intelligence';
-      default:
-        return 'Competitive Intelligence';
-    }
-  };
-
-  const getInsightsDescription = () => {
-    switch (businessType) {
-      case 'copywriting':
-        return 'Analysis of top-performing copy in your client\'s industry and competitive copywriting landscape';
-      case 'agency':
-        return 'Analysis of your agency competitive landscape and client industry opportunities';
-      case 'sales':
-        return 'Analysis of your competitive sales landscape and market positioning for better deal closing';
-      default:
-        return 'Analysis of your competitive landscape and market opportunities';
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -44,39 +17,31 @@ const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => 
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Target className="h-5 w-5" />
-            <span>{getInsightsTitle()}</span>
+            <span>Competitive Intelligence</span>
           </CardTitle>
           <CardDescription>
-            {getInsightsDescription()}
+            Analysis of your competitive landscape and market opportunities
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Competitor Analysis */}
           {competitors.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">
-                {businessType === 'copywriting' ? 'Industry Copy Analysis' : 
-                 businessType === 'sales' ? 'Competitive Sales Analysis' : 
-                 'Competitor Analysis'}
-              </h3>
+              <h3 className="text-lg font-semibold">Competitor Analysis</h3>
               <div className="grid gap-4">
                 {competitors.slice(0, 3).map((competitor: any, index: number) => (
                   <Card key={index} className="border-dashed">
                     <CardContent className="pt-4">
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium">{competitor.name || `${businessType === 'copywriting' ? 'Copy Example' : 'Competitor'} ${index + 1}`}</h4>
+                        <h4 className="font-medium">{competitor.name || `Competitor ${index + 1}`}</h4>
                         <Badge variant="outline">
-                          {competitor.marketShare || 'Performance Benchmark'}
+                          {competitor.marketShare || 'Unknown'} market share
                         </Badge>
                       </div>
                       
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                          <h5 className="text-sm font-medium text-green-600 mb-2">
-                            {businessType === 'copywriting' ? 'Copy Strengths' : 
-                             businessType === 'sales' ? 'Sales Advantages' : 
-                             'Strengths'}
-                          </h5>
+                          <h5 className="text-sm font-medium text-green-600 mb-2">Strengths</h5>
                           <ul className="text-sm space-y-1">
                             {Array.isArray(competitor.strengths) 
                               ? competitor.strengths.map((strength: string, i: number) => (
@@ -96,11 +61,7 @@ const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => 
                         </div>
                         
                         <div>
-                          <h5 className="text-sm font-medium text-red-600 mb-2">
-                            {businessType === 'copywriting' ? 'Copy Weaknesses' : 
-                             businessType === 'sales' ? 'Sales Gaps' : 
-                             'Weaknesses'}
-                          </h5>
+                          <h5 className="text-sm font-medium text-red-600 mb-2">Weaknesses</h5>
                           <ul className="text-sm space-y-1">
                             {Array.isArray(competitor.weaknesses) 
                               ? competitor.weaknesses.map((weakness: string, i: number) => (
@@ -129,11 +90,7 @@ const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => 
           {/* Gap Opportunities */}
           {insights.gapOpportunities && (
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold">
-                {businessType === 'copywriting' ? 'Copy Improvement Opportunities' : 
-                 businessType === 'sales' ? 'Sales Opportunity Gaps' : 
-                 'Market Gap Opportunities'}
-              </h3>
+              <h3 className="text-lg font-semibold">Market Gap Opportunities</h3>
               <div className="grid gap-3">
                 {Array.isArray(insights.gapOpportunities) 
                   ? insights.gapOpportunities.map((opportunity: string, index: number) => (
@@ -156,11 +113,7 @@ const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => 
           {/* Differentiation Strategy */}
           {insights.differentiationStrategy && (
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold">
-                {businessType === 'copywriting' ? 'Copy Differentiation Strategy' : 
-                 businessType === 'sales' ? 'Sales Differentiation Strategy' : 
-                 'Differentiation Strategy'}
-              </h3>
+              <h3 className="text-lg font-semibold">Differentiation Strategy</h3>
               <div className="grid gap-3">
                 {Array.isArray(insights.differentiationStrategy) 
                   ? insights.differentiationStrategy.map((strategy: string, index: number) => (
@@ -183,11 +136,7 @@ const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => 
           {/* Market Position */}
           {data.marketPosition && (
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold">
-                {businessType === 'copywriting' ? 'Copy Market Position' : 
-                 businessType === 'sales' ? 'Sales Market Position' : 
-                 'Market Position'}
-              </h3>
+              <h3 className="text-lg font-semibold">Market Position</h3>
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm">{data.marketPosition}</p>
               </div>
@@ -197,11 +146,7 @@ const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => 
           {/* Competitive Advantage */}
           {data.competitiveAdvantage && (
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold">
-                {businessType === 'copywriting' ? 'Copywriting Competitive Advantage' : 
-                 businessType === 'sales' ? 'Sales Competitive Advantage' : 
-                 'Competitive Advantage'}
-              </h3>
+              <h3 className="text-lg font-semibold">Competitive Advantage</h3>
               <div className="p-4 bg-green-50 rounded-lg">
                 <p className="text-sm">{data.competitiveAdvantage}</p>
               </div>

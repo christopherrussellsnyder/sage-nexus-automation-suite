@@ -6,10 +6,9 @@ import { TrendingUp, Target, CheckCircle, AlertTriangle } from 'lucide-react';
 
 interface MetricOptimizationProps {
   data: any;
-  businessType?: string;
 }
 
-const MetricOptimization = ({ data, businessType }: MetricOptimizationProps) => {
+const MetricOptimization = ({ data }: MetricOptimizationProps) => {
   const metricOptimization = data.metricOptimization || [];
 
   const getMetricColor = (current: number, target: number) => {
@@ -32,42 +31,16 @@ const MetricOptimization = ({ data, businessType }: MetricOptimizationProps) => 
     return Math.min((current / target) * 100, 100);
   };
 
-  const getOptimizationTitle = () => {
-    switch (businessType) {
-      case 'copywriting':
-        return 'AI Copywriting Performance Targets';
-      case 'agency':
-        return 'AI Agency Performance Targets';
-      case 'sales':
-        return 'AI Sales Performance Targets';
-      default:
-        return 'AI Metric Optimization Targets';
-    }
-  };
-
-  const getOptimizationDescription = () => {
-    switch (businessType) {
-      case 'copywriting':
-        return 'AI-generated copywriting performance improvement strategies and client success benchmarks';
-      case 'agency':
-        return 'AI-generated agency performance improvement strategies for client results and business growth';
-      case 'sales':
-        return 'AI-generated sales performance improvement strategies and deal-closing benchmarks';
-      default:
-        return 'AI-generated performance improvement strategies and benchmarks';
-    }
-  };
-
   if (!metricOptimization || metricOptimization.length === 0) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Target className="h-5 w-5" />
-            <span>{getOptimizationTitle()}</span>
+            <span>AI Metric Optimization</span>
           </CardTitle>
           <CardDescription>
-            {getOptimizationDescription()} not available. Please regenerate the report.
+            AI metric optimization targets not available. Please regenerate the report.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -82,10 +55,10 @@ const MetricOptimization = ({ data, businessType }: MetricOptimizationProps) => 
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Target className="h-5 w-5" />
-          <span>{getOptimizationTitle()}</span>
+          <span>AI Metric Optimization Targets</span>
         </CardTitle>
         <CardDescription>
-          {getOptimizationDescription()}
+          AI-generated performance improvement strategies and benchmarks
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -150,7 +123,7 @@ const MetricOptimization = ({ data, businessType }: MetricOptimizationProps) => 
         <div className="mt-4 p-3 bg-purple-50 rounded border border-purple-200">
           <p className="text-sm text-purple-800">
             <strong>AI-Powered Optimization:</strong> These metric targets and improvement strategies are generated 
-            by AI analysis of your current performance, industry benchmarks, and growth opportunities specific to your {businessType || 'business'}.
+            by AI analysis of your current performance, industry benchmarks, and growth opportunities specific to your business.
           </p>
         </div>
       </CardContent>

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 interface BusinessFormData {
@@ -40,7 +39,6 @@ interface AIGeneratedContent {
   };
   platformRecommendations: PlatformRecommendation[];
   monthlyPlan: DailyContent[];
-  agencyClientPlan?: DailyContent[];
   metricOptimization: MetricOptimization[];
   competitorInsights: CompetitorInsight[];
   copywritingRecommendations: CopywritingInsight[];
@@ -79,13 +77,6 @@ interface DailyContent {
     conversions: number;
   };
   strategicReasoning: string;
-  objective?: string;
-  activity?: string;
-  expectedOutcome?: string;
-  taskDetails?: string;
-  psychologicalTriggers?: string[];
-  salesTechniques?: string[];
-  copywritingPrinciples?: string[];
 }
 
 interface MetricOptimization {
