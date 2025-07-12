@@ -2,106 +2,230 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { 
+  Target, 
+  TrendingUp, 
+  DollarSign, 
+  Users, 
+  Eye,
+  MousePointer,
+  BarChart3,
+  Zap
+} from 'lucide-react';
 
 interface PlatformRecommendationsProps {
   data: any;
 }
 
 const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
-  const platforms = data.platformRecommendations || [];
+  // Ensure we access the correct data structure
+  const platformRecommendations = data.platformRecommendations || [];
+  
+  console.log('PlatformRecommendations - Full data:', data);
+  console.log('PlatformRecommendations - Platform recommendations array:', platformRecommendations);
 
-  const getPriorityColor = (priority: number) => {
-    switch (priority) {
-      case 1: return 'bg-green-500';
-      case 2: return 'bg-blue-500';
-      case 3: return 'bg-yellow-500';
-      default: return 'bg-gray-500';
+  const getPlatformIcon = (platform: string) => {
+    switch (platform?.toLowerCase()) {
+      case 'facebook ads':
+      case 'facebook':
+        return '📘';
+      case 'google ads':
+      case 'google search ads':
+      case 'google':
+        return '🔍';
+      case 'instagram':
+        return '📷';
+      case 'linkedin':
+        return '💼';
+      case 'twitter':
+        return '🐦';
+      case 'youtube':
+        return '🎥';
+      case 'tiktok':
+        return '🎵';
+      default:
+        return '🌐';
     }
   };
 
-  if (!platforms || platforms.length === 0) {
+  const getPriorityColor = (priority: number) => {
+    if (priority === 1) return 'bg-green-100 text-green-700 border-green-200';
+    if (priority === 2) return 'bg-blue-100 text-blue-700 border-blue-200';
+    if (priority === 3) return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+    return 'bg-gray-100 text-gray-700 border-gray-200';
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 85) return 'text-green-600';
+    if (score >= 70) return 'text-blue-600';
+    if (score >= 50) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  if (!platformRecommendations || platformRecommendations.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Platform Recommendations</CardTitle>
-          <CardDescription>
-            AI-generated platform recommendations are not available. Please regenerate the report.
-          </CardDescription>
+          <CardTitle className="flex items-center space-x-2">
+            <Target className="h-5 w-5" />
+            <span>AI Platform Recommendations</span>
+          </CardTitle>
+          <CardDescription>AI-ranked marketing platforms optimized for your business goals and budget</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">No AI platform recommendations found in the current report.</p>
+          <div className="text-center py-8 bg-yellow-50 rounded-lg border border-yellow-200">
+            <Target className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-yellow-700 mb-2">No Platform Recommendations Generated</h3>
+            <p className="text-sm text-yellow-600 mb-4">
+              The AI platform analysis was not generated or is missing from the response.
+            </p>
+            <p className="text-xs text-yellow-600">
+              Please regenerate the report to get comprehensive platform recommendations.
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
+  // Sort by priority for display
+  const sortedPlatforms = [...platformRecommendations].sort((a, b) => (a.priority || 99) - (b.priority || 99));
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Platform Recommendations</CardTitle>
+        <CardTitle className="flex items-center space-x-2">
+          <Target className="h-5 w-5" />
+          <span>AI Platform Recommendations</span>
+        </CardTitle>
         <CardDescription>
-          AI-ranked marketing platforms optimized for your business goals and budget
+          AI-ranked marketing platforms optimized for your business goals and budget ({sortedPlatforms.length} platforms analyzed)
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {platforms.map((platform: any, index: number) => (
-            <div key={index} className="p-4 border rounded-lg">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center space-x-3">
-                  <Badge className={`${getPriorityColor(platform.priority || index + 1)} text-white`}>
-                    #{platform.priority || index + 1}
-                  </Badge>
+          {sortedPlatforms.map((platform: any, index: number) => (
+            <Card key={`${platform.platform}-${index}`} className="border-l-4 border-l-blue-500">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Badge className={getPriorityColor(platform.priority || index + 1)}>
+                      #{platform.priority || index + 1} Priority
+                    </Badge>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl">{getPlatformIcon(platform.platform)}</span>
+                      <span className="font-semibold text-lg">{platform.platform}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    {platform.score && (
+                      <div className="text-right">
+                        <div className={`text-2xl font-bold ${getScoreColor(platform.score)}`}>
+                          {platform.score}/100
+                        </div>
+                        <div className="text-xs text-muted-foreground">AI Optimization Score</div>
+                      </div>
+                    )}
+                    {platform.budgetAllocation && (
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-blue-600">
+                          {platform.budgetAllocation}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">Budget</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* AI Reasoning */}
+                {platform.reasoning && (
                   <div>
-                    <h4 className="font-semibold">{platform.platform || 'Platform Name'}</h4>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-sm text-muted-foreground">AI Optimization Score:</span>
-                      <span className="text-sm font-medium">{platform.score || 'N/A'}/100</span>
+                    <div className="flex items-center space-x-2 mb-2">
+                      <Zap className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-700">AI Strategic Reasoning</span>
+                    </div>
+                    <p className="text-sm bg-blue-50 p-3 rounded border border-blue-200">
+                      {platform.reasoning}
+                    </p>
+                  </div>
+                )}
+
+                {/* Expected Metrics */}
+                {platform.expectedMetrics && Object.keys(platform.expectedMetrics).length > 0 && (
+                  <div>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <BarChart3 className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-700">Expected Performance Metrics</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {platform.expectedMetrics.roas && (
+                        <div className="bg-green-50 p-3 rounded border border-green-200 text-center">
+                          <div className="flex items-center justify-center space-x-1 mb-1">
+                            <TrendingUp className="h-4 w-4 text-green-600" />
+                            <span className="text-xs font-medium text-green-600">ROAS</span>
+                          </div>
+                          <div className="text-2xl font-bold text-green-700">{platform.expectedMetrics.roas}x</div>
+                          <div className="text-xs text-green-600">Return on Ad Spend</div>
+                        </div>
+                      )}
+                      
+                      {platform.expectedMetrics.cpm && (
+                        <div className="bg-blue-50 p-3 rounded border border-blue-200 text-center">
+                          <div className="flex items-center justify-center space-x-1 mb-1">
+                            <DollarSign className="h-4 w-4 text-blue-600" />
+                            <span className="text-xs font-medium text-blue-600">CPM</span>
+                          </div>
+                          <div className="text-2xl font-bold text-blue-700">${platform.expectedMetrics.cpm}</div>
+                          <div className="text-xs text-blue-600">Cost per 1000 Impressions</div>
+                        </div>
+                      )}
+                      
+                      {platform.expectedMetrics.conversionRate && (
+                        <div className="bg-purple-50 p-3 rounded border border-purple-200 text-center">
+                          <div className="flex items-center justify-center space-x-1 mb-1">
+                            <MousePointer className="h-4 w-4 text-purple-600" />
+                            <span className="text-xs font-medium text-purple-600">Conversion Rate</span>
+                          </div>
+                          <div className="text-2xl font-bold text-purple-700">{platform.expectedMetrics.conversionRate}%</div>
+                          <div className="text-xs text-purple-600">Expected Conversion Rate</div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-                <Badge variant="outline">{platform.budgetAllocation || 'N/A'}% Budget</Badge>
-              </div>
-              
-              {platform.score && (
-                <Progress value={platform.score} className="mb-3" />
-              )}
-              
-              <p className="text-sm text-muted-foreground mb-3">
-                {platform.reasoning || 'AI reasoning not available for this platform.'}
-              </p>
-              
-              {platform.expectedMetrics && (
-                <div className="grid grid-cols-3 gap-4 text-sm">
-                  <div className="text-center p-2 bg-gray-50 rounded">
-                    <div className="font-semibold text-green-600">
-                      {platform.expectedMetrics.roas || 'N/A'}x
+                )}
+
+                {/* Score Progress Bar */}
+                {platform.score && (
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium">AI Optimization Score</span>
+                      <span className={`text-sm font-semibold ${getScoreColor(platform.score)}`}>
+                        {platform.score}/100
+                      </span>
                     </div>
-                    <div className="text-muted-foreground">ROAS</div>
-                  </div>
-                  <div className="text-center p-2 bg-gray-50 rounded">
-                    <div className="font-semibold text-blue-600">
-                      ${platform.expectedMetrics.cpm || 'N/A'}
+                    <Progress value={platform.score} className="h-2" />
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>Poor Fit</span>
+                      <span>Perfect Match</span>
                     </div>
-                    <div className="text-muted-foreground">CPM</div>
                   </div>
-                  <div className="text-center p-2 bg-gray-50 rounded">
-                    <div className="font-semibold text-purple-600">
-                      {platform.expectedMetrics.conversionRate || 'N/A'}%
-                    </div>
-                    <div className="text-muted-foreground">Conv. Rate</div>
-                  </div>
-                </div>
-              )}
-            </div>
+                )}
+              </CardContent>
+            </Card>
           ))}
-        </div>
-        
-        <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-          <p className="text-sm text-blue-800">
-            <strong>AI-Generated:</strong> These platform recommendations are generated by AI analysis of your business data, 
-            industry trends, and competitive landscape. All metrics and strategies are tailored specifically for your business.
-          </p>
+
+          {/* AI-Generated Notice */}
+          <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border border-green-200 mt-6">
+            <div className="flex items-center space-x-2 mb-2">
+              <Badge className="bg-green-100 text-green-700">AI-Generated</Badge>
+              <span className="text-sm font-medium text-green-700">Platform Analysis Complete</span>
+            </div>
+            <p className="text-sm text-green-600">
+              These platform recommendations are generated by AI analysis of your business data, industry trends, and 
+              competitive landscape. All metrics and strategies are tailored specifically for your business.
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>
