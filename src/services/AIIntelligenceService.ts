@@ -13,6 +13,9 @@ interface BusinessFormData {
   timeline?: string;
   competitorData?: any;
   currentMetrics?: any;
+  clientDetails?: any;
+  idealCustomerProfile?: any;
+  productToSell?: string;
 }
 
 interface IntelligenceRequest {
