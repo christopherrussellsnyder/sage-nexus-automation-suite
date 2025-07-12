@@ -1,12 +1,55 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Crown, Brain, Zap, Target, Rocket, X } from 'lucide-react';
+import { Check, Crown, Brain, Zap, Target, Rocket, X, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Footer from '@/components/Footer';
+import PricingCard from '@/components/PricingCard';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [userSubscription, setUserSubscription] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkSubscriptionStatus();
+  }, []);
+
+  const checkSubscriptionStatus = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('check-subscription', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+      setUserSubscription(data);
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStartTrial = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/signup');
+      return;
+    }
+    navigate('/dashboard');
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,137 +94,29 @@ const Pricing = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
-          {/* Free Trial */}
-          <Card className="relative">
-            <CardHeader>
-              <CardTitle>Free Trial</CardTitle>
-              <CardDescription>Perfect for testing our AI automation platform</CardDescription>
-              <div className="text-3xl font-bold">$0<span className="text-lg font-normal text-muted-foreground">/trial</span></div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 mb-6">
-                <div className="text-sm font-medium text-foreground mb-3">What's Included:</div>
-                <ul className="space-y-3 text-sm">
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>1 credit for Intelligence insights</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>1 credit for Website copy generation</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>1 credit for Ad copy creation</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>1 credit for Email sequence generation</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>1 credit for Social content creation</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>1 credit for Lead scoring</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Access to 3 trending products (limited view)</span>
-                  </li>
-                </ul>
-                
-                <div className="text-sm font-medium text-foreground mb-3 mt-6">Limitations:</div>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center">
-                    <X className="h-4 w-4 text-red-500 mr-3 flex-shrink-0" />
-                    <span>Only 1 use per feature</span>
-                  </li>
-                  <li className="flex items-center">
-                    <X className="h-4 w-4 text-red-500 mr-3 flex-shrink-0" />
-                    <span>Limited product research (3 products only)</span>
-                  </li>
-                  <li className="flex items-center">
-                    <X className="h-4 w-4 text-red-500 mr-3 flex-shrink-0" />
-                    <span>No advanced features</span>
-                  </li>
-                </ul>
-              </div>
-              <Button className="w-full" variant="outline" onClick={() => navigate('/signup')}>
-                Start Free Trial
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Premium Plan */}
-          <Card className="border-2 border-primary relative">
-            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-              <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
-                Most Popular
-              </span>
+        {/* Pricing Cards */}
+        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8 mb-20">
+          {!loading && (
+            <>
+              <PricingCard 
+                plan="free" 
+                isCurrentPlan={!userSubscription?.subscribed}
+                userSubscription={userSubscription}
+              />
+              <PricingCard 
+                plan="premium" 
+                isCurrentPlan={userSubscription?.subscribed}
+                userSubscription={userSubscription}
+              />
+            </>
+          )}
+          
+          {loading && (
+            <div className="col-span-2 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-2 text-muted-foreground">Loading pricing information...</p>
             </div>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Crown className="h-5 w-5 text-yellow-500 mr-2" />
-                Complete AI Suite
-              </CardTitle>
-              <CardDescription>Unlimited access to all AI automation tools</CardDescription>
-              <div className="text-3xl font-bold">$30<span className="text-lg font-normal text-muted-foreground">/month</span></div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 mb-6">
-                <div className="text-sm font-medium text-foreground mb-3">Everything in Free Trial, plus:</div>
-                <ul className="space-y-3 text-sm">
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span><strong>Unlimited</strong> intelligence insights</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span><strong>Unlimited</strong> copy generation (all types)</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span><strong>Unlimited</strong> lead scoring & management</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Access to all <strong>30 weekly trending products</strong></span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Advanced e-commerce website builder</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Campaign management & automation</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Sales sequence automation</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Priority customer support</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Export capabilities</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Check className="h-4 w-4 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Custom integrations</span>
-                  </li>
-                </ul>
-              </div>
-              <Button className="w-full bg-primary hover:bg-primary/90" onClick={() => navigate('/signup')}>
-                <Crown className="h-4 w-4 mr-2" />
-                Start Your Transformation
-              </Button>
-            </CardContent>
-          </Card>
+          )}
         </div>
 
         {/* Value Proposition */}
@@ -265,23 +200,23 @@ const Pricing = () => {
             <div>
               <h3 className="font-semibold mb-2">What happens after my free trial?</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                After using your 1 credit per feature, you'll need to upgrade to continue using Sage.ai. Your trial data is saved and accessible once you subscribe.
+                After using your free trial limits, you'll need to upgrade to Premium ($30/month) to continue using Sage.ai with unlimited access to all features.
               </p>
               
               <h3 className="font-semibold mb-2">Can I cancel anytime?</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Yes, you can cancel your subscription at any time. You'll retain access until the end of your billing period.
+                Yes, you can cancel your subscription at any time through the customer portal. You'll retain access until the end of your billing period.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold mb-2">How does the credit system work?</h3>
+              <h3 className="font-semibold mb-2">What does the $30/month include?</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Each feature use (generating copy, scoring leads, etc.) counts as 1 credit. Free trial gives 1 credit per feature, paid plan offers unlimited usage.
+                Premium gives you unlimited access to all AI features: copywriting, intelligence insights, product research, website building, campaign automation, and priority support.
               </p>
               
               <h3 className="font-semibold mb-2">Is there customer support?</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Yes! Paid subscribers get priority support via email and chat. Free trial users have access to our knowledge base and community forum.
+                Yes! Premium subscribers get priority support via email and chat. Free trial users have access to our knowledge base and community forum.
               </p>
             </div>
           </div>
@@ -297,7 +232,8 @@ const Pricing = () => {
                 Start your free trial today and see the difference AI automation can make.
               </p>
               <div className="flex justify-center space-x-4">
-                <Button size="lg" variant="secondary" onClick={() => navigate('/signup')}>
+                <Button size="lg" variant="secondary" onClick={handleStartTrial}>
+                  <ArrowRight className="h-4 w-4 mr-2" />
                   Start Free Trial
                 </Button>
                 <Button variant="outline" size="lg" className="bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
