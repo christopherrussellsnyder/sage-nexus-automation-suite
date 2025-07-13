@@ -9,6 +9,8 @@ import PlatformRecommendations from './results/PlatformRecommendations';
 import MonthlyPlan from './results/MonthlyPlan';
 import MetricOptimization from './results/MetricOptimization';
 import CompetitorInsights from './results/CompetitorInsights';
+import EmailTemplatesGenerator from './copywriting/EmailTemplatesGenerator';
+import SalesScriptsGenerator from './sales/SalesScriptsGenerator';
 
 interface IntelligenceResultsProps {
   data: any;
@@ -58,7 +60,9 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
       monthlyPlan: ['full', 'marketing'],
       metrics: ['full', 'marketing'],
       competitors: ['full', 'competitor'],
-      copywriting: ['full', 'copywriting']
+      copywriting: ['full', 'copywriting'],
+      emailTemplates: ['copywriting'],
+      salesScripts: ['sales']
     };
     
     return sectionMapping[section]?.includes(intelligenceMode) || false;
@@ -105,6 +109,21 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
       <div className="space-y-6">
         {shouldShowSection('overview') && (
           <ResultsOverview data={intelligenceData} businessType={businessType} />
+        )}
+
+        {/* Business Type Specific Features */}
+        {businessType === 'copywriting' && (
+          <EmailTemplatesGenerator 
+            data={intelligenceData.formData} 
+            clientInfo={intelligenceData.formData?.clientDetails}
+          />
+        )}
+
+        {businessType === 'sales' && (
+          <SalesScriptsGenerator 
+            data={intelligenceData.formData} 
+            idealCustomer={intelligenceData.formData?.idealCustomerProfile}
+          />
         )}
         
         {shouldShowSection('platforms') && (
