@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 interface BusinessInformationFormProps {
   data: any;
   onChange: (field: string, value: any) => void;
-  businessType: 'ecommerce' | 'agency' | 'sales';
+  businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
 }
 
 const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInformationFormProps) => {
@@ -34,6 +34,17 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         { value: 'branding', label: 'Branding & Design' },
         { value: 'pr', label: 'Public Relations' },
         { value: 'full-service', label: 'Full-Service Agency' }
+      ];
+    } else if (businessType === 'copywriting') {
+      return [
+        { value: 'email-marketing', label: 'Email Marketing Copy' },
+        { value: 'sales-pages', label: 'Sales Pages & Funnels' },
+        { value: 'ad-copy', label: 'Ad Copy & Creatives' },
+        { value: 'content-marketing', label: 'Content Marketing' },
+        { value: 'direct-response', label: 'Direct Response' },
+        { value: 'website-copy', label: 'Website Copy' },
+        { value: 'social-media', label: 'Social Media Copy' },
+        { value: 'ecommerce', label: 'E-commerce Copy' }
       ];
     } else {
       return [
@@ -64,6 +75,13 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         { value: 'mid-agency', label: 'Mid-size Agency (10-50 employees)' },
         { value: 'large-agency', label: 'Large Agency (50+ employees)' }
       ];
+    } else if (businessType === 'copywriting') {
+      return [
+        { value: 'freelancer', label: 'Solo Copywriter' },
+        { value: 'small-team', label: 'Small Copy Team (2-5 writers)' },
+        { value: 'agency', label: 'Copy Agency (5+ writers)' },
+        { value: 'in-house', label: 'In-house Copywriter' }
+      ];
     } else {
       return [
         { value: 'individual', label: 'Individual Sales Rep' },
@@ -93,6 +111,15 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         { value: 'retention', label: 'Improve Client Retention' },
         { value: 'specialization', label: 'Develop Industry Specialization' }
       ];
+    } else if (businessType === 'copywriting') {
+      return [
+        { value: 'client-acquisition', label: 'Acquire New Clients' },
+        { value: 'increase-rates', label: 'Increase Copywriting Rates' },
+        { value: 'improve-conversions', label: 'Improve Copy Performance' },
+        { value: 'specialize-niche', label: 'Specialize in Profitable Niche' },
+        { value: 'scale-business', label: 'Scale Copywriting Business' },
+        { value: 'retention', label: 'Improve Client Retention' }
+      ];
     } else {
       return [
         { value: 'close-more-deals', label: 'Close More Deals' },
@@ -113,6 +140,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         return 'Marketing Agency Information';
       case 'sales':
         return 'Sales Organization Information';
+      case 'copywriting':
+        return 'Copywriting Business Information';
       default:
         return 'Business Information';
     }
@@ -126,6 +155,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         return 'Tell us about your agency to generate client acquisition and campaign optimization strategies';
       case 'sales':
         return 'Tell us about your sales process to generate prospect research and conversion optimization insights';
+      case 'copywriting':
+        return 'Tell us about your copywriting business to generate email templates, client acquisition strategies, and performance optimization';
       default:
         return 'Tell us about your business to generate personalized intelligence and content';
     }
@@ -145,18 +176,23 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="businessName">
-              {businessType === 'sales' ? 'Company Name' : businessType === 'agency' ? 'Agency Name' : 'Store Name'}
+              {businessType === 'sales' ? 'Company Name' : 
+               businessType === 'agency' ? 'Agency Name' :
+               businessType === 'copywriting' ? 'Business Name' : 'Store Name'}
             </Label>
             <Input
               id="businessName"
-              placeholder={businessType === 'sales' ? 'Your company name' : businessType === 'agency' ? 'Your agency name' : 'Your store name'}
+              placeholder={businessType === 'sales' ? 'Your company name' : 
+                          businessType === 'agency' ? 'Your agency name' :
+                          businessType === 'copywriting' ? 'Your copywriting business name' : 'Your store name'}
               value={data.businessName || ''}
               onChange={(e) => onChange('businessName', e.target.value)}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="industry">
-              {businessType === 'agency' ? 'Agency Specialization' : 'Industry/Niche'}
+              {businessType === 'agency' ? 'Agency Specialization' : 
+               businessType === 'copywriting' ? 'Copy Specialization' : 'Industry/Niche'}
             </Label>
             <Select value={data.industry || ''} onValueChange={(value) => onChange('industry', value)}>
               <SelectTrigger>
@@ -176,7 +212,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         <div className="space-y-2">
           <Label htmlFor="targetAudience">
             {businessType === 'ecommerce' ? 'Target Customer Demographics' : 
-             businessType === 'agency' ? 'Ideal Client Profile' : 
+             businessType === 'agency' ? 'Ideal Client Profile' :
+             businessType === 'copywriting' ? 'Ideal Client Profile' : 
              'Target Prospect Profile'}
           </Label>
           <Input
@@ -184,6 +221,7 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
             placeholder={
               businessType === 'ecommerce' ? 'e.g., Women aged 25-45, fashion-conscious, disposable income $50k+' :
               businessType === 'agency' ? 'e.g., Small businesses, $500k-5M revenue, need digital marketing help' :
+              businessType === 'copywriting' ? 'e.g., E-commerce brands, coaches, SaaS companies needing high-converting copy' :
               'e.g., Decision makers at mid-size companies, budget authority, pain points with current solution'
             }
             value={data.targetAudience || ''}
@@ -194,7 +232,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         <div className="space-y-2">
           <Label htmlFor="productService">
             {businessType === 'ecommerce' ? 'Product Catalog Description' : 
-             businessType === 'agency' ? 'Services Offered' : 
+             businessType === 'agency' ? 'Services Offered' :
+             businessType === 'copywriting' ? 'Copywriting Services Offered' : 
              'Product/Service You Sell'}
           </Label>
           <Textarea
@@ -202,6 +241,7 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
             placeholder={
               businessType === 'ecommerce' ? 'Describe your main product categories, price ranges, and unique selling points' :
               businessType === 'agency' ? 'Describe your core services, specializations, and what makes you different' :
+              businessType === 'copywriting' ? 'Describe your copywriting services (email sequences, sales pages, ads, etc.) and specializations' :
               'Describe what you sell, key benefits, and how it solves customer problems'
             }
             value={data.productService || ''}
@@ -214,7 +254,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
           <div className="space-y-2">
             <Label htmlFor="monthlyRevenue">
               {businessType === 'ecommerce' ? 'Monthly Store Revenue' : 
-               businessType === 'agency' ? 'Monthly Agency Revenue' : 
+               businessType === 'agency' ? 'Monthly Agency Revenue' :
+               businessType === 'copywriting' ? 'Monthly Copywriting Revenue' : 
                'Monthly Sales Revenue'}
             </Label>
             <Select value={data.monthlyRevenue || ''} onValueChange={(value) => onChange('monthlyRevenue', value)}>
@@ -233,7 +274,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
           <div className="space-y-2">
             <Label htmlFor="monthlyAdBudget">
               {businessType === 'ecommerce' ? 'Monthly Marketing Budget' : 
-               businessType === 'agency' ? 'Average Client Ad Spend' : 
+               businessType === 'agency' ? 'Average Client Ad Spend' :
+               businessType === 'copywriting' ? 'Monthly Marketing Budget' : 
                'Monthly Marketing Budget'}
             </Label>
             <Select value={data.monthlyAdBudget || ''} onValueChange={(value) => onChange('monthlyAdBudget', value)}>
@@ -256,7 +298,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
           <div className="space-y-2">
             <Label htmlFor="teamSize">
               {businessType === 'ecommerce' ? 'Store Team Size' : 
-               businessType === 'agency' ? 'Agency Team Size' : 
+               businessType === 'agency' ? 'Agency Team Size' :
+               businessType === 'copywriting' ? 'Team Size' : 
                'Sales Team Size'}
             </Label>
             <Select value={data.teamSize || ''} onValueChange={(value) => onChange('teamSize', value)}>
@@ -275,7 +318,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
           <div className="space-y-2">
             <Label htmlFor="businessStage">
               {businessType === 'ecommerce' ? 'Store Stage' : 
-               businessType === 'agency' ? 'Agency Stage' : 
+               businessType === 'agency' ? 'Agency Stage' :
+               businessType === 'copywriting' ? 'Business Stage' : 
                'Sales Organization Stage'}
             </Label>
             <Select value={data.businessStage || ''} onValueChange={(value) => onChange('businessStage', value)}>
@@ -296,7 +340,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         <div className="space-y-2">
           <Label htmlFor="primaryGoal">
             {businessType === 'ecommerce' ? 'Primary E-commerce Goal' : 
-             businessType === 'agency' ? 'Primary Agency Goal' : 
+             businessType === 'agency' ? 'Primary Agency Goal' :
+             businessType === 'copywriting' ? 'Primary Copywriting Goal' : 
              'Primary Sales Goal'}
           </Label>
           <Select value={data.primaryGoal || ''} onValueChange={(value) => onChange('primaryGoal', value)}>
@@ -316,7 +361,8 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
         <div className="space-y-2">
           <Label htmlFor="currentChallenges">
             {businessType === 'ecommerce' ? 'Biggest E-commerce Challenges' : 
-             businessType === 'agency' ? 'Biggest Agency Challenges' : 
+             businessType === 'agency' ? 'Biggest Agency Challenges' :
+             businessType === 'copywriting' ? 'Biggest Copywriting Challenges' : 
              'Biggest Sales Challenges'}
           </Label>
           <Textarea
@@ -324,6 +370,7 @@ const BusinessInformationForm = ({ data, onChange, businessType }: BusinessInfor
             placeholder={
               businessType === 'ecommerce' ? 'e.g., Low conversion rates, high cart abandonment, customer acquisition costs' :
               businessType === 'agency' ? 'e.g., Client acquisition, proving ROI, scaling operations, retaining clients' :
+              businessType === 'copywriting' ? 'e.g., Finding quality clients, pricing services, proving ROI, writer\'s block' :
               'e.g., Generating qualified leads, long sales cycles, competition, pricing objections'
             }
             value={data.currentChallenges || ''}

@@ -9,6 +9,8 @@ import PlatformRecommendations from './results/PlatformRecommendations';
 import MonthlyPlan from './results/MonthlyPlan';
 import MetricOptimization from './results/MetricOptimization';
 import CompetitorInsights from './results/CompetitorInsights';
+import EmailTemplates from './results/EmailTemplates';
+import SalesScripts from './results/SalesScripts';
 
 interface IntelligenceResultsProps {
   data: any;
@@ -121,6 +123,16 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
         
         {shouldShowSection('competitors') && (
           <CompetitorInsights data={intelligenceData} />
+        )}
+
+        {/* Copywriting-specific Email Templates */}
+        {businessType === 'copywriting' && (
+          <EmailTemplates data={intelligenceData} businessType={businessType} />
+        )}
+
+        {/* Sales-specific Scripts */}
+        {businessType === 'sales' && (
+          <SalesScripts data={intelligenceData} businessType={businessType} />
         )}
 
         {/* Marketing-specific message */}

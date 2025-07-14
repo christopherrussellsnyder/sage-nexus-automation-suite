@@ -253,11 +253,11 @@ const UnifiedIntelligenceWizard = ({
       case 'copywriting':
         switch (currentStep) {
           case 1:
-            return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+            return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType="copywriting" />;
           case 2:
-            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType="copywriting" />;
           case 3:
-            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType="copywriting" />;
           case 4:
             return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
           default:
@@ -285,9 +285,9 @@ const UnifiedIntelligenceWizard = ({
           case 1:
             return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 2:
-            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType="sales" />;
           case 3:
-            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType="sales" />;
           case 4:
             return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
           default:
