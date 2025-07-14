@@ -23,9 +23,7 @@ interface MetricOptimizationProps {
 
 const MetricOptimization = ({ data }: MetricOptimizationProps) => {
   // Ensure we access the correct data structure
-  const metricOptimization = Array.isArray(data.metricOptimization) 
-    ? data.metricOptimization 
-    : [];
+  const metricOptimization = data.metricOptimization || [];
   
   console.log('MetricOptimization - Full data:', data);
   console.log('MetricOptimization - Metric optimization array:', metricOptimization);
@@ -79,7 +77,7 @@ const MetricOptimization = ({ data }: MetricOptimizationProps) => {
     }
   };
 
-  if (!Array.isArray(metricOptimization) || metricOptimization.length === 0) {
+  if (!metricOptimization || metricOptimization.length === 0) {
     return (
       <Card>
         <CardHeader>

@@ -24,9 +24,7 @@ interface MonthlyPlanProps {
 
 const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
   // Ensure we access the correct data structure
-  const monthlyPlan = Array.isArray(data.monthlyPlan) 
-    ? data.monthlyPlan 
-    : [];
+  const monthlyPlan = data.monthlyPlan || [];
   
   console.log('MonthlyPlan - Full data:', data);
   console.log('MonthlyPlan - Monthly plan array:', monthlyPlan);
@@ -65,7 +63,7 @@ const MonthlyPlan = ({ data }: MonthlyPlanProps) => {
     }
   };
 
-  if (!Array.isArray(monthlyPlan) || monthlyPlan.length === 0) {
+  if (!monthlyPlan || monthlyPlan.length === 0) {
     return (
       <Card>
         <CardHeader>

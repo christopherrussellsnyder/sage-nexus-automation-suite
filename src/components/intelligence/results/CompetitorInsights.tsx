@@ -20,9 +20,7 @@ interface CompetitorInsightsProps {
 
 const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
   // Ensure we access the correct data structure
-  const competitorInsights = Array.isArray(data.competitorInsights) 
-    ? data.competitorInsights 
-    : [];
+  const competitorInsights = data.competitorInsights || [];
   
   console.log('CompetitorInsights - Full data:', data);
   console.log('CompetitorInsights - Competitor insights array:', competitorInsights);
@@ -35,7 +33,7 @@ const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
     return value.split(/[.;,]\s*/).filter(item => item.trim().length > 0);
   };
 
-  if (!Array.isArray(competitorInsights) || competitorInsights.length === 0) {
+  if (!competitorInsights || competitorInsights.length === 0) {
     return (
       <Card>
         <CardHeader>
