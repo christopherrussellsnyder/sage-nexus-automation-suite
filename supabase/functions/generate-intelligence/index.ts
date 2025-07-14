@@ -22,9 +22,9 @@ interface IntelligenceRequest {
     timeline?: string;
     competitorData?: any;
     currentMetrics?: any;
-    clientDetails?: any; // New field for client information
-    idealCustomerProfile?: any; // New field for sales ideal customer
-    productToSell?: string; // New field for sales product
+    clientDetails?: any;
+    idealCustomerProfile?: any;
+    productToSell?: string;
   };
   intelligenceMode: 'full' | 'copywriting' | 'marketing' | 'competitor';
   businessType: 'ecommerce' | 'agency' | 'sales' | 'copywriting';
@@ -127,43 +127,58 @@ function getSpecializedSystemPrompt(businessType: string, intelligenceMode: stri
   const basePrompt = `You are an expert business intelligence AI specialized in ${businessType} businesses.`;
   
   switch (businessType) {
-    case 'copywriting':
-      return `${basePrompt} You provide comprehensive copywriting insights including email sequences, ad copy optimization, and psychological triggers. You MUST respond with a valid JSON object that includes:
-      - copywritingRecommendations: Detailed copy strategies and frameworks
-      - emailSequence: 30-day email sequence for client nurturing
-      - monthlyPlan: 30-day content calendar for client advertising
-      - competitorInsights: Analysis of top-performing copy in the client's industry
-      - metricOptimization: Copy performance metrics (CTR, conversion rates, engagement)
-      - industryInsights: Copywriting trends and opportunities
+    case 'ecommerce':
+      return `${basePrompt} You provide comprehensive ecommerce optimization insights. You MUST respond with a valid JSON object that includes:
+      - budgetStrategy: Detailed budget allocation and strategy recommendations
+      - copywritingRecommendations: AI-powered copy optimization for product pages, ads, and emails
+      - platformRecommendations: Best advertising platforms with detailed reasoning
+      - monthlyPlan: AI-generated 30-day optimized content calendar
+      - metricOptimization: AI metric optimization targets for conversion rates, ROAS, etc.
+      - competitorInsights: Competitive intelligence analysis
       
-      DO NOT include budgetStrategy as copywriters don't handle client budgets.`;
+      Focus on conversion optimization, customer acquisition, and revenue growth strategies.`;
       
     case 'agency':
-      return `${basePrompt} You provide marketing agency insights including client acquisition and client delivery strategies. You MUST respond with a valid JSON object that includes:
-      - budgetStrategy: Client budget recommendations and agency growth budget
-      - platformRecommendations: Best platforms for both client delivery and agency growth
-      - monthlyPlan: TWO 30-day plans - one for client delivery, one for agency client acquisition
-      - clientDeliveryPlan: Specific 30-day plan for serving existing clients
+      return `${basePrompt} You provide comprehensive marketing agency insights including dual-focus strategies. You MUST respond with a valid JSON object that includes:
+      - budgetStrategy: Budget recommendations for the agency's growth AND client budget management
+      - copywritingRecommendations: Copy strategies for both agency client acquisition AND client campaign delivery
+      - platformRecommendations: Best platforms for agency growth AND client campaign delivery
+      - monthlyPlan: AI-generated 30-day content calendar for agency growth
+      - clientDeliveryPlan: Separate 30-day plan for client service delivery
       - agencyGrowthPlan: Specific 30-day plan for acquiring new agency clients
-      - metricOptimization: Agency and client performance metrics
-      - competitorInsights: Analysis of competing agencies and client industry
-      - industryInsights: Marketing trends and opportunities`;
+      - metricOptimization: Performance metrics for both agency growth and client results
+      - competitorInsights: Analysis of competing agencies AND client industry competitors
+      - industryInsights: Marketing trends and opportunities
+      
+      Provide strategies for both agency growth and exceptional client delivery.`;
       
     case 'sales':
-      return `${basePrompt} You provide sales organization insights focused on closing deals and lead conversion. You MUST respond with a valid JSON object that includes:
-      - salesStrategy: Deal closing strategies and lead conversion tactics
-      - emailSequence: 30-day email sequence for nurturing prospects to close
-      - phoneCallScript: Optimized phone scripts for different stages of the sales process
-      - monthlyPlan: 30-day sales activity calendar focused on closing deals
-      - metricOptimization: Sales metrics (close rate, pipeline velocity, deal size)
+      return `${basePrompt} You provide comprehensive sales organization insights focused on lead generation and deal closing. You MUST respond with a valid JSON object that includes:
+      - budgetStrategy: Budget allocation for lead generation activities
+      - copywritingRecommendations: Copy optimization for email sequences AND phone call sales scripts
+      - monthlyPlan: AI-generated 30-day content calendar for lead generation (if needed)
+      - metricOptimization: Sales metrics optimization (close rates, pipeline velocity, deal size)
       - competitorInsights: Analysis of top sales strategies in the industry
-      - prospectingInsights: Ideal customer profile optimization
+      - prospectingInsights: Ideal customer profile optimization and lead generation strategies
       - industryInsights: Sales trends and psychological triggers for the industry
       
-      Focus on closing deals, not outreach. Include psychological triggers specific to ${formData.industry || 'the industry'}.`;
+      Focus on lead generation, deal closing, and sales process optimization for ${formData.industry || 'the industry'}.`;
       
-    default: // ecommerce
-      return `${basePrompt} You provide comprehensive ecommerce optimization insights with advanced conversion strategies. You MUST respond with a valid JSON object that includes ALL standard sections with ecommerce-specific optimization.`;
+    case 'copywriting':
+      return `${basePrompt} You provide comprehensive copywriting business insights with dual-focus strategies. You MUST respond with a valid JSON object that includes:
+      - copywritingRecommendations: Advanced copy strategies for both copywriter client acquisition AND client campaign delivery
+      - monthlyPlan: AI-generated 30-day content calendar for copywriter business growth
+      - clientCopyPlan: Separate 30-day copy calendar for client advertisement campaigns
+      - metricOptimization: Copy performance metrics for email sequences and conversion optimization
+      - competitorInsights: Analysis of top-performing copy in the client's industry
+      - industryInsights: Copywriting trends and opportunities
+      - emailSequence: 30-day email sequence for client nurturing and conversion
+      
+      DO NOT include budgetStrategy as copywriters don't handle client budgets directly.
+      Focus on copy performance, client results, and copywriter business growth.`;
+      
+    default:
+      return `${basePrompt} You provide comprehensive business optimization insights with advanced strategies.`;
   }
 }
 
@@ -181,17 +196,16 @@ function getSpecializedUserPrompt(businessType: string, intelligenceMode: string
     Timeline: ${formData.timeline || 'Not specified'}`;
 
   switch (businessType) {
-    case 'copywriting':
+    case 'ecommerce':
       return `${baseInfo}
       
-      Generate comprehensive copywriting intelligence for ${formData.businessName}. Focus on:
-      1. High-converting copy frameworks and psychological triggers
-      2. 30-day email sequence for client nurturing and conversion
-      3. 30-day content calendar for client's advertising campaigns
-      4. Analysis of top-performing copy in ${formData.industry} industry
-      5. Copy performance optimization strategies
-      
-      Client Details: ${formData.clientDetails ? JSON.stringify(formData.clientDetails) : 'Not provided'}
+      Generate comprehensive ecommerce intelligence for ${formData.businessName}. Focus on:
+      1. Budget Strategy: Detailed budget allocation for growth
+      2. AI Copywriting Recommendations: Product page optimization, ad copy, email campaigns
+      3. Platform Recommendations: Best advertising platforms with detailed analysis
+      4. AI Generated 30 Day Optimized Content Calendar: Daily content strategy
+      5. AI Metric Optimization Targets: Conversion rates, ROAS, customer acquisition costs
+      6. Competitive Intelligence: Competitor analysis and positioning strategies
       
       Intelligence Mode: ${intelligenceMode}`;
       
@@ -199,12 +213,13 @@ function getSpecializedUserPrompt(businessType: string, intelligenceMode: string
       return `${baseInfo}
       
       Generate comprehensive marketing agency intelligence for ${formData.businessName}. Provide:
-      1. TWO separate 30-day content calendars:
-         - One for delivering results to existing clients
-         - One for acquiring new agency clients
-      2. Client budget optimization strategies
-      3. Agency growth and scaling tactics
-      4. Competitive analysis of other agencies and client industries
+      1. Budget Strategy: For agency growth AND client budget management
+      2. AI Copywriting Recommendations: For agency client acquisition AND client campaign delivery
+      3. Platform Recommendations: Best platforms for agency growth AND client delivery
+      4. AI Generated 30 Day Optimized Content Calendar: For agency growth
+      5. Client Service Delivery Plan: 30-day plan for serving existing clients
+      6. AI Metric Optimization Targets: For both agency growth and client results
+      7. Competitive Intelligence: Competing agencies AND client industry analysis
       
       Client Details: ${formData.clientDetails ? JSON.stringify(formData.clientDetails) : 'Not provided - focus on agency growth strategies'}
       
@@ -214,21 +229,35 @@ function getSpecializedUserPrompt(businessType: string, intelligenceMode: string
       return `${baseInfo}
       
       Generate comprehensive sales intelligence for ${formData.businessName}. Focus on:
-      1. Deal closing strategies and conversion tactics
-      2. 30-day email sequence optimized for closing prospects
-      3. Phone call scripts for different sales stages
-      4. 30-day sales activity calendar focused on closing deals
-      5. Psychological triggers specific to ${formData.industry}
+      1. Budget Strategy: For lead generation activities
+      2. AI Copywriting Recommendations: Email sequences AND phone call sales scripts
+      3. AI Generated 30 Day Optimized Content Calendar: For lead generation (if needed)
+      4. AI Metric Optimization Targets: Sales metrics and deal closing optimization
+      5. Competitive Intelligence: Top sales strategies in ${formData.industry}
       
       Product to Sell: ${formData.productToSell || 'Not specified'}
       Ideal Customer Profile: ${formData.idealCustomerProfile ? JSON.stringify(formData.idealCustomerProfile) : 'Not provided'}
       
       Intelligence Mode: ${intelligenceMode}`;
       
+    case 'copywriting':
+      return `${baseInfo}
+      
+      Generate comprehensive copywriting intelligence for ${formData.businessName}. Focus on:
+      1. AI Copywriting Recommendations: For copywriter client acquisition AND client campaign delivery
+      2. AI Generated 30 Day Optimized Content Calendar: For copywriter business growth
+      3. Client Copy Plan: 30-day copy calendar for client advertisement campaigns
+      4. AI Metric Optimization Targets: Copy performance metrics and email sequences
+      5. Competitive Intelligence: Top-performing copy in client's industry
+      
+      Client Details: ${formData.clientDetails ? JSON.stringify(formData.clientDetails) : 'Not provided'}
+      
+      Intelligence Mode: ${intelligenceMode}`;
+      
     default:
       return `${baseInfo}
       
-      Generate comprehensive ecommerce intelligence for ${formData.businessName}.
+      Generate comprehensive business intelligence for ${formData.businessName}.
       Intelligence Mode: ${intelligenceMode}`;
   }
 }
@@ -443,12 +472,14 @@ function createSpecializedFallback(formData: any, businessType: string, intellig
         ...baseData,
         copywritingRecommendations: [],
         emailSequence: [],
-        metricOptimization: []
+        metricOptimization: [],
+        clientCopyPlan: []
       };
     case 'agency':
       return {
         ...baseData,
         budgetStrategy: {},
+        copywritingRecommendations: [],
         platformRecommendations: [],
         clientDeliveryPlan: [],
         agencyGrowthPlan: [],
@@ -457,9 +488,8 @@ function createSpecializedFallback(formData: any, businessType: string, intellig
     case 'sales':
       return {
         ...baseData,
-        salesStrategy: {},
-        emailSequence: [],
-        phoneCallScript: {},
+        budgetStrategy: {},
+        copywritingRecommendations: [],
         prospectingInsights: [],
         metricOptimization: []
       };
@@ -467,6 +497,7 @@ function createSpecializedFallback(formData: any, businessType: string, intellig
       return {
         ...baseData,
         budgetStrategy: {},
+        copywritingRecommendations: [],
         platformRecommendations: [],
         metricOptimization: []
       };

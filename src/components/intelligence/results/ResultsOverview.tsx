@@ -29,13 +29,26 @@ const ResultsOverview = ({ data, businessType }: ResultsOverviewProps) => {
   // Ensure we're accessing the correct data structure
   const businessData = data.formData || data.businessData || {};
   const budgetStrategy = data.budgetStrategy || {};
-  const copywritingRecs = data.copywritingRecommendations || [];
+  // Ensure copywritingRecommendations is always an array
+  const copywritingRecs = Array.isArray(data.copywritingRecommendations) 
+    ? data.copywritingRecommendations 
+    : [];
 
   console.log('ResultsOverview - Full data:', data);
   console.log('ResultsOverview - Budget strategy:', budgetStrategy);
   console.log('ResultsOverview - Copywriting recommendations:', copywritingRecs);
 
   const getCurrentCopyRecommendations = () => {
+    // Double-check that copywritingRecs is an array before using array methods
+    if (!Array.isArray(copywritingRecs) || copywritingRecs.length === 0) {
+      return {
+        copyType: selectedCopyType,
+        recommendations: ['No specific recommendations generated for this copy type. Please regenerate the report.'],
+        examples: [],
+        emotionalTriggers: []
+      };
+    }
+
     const currentRec = copywritingRecs.find((rec: any) => rec.copyType === selectedCopyType);
     
     if (currentRec) {

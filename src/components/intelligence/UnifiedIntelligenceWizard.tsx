@@ -181,20 +181,29 @@ const UnifiedIntelligenceWizard = ({
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => {
-      const newFormData = { ...prev };
+      const newData = { ...prev };
       
       // Handle nested field paths like 'clientDetails.businessName'
       if (field.includes('.')) {
-        const [parentKey, childKey] = field.split('.');
-        newFormData[parentKey] = {
-          ...newFormData[parentKey],
-          [childKey]: value
-        };
+        const keys = field.split('.');
+        let current = newData;
+        
+        // Navigate to the nested object, creating it if it doesn't exist
+        for (let i = 0; i < keys.length - 1; i++) {
+          if (!current[keys[i]]) {
+            current[keys[i]] = {};
+          }
+          current = current[keys[i]];
+        }
+        
+        // Set the final value
+        current[keys[keys.length - 1]] = value;
       } else {
-        newFormData[field] = value;
+        // Handle simple field paths
+        newData[field] = value;
       }
       
-      return newFormData;
+      return newData;
     });
   };
 
@@ -268,11 +277,11 @@ const UnifiedIntelligenceWizard = ({
       case 'copywriting':
         switch (currentStep) {
           case 1:
-            return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType="copywriting" />;
+            return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 2:
-            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType="copywriting" />;
+            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 3:
-            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType="copywriting" />;
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 4:
             return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
           default:
@@ -300,9 +309,9 @@ const UnifiedIntelligenceWizard = ({
           case 1:
             return <BusinessInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 2:
-            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType="sales" />;
+            return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 3:
-            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType="sales" />;
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 4:
             return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
           default:

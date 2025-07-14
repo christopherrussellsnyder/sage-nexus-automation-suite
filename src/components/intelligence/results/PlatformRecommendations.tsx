@@ -19,7 +19,9 @@ interface PlatformRecommendationsProps {
 
 const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
   // Ensure we access the correct data structure
-  const platformRecommendations = data.platformRecommendations || [];
+  const platformRecommendations = Array.isArray(data.platformRecommendations) 
+    ? data.platformRecommendations 
+    : [];
   
   console.log('PlatformRecommendations - Full data:', data);
   console.log('PlatformRecommendations - Platform recommendations array:', platformRecommendations);
@@ -62,7 +64,7 @@ const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
     return 'text-red-600';
   };
 
-  if (!platformRecommendations || platformRecommendations.length === 0) {
+  if (!Array.isArray(platformRecommendations) || platformRecommendations.length === 0) {
     return (
       <Card>
         <CardHeader>
