@@ -180,7 +180,22 @@ const UnifiedIntelligenceWizard = ({
   const maxSteps = steps.length;
 
   const handleFieldChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const newFormData = { ...prev };
+      
+      // Handle nested field paths like 'clientDetails.businessName'
+      if (field.includes('.')) {
+        const [parentKey, childKey] = field.split('.');
+        newFormData[parentKey] = {
+          ...newFormData[parentKey],
+          [childKey]: value
+        };
+      } else {
+        newFormData[field] = value;
+      }
+      
+      return newFormData;
+    });
   };
 
   const handleNext = () => {
