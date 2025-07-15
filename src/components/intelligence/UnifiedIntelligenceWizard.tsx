@@ -97,21 +97,27 @@ const UnifiedIntelligenceWizard = ({
           },
           {
             id: 3,
-            title: 'Current Metrics',
-            description: 'Agency and client performance metrics',
+            title: 'Client Current Metrics',
+            description: 'Client performance metrics and challenges',
             status: getStatus(3)
           },
           {
             id: 4,
-            title: 'Goals & Objectives',
-            description: 'Agency growth and client success goals',
+            title: 'Current Metrics',
+            description: 'Agency performance metrics',
             status: getStatus(4)
           },
           {
             id: 5,
+            title: 'Goals & Objectives',
+            description: 'Agency growth and client success goals',
+            status: getStatus(5)
+          },
+          {
+            id: 6,
             title: 'Competitive Analysis',
             description: 'Agency and client industry competition',
-            status: getStatus(5)
+            status: getStatus(6)
           }
         ];
         
@@ -223,7 +229,8 @@ const UnifiedIntelligenceWizard = ({
 
   const handleSkipClientInfo = () => {
     if (businessType === 'agency' && currentStep === 2) {
-      setCurrentStep(prev => prev + 1);
+      // Skip both client info and client metrics when skipping
+      setCurrentStep(prev => prev + 2);
     }
   };
 
@@ -295,10 +302,12 @@ const UnifiedIntelligenceWizard = ({
           case 2:
             return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} onSkip={handleSkipClientInfo} />;
           case 3:
-            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType="client" />;
           case 4:
-            return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
+            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 5:
+            return <GoalsObjectivesForm data={formData} onChange={handleFieldChange} />;
+          case 6:
             return <CompetitorAnalysisForm data={formData} onChange={handleFieldChange} />;
           default:
             return null;

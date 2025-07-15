@@ -132,7 +132,7 @@ function getSpecializedSystemPrompt(businessType: string, intelligenceMode: stri
       - budgetStrategy: Detailed budget allocation and strategy recommendations
       - copywritingRecommendations: AI-powered copy optimization for product pages, ads, and emails
       - platformRecommendations: Best advertising platforms with detailed reasoning
-      - monthlyPlan: AI-generated 30-day optimized content calendar
+      - monthlyPlan: AI-generated 30-day optimized content calendar with daily posts
       - metricOptimization: AI metric optimization targets for conversion rates, ROAS, etc.
       - competitorInsights: Competitive intelligence analysis
       
@@ -140,9 +140,9 @@ function getSpecializedSystemPrompt(businessType: string, intelligenceMode: stri
       
     case 'agency':
       return `${basePrompt} You provide comprehensive marketing agency insights including dual-focus strategies. You MUST respond with a valid JSON object that includes:
-      - budgetStrategy: Budget recommendations for the agency's growth AND client budget management
-      - copywritingRecommendations: Copy strategies for both agency client acquisition AND client campaign delivery
-      - platformRecommendations: Best platforms for agency growth AND client campaign delivery
+      - budgetStrategy: Budget recommendations for agency growth AND client budget management strategies
+      - copywritingRecommendations: Copy strategies for both agency client acquisition AND client campaign delivery (include audience field: 'user' for agency, 'client' for client campaigns)
+      - platformRecommendations: Best platforms for both agency growth AND client campaign delivery
       - monthlyPlan: AI-generated 30-day content calendar for agency growth
       - clientDeliveryPlan: Separate 30-day plan for client service delivery
       - agencyGrowthPlan: Specific 30-day plan for acquiring new agency clients
@@ -154,10 +154,10 @@ function getSpecializedSystemPrompt(businessType: string, intelligenceMode: stri
       
     case 'sales':
       return `${basePrompt} You provide comprehensive sales organization insights focused on lead generation and deal closing. You MUST respond with a valid JSON object that includes:
-      - budgetStrategy: Budget allocation for lead generation activities
+      - budgetStrategy: Budget allocation specifically for lead generation activities
       - copywritingRecommendations: Copy optimization for email sequences AND phone call sales scripts
-      - monthlyPlan: AI-generated 30-day content calendar for lead generation (if needed)
-      - metricOptimization: Sales metrics optimization (close rates, pipeline velocity, deal size)
+      - monthlyPlan: AI-generated 30-day content calendar for lead generation (if needed for content marketing)
+      - metricOptimization: Sales metrics optimization (close rates, pipeline velocity, deal size metrics)
       - competitorInsights: Analysis of top sales strategies in the industry
       - prospectingInsights: Ideal customer profile optimization and lead generation strategies
       - industryInsights: Sales trends and psychological triggers for the industry
@@ -166,8 +166,8 @@ function getSpecializedSystemPrompt(businessType: string, intelligenceMode: stri
       
     case 'copywriting':
       return `${basePrompt} You provide comprehensive copywriting business insights with dual-focus strategies. You MUST respond with a valid JSON object that includes:
-      - copywritingRecommendations: Advanced copy strategies for both copywriter client acquisition AND client campaign delivery
-      - monthlyPlan: AI-generated 30-day content calendar for copywriter business growth
+      - copywritingRecommendations: Advanced copy strategies for both copywriter client acquisition AND client campaign delivery (include audience field: 'user' for copywriter business, 'client' for client campaigns)
+      - monthlyPlan: AI-generated 30-day content calendar for copywriter business growth (lead generation content)
       - clientCopyPlan: Separate 30-day copy calendar for client advertisement campaigns
       - metricOptimization: Copy performance metrics for email sequences and conversion optimization
       - competitorInsights: Analysis of top-performing copy in the client's industry

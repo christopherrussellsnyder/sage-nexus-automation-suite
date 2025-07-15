@@ -9,6 +9,9 @@ import PlatformRecommendations from './results/PlatformRecommendations';
 import MonthlyPlan from './results/MonthlyPlan';
 import MetricOptimization from './results/MetricOptimization';
 import CompetitorInsights from './results/CompetitorInsights';
+import BudgetStrategy from './results/BudgetStrategy';
+import CopywritingRecommendations from './results/CopywritingRecommendations';
+import ContentCalendar from './results/ContentCalendar';
 import EmailTemplatesGenerator from './copywriting/EmailTemplatesGenerator';
 import SalesScriptsGenerator from './sales/SalesScriptsGenerator';
 
@@ -56,16 +59,20 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
     
     const sectionMapping = {
       overview: ['full', 'copywriting', 'marketing', 'competitor'],
-      platforms: ['full', 'marketing'],
+      budgetStrategy: ['full', 'marketing', 'ecommerce', 'agency', 'sales'],
+      copywritingRecommendations: ['full', 'copywriting', 'marketing', 'ecommerce', 'agency', 'sales'],
+      contentCalendar: ['full', 'marketing', 'ecommerce', 'agency', 'sales', 'copywriting'],
+      platforms: ['full', 'marketing', 'ecommerce', 'agency'],
       monthlyPlan: ['full', 'marketing'],
-      metrics: ['full', 'marketing'],
-      competitors: ['full', 'competitor'],
+      metrics: ['full', 'marketing', 'ecommerce', 'agency', 'sales', 'copywriting'],
+      competitors: ['full', 'competitor', 'ecommerce', 'agency'],
       copywriting: ['full', 'copywriting'],
       emailTemplates: ['copywriting'],
       salesScripts: ['sales']
     };
     
-    return sectionMapping[section]?.includes(intelligenceMode) || false;
+    return sectionMapping[section]?.includes(intelligenceMode) || 
+           sectionMapping[section]?.includes(businessType) || false;
   };
 
   return (
@@ -111,6 +118,36 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
           <ResultsOverview data={intelligenceData} businessType={businessType} />
         )}
 
+        {/* Budget Strategy - Show for all business types except copywriting */}
+        {shouldShowSection('budgetStrategy') && businessType !== 'copywriting' && (
+          <BudgetStrategy data={intelligenceData} businessType={businessType} />
+        )}
+
+        {/* AI Copywriting Recommendations - Show for all business types */}
+        {shouldShowSection('copywritingRecommendations') && (
+          <CopywritingRecommendations data={intelligenceData} businessType={businessType} />
+        )}
+
+        {/* Platform Recommendations - Show for ecommerce and agency */}
+        {shouldShowSection('platforms') && (
+          <PlatformRecommendations data={intelligenceData} />
+        )}
+
+        {/* AI Generated 30 Day Optimized Content Calendar */}
+        {shouldShowSection('contentCalendar') && (
+          <ContentCalendar data={intelligenceData} businessType={businessType} />
+        )}
+
+        {/* AI Metric Optimization Targets */}
+        {shouldShowSection('metrics') && (
+          <MetricOptimization data={intelligenceData} />
+        )}
+
+        {/* Competitive Intelligence */}
+        {shouldShowSection('competitors') && (
+          <CompetitorInsights data={intelligenceData} />
+        )}
+
         {/* Business Type Specific Features */}
         {businessType === 'copywriting' && (
           <EmailTemplatesGenerator 
@@ -124,22 +161,6 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
             data={intelligenceData.formData} 
             idealCustomer={intelligenceData.formData?.idealCustomerProfile}
           />
-        )}
-        
-        {shouldShowSection('platforms') && (
-          <PlatformRecommendations data={intelligenceData} />
-        )}
-        
-        {shouldShowSection('monthlyPlan') && (
-          <MonthlyPlan data={intelligenceData} />
-        )}
-        
-        {shouldShowSection('metrics') && (
-          <MetricOptimization data={intelligenceData} />
-        )}
-        
-        {shouldShowSection('competitors') && (
-          <CompetitorInsights data={intelligenceData} />
         )}
 
         {/* Marketing-specific message */}
