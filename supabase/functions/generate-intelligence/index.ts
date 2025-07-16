@@ -37,23 +37,29 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Received request method:', req.method);
-    console.log('Request headers:', Object.fromEntries(req.headers.entries()));
+    console.log('Function invoked with method:', req.method);
     
-    const request: IntelligenceRequest = await req.json();
-    const { formData, intelligenceMode, businessType } = request;
-
-    console.log('Generating intelligence for:', formData.businessName);
-    console.log('Business Type:', businessType);
-    console.log('Intelligence Mode:', intelligenceMode);
-
-    if (!OPENAI_API_KEY) {
-      console.error('OPENAI_API_KEY not found in environment variables');
-      console.log('Available env vars:', Object.keys(Deno.env.toObject()));
-      throw new Error('OpenAI API key not configured');
+    let request: IntelligenceRequest;
+    try {
+      request = await req.json();
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    console.log('OpenAI API key found, proceeding with generation...');
+    const { formData, intelligenceMode, businessType } = request;
+    console.log('Processing intelligence request for:', formData?.businessName || 'Unknown business');
+
+    if (!OPENAI_API_KEY) {
+      console.error('OPENAI_API_KEY not configured');
+      return new Response(JSON.stringify({ error: 'OpenAI API key not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Calculate realistic metric targets based on user data
     const metricTargets = calculateRealisticMetrics(formData, businessType);
@@ -62,6 +68,8 @@ serve(async (req) => {
     const systemPrompt = getSpecializedSystemPrompt(businessType, intelligenceMode, formData, metricTargets);
     const userPrompt = getSpecializedUserPrompt(businessType, intelligenceMode, formData);
 
+    console.log('Calling OpenAI API...');
+    
     // Call OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -81,15 +89,20 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+      const errorData = await response.text();
+      console.error('OpenAI API error:', response.status, errorData);
+      return new Response(JSON.stringify({ 
+        error: `OpenAI API error: ${response.status} - ${errorData}` 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
 
-    console.log('AI Response received, parsing JSON...');
+    console.log('AI Response received, parsing...');
 
     // Try to parse as JSON
     let intelligenceData;
@@ -112,7 +125,7 @@ serve(async (req) => {
       
     } catch (parseError) {
       console.error('Failed to parse JSON response:', parseError);
-      console.log('Raw AI response:', aiResponse);
+      console.log('Raw AI response length:', aiResponse.length);
       
       // Create specialized fallback
       intelligenceData = createSpecializedFallback(formData, businessType, intelligenceMode);
@@ -125,7 +138,10 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in generate-intelligence function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message || 'Unknown error occurred',
+      details: error.toString()
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
