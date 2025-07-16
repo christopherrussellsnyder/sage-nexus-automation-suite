@@ -58,7 +58,9 @@ const ContentCalendar = ({ data, businessType }: ContentCalendarProps) => {
 };
 
 const ContentCalendarGrid = ({ content }: { content: any[] }) => {
-  if (!content || content.length === 0) {
+  const contentArray = Array.isArray(content) ? content : [];
+  
+  if (!contentArray || contentArray.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
         <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -70,7 +72,7 @@ const ContentCalendarGrid = ({ content }: { content: any[] }) => {
   return (
     <ScrollArea className="h-96">
       <div className="space-y-3">
-        {content.map((item: any, index: number) => (
+        {contentArray.map((item: any, index: number) => (
           <ContentCard key={index} content={item} />
         ))}
       </div>
