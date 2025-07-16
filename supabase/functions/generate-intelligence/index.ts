@@ -78,8 +78,13 @@ serve(async (req) => {
 
     console.log('Calling OpenAI API...');
     
-    // Call OpenAI API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Create a timeout promise for 45 seconds
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('OpenAI API request timed out after 45 seconds')), 45000);
+    });
+
+    // Create the fetch promise
+    const fetchPromise = fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -95,6 +100,11 @@ serve(async (req) => {
         max_tokens: 4000
       }),
     });
+
+    console.log('Waiting for OpenAI response...');
+    
+    // Race between fetch and timeout
+    const response = await Promise.race([fetchPromise, timeoutPromise]);
 
     if (!response.ok) {
       const errorData = await response.text();
