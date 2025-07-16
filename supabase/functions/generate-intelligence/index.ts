@@ -5,8 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Get Intelligence API key from Supabase secrets
-const INTELLIGENCE_API_KEY = Deno.env.get('INTELLIGENCE_API_KEY');
+// Get OpenAI API key from Supabase secrets
+const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
 interface IntelligenceRequest {
   formData: {
@@ -42,8 +42,8 @@ serve(async (req) => {
 
     console.log('Generating intelligence for:', formData.businessName);
 
-    if (!INTELLIGENCE_API_KEY) {
-      throw new Error('Intelligence API key not configured');
+    if (!OPENAI_API_KEY) {
+      throw new Error('OpenAI API key not configured');
     }
 
     // Calculate realistic metric targets based on user data
@@ -57,7 +57,7 @@ serve(async (req) => {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${INTELLIGENCE_API_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
