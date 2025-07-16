@@ -8,6 +8,9 @@ const corsHeaders = {
 // Get OpenAI API key from Supabase secrets
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
+console.log('=== Edge Function Loaded ===');
+console.log('OpenAI API Key configured:', !!OPENAI_API_KEY);
+
 interface IntelligenceRequest {
   formData: {
     businessName: string;
