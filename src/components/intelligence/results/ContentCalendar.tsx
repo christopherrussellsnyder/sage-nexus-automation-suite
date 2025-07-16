@@ -17,9 +17,46 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
   const clientDeliveryPlan = data.clientDeliveryPlan?.contentCalendar || [];
   const agencyGrowthPlan = data.agencyGrowthPlan?.contentCalendar || [];
   
-  // Transform string data into structured format if needed
+  // Transform data into structured format - handle both arrays and objects
   const parseContentData = (content: any) => {
-    if (Array.isArray(content)) return content;
+    if (Array.isArray(content)) {
+      // If it's already an array of objects with day/content structure
+      return content.map((item, index) => {
+        if (typeof item === 'object' && item.day && item.content) {
+          return {
+            day: item.day,
+            platform: 'Multi-Platform',
+            contentType: 'content',
+            hook: item.content.substring(0, 50) + (item.content.length > 50 ? '...' : ''),
+            body: item.content,
+            cta: 'Learn More',
+            visualSuggestion: 'Professional imagery recommended',
+            expectedMetrics: {
+              reach: 1000 + (index * 200),
+              engagement: '3.5%',
+              conversions: 15 + index
+            },
+            strategicReasoning: 'Designed to maximize engagement and drive conversions'
+          };
+        }
+        // Handle string items in array
+        return {
+          day: index + 1,
+          platform: 'Multi-Platform',
+          contentType: 'content',
+          hook: item.substring(0, 50) + (item.length > 50 ? '...' : ''),
+          body: item,
+          cta: 'Learn More',
+          visualSuggestion: 'Professional imagery recommended',
+          expectedMetrics: {
+            reach: 1000 + (index * 200),
+            engagement: '3.5%',
+            conversions: 15 + index
+          },
+          strategicReasoning: 'Designed to maximize engagement and drive conversions'
+        };
+      });
+    }
     if (typeof content === 'string') {
       // Parse string content into structured format
       const lines = content.split('\n').filter(line => line.trim());
@@ -32,7 +69,7 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
           day: day,
           platform: 'Multi-Platform',
           contentType: 'content',
-          hook: description.substring(0, 50) + '...',
+          hook: description.substring(0, 50) + (description.length > 50 ? '...' : ''),
           body: description,
           cta: 'Learn More',
           visualSuggestion: 'Professional imagery recommended',

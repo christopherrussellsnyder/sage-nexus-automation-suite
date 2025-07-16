@@ -22,9 +22,9 @@ const PlatformRecommendations = ({ data, businessType }: PlatformRecommendations
   // Access platform recommendations from the correct structure
   const platformData = data.platformRecommendations || {};
   
-  // Handle both agency and client recommendations
-  const agencyPlatforms = platformData.agencyGrowth?.recommendedPlatforms || [];
-  const clientPlatforms = platformData.clientDelivery?.recommendedPlatforms || [];
+  // Handle both agency and client recommendations - fix data structure mapping
+  const agencyPlatforms = platformData.agencyGrowth || [];
+  const clientPlatforms = platformData.clientDelivery || [];
   
   // Combine all platforms into a single array
   const allPlatforms = [

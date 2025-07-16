@@ -177,6 +177,16 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
           />
         )}
 
+        {/* Industry Insights */}
+        {(businessType === 'ecommerce' || businessType === 'agency') && (
+          <IndustryInsights data={intelligenceData} businessType={businessType} />
+        )}
+
+        {/* Action Plans for 30-Day Strategies */}
+        {(businessType === 'agency' || businessType === 'copywriting') && (
+          <ActionPlans data={intelligenceData} businessType={businessType} />
+        )}
+
         {/* AI Metric Optimization Targets */}
         {shouldShowSection('metrics') && (
           <MetricOptimization data={intelligenceData} businessType={businessType} />
