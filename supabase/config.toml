@@ -2,3 +2,6 @@ project_id = "qtckfvprvpxbbteinxve"
 
 [functions.generate-intelligence]
 verify_jwt = false
+
+[functions.test-openai-key]
+verify_jwt = false

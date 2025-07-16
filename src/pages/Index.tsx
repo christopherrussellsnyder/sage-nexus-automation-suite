@@ -25,6 +25,7 @@ import SalesDashboard from "@/components/SalesDashboard";
 import IntelligenceDashboard from "@/components/IntelligenceDashboard";
 import Footer from "@/components/Footer";
 import { useCopySettings } from '@/hooks/useCopySettings';
+import { ApiKeyTester } from "@/components/ApiKeyTester";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'ecommerce' | 'agency' | 'sales' | 'copywriting'>('overview');
@@ -114,6 +115,11 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {activeSection === 'overview' && (
+          <div className="mb-8">
+            <ApiKeyTester />
+          </div>
+        )}
         {renderContent()}
       </main>
 
