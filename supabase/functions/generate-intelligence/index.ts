@@ -37,14 +37,23 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Received request method:', req.method);
+    console.log('Request headers:', Object.fromEntries(req.headers.entries()));
+    
     const request: IntelligenceRequest = await req.json();
     const { formData, intelligenceMode, businessType } = request;
 
     console.log('Generating intelligence for:', formData.businessName);
+    console.log('Business Type:', businessType);
+    console.log('Intelligence Mode:', intelligenceMode);
 
     if (!OPENAI_API_KEY) {
+      console.error('OPENAI_API_KEY not found in environment variables');
+      console.log('Available env vars:', Object.keys(Deno.env.toObject()));
       throw new Error('OpenAI API key not configured');
     }
+
+    console.log('OpenAI API key found, proceeding with generation...');
 
     // Calculate realistic metric targets based on user data
     const metricTargets = calculateRealisticMetrics(formData, businessType);
