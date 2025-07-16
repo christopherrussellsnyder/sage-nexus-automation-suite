@@ -69,6 +69,17 @@ serve(async (req) => {
       });
     }
 
+    // Validate API key format
+    if (!OPENAI_API_KEY.startsWith('sk-')) {
+      console.error('Invalid OpenAI API key format');
+      return new Response(JSON.stringify({ error: 'Invalid OpenAI API key format' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    console.log('API key validation passed');
+
     // Calculate realistic metric targets based on user data
     const metricTargets = calculateRealisticMetrics(formData, businessType);
 
@@ -117,16 +128,24 @@ serve(async (req) => {
       });
     }
 
+    console.log('Parsing OpenAI response...');
+    
     const data = await response.json();
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', data);
+      throw new Error('Invalid response from OpenAI API');
+    }
+    
     const aiResponse = data.choices[0].message.content;
-
-    console.log('AI Response received, parsing...');
+    console.log('AI Response received, length:', aiResponse.length);
 
     // Try to parse as JSON
     let intelligenceData;
     try {
       // Clean the response to ensure it's valid JSON
       const cleanResponse = aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      console.log('Attempting to parse JSON response...');
       intelligenceData = JSON.parse(cleanResponse);
       
       // Ensure all required fields are present
@@ -156,9 +175,23 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in generate-intelligence function:', error);
+    console.error('Error stack:', error.stack);
+    
+    // More specific error handling
+    if (error.message?.includes('timeout')) {
+      return new Response(JSON.stringify({ 
+        error: 'Request timed out - please try again',
+        details: 'The AI service took too long to respond'
+      }), {
+        status: 408,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
     return new Response(JSON.stringify({ 
       error: error.message || 'Unknown error occurred',
-      details: error.toString()
+      details: error.toString(),
+      timestamp: new Date().toISOString()
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
