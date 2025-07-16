@@ -10,7 +10,7 @@ interface CopywritingRecommendationsProps {
 }
 
 const CopywritingRecommendations = ({ data, businessType }: CopywritingRecommendationsProps) => {
-  const copyData = data.copywritingRecommendations || [];
+  const copyData = Array.isArray(data.copywritingRecommendations) ? data.copywritingRecommendations : [];
   
   return (
     <Card>
