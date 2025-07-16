@@ -12,8 +12,8 @@ import CompetitorInsights from './results/CompetitorInsights';
 import BudgetStrategy from './results/BudgetStrategy';
 import CopywritingRecommendations from './results/CopywritingRecommendations';
 import ContentCalendar from './results/ContentCalendar';
-import EmailTemplatesGenerator from './copywriting/EmailTemplatesGenerator';
-import SalesScriptsGenerator from './sales/SalesScriptsGenerator';
+import EnhancedEmailTemplatesGenerator from './copywriting/EnhancedEmailTemplatesGenerator';
+import EnhancedSalesScriptsGenerator from './sales/EnhancedSalesScriptsGenerator';
 import IndustryInsights from './results/IndustryInsights';
 import ActionPlans from './results/ActionPlans';
 
@@ -56,25 +56,51 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
     }
   };
 
+  // New business type specific section mapping based on user requirements
+  const getBusinessTypeSections = () => {
+    switch (businessType) {
+      case 'ecommerce':
+        return [
+          'budgetStrategy',
+          'copywritingRecommendations', 
+          'platforms',
+          'contentCalendar',
+          'metrics',
+          'competitors'
+        ];
+      case 'agency':
+        return [
+          'budgetStrategy',
+          'copywritingRecommendations',
+          'platforms', 
+          'contentCalendar',
+          'contentCalendarClient',
+          'metrics',
+          'competitors'
+        ];
+      case 'sales':
+        return [
+          'budgetStrategy',
+          'copywritingRecommendations',
+          'contentCalendar',
+          'metrics',
+          'salesScripts'
+        ];
+      case 'copywriting':
+        return [
+          'copywritingRecommendations',
+          'contentCalendar', 
+          'metrics',
+          'emailTemplates'
+        ];
+      default:
+        return [];
+    }
+  };
+
   const shouldShowSection = (section: string) => {
-    if (intelligenceMode === 'full') return true;
-    
-    const sectionMapping = {
-      overview: ['full', 'copywriting', 'marketing', 'competitor'],
-      budgetStrategy: ['full', 'marketing', 'ecommerce', 'agency', 'sales'],
-      copywritingRecommendations: ['full', 'copywriting', 'marketing', 'ecommerce', 'agency', 'sales'],
-      contentCalendar: ['full', 'marketing', 'ecommerce', 'agency', 'sales', 'copywriting'],
-      platforms: ['full', 'marketing', 'ecommerce', 'agency'],
-      monthlyPlan: ['full', 'marketing'],
-      metrics: ['full', 'marketing', 'ecommerce', 'agency', 'sales', 'copywriting'],
-      competitors: ['full', 'competitor', 'ecommerce', 'agency'],
-      copywriting: ['full', 'copywriting'],
-      emailTemplates: ['copywriting'],
-      salesScripts: ['sales']
-    };
-    
-    return sectionMapping[section]?.includes(intelligenceMode) || 
-           sectionMapping[section]?.includes(businessType) || false;
+    const allowedSections = getBusinessTypeSections();
+    return allowedSections.includes(section);
   };
 
   return (
@@ -114,80 +140,67 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
         </div>
       </div>
 
-      {/* Results Content */}
+      {/* Results Content - Restructured by Business Type */}
       <div className="space-y-6">
-        {shouldShowSection('overview') && (
-          <ResultsOverview data={intelligenceData} businessType={businessType} />
-        )}
-
-        {/* Budget Strategy - Show for all business types except copywriting */}
-        {shouldShowSection('budgetStrategy') && businessType !== 'copywriting' && (
+        {/* Budget Strategy */}
+        {shouldShowSection('budgetStrategy') && (
           <BudgetStrategy data={intelligenceData} businessType={businessType} />
         )}
 
-        {/* AI Copywriting Recommendations - Show for all business types */}
+        {/* AI Copywriting Recommendations */}
         {shouldShowSection('copywritingRecommendations') && (
           <CopywritingRecommendations data={intelligenceData} businessType={businessType} />
         )}
 
-        {/* Platform Recommendations - Show for ecommerce and agency */}
+        {/* Platform Recommendations */}
         {shouldShowSection('platforms') && (
-          <PlatformRecommendations data={intelligenceData} />
+          <PlatformRecommendations data={intelligenceData} businessType={businessType} />
         )}
 
-        {/* AI Generated 30 Day Optimized Content Calendar */}
+        {/* AI Generated 30 Day Optimized Content Calendar (User) */}
         {shouldShowSection('contentCalendar') && (
-          <ContentCalendar data={intelligenceData} businessType={businessType} />
+          <ContentCalendar 
+            data={intelligenceData} 
+            businessType={businessType}
+            variant="user"
+            title="30-Day Content Calendar (Your Business)"
+          />
+        )}
+
+        {/* AI Generated 30 Day Optimized Content Calendar (Client) - Agency Only */}
+        {shouldShowSection('contentCalendarClient') && businessType === 'agency' && (
+          <ContentCalendar 
+            data={intelligenceData} 
+            businessType={businessType}
+            variant="client"
+            title="30-Day Content Calendar (Client Services)"
+          />
         )}
 
         {/* AI Metric Optimization Targets */}
         {shouldShowSection('metrics') && (
-          <MetricOptimization data={intelligenceData} />
+          <MetricOptimization data={intelligenceData} businessType={businessType} />
         )}
 
         {/* Competitive Intelligence */}
         {shouldShowSection('competitors') && (
-          <CompetitorInsights data={intelligenceData} />
+          <CompetitorInsights data={intelligenceData} businessType={businessType} />
         )}
 
-        {/* Industry Insights */}
-        {shouldShowSection('overview') && (
-          <IndustryInsights data={intelligenceData} businessType={businessType} />
-        )}
-
-        {/* 30-Day Action Plans */}
-        {shouldShowSection('overview') && businessType === 'agency' && (
-          <ActionPlans data={intelligenceData} businessType={businessType} />
-        )}
-
-        {/* Business Type Specific Features */}
-        {businessType === 'copywriting' && (
-          <EmailTemplatesGenerator 
+        {/* Email Templates for Copywriting */}
+        {shouldShowSection('emailTemplates') && businessType === 'copywriting' && (
+          <EnhancedEmailTemplatesGenerator 
             data={intelligenceData.formData} 
             clientInfo={intelligenceData.formData?.clientDetails}
           />
         )}
 
-        {businessType === 'sales' && (
-          <SalesScriptsGenerator 
+        {/* Sales Scripts for Sales */}
+        {shouldShowSection('salesScripts') && businessType === 'sales' && (
+          <EnhancedSalesScriptsGenerator 
             data={intelligenceData.formData} 
             idealCustomer={intelligenceData.formData?.idealCustomerProfile}
           />
-        )}
-
-        {/* Marketing-specific message */}
-        {intelligenceMode === 'marketing' && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center space-y-2">
-                <h3 className="font-semibold">Marketing Focus Mode</h3>
-                <p className="text-sm text-muted-foreground">
-                  This report focuses specifically on marketing strategy and campaign recommendations. 
-                  Switch to "Full Intelligence" mode for comprehensive insights including copywriting analysis.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
         )}
       </div>
     </div>

@@ -19,9 +19,10 @@ import {
 
 interface MetricOptimizationProps {
   data: any;
+  businessType?: string | null;
 }
 
-const MetricOptimization = ({ data }: MetricOptimizationProps) => {
+const MetricOptimization = ({ data, businessType }: MetricOptimizationProps) => {
   // Access metric optimization from the correct structure
   const metricData = data.metricOptimization || {};
   

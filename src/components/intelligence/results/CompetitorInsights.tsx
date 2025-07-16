@@ -16,9 +16,10 @@ import {
 
 interface CompetitorInsightsProps {
   data: any;
+  businessType?: string | null;
 }
 
-const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
+const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => {
   // Access competitor insights from the correct structure
   const competitorData = data.competitorInsights || {};
   

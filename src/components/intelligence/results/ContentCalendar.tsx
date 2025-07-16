@@ -9,7 +9,7 @@ interface ContentCalendarProps {
   businessType: string;
 }
 
-const ContentCalendar = ({ data, businessType }: ContentCalendarProps) => {
+const ContentCalendar = ({ data, businessType, variant = 'user', title }: ContentCalendarProps) => {
   // Access content calendar from the correct structure
   const monthlyPlan = data.monthlyPlan?.contentCalendar || data.contentCalendar || [];
   const clientDeliveryPlan = data.clientDeliveryPlan?.contentCalendar || [];

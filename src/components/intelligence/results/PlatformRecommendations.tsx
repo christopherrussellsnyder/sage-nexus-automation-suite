@@ -15,9 +15,10 @@ import {
 
 interface PlatformRecommendationsProps {
   data: any;
+  businessType?: string | null;
 }
 
-const PlatformRecommendations = ({ data }: PlatformRecommendationsProps) => {
+const PlatformRecommendations = ({ data, businessType }: PlatformRecommendationsProps) => {
   // Access platform recommendations from the correct structure
   const platformData = data.platformRecommendations || {};
   
