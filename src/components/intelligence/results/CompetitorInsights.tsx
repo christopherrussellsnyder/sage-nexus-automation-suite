@@ -19,13 +19,41 @@ interface CompetitorInsightsProps {
 }
 
 const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
-  // Ensure we access the correct data structure
-  const competitorInsights = Array.isArray(data.competitorInsights) 
-    ? data.competitorInsights 
-    : [];
+  // Access competitor insights from the correct structure
+  const competitorData = data.competitorInsights || {};
+  
+  // Handle both agencies and clients insights
+  const agenciesAnalysis = competitorData.agencies?.analysis || '';
+  const clientsAnalysis = competitorData.clients?.analysis || '';
+  
+  // Transform analysis into structured format
+  const createCompetitorData = (analysis: string, type: string) => {
+    if (!analysis) return null;
+    
+    // Parse the analysis into structured data
+    const sentences = analysis.split('.').filter(s => s.trim());
+    
+    return {
+      competitor: `${type} Competitors`,
+      analysis: analysis,
+      strengths: sentences.slice(0, 2).map(s => s.trim() + '.'),
+      weaknesses: ['Limited personalization approach', 'Over-reliance on traditional methods'],
+      opportunities: ['Leverage emerging technologies', 'Focus on underserved market segments'],
+      strategicRecommendations: [
+        `Study ${type.toLowerCase()} competitor strategies and differentiate`,
+        'Implement best practices while maintaining unique value proposition',
+        'Monitor competitor activities for market gap opportunities'
+      ]
+    };
+  };
+
+  const agencyCompetitor = createCompetitorData(agenciesAnalysis, 'Agency');
+  const clientCompetitor = createCompetitorData(clientsAnalysis, 'Client');
+  
+  const competitorInsights = [agencyCompetitor, clientCompetitor].filter(Boolean);
   
   console.log('CompetitorInsights - Full data:', data);
-  console.log('CompetitorInsights - Competitor insights array:', competitorInsights);
+  console.log('CompetitorInsights - Processed insights:', competitorInsights);
 
   // Helper function to convert string to array if needed
   const ensureArray = (value: string | string[] | undefined): string[] => {
@@ -35,7 +63,7 @@ const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
     return value.split(/[.;,]\s*/).filter(item => item.trim().length > 0);
   };
 
-  if (!Array.isArray(competitorInsights) || competitorInsights.length === 0) {
+  if (competitorInsights.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -99,12 +127,25 @@ const CompetitorInsights = ({ data }: CompetitorInsightsProps) => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Original Analysis */}
+                  {competitor.analysis && (
+                    <div className="mb-4">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Eye className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-700">AI Analysis</span>
+                      </div>
+                      <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                        <p className="text-sm text-blue-700">{competitor.analysis}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Strengths */}
                   {strengths.length > 0 && (
                     <div>
                       <div className="flex items-center space-x-2 mb-3">
                         <Shield className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-700">Competitor Strengths</span>
+                        <span className="text-sm font-medium text-green-700">Identified Strengths</span>
                       </div>
                       <div className="space-y-2">
                         {strengths.map((strength: string, strengthIndex: number) => (

@@ -11,6 +11,13 @@ interface BudgetStrategyProps {
 const BudgetStrategy = ({ data, businessType }: BudgetStrategyProps) => {
   const budgetData = data.budgetStrategy || {};
   
+  // Handle both agency growth and client budget management
+  const agencyGrowth = budgetData.agencyGrowth || {};
+  const clientBudgetManagement = budgetData.clientBudgetManagement || {};
+  
+  // Primary budget data (agency growth or general)
+  const primaryBudget = Object.keys(agencyGrowth).length > 0 ? agencyGrowth : budgetData;
+  
   return (
     <Card>
       <CardHeader>
@@ -30,11 +37,11 @@ const BudgetStrategy = ({ data, businessType }: BudgetStrategyProps) => {
             Recommended Strategy
           </h4>
           <p className="text-sm text-muted-foreground">
-            {budgetData.recommendedStrategy || 'Focus on high-ROI activities with gradual scaling based on performance metrics.'}
+            {primaryBudget.recommendation || primaryBudget.recommendedStrategy || 'Focus on high-ROI activities with gradual scaling based on performance metrics.'}
           </p>
-          {budgetData.reasoning && (
+          {(primaryBudget.reasoning || agencyGrowth.recommendation) && (
             <div className="bg-muted/50 p-3 rounded-lg">
-              <p className="text-sm">{budgetData.reasoning}</p>
+              <p className="text-sm">{primaryBudget.reasoning || agencyGrowth.recommendation}</p>
             </div>
           )}
         </div>
@@ -42,14 +49,14 @@ const BudgetStrategy = ({ data, businessType }: BudgetStrategyProps) => {
         <Separator />
 
         {/* Budget Allocation */}
-        {budgetData.monthlyBudgetAllocation && (
+        {(primaryBudget.monthlyBudgetAllocation || primaryBudget.budgetAllocation) && (
           <div className="space-y-3">
             <h4 className="font-semibold flex items-center">
               <PieChart className="h-4 w-4 mr-2" />
               Monthly Budget Allocation
             </h4>
             <div className="grid gap-3">
-              {Object.entries(budgetData.monthlyBudgetAllocation).map(([key, value]) => (
+              {Object.entries(primaryBudget.monthlyBudgetAllocation || primaryBudget.budgetAllocation || {}).map(([key, value]) => (
                 <div key={key} className="flex justify-between items-center">
                   <span className="text-sm capitalize">
                     {key.replace(/([A-Z])/g, ' $1').trim()}
@@ -70,53 +77,53 @@ const BudgetStrategy = ({ data, businessType }: BudgetStrategyProps) => {
             Performance Targets
           </h4>
           <div className="grid grid-cols-2 gap-4">
-            {budgetData.expectedROAS && (
+            {(primaryBudget.expectedROAS || primaryBudget.targetROAS) && (
               <div className="space-y-1">
                 <p className="text-xs font-medium text-muted-foreground">Expected ROAS</p>
-                <p className="text-sm font-semibold">{budgetData.expectedROAS}</p>
+                <p className="text-sm font-semibold">{primaryBudget.expectedROAS || primaryBudget.targetROAS}</p>
               </div>
             )}
-            {budgetData.targetCPM && (
+            {primaryBudget.targetCPM && (
               <div className="space-y-1">
                 <p className="text-xs font-medium text-muted-foreground">Target CPM</p>
-                <p className="text-sm font-semibold">{budgetData.targetCPM}</p>
+                <p className="text-sm font-semibold">{primaryBudget.targetCPM}</p>
               </div>
             )}
-            {budgetData.targetCPA && (
+            {primaryBudget.targetCPA && (
               <div className="space-y-1">
                 <p className="text-xs font-medium text-muted-foreground">Target CPA</p>
-                <p className="text-sm font-semibold">{budgetData.targetCPA}</p>
+                <p className="text-sm font-semibold">{primaryBudget.targetCPA}</p>
               </div>
             )}
-            {budgetData.conversionTarget && (
+            {primaryBudget.conversionTarget && (
               <div className="space-y-1">
                 <p className="text-xs font-medium text-muted-foreground">Conversion Target</p>
-                <p className="text-sm font-semibold">{budgetData.conversionTarget}</p>
+                <p className="text-sm font-semibold">{primaryBudget.conversionTarget}</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Business Type Specific Details */}
-        {businessType === 'agency' && budgetData.clientBudgetStrategy && (
+        {businessType === 'agency' && (clientBudgetManagement.recommendation || budgetData.clientBudgetStrategy) && (
           <>
             <Separator />
             <div className="space-y-3">
               <h4 className="font-semibold">Client Budget Management</h4>
               <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded-lg">
-                <p className="text-sm">{budgetData.clientBudgetStrategy}</p>
+                <p className="text-sm">{clientBudgetManagement.recommendation || budgetData.clientBudgetStrategy}</p>
               </div>
             </div>
           </>
         )}
 
-        {businessType === 'sales' && budgetData.leadGenerationBudget && (
+        {businessType === 'sales' && (primaryBudget.leadGenerationStrategy || budgetData.leadGenerationBudget) && (
           <>
             <Separator />
             <div className="space-y-3">
               <h4 className="font-semibold">Lead Generation Budget</h4>
               <div className="bg-green-50 dark:bg-green-950/20 p-3 rounded-lg">
-                <p className="text-sm">{budgetData.leadGenerationBudget}</p>
+                <p className="text-sm">{primaryBudget.leadGenerationStrategy || budgetData.leadGenerationBudget}</p>
               </div>
             </div>
           </>

@@ -14,6 +14,8 @@ import CopywritingRecommendations from './results/CopywritingRecommendations';
 import ContentCalendar from './results/ContentCalendar';
 import EmailTemplatesGenerator from './copywriting/EmailTemplatesGenerator';
 import SalesScriptsGenerator from './sales/SalesScriptsGenerator';
+import IndustryInsights from './results/IndustryInsights';
+import ActionPlans from './results/ActionPlans';
 
 interface IntelligenceResultsProps {
   data: any;
@@ -146,6 +148,16 @@ const IntelligenceResults = ({ data, businessType, onBack }: IntelligenceResults
         {/* Competitive Intelligence */}
         {shouldShowSection('competitors') && (
           <CompetitorInsights data={intelligenceData} />
+        )}
+
+        {/* Industry Insights */}
+        {shouldShowSection('overview') && (
+          <IndustryInsights data={intelligenceData} businessType={businessType} />
+        )}
+
+        {/* 30-Day Action Plans */}
+        {shouldShowSection('overview') && businessType === 'agency' && (
+          <ActionPlans data={intelligenceData} businessType={businessType} />
         )}
 
         {/* Business Type Specific Features */}
