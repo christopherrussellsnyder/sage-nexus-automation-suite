@@ -7,6 +7,8 @@ import { Calendar, Users, Target, TrendingUp } from 'lucide-react';
 interface ContentCalendarProps {
   data: any;
   businessType: string;
+  variant?: 'user' | 'client';
+  title?: string;
 }
 
 const ContentCalendar = ({ data, businessType, variant = 'user', title }: ContentCalendarProps) => {

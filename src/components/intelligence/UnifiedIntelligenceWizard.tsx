@@ -6,10 +6,11 @@ import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import WizardSteps from './wizard/WizardSteps';
 import BusinessInformationForm from './wizard/BusinessInformationForm';
+import ClientInformationForm from './wizard/ClientInformationForm';
+import ClientCurrentMetricsForm from './wizard/ClientCurrentMetricsForm';
 import CurrentMetricsForm from './wizard/CurrentMetricsForm';
 import GoalsObjectivesForm from './wizard/GoalsObjectivesForm';
 import CompetitorAnalysisForm from './wizard/CompetitorAnalysisForm';
-import ClientInformationForm from './wizard/ClientInformationForm';
 import IntelligenceLoading from './IntelligenceLoading';
 import { AIIntelligenceService } from '@/services/AIIntelligenceService';
 import { useToast } from '@/components/ui/use-toast';
@@ -302,7 +303,7 @@ const UnifiedIntelligenceWizard = ({
           case 2:
             return <ClientInformationForm data={formData} onChange={handleFieldChange} businessType={businessType} onSkip={handleSkipClientInfo} />;
           case 3:
-            return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType="client" />;
+            return <ClientCurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 4:
             return <CurrentMetricsForm data={formData} onChange={handleFieldChange} businessType={businessType} />;
           case 5:
