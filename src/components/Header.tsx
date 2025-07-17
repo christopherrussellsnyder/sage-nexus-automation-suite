@@ -33,7 +33,7 @@ const Header = ({ user }: HeaderProps) => {
           <span className="text-2xl font-bold text-gray-900">{copy.brandName}</span>
         </div>
 
-        <nav className="hidden lg:flex items-center space-x-6">
+        <nav className="hidden md:flex items-center space-x-6">
           <Button variant="ghost" onClick={() => navigate('/dashboard')}>Overview</Button>
           <Button variant="ghost" onClick={() => navigate('/pricing')}>Pricing</Button>
           <Button variant="ghost" onClick={() => navigate('/dashboard?tab=intelligence')}>Intelligence</Button>
