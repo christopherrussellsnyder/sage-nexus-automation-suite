@@ -35,9 +35,11 @@ const Header = ({ user }: HeaderProps) => {
 
         <nav className="hidden md:flex items-center space-x-6">
           <Button variant="ghost" onClick={() => navigate('/dashboard')}>Overview</Button>
-          <a href="/features" className="text-gray-600 hover:text-gray-900">{copy.featuresLabel}</a>
-          <a href="/pricing" className="text-gray-600 hover:text-gray-900">{copy.pricingLabel}</a>
-          <a href="/about" className="text-gray-600 hover:text-gray-900">{copy.aboutLabel}</a>
+          <Button variant="ghost" onClick={() => navigate('/pricing')}>Pricing</Button>
+          <Button variant="ghost" onClick={() => navigate('/dashboard?tab=intelligence')}>Intelligence</Button>
+          <Button variant="ghost" onClick={() => navigate('/dashboard?tab=ecommerce')}>E-commerce Domination</Button>
+          <Button variant="ghost" onClick={() => navigate('/dashboard?tab=agency')}>Agency Scale System</Button>
+          <Button variant="ghost" onClick={() => navigate('/dashboard?tab=sales')}>Sales Acceleration Hub</Button>
           
           {user && (
             <DropdownMenu>
