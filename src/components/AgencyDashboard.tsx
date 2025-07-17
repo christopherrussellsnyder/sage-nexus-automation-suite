@@ -6,13 +6,25 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Users, 
   BarChart3,
-  RefreshCw
+  RefreshCw,
+  Target,
+  Mail,
+  Calendar,
+  DollarSign
 } from "lucide-react";
 import LeadManagement from './agency/LeadManagement';
 import LeadScoringDashboard from './agency/LeadScoringDashboard';
+import DealsTracker from './sales/DealsTracker';
+import EmailSequenceBuilder from './sales/EmailSequenceBuilder';
+import MeetingScheduler from './sales/MeetingScheduler';
 
 const AgencyDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'leads' | 'scoring'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'scoring' | 'deals' | 'sequences' | 'meetings'>('leads');
+  const [leads, setLeads] = useState<any[]>([]);
+
+  const handleLeadAdded = (lead: any) => {
+    setLeads(prev => [...prev, lead]);
+  };
 
   const handleNurtureLead = (lead: any) => {
     console.log('Nurturing lead:', lead);
@@ -47,25 +59,49 @@ const AgencyDashboard = () => {
             <BarChart3 className="h-4 w-4" />
             <span>Lead Scoring</span>
           </Button>
-          <Button className="flex items-center space-x-2">
-            <RefreshCw className="h-4 w-4" />
-            <span>Refresh</span>
+          <Button
+            variant={activeTab === 'deals' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('deals')}
+            className="flex items-center space-x-2"
+          >
+            <Target className="h-4 w-4" />
+            <span>Deals</span>
+          </Button>
+          <Button
+            variant={activeTab === 'sequences' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('sequences')}
+            className="flex items-center space-x-2"
+          >
+            <Mail className="h-4 w-4" />
+            <span>Email Sequences</span>
+          </Button>
+          <Button
+            variant={activeTab === 'meetings' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('meetings')}
+            className="flex items-center space-x-2"
+          >
+            <Calendar className="h-4 w-4" />
+            <span>Meetings</span>
           </Button>
         </div>
       </div>
 
       {/* Tab Content */}
       {activeTab === 'leads' && (
-        <LeadManagement />
+        <LeadManagement onLeadAdded={handleLeadAdded} />
       )}
 
       {activeTab === 'scoring' && (
         <LeadScoringDashboard 
-          leads={[]}
+          leads={leads}
           onNurtureLead={handleNurtureLead}
           onScheduleMeeting={handleScheduleMeeting}
         />
       )}
+
+      {activeTab === 'deals' && <DealsTracker />}
+      {activeTab === 'sequences' && <EmailSequenceBuilder />}
+      {activeTab === 'meetings' && <MeetingScheduler />}
     </div>
   );
 };

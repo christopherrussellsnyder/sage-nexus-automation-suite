@@ -280,6 +280,15 @@ const MeetingScheduler = () => {
                       onSelect={setSelectedDate}
                       disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                       className="rounded-md border"
+                      modifiers={{
+                        selected: selectedDate
+                      }}
+                      modifiersStyles={{
+                        selected: {
+                          backgroundColor: 'hsl(var(--primary))',
+                          color: 'hsl(var(--primary-foreground))'
+                        }
+                      }}
                     />
                   </div>
                 </div>

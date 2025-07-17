@@ -40,6 +40,8 @@ const EmailSequenceBuilder = () => {
   const [sequences, setSequences] = useState<EmailSequence[]>([]);
   const [selectedSequence, setSelectedSequence] = useState<EmailSequence | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingEmail, setEditingEmail] = useState<EmailTemplate | null>(null);
   const [newSequence, setNewSequence] = useState({
     name: '',
     type: 'universal',
@@ -398,6 +400,40 @@ Thanks for considering us!
     });
   };
 
+  const updateEmailContent = (emailId: string, updates: Partial<EmailTemplate>) => {
+    if (!selectedSequence) return;
+
+    const updatedSequence = {
+      ...selectedSequence,
+      emails: selectedSequence.emails.map(email =>
+        email.id === emailId ? { ...email, ...updates } : email
+      )
+    };
+
+    setSequences(sequences.map(seq =>
+      seq.id === selectedSequence.id ? updatedSequence : seq
+    ));
+    setSelectedSequence(updatedSequence);
+    
+    toast({
+      title: "Email Updated",
+      description: "Email content has been saved",
+    });
+  };
+
+  const handleEditEmail = (email: EmailTemplate) => {
+    setEditingEmail(email);
+    setIsEditing(true);
+  };
+
+  const saveEmailEdits = () => {
+    if (!editingEmail) return;
+    
+    updateEmailContent(editingEmail.id, editingEmail);
+    setIsEditing(false);
+    setEditingEmail(null);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -580,20 +616,29 @@ Thanks for considering us!
                               </div>
                             </div>
                           </CardHeader>
-                          <CardContent className="pt-0">
-                            <div className="space-y-3">
-                              <div>
-                                <Label className="text-xs font-medium">Subject Line:</Label>
-                                <p className="text-sm bg-gray-50 p-2 rounded">{email.subject}</p>
-                              </div>
-                              <div>
-                                <Label className="text-xs font-medium">Content Preview:</Label>
-                                <p className="text-sm text-muted-foreground bg-gray-50 p-3 rounded max-h-32 overflow-hidden">
-                                  {email.content.substring(0, 200)}...
-                                </p>
-                              </div>
-                            </div>
-                          </CardContent>
+                           <CardContent className="pt-0">
+                             <div className="space-y-3">
+                               <div>
+                                 <Label className="text-xs font-medium">Subject Line:</Label>
+                                 <p className="text-sm bg-gray-50 p-2 rounded">{email.subject}</p>
+                               </div>
+                               <div>
+                                 <Label className="text-xs font-medium">Content Preview:</Label>
+                                 <p className="text-sm text-muted-foreground bg-gray-50 p-3 rounded max-h-32 overflow-hidden">
+                                   {email.content.substring(0, 200)}...
+                                 </p>
+                               </div>
+                               <Button 
+                                 size="sm" 
+                                 variant="outline" 
+                                 onClick={() => handleEditEmail(email)}
+                                 className="mt-2"
+                               >
+                                 <Edit className="h-3 w-3 mr-1" />
+                                 Edit Content
+                               </Button>
+                             </div>
+                           </CardContent>
                         </Card>
                       ))}
                     </TabsContent>
@@ -634,6 +679,46 @@ Thanks for considering us!
           )}
         </div>
       )}
+
+      {/* Email Editor Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Email: {editingEmail?.name}</DialogTitle>
+            <DialogDescription>
+              Customize the email content and subject line
+            </DialogDescription>
+          </DialogHeader>
+          {editingEmail && (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="editSubject">Subject Line</Label>
+                <Input
+                  id="editSubject"
+                  value={editingEmail.subject}
+                  onChange={(e) => setEditingEmail({ ...editingEmail, subject: e.target.value })}
+                  placeholder="Email subject line"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editContent">Email Content</Label>
+                <Textarea
+                  id="editContent"
+                  value={editingEmail.content}
+                  onChange={(e) => setEditingEmail({ ...editingEmail, content: e.target.value })}
+                  placeholder="Email content..."
+                  rows={15}
+                  className="font-mono text-sm"
+                />
+              </div>
+              <div className="flex space-x-2">
+                <Button onClick={saveEmailEdits} className="flex-1">Save Changes</Button>
+                <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -34,6 +34,7 @@ const Header = ({ user }: HeaderProps) => {
         </div>
 
         <nav className="hidden md:flex items-center space-x-6">
+          <Button variant="ghost" onClick={() => navigate('/dashboard')}>Overview</Button>
           <a href="/features" className="text-gray-600 hover:text-gray-900">{copy.featuresLabel}</a>
           <a href="/pricing" className="text-gray-600 hover:text-gray-900">{copy.pricingLabel}</a>
           <a href="/about" className="text-gray-600 hover:text-gray-900">{copy.aboutLabel}</a>
