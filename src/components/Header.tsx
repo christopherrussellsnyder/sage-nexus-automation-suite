@@ -33,13 +33,13 @@ const Header = ({ user }: HeaderProps) => {
           <span className="text-2xl font-bold text-gray-900">{copy.brandName}</span>
         </div>
 
-        <nav className="hidden md:flex items-center space-x-6">
-          <Button variant="ghost" onClick={() => navigate('/dashboard')}>Overview</Button>
-          <Button variant="ghost" onClick={() => navigate('/pricing')}>Pricing</Button>
-          <Button variant="ghost" onClick={() => navigate('/dashboard?tab=intelligence')}>Intelligence</Button>
-          <Button variant="ghost" onClick={() => navigate('/dashboard?tab=ecommerce')}>E-commerce Domination</Button>
-          <Button variant="ghost" onClick={() => navigate('/dashboard?tab=agency')}>Agency Scale System</Button>
-          <Button variant="ghost" onClick={() => navigate('/dashboard?tab=sales')}>Sales Acceleration Hub</Button>
+        <nav className="hidden md:flex items-center space-x-3">
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')}>Overview</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>Pricing</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard?tab=intelligence')}>Intelligence</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard?tab=ecommerce')}>E-commerce Domination</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard?tab=agency')}>Agency Scale System</Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard?tab=sales')}>Sales Acceleration Hub</Button>
           
           {user && (
             <DropdownMenu>
