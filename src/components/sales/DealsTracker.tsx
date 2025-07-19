@@ -6,12 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Target, Plus, Trash2, Edit, DollarSign, Calendar as CalendarIcon, User, Building } from 'lucide-react';
+import { Target, DollarSign, TrendingUp, Calendar as CalendarIcon, Building, User, Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
@@ -19,13 +17,13 @@ interface Deal {
   id: string;
   title: string;
   contactName: string;
-  company: string;
+  businessName: string;
   value: number;
   stage: 'prospecting' | 'qualified' | 'proposal' | 'negotiation' | 'closed-won' | 'closed-lost';
   probability: number;
   expectedCloseDate: Date;
   notes: string;
-  createdAt: string;
+  createdAt: Date;
   section: 'sales' | 'agency';
 }
 
@@ -35,28 +33,29 @@ interface DealsTrackerProps {
 
 const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
   const [deals, setDeals] = useState<Deal[]>([]);
-  const [isCreating, setIsCreating] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isAddingDeal, setIsAddingDeal] = useState(false);
+  const [isEditingDeal, setIsEditingDeal] = useState(false);
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [newDeal, setNewDeal] = useState({
     title: '',
     contactName: '',
-    company: '',
-    value: 0,
-    stage: 'prospecting' as const,
-    probability: 10,
+    businessName: '',
+    value: '',
+    stage: 'prospecting' as Deal['stage'],
+    probability: '25',
     notes: ''
   });
   const { toast } = useToast();
 
-  // Load deals from localStorage on mount - section specific
+  // Load deals from localStorage for the specific section
   useEffect(() => {
     const savedDeals = localStorage.getItem(`deals_${section}`);
     if (savedDeals) {
       const parsed = JSON.parse(savedDeals).map((deal: any) => ({
         ...deal,
-        expectedCloseDate: new Date(deal.expectedCloseDate)
+        expectedCloseDate: new Date(deal.expectedCloseDate),
+        createdAt: new Date(deal.createdAt)
       }));
       setDeals(parsed);
     }
@@ -67,8 +66,8 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
     localStorage.setItem(`deals_${section}`, JSON.stringify(deals));
   }, [deals, section]);
 
-  const handleCreateDeal = () => {
-    if (!newDeal.title || !newDeal.contactName || !newDeal.company || !selectedDate) {
+  const handleAddDeal = () => {
+    if (!newDeal.title || !newDeal.contactName || !newDeal.businessName || !newDeal.value || !selectedDate) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -81,13 +80,13 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
       id: Date.now().toString(),
       title: newDeal.title,
       contactName: newDeal.contactName,
-      company: newDeal.company,
-      value: newDeal.value,
+      businessName: newDeal.businessName,
+      value: parseFloat(newDeal.value),
       stage: newDeal.stage,
-      probability: newDeal.probability,
+      probability: parseInt(newDeal.probability),
       expectedCloseDate: selectedDate,
       notes: newDeal.notes,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       section
     };
 
@@ -98,23 +97,23 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
     setNewDeal({
       title: '',
       contactName: '',
-      company: '',
-      value: 0,
+      businessName: '',
+      value: '',
       stage: 'prospecting',
-      probability: 10,
+      probability: '25',
       notes: ''
     });
     setSelectedDate(undefined);
-    setIsCreating(false);
+    setIsAddingDeal(false);
 
     toast({
-      title: "Deal Created",
-      description: `${deal.title} has been added to your pipeline`,
+      title: "Deal Added",
+      description: `Deal "${deal.title}" has been added to your pipeline`,
     });
   };
 
   const handleEditDeal = () => {
-    if (!editingDeal || !newDeal.title || !newDeal.contactName || !newDeal.company || !selectedDate) {
+    if (!editingDeal || !newDeal.title || !newDeal.contactName || !newDeal.businessName || !newDeal.value || !selectedDate) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -127,10 +126,10 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
       ...editingDeal,
       title: newDeal.title,
       contactName: newDeal.contactName,
-      company: newDeal.company,
-      value: newDeal.value,
+      businessName: newDeal.businessName,
+      value: parseFloat(newDeal.value),
       stage: newDeal.stage,
-      probability: newDeal.probability,
+      probability: parseInt(newDeal.probability),
       expectedCloseDate: selectedDate,
       notes: newDeal.notes
     };
@@ -144,19 +143,19 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
     setNewDeal({
       title: '',
       contactName: '',
-      company: '',
-      value: 0,
+      businessName: '',
+      value: '',
       stage: 'prospecting',
-      probability: 10,
+      probability: '25',
       notes: ''
     });
     setSelectedDate(undefined);
     setEditingDeal(null);
-    setIsEditing(false);
+    setIsEditingDeal(false);
 
     toast({
       title: "Deal Updated",
-      description: `${updatedDeal.title} has been updated successfully`,
+      description: `Deal "${updatedDeal.title}" has been updated`,
     });
   };
 
@@ -166,13 +165,13 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
     setNewDeal({
       title: deal.title,
       contactName: deal.contactName,
-      company: deal.company,
-      value: deal.value,
+      businessName: deal.businessName,
+      value: deal.value.toString(),
       stage: deal.stage,
-      probability: deal.probability,
+      probability: deal.probability.toString(),
       notes: deal.notes
     });
-    setIsEditing(true);
+    setIsEditingDeal(true);
   };
 
   const handleDeleteDeal = (dealId: string) => {
@@ -195,20 +194,17 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
     }
   };
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  const getTotalPipelineValue = () => {
+    return deals
+      .filter(deal => !['closed-won', 'closed-lost'].includes(deal.stage))
+      .reduce((total, deal) => total + (deal.value * deal.probability / 100), 0);
   };
 
-  const totalPipelineValue = deals
-    .filter(deal => !['closed-won', 'closed-lost'].includes(deal.stage))
-    .reduce((sum, deal) => sum + deal.value, 0);
-
-  const wonDeals = deals.filter(deal => deal.stage === 'closed-won');
-  const totalWonValue = wonDeals.reduce((sum, deal) => sum + deal.value, 0);
-
-  const activeDeals = deals.filter(deal => !['closed-won', 'closed-lost'].includes(deal.stage));
-
-  const sectionTitle = section === 'sales' ? 'Sales Pipeline' : 'Agency Deals';
+  const getClosedDealsValue = () => {
+    return deals
+      .filter(deal => deal.stage === 'closed-won')
+      .reduce((total, deal) => total + deal.value, 0);
+  };
 
   return (
     <div className="space-y-6">
@@ -218,22 +214,22 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
             <div>
               <CardTitle className="flex items-center space-x-2">
                 <Target className="h-5 w-5" />
-                <span>{sectionTitle}</span>
+                <span>Deals Pipeline</span>
               </CardTitle>
-              <CardDescription>Track your deals through the sales pipeline</CardDescription>
+              <CardDescription>Track and manage your sales opportunities</CardDescription>
             </div>
-            <Dialog open={isCreating} onOpenChange={setIsCreating}>
+            <Dialog open={isAddingDeal} onOpenChange={setIsAddingDeal}>
               <DialogTrigger asChild>
                 <Button>
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Target className="h-4 w-4 mr-2" />
                   Add Deal
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Create New Deal</DialogTitle>
+                  <DialogTitle>Add New Deal</DialogTitle>
                   <DialogDescription>
-                    Add a new deal to your pipeline
+                    Create a new deal opportunity
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -245,6 +241,7 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
                         value={newDeal.title}
                         onChange={(e) => setNewDeal({ ...newDeal, title: e.target.value })}
                         placeholder="Website Redesign Project"
+                        className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
                     <div>
@@ -254,54 +251,63 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
                         value={newDeal.contactName}
                         onChange={(e) => setNewDeal({ ...newDeal, contactName: e.target.value })}
                         placeholder="John Smith"
+                        className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="company">Company *</Label>
+                      <Label htmlFor="businessName">Business Name *</Label>
                       <Input
-                        id="company"
-                        value={newDeal.company}
-                        onChange={(e) => setNewDeal({ ...newDeal, company: e.target.value })}
+                        id="businessName"
+                        value={newDeal.businessName}
+                        onChange={(e) => setNewDeal({ ...newDeal, businessName: e.target.value })}
                         placeholder="TechCorp Inc"
+                        className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="value">Deal Value ($)</Label>
+                      <Label htmlFor="value">Deal Value ($) *</Label>
                       <Input
                         id="value"
                         type="number"
                         value={newDeal.value}
-                        onChange={(e) => setNewDeal({ ...newDeal, value: parseFloat(e.target.value) || 0 })}
-                        placeholder="10000"
+                        onChange={(e) => setNewDeal({ ...newDeal, value: e.target.value })}
+                        placeholder="5000"
+                        className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="stage">Deal Stage</Label>
-                      <Select value={newDeal.stage} onValueChange={(value) => setNewDeal({ ...newDeal, stage: value as any })}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="prospecting">Prospecting</SelectItem>
-                          <SelectItem value="qualified">Qualified</SelectItem>
-                          <SelectItem value="proposal">Proposal</SelectItem>
-                          <SelectItem value="negotiation">Negotiation</SelectItem>
-                          <SelectItem value="closed-won">Closed Won</SelectItem>
-                          <SelectItem value="closed-lost">Closed Lost</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="probability">Probability (%)</Label>
-                      <Input
-                        id="probability"
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={newDeal.probability}
-                        onChange={(e) => setNewDeal({ ...newDeal, probability: parseInt(e.target.value) || 0 })}
-                        placeholder="50"
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="stage">Stage</Label>
+                        <Select value={newDeal.stage} onValueChange={(value: Deal['stage']) => setNewDeal({ ...newDeal, stage: value })}>
+                          <SelectTrigger className="focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="prospecting">Prospecting</SelectItem>
+                            <SelectItem value="qualified">Qualified</SelectItem>
+                            <SelectItem value="proposal">Proposal</SelectItem>
+                            <SelectItem value="negotiation">Negotiation</SelectItem>
+                            <SelectItem value="closed-won">Closed Won</SelectItem>
+                            <SelectItem value="closed-lost">Closed Lost</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="probability">Probability (%)</Label>
+                        <Select value={newDeal.probability} onValueChange={(value) => setNewDeal({ ...newDeal, probability: value })}>
+                          <SelectTrigger className="focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="10">10%</SelectItem>
+                            <SelectItem value="25">25%</SelectItem>
+                            <SelectItem value="50">50%</SelectItem>
+                            <SelectItem value="75">75%</SelectItem>
+                            <SelectItem value="90">90%</SelectItem>
+                            <SelectItem value="100">100%</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     <div>
                       <Label htmlFor="notes">Notes</Label>
@@ -309,8 +315,9 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
                         id="notes"
                         value={newDeal.notes}
                         onChange={(e) => setNewDeal({ ...newDeal, notes: e.target.value })}
-                        placeholder="Deal notes and next steps..."
+                        placeholder="Deal details, next steps..."
                         rows={3}
+                        className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
                   </div>
@@ -326,8 +333,8 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
                   </div>
                 </div>
                 <div className="flex space-x-2">
-                  <Button onClick={handleCreateDeal} className="flex-1">Create Deal</Button>
-                  <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
+                  <Button onClick={handleAddDeal} className="flex-1">Add Deal</Button>
+                  <Button variant="outline" onClick={() => setIsAddingDeal(false)}>Cancel</Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -338,10 +345,10 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
           <div className="grid md:grid-cols-3 gap-4 mb-6">
             <Card>
               <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="h-5 w-5 text-green-500" />
+                <div className="flex items-center space-x-3">
+                  <DollarSign className="h-8 w-8 text-green-600" />
                   <div>
-                    <p className="text-2xl font-bold">${totalPipelineValue.toLocaleString()}</p>
+                    <p className="text-2xl font-bold">${getTotalPipelineValue().toLocaleString()}</p>
                     <p className="text-sm text-muted-foreground">Pipeline Value</p>
                   </div>
                 </div>
@@ -349,80 +356,71 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
             </Card>
             <Card>
               <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <Target className="h-5 w-5 text-blue-500" />
+                <div className="flex items-center space-x-3">
+                  <TrendingUp className="h-8 w-8 text-blue-600" />
                   <div>
-                    <p className="text-2xl font-bold">{activeDeals.length}</p>
-                    <p className="text-sm text-muted-foreground">Active Deals</p>
+                    <p className="text-2xl font-bold">${getClosedDealsValue().toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">Closed Won</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="h-5 w-5 text-orange-500" />
+                <div className="flex items-center space-x-3">
+                  <Target className="h-8 w-8 text-purple-600" />
                   <div>
-                    <p className="text-2xl font-bold">${totalWonValue.toLocaleString()}</p>
-                    <p className="text-sm text-muted-foreground">Won This Month</p>
+                    <p className="text-2xl font-bold">{deals.filter(d => d.stage !== 'closed-won' && d.stage !== 'closed-lost').length}</p>
+                    <p className="text-sm text-muted-foreground">Active Deals</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {deals.length === 0 ? (
-            <div className="text-center py-8 border rounded-lg">
-              <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No deals yet</h3>
-              <p className="text-muted-foreground">Create your first deal to start tracking your pipeline</p>
-            </div>
-          ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Deal</TableHead>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Value</TableHead>
-                    <TableHead>Stage</TableHead>
-                    <TableHead>Probability</TableHead>
-                    <TableHead>Close Date</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {deals.map((deal) => (
-                    <TableRow key={deal.id}>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <Avatar>
-                            <AvatarFallback>{getInitials(deal.contactName)}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium">{deal.title}</div>
-                            <div className="text-sm text-muted-foreground">{deal.contactName}</div>
+          {/* Deals List */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Active Deals</h3>
+            {deals.length === 0 ? (
+              <div className="text-center py-8 border rounded-lg">
+                <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No deals in your pipeline yet</p>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {deals.map((deal) => (
+                  <Card key={deal.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Badge className={`${getStageColor(deal.stage)} text-white`}>
+                              {deal.stage.replace('-', ' ')}
+                            </Badge>
+                            <span className="text-sm text-muted-foreground">
+                              {deal.probability}% probability
+                            </span>
+                          </div>
+                          <h4 className="font-medium">{deal.title}</h4>
+                          <div className="flex items-center space-x-4 text-sm text-muted-foreground mt-1">
+                            <div className="flex items-center space-x-1">
+                              <User className="h-3 w-3" />
+                              <span>{deal.contactName}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <Building className="h-3 w-3" />
+                              <span>{deal.businessName}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <DollarSign className="h-3 w-3" />
+                              <span>${deal.value.toLocaleString()}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <CalendarIcon className="h-3 w-3" />
+                              <span>{format(deal.expectedCloseDate, 'MMM dd, yyyy')}</span>
+                            </div>
                           </div>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-medium">{deal.company}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-medium">${deal.value.toLocaleString()}</div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={`${getStageColor(deal.stage)} text-white capitalize`}>
-                          {deal.stage.replace('-', ' ')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium">{deal.probability}%</span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm">{format(deal.expectedCloseDate, 'MMM dd, yyyy')}</span>
-                      </TableCell>
-                      <TableCell>
                         <div className="flex space-x-1">
                           <Button 
                             size="sm" 
@@ -439,18 +437,18 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
                             <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 
       {/* Edit Deal Dialog */}
-      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+      <Dialog open={isEditingDeal} onOpenChange={setIsEditingDeal}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Deal</DialogTitle>
@@ -467,6 +465,7 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
                   value={newDeal.title}
                   onChange={(e) => setNewDeal({ ...newDeal, title: e.target.value })}
                   placeholder="Website Redesign Project"
+                  className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
               </div>
               <div>
@@ -476,54 +475,63 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
                   value={newDeal.contactName}
                   onChange={(e) => setNewDeal({ ...newDeal, contactName: e.target.value })}
                   placeholder="John Smith"
+                  className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
               </div>
               <div>
-                <Label htmlFor="edit-company">Company *</Label>
+                <Label htmlFor="edit-businessName">Business Name *</Label>
                 <Input
-                  id="edit-company"
-                  value={newDeal.company}
-                  onChange={(e) => setNewDeal({ ...newDeal, company: e.target.value })}
+                  id="edit-businessName"
+                  value={newDeal.businessName}
+                  onChange={(e) => setNewDeal({ ...newDeal, businessName: e.target.value })}
                   placeholder="TechCorp Inc"
+                  className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
               </div>
               <div>
-                <Label htmlFor="edit-value">Deal Value ($)</Label>
+                <Label htmlFor="edit-value">Deal Value ($) *</Label>
                 <Input
                   id="edit-value"
                   type="number"
                   value={newDeal.value}
-                  onChange={(e) => setNewDeal({ ...newDeal, value: parseFloat(e.target.value) || 0 })}
-                  placeholder="10000"
+                  onChange={(e) => setNewDeal({ ...newDeal, value: e.target.value })}
+                  placeholder="5000"
+                  className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
               </div>
-              <div>
-                <Label htmlFor="edit-stage">Deal Stage</Label>
-                <Select value={newDeal.stage} onValueChange={(value) => setNewDeal({ ...newDeal, stage: value as any })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="prospecting">Prospecting</SelectItem>
-                    <SelectItem value="qualified">Qualified</SelectItem>
-                    <SelectItem value="proposal">Proposal</SelectItem>
-                    <SelectItem value="negotiation">Negotiation</SelectItem>
-                    <SelectItem value="closed-won">Closed Won</SelectItem>
-                    <SelectItem value="closed-lost">Closed Lost</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="edit-probability">Probability (%)</Label>
-                <Input
-                  id="edit-probability"
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={newDeal.probability}
-                  onChange={(e) => setNewDeal({ ...newDeal, probability: parseInt(e.target.value) || 0 })}
-                  placeholder="50"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-stage">Stage</Label>
+                  <Select value={newDeal.stage} onValueChange={(value: Deal['stage']) => setNewDeal({ ...newDeal, stage: value })}>
+                    <SelectTrigger className="focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="prospecting">Prospecting</SelectItem>
+                      <SelectItem value="qualified">Qualified</SelectItem>
+                      <SelectItem value="proposal">Proposal</SelectItem>
+                      <SelectItem value="negotiation">Negotiation</SelectItem>
+                      <SelectItem value="closed-won">Closed Won</SelectItem>
+                      <SelectItem value="closed-lost">Closed Lost</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-probability">Probability (%)</Label>
+                  <Select value={newDeal.probability} onValueChange={(value) => setNewDeal({ ...newDeal, probability: value })}>
+                    <SelectTrigger className="focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10%</SelectItem>
+                      <SelectItem value="25">25%</SelectItem>
+                      <SelectItem value="50">50%</SelectItem>
+                      <SelectItem value="75">75%</SelectItem>
+                      <SelectItem value="90">90%</SelectItem>
+                      <SelectItem value="100">100%</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <div>
                 <Label htmlFor="edit-notes">Notes</Label>
@@ -531,8 +539,9 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
                   id="edit-notes"
                   value={newDeal.notes}
                   onChange={(e) => setNewDeal({ ...newDeal, notes: e.target.value })}
-                  placeholder="Deal notes and next steps..."
+                  placeholder="Deal details, next steps..."
                   rows={3}
+                  className="focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 />
               </div>
             </div>
@@ -549,7 +558,7 @@ const DealsTracker = ({ section = 'sales' }: DealsTrackerProps) => {
           </div>
           <div className="flex space-x-2">
             <Button onClick={handleEditDeal} className="flex-1">Update Deal</Button>
-            <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setIsEditingDeal(false)}>Cancel</Button>
           </div>
         </DialogContent>
       </Dialog>
