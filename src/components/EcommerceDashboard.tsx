@@ -26,12 +26,6 @@ const EcommerceDashboard = () => {
           <h2 className="text-3xl font-bold">E-commerce Suite</h2>
           <p className="text-muted-foreground">AI-powered product research and optimization</p>
         </div>
-        <div className="flex space-x-2">
-          <Button className="flex items-center space-x-2">
-            <RefreshCw className="h-4 w-4" />
-            <span>Refresh Data</span>
-          </Button>
-        </div>
       </div>
 
       {/* Product Research Section */}

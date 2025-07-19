@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -1343,7 +1342,7 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
           <div>
             <CardTitle>Product Research</CardTitle>
             <CardDescription>
-              30 qualified products from stores generating $300K-$2M monthly revenue with growth potential
+              Qualified products with growth potential
             </CardDescription>
           </div>
           <Badge variant="outline" className="flex items-center space-x-1">
@@ -1527,29 +1526,6 @@ const ProductResearchTable = ({ onViewProduct, onResearchProduct }: ProductResea
             <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
           </div>
         )}
-
-        {/* Growing Business Focus Summary */}
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h4 className="font-medium text-blue-800 mb-2">Growing Business Focus ($300K-$2M Monthly Revenue):</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-blue-700">
-            <div className="flex items-center space-x-1">
-              <CheckCircle className="h-3 w-3" />
-              <span>Real website URLs to growing businesses</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <CheckCircle className="h-3 w-3" />
-              <span>Specific product names for each item</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <CheckCircle className="h-3 w-3" />
-              <span>Revenue range: $300K-$2M monthly</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <CheckCircle className="h-3 w-3" />
-              <span>Growth-focused with scaling opportunities</span>
-            </div>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );
