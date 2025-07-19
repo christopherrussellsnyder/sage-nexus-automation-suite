@@ -1,59 +1,85 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Calendar } from '@/components/ui/calendar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DollarSign, TrendingUp, Target, Plus, Trash2, Calendar as CalendarIcon } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Target, DollarSign, Calendar as CalendarIcon, User, Building, Trash2, Edit, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
 interface Deal {
   id: string;
-  dealName: string;
-  clientName: string;
-  companyName: string;
-  amount: number;
-  stage: 'prospecting' | 'qualified' | 'proposal' | 'negotiation' | 'closed-won' | 'closed-lost';
+  title: string;
+  contactName: string;
+  company: string;
+  value: number;
+  stage: 'prospecting' | 'qualification' | 'proposal' | 'negotiation' | 'closed-won' | 'closed-lost';
   probability: number;
-  expectedCloseDate: Date;
-  actualCloseDate?: Date;
+  closeDate: Date;
   notes: string;
-  createdAt: Date;
+  createdAt: string;
+  section: 'sales' | 'agency';
 }
 
 const DealsTracker = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [isAddingDeal, setIsAddingDeal] = useState(false);
+  const [isEditingDeal, setIsEditingDeal] = useState(false);
+  const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [newDeal, setNewDeal] = useState({
-    dealName: '',
-    clientName: '',
-    companyName: '',
-    amount: '',
+    title: '',
+    contactName: '',
+    company: '',
+    value: '',
     stage: 'prospecting',
     probability: '25',
     notes: ''
   });
   const { toast } = useToast();
 
+  // Determine current section based on URL or context
+  const currentSection = window.location.pathname.includes('agency') ? 'agency' : 'sales';
+
+  // Load deals from localStorage on component mount
+  useEffect(() => {
+    const savedDeals = localStorage.getItem(`dealsTracker_${currentSection}`);
+    if (savedDeals) {
+      const parsedDeals = JSON.parse(savedDeals).map((deal: any) => ({
+        ...deal,
+        closeDate: new Date(deal.closeDate)
+      }));
+      setDeals(parsedDeals);
+    }
+  }, [currentSection]);
+
+  // Save deals to localStorage whenever deals change
+  useEffect(() => {
+    if (deals.length >= 0) {
+      localStorage.setItem(`dealsTracker_${currentSection}`, JSON.stringify(deals));
+    }
+  }, [deals, currentSection]);
+
   const stages = [
-    { value: 'prospecting', label: 'Prospecting', probability: 25 },
-    { value: 'qualified', label: 'Qualified', probability: 40 },
-    { value: 'proposal', label: 'Proposal', probability: 60 },
-    { value: 'negotiation', label: 'Negotiation', probability: 80 },
-    { value: 'closed-won', label: 'Closed Won', probability: 100 },
-    { value: 'closed-lost', label: 'Closed Lost', probability: 0 }
+    { value: 'prospecting', label: 'Prospecting', probability: 25, color: 'bg-gray-500' },
+    { value: 'qualification', label: 'Qualification', probability: 40, color: 'bg-blue-500' },
+    { value: 'proposal', label: 'Proposal', probability: 60, color: 'bg-yellow-500' },
+    { value: 'negotiation', label: 'Negotiation', probability: 80, color: 'bg-orange-500' },
+    { value: 'closed-won', label: 'Closed Won', probability: 100, color: 'bg-green-500' },
+    { value: 'closed-lost', label: 'Closed Lost', probability: 0, color: 'bg-red-500' }
   ];
 
   const handleAddDeal = () => {
-    if (!newDeal.dealName || !newDeal.clientName || !newDeal.companyName || !newDeal.amount || !selectedDate) {
+    if (!newDeal.title || !newDeal.contactName || !newDeal.company || !newDeal.value || !selectedDate) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -62,27 +88,32 @@ const DealsTracker = () => {
       return;
     }
 
+    const selectedStage = stages.find(s => s.value === newDeal.stage);
+    
     const deal: Deal = {
       id: Date.now().toString(),
-      dealName: newDeal.dealName,
-      clientName: newDeal.clientName,
-      companyName: newDeal.companyName,
-      amount: parseFloat(newDeal.amount),
+      title: newDeal.title,
+      contactName: newDeal.contactName,
+      company: newDeal.company,
+      value: parseFloat(newDeal.value),
       stage: newDeal.stage as Deal['stage'],
-      probability: parseInt(newDeal.probability),
-      expectedCloseDate: selectedDate,
+      probability: selectedStage?.probability || parseInt(newDeal.probability),
+      closeDate: selectedDate,
       notes: newDeal.notes,
-      createdAt: new Date(),
-      ...(newDeal.stage === 'closed-won' && { actualCloseDate: new Date() })
+      createdAt: new Date().toISOString(),
+      section: currentSection
     };
 
-    setDeals([...deals, deal].sort((a, b) => b.amount - a.amount));
+    const updatedDeals = [...deals, deal].sort((a, b) => 
+      new Date(a.closeDate).getTime() - new Date(b.closeDate).getTime()
+    );
+    setDeals(updatedDeals);
 
     setNewDeal({
-      dealName: '',
-      clientName: '',
-      companyName: '',
-      amount: '',
+      title: '',
+      contactName: '',
+      company: '',
+      value: '',
       stage: 'prospecting',
       probability: '25',
       notes: ''
@@ -92,87 +123,106 @@ const DealsTracker = () => {
 
     toast({
       title: "Deal Added",
-      description: `${deal.dealName} has been added to your pipeline`,
+      description: `Deal "${deal.title}" has been added to ${currentSection === 'sales' ? 'Sales' : 'Agency'} pipeline`,
+    });
+  };
+
+  const handleEditDeal = (deal: Deal) => {
+    setEditingDeal(deal);
+    setSelectedDate(deal.closeDate);
+    setNewDeal({
+      title: deal.title,
+      contactName: deal.contactName,
+      company: deal.company,
+      value: deal.value.toString(),
+      stage: deal.stage,
+      probability: deal.probability.toString(),
+      notes: deal.notes
+    });
+    setIsEditingDeal(true);
+  };
+
+  const handleUpdateDeal = () => {
+    if (!editingDeal || !newDeal.title || !newDeal.contactName || !newDeal.company || !newDeal.value || !selectedDate) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const selectedStage = stages.find(s => s.value === newDeal.stage);
+    
+    const updatedDeal: Deal = {
+      ...editingDeal,
+      title: newDeal.title,
+      contactName: newDeal.contactName,
+      company: newDeal.company,
+      value: parseFloat(newDeal.value),
+      stage: newDeal.stage as Deal['stage'],
+      probability: selectedStage?.probability || parseInt(newDeal.probability),
+      closeDate: selectedDate,
+      notes: newDeal.notes
+    };
+
+    const updatedDeals = deals.map(deal => 
+      deal.id === editingDeal.id ? updatedDeal : deal
+    );
+    setDeals(updatedDeals);
+
+    setNewDeal({
+      title: '',
+      contactName: '',
+      company: '',
+      value: '',
+      stage: 'prospecting',
+      probability: '25',
+      notes: ''
+    });
+    setSelectedDate(undefined);
+    setIsEditingDeal(false);
+    setEditingDeal(null);
+
+    toast({
+      title: "Deal Updated",
+      description: `Deal "${updatedDeal.title}" has been updated successfully`,
     });
   };
 
   const handleDeleteDeal = (dealId: string) => {
-    setDeals(deals.filter(deal => deal.id !== dealId));
+    const updatedDeals = deals.filter(deal => deal.id !== dealId);
+    setDeals(updatedDeals);
     toast({
       title: "Deal Deleted",
       description: "Deal has been removed from your pipeline",
     });
   };
 
-  const handleUpdateDealStage = (dealId: string, newStage: Deal['stage']) => {
-    setDeals(deals.map(deal => {
-      if (deal.id === dealId) {
-        const stageInfo = stages.find(s => s.value === newStage);
-        return {
-          ...deal,
-          stage: newStage,
-          probability: stageInfo?.probability || deal.probability,
-          ...(newStage === 'closed-won' && { actualCloseDate: new Date() })
-        };
-      }
-      return deal;
-    }));
-
-    toast({
-      title: "Deal Updated",
-      description: `Deal stage updated to ${newStage.replace('-', ' ')}`,
-    });
+  const getStageInfo = (stage: string) => {
+    return stages.find(s => s.value === stage) || stages[0];
   };
 
-  const getStageColor = (stage: string) => {
-    switch (stage) {
-      case 'prospecting': return 'bg-gray-500';
-      case 'qualified': return 'bg-blue-500';
-      case 'proposal': return 'bg-yellow-500';
-      case 'negotiation': return 'bg-orange-500';
-      case 'closed-won': return 'bg-green-500';
-      case 'closed-lost': return 'bg-red-500';
-      default: return 'bg-gray-500';
-    }
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  // Calculate metrics based on actual data - start from 0
   const totalPipelineValue = deals
     .filter(deal => !['closed-won', 'closed-lost'].includes(deal.stage))
-    .reduce((sum, deal) => sum + (deal.amount * deal.probability / 100), 0);
+    .reduce((sum, deal) => sum + (deal.value * deal.probability / 100), 0);
 
-  const totalWonValue = deals
-    .filter(deal => deal.stage === 'closed-won')
-    .reduce((sum, deal) => sum + deal.amount, 0);
-
-  const activeDealCount = deals.filter(deal => !['closed-won', 'closed-lost'].includes(deal.stage)).length;
-
-  // Win rate calculation based on actual data
-  const closedDeals = deals.filter(deal => ['closed-won', 'closed-lost'].includes(deal.stage));
   const wonDeals = deals.filter(deal => deal.stage === 'closed-won');
-  const winRate = closedDeals.length > 0 ? Math.round((wonDeals.length / closedDeals.length) * 100) : 0;
+  const totalWonValue = wonDeals.reduce((sum, deal) => sum + deal.value, 0);
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards - Dynamic based on actual data */}
-      <div className="grid md:grid-cols-4 gap-4">
+      <div className="grid md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Target className="h-6 w-6 text-blue-500" />
+              <Target className="h-8 w-8 text-blue-600" />
               <div>
-                <p className="text-2xl font-bold">{activeDealCount}</p>
-                <p className="text-sm text-muted-foreground">Active Deals</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <DollarSign className="h-6 w-6 text-green-500" />
-              <div>
-                <p className="text-2xl font-bold">${Math.round(totalPipelineValue).toLocaleString()}</p>
+                <p className="text-2xl font-bold">${totalPipelineValue.toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground">Pipeline Value</p>
               </div>
             </div>
@@ -181,10 +231,10 @@ const DealsTracker = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <TrendingUp className="h-6 w-6 text-purple-500" />
+              <DollarSign className="h-8 w-8 text-green-600" />
               <div>
-                <p className="text-2xl font-bold">${Math.round(totalWonValue).toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Closed Won</p>
+                <p className="text-2xl font-bold">${totalWonValue.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Won Deals</p>
               </div>
             </div>
           </CardContent>
@@ -192,10 +242,10 @@ const DealsTracker = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Target className="h-6 w-6 text-orange-500" />
+              <Target className="h-8 w-8 text-purple-600" />
               <div>
-                <p className="text-2xl font-bold">{winRate}%</p>
-                <p className="text-sm text-muted-foreground">Win Rate</p>
+                <p className="text-2xl font-bold">{deals.length}</p>
+                <p className="text-sm text-muted-foreground">Total Deals</p>
               </div>
             </div>
           </CardContent>
@@ -208,9 +258,9 @@ const DealsTracker = () => {
             <div>
               <CardTitle className="flex items-center space-x-2">
                 <Target className="h-5 w-5" />
-                <span>Deal Pipeline</span>
+                <span>Deals Pipeline - {currentSection === 'sales' ? 'Sales' : 'Agency'}</span>
               </CardTitle>
-              <CardDescription>Track and manage your sales opportunities</CardDescription>
+              <CardDescription>Track and manage your {currentSection === 'sales' ? 'sales' : 'agency'} deals</CardDescription>
             </div>
             <Dialog open={isAddingDeal} onOpenChange={setIsAddingDeal}>
               <DialogTrigger asChild>
@@ -223,68 +273,58 @@ const DealsTracker = () => {
                 <DialogHeader>
                   <DialogTitle>Add New Deal</DialogTitle>
                   <DialogDescription>
-                    Add a new deal to your sales pipeline
+                    Create a new deal in your pipeline
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="dealName">Deal Name *</Label>
+                      <Label htmlFor="title">Deal Title *</Label>
                       <Input
-                        id="dealName"
-                        value={newDeal.dealName}
-                        onChange={(e) => setNewDeal({ ...newDeal, dealName: e.target.value })}
-                        placeholder="Q1 Software License Deal"
+                        id="title"
+                        value={newDeal.title}
+                        onChange={(e) => setNewDeal({ ...newDeal, title: e.target.value })}
+                        placeholder="Website Redesign Project"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="clientName">Client Name *</Label>
+                      <Label htmlFor="contactName">Contact Name *</Label>
                       <Input
-                        id="clientName"
-                        value={newDeal.clientName}
-                        onChange={(e) => setNewDeal({ ...newDeal, clientName: e.target.value })}
+                        id="contactName"
+                        value={newDeal.contactName}
+                        onChange={(e) => setNewDeal({ ...newDeal, contactName: e.target.value })}
                         placeholder="John Smith"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="companyName">Company Name *</Label>
+                      <Label htmlFor="company">Company *</Label>
                       <Input
-                        id="companyName"
-                        value={newDeal.companyName}
-                        onChange={(e) => setNewDeal({ ...newDeal, companyName: e.target.value })}
+                        id="company"
+                        value={newDeal.company}
+                        onChange={(e) => setNewDeal({ ...newDeal, company: e.target.value })}
                         placeholder="TechCorp Inc"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="amount">Deal Amount ($) *</Label>
+                      <Label htmlFor="value">Deal Value *</Label>
                       <Input
-                        id="amount"
+                        id="value"
                         type="number"
-                        value={newDeal.amount}
-                        onChange={(e) => setNewDeal({ ...newDeal, amount: e.target.value })}
+                        value={newDeal.value}
+                        onChange={(e) => setNewDeal({ ...newDeal, value: e.target.value })}
                         placeholder="50000"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="stage">Deal Stage</Label>
-                      <Select 
-                        value={newDeal.stage} 
-                        onValueChange={(value) => {
-                          const stage = stages.find(s => s.value === value);
-                          setNewDeal({ 
-                            ...newDeal, 
-                            stage: value,
-                            probability: stage?.probability.toString() || '25'
-                          });
-                        }}
-                      >
+                      <Label htmlFor="stage">Stage</Label>
+                      <Select value={newDeal.stage} onValueChange={(value) => setNewDeal({ ...newDeal, stage: value })}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           {stages.map((stage) => (
                             <SelectItem key={stage.value} value={stage.value}>
-                              {stage.label} ({stage.probability}%)
+                              {stage.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -296,7 +336,7 @@ const DealsTracker = () => {
                         id="notes"
                         value={newDeal.notes}
                         onChange={(e) => setNewDeal({ ...newDeal, notes: e.target.value })}
-                        placeholder="Deal details, next steps, key requirements..."
+                        placeholder="Deal notes and details..."
                         rows={3}
                       />
                     </div>
@@ -333,8 +373,8 @@ const DealsTracker = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Deal</TableHead>
-                    <TableHead>Client & Company</TableHead>
-                    <TableHead>Amount</TableHead>
+                    <TableHead>Contact</TableHead>
+                    <TableHead>Value</TableHead>
                     <TableHead>Stage</TableHead>
                     <TableHead>Probability</TableHead>
                     <TableHead>Close Date</TableHead>
@@ -342,76 +382,162 @@ const DealsTracker = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {deals.map((deal) => (
-                    <TableRow key={deal.id}>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{deal.dealName}</div>
-                          <div className="text-sm text-muted-foreground">
-                            Created {format(deal.createdAt, 'MMM dd, yyyy')}
+                  {deals.map((deal) => {
+                    const stageInfo = getStageInfo(deal.stage);
+                    return (
+                      <TableRow key={deal.id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{deal.title}</div>
+                            <div className="text-sm text-muted-foreground">{deal.company}</div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{deal.clientName}</div>
-                          <div className="text-sm text-muted-foreground">{deal.companyName}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-semibold text-green-600">
-                          ${deal.amount.toLocaleString()}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Select 
-                          value={deal.stage} 
-                          onValueChange={(value) => handleUpdateDealStage(deal.id, value as Deal['stage'])}
-                        >
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {stages.map((stage) => (
-                              <SelectItem key={stage.value} value={stage.value}>
-                                {stage.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={`${getStageColor(deal.stage)} text-white`}>
-                          {deal.probability}%
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          {format(deal.expectedCloseDate, 'MMM dd, yyyy')}
-                          {deal.actualCloseDate && (
-                            <div className="text-green-600 font-medium">
-                              Closed: {format(deal.actualCloseDate, 'MMM dd, yyyy')}
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleDeleteDeal(deal.id)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback>{getInitials(deal.contactName)}</AvatarFallback>
+                            </Avatar>
+                            <span>{deal.contactName}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium">${deal.value.toLocaleString()}</div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={`${stageInfo.color} text-white`}>
+                            {stageInfo.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <Progress value={deal.probability} className="w-16" />
+                            <span className="text-sm">{deal.probability}%</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            {format(deal.closeDate, 'MMM dd, yyyy')}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex space-x-1">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleEditDeal(deal)}
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleDeleteDeal(deal.id)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Deal Dialog */}
+      <Dialog open={isEditingDeal} onOpenChange={setIsEditingDeal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Deal</DialogTitle>
+            <DialogDescription>
+              Update deal information
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-title">Deal Title *</Label>
+                <Input
+                  id="edit-title"
+                  value={newDeal.title}
+                  onChange={(e) => setNewDeal({ ...newDeal, title: e.target.value })}
+                  placeholder="Website Redesign Project"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-contactName">Contact Name *</Label>
+                <Input
+                  id="edit-contactName"
+                  value={newDeal.contactName}
+                  onChange={(e) => setNewDeal({ ...newDeal, contactName: e.target.value })}
+                  placeholder="John Smith"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-company">Company *</Label>
+                <Input
+                  id="edit-company"
+                  value={newDeal.company}
+                  onChange={(e) => setNewDeal({ ...newDeal, company: e.target.value })}
+                  placeholder="TechCorp Inc"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-value">Deal Value *</Label>
+                <Input
+                  id="edit-value"
+                  type="number"
+                  value={newDeal.value}
+                  onChange={(e) => setNewDeal({ ...newDeal, value: e.target.value })}
+                  placeholder="50000"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-stage">Stage</Label>
+                <Select value={newDeal.stage} onValueChange={(value) => setNewDeal({ ...newDeal, stage: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {stages.map((stage) => (
+                      <SelectItem key={stage.value} value={stage.value}>
+                        {stage.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="edit-notes">Notes</Label>
+                <Textarea
+                  id="edit-notes"
+                  value={newDeal.notes}
+                  onChange={(e) => setNewDeal({ ...newDeal, notes: e.target.value })}
+                  placeholder="Deal notes and details..."
+                  rows={3}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Expected Close Date *</Label>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                className="rounded-md border"
+              />
+            </div>
+          </div>
+          <div className="flex space-x-2">
+            <Button onClick={handleUpdateDeal} className="flex-1">Update Deal</Button>
+            <Button variant="outline" onClick={() => setIsEditingDeal(false)}>Cancel</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

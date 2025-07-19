@@ -34,6 +34,10 @@ const AgencyDashboard = () => {
     console.log('Scheduling meeting with:', lead);
   };
 
+  const handleDeleteLead = (leadId: string) => {
+    setLeads(prev => prev.filter(lead => lead.id !== leadId));
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -96,6 +100,7 @@ const AgencyDashboard = () => {
           leads={leads}
           onNurtureLead={handleNurtureLead}
           onScheduleMeeting={handleScheduleMeeting}
+          onDeleteLead={handleDeleteLead}
         />
       )}
 
