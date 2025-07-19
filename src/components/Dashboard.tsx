@@ -3,10 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  ShoppingCart, 
   Users, 
   Phone, 
-  Globe, 
   Search,
   Megaphone,
   TrendingUp,
@@ -22,12 +20,14 @@ import {
   Crown,
   BarChart3,
   Clock,
-  DollarSign
+  DollarSign,
+  Mail,
+  FileText
 } from "lucide-react";
 import { useCopySettings } from '@/hooks/useCopySettings';
 
 interface DashboardProps {
-  setActiveSection: (section: 'overview' | 'ecommerce' | 'agency' | 'sales' | 'copywriting') => void;
+  setActiveSection: (section: 'overview' | 'agency' | 'sales' | 'copywriting') => void;
 }
 
 const Dashboard = ({ setActiveSection }: DashboardProps) => {
@@ -35,69 +35,60 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
 
   const features = [
     {
-      section: 'ecommerce' as const,
-      title: copy.ecommerceTitle,
-      description: copy.ecommerceDescription,
-      icon: ShoppingCart,
+      section: 'copywriting' as const,
+      title: 'AI Copywriting Suite',
+      description: 'Generate high-converting copy for ads, emails, websites, and social media',
+      icon: PenTool,
       color: 'bg-primary',
-      features: [copy.ecommerceFeature1, copy.ecommerceFeature2, copy.ecommerceFeature3, copy.ecommerceFeature4],
-      stats: { [copy.ecommerceStat1Key]: copy.ecommerceStat1Value, [copy.ecommerceStat2Key]: copy.ecommerceStat2Value }
+      features: ['Ad Copy Generation', 'Email Templates', 'Website Copy', 'Social Content'],
+      stats: { 'Templates': '500+', 'Conversion': '3.2x' }
     },
     {
       section: 'agency' as const,
-      title: copy.agencyTitle,
-      description: copy.agencyDescription,
+      title: 'Agency Scale System',
+      description: 'Complete lead management, scoring, and campaign automation',
       icon: Users,
       color: 'bg-accent',
-      features: [copy.agencyFeature1, copy.agencyFeature2, copy.agencyFeature3, copy.agencyFeature4],
-      stats: { [copy.agencyStat1Key]: copy.agencyStat1Value, [copy.agencyStat2Key]: copy.agencyStat2Value }
+      features: ['Lead Management', 'Lead Scoring', 'Campaign Tracking', 'Client Analytics'],
+      stats: { 'Leads': '10k+', 'Conversion': '45%' }
     },
     {
       section: 'sales' as const,
-      title: copy.salesTitle,
-      description: copy.salesDescription,
+      title: 'Sales Automation Hub',
+      description: 'Prospect research, email sequences, and meeting scheduling',
       icon: Phone,
       color: 'bg-primary',
-      features: [copy.salesFeature1, copy.salesFeature2, copy.salesFeature3, copy.salesFeature4],
-      stats: { [copy.salesStat1Key]: copy.salesStat1Value, [copy.salesStat2Key]: copy.salesStat2Value }
-    },
-    {
-      section: 'copywriting' as const,
-      title: copy.copywritingTitle,
-      description: copy.copywritingDescription,
-      icon: PenTool,
-      color: 'bg-accent',
-      features: [copy.copywritingFeature1, copy.copywritingFeature2, copy.copywritingFeature3, copy.copywritingFeature4],
-      stats: { [copy.copywritingStat1Key]: copy.copywritingStat1Value, [copy.copywritingStat2Key]: copy.copywritingStat2Value }
+      features: ['Prospect Research', 'Email Sequences', 'Meeting Scheduler', 'Deal Tracking'],
+      stats: { 'Prospects': '5k+', 'Close Rate': '28%' }
     }
   ];
 
   const quickStats = [
     {
-      title: copy.stat1Title,
-      value: copy.stat1Value,
-      description: copy.stat1Description,
+      title: 'Revenue Generated',
+      value: '$2.4M+',
+      description: 'By our AI-powered campaigns',
       icon: DollarSign,
       color: 'text-primary'
     },
     {
-      title: copy.stat2Title,
-      value: copy.stat2Value,
-      description: copy.stat2Description,
+      title: 'Conversion Rate',
+      value: '+185%',
+      description: 'Average improvement',
       icon: TrendingUp,
       color: 'text-accent'
     },
     {
-      title: copy.stat3Title,
-      value: copy.stat3Value,
-      description: copy.stat3Description,
+      title: 'Active Users',
+      value: '25,000+',
+      description: 'Marketing professionals',
       icon: Users,
       color: 'text-primary'
     },
     {
-      title: copy.stat4Title,
-      value: copy.stat4Value,
-      description: copy.stat4Description,
+      title: 'Templates Generated',
+      value: '1M+',
+      description: 'High-converting copies',
       icon: BarChart3,
       color: 'text-accent'
     }
@@ -110,25 +101,26 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
         <div className="flex items-center justify-center space-x-3 mb-6">
           <Brain className="h-16 w-16 text-primary" />
           <h1 className="text-5xl font-bold text-gradient">
-            {copy.overviewHeroTitle}
+            Sage.ai
           </h1>
         </div>
-        <h2 className="text-3xl font-bold text-foreground">{copy.overviewHeroSubtitle}</h2>
+        <h2 className="text-3xl font-bold text-foreground">AI-Powered Marketing & Sales Platform</h2>
         <p className="text-xl text-muted-foreground max-w-4xl mx-auto">
-          {copy.overviewHeroDescription}
+          Transform your business with intelligent copywriting, automated lead management, and powerful sales tools. 
+          Generate high-converting content, manage prospects, and scale your operations with AI precision.
         </p>
         <div className="flex items-center justify-center space-x-4 pt-4">
           <Badge variant="secondary" className="px-4 py-2 bg-card border-primary/20">
             <Zap className="h-4 w-4 mr-2 text-primary" />
-            {copy.overviewBadge1}
+            AI-Powered Copy
           </Badge>
           <Badge variant="secondary" className="px-4 py-2 bg-card border-primary/20">
             <Target className="h-4 w-4 mr-2 text-primary" />
-            {copy.overviewBadge2}
+            Lead Automation
           </Badge>
           <Badge variant="secondary" className="px-4 py-2 bg-card border-primary/20">
             <Rocket className="h-4 w-4 mr-2 text-primary" />
-            {copy.overviewBadge3}
+            Sales Optimization
           </Badge>
         </div>
       </div>
@@ -154,11 +146,11 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
       {/* Platform Features */}
       <div>
         <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold mb-2 text-foreground">{copy.platformFeaturesTitle}</h3>
-          <p className="text-muted-foreground">{copy.platformFeaturesDescription}</p>
+          <h3 className="text-2xl font-bold mb-2 text-foreground">Comprehensive Marketing & Sales Solutions</h3>
+          <p className="text-muted-foreground">Everything you need to generate leads, create compelling copy, and close more deals</p>
         </div>
         
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {features.map((feature) => (
             <Card 
               key={feature.section} 
@@ -198,7 +190,7 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
                   </div>
                   
                   <Button size="sm" className="group button-glow">
-                    {copy.exploreButton}
+                    Explore
                     <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
@@ -211,9 +203,10 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
       {/* Value Proposition */}
       <Card className="bg-gradient-to-r from-card to-card/80 border-primary/20 card-hover">
         <CardHeader>
-          <CardTitle className="text-center text-foreground">{copy.valuePropositionTitle}</CardTitle>
+          <CardTitle className="text-center text-foreground">Why Choose Sage.ai for Your Business?</CardTitle>
           <CardDescription className="text-center max-w-2xl mx-auto text-muted-foreground">
-            {copy.valuePropositionDescription}
+            Leverage AI-powered tools to streamline your marketing operations, generate compelling content, 
+            and convert more prospects into paying customers.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -222,27 +215,27 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
                 <Brain className="h-8 w-8 text-primary" />
               </div>
-              <h4 className="font-semibold mb-2 text-foreground">{copy.valueProposition1Title}</h4>
+              <h4 className="font-semibold mb-2 text-foreground">AI-Driven Intelligence</h4>
               <p className="text-sm text-muted-foreground">
-                {copy.valueProposition1Description}
+                Advanced algorithms analyze top-performing content to create personalized, high-converting copy for your specific audience
               </p>
             </div>
             <div className="text-center">
               <div className="bg-accent/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-accent/20">
                 <Rocket className="h-8 w-8 text-accent" />
               </div>
-              <h4 className="font-semibold mb-2 text-foreground">{copy.valueProposition2Title}</h4>
+              <h4 className="font-semibold mb-2 text-foreground">Automated Workflows</h4>
               <p className="text-sm text-muted-foreground">
-                {copy.valueProposition2Description}
+                Streamline your entire sales and marketing process with automated lead scoring, email sequences, and prospect research
               </p>
             </div>
             <div className="text-center">
               <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
                 <TrendingUp className="h-8 w-8 text-primary" />
               </div>
-              <h4 className="font-semibold mb-2 text-foreground">{copy.valueProposition3Title}</h4>
+              <h4 className="font-semibold mb-2 text-foreground">Proven Results</h4>
               <p className="text-sm text-muted-foreground">
-                {copy.valueProposition3Description}
+                Our AI-generated content delivers 185% better conversion rates based on analysis of thousands of successful campaigns
               </p>
             </div>
           </div>
@@ -252,17 +245,17 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
       {/* CTA Section */}
       <Card className="bg-primary text-primary-foreground border-primary">
         <CardContent className="p-8 text-center">
-          <h3 className="text-2xl font-bold mb-2">{copy.ctaTitle}</h3>
+          <h3 className="text-2xl font-bold mb-2">Ready to Transform Your Marketing?</h3>
           <p className="mb-6 opacity-90">
-            {copy.ctaDescription}
+            Join thousands of marketers and sales professionals who trust Sage.ai to generate high-converting content and automate their workflows
           </p>
           <div className="flex justify-center space-x-4">
             <Button variant="secondary" size="lg" onClick={() => setActiveSection('copywriting')} className="button-glow">
               <Crown className="h-4 w-4 mr-2" />
-              {copy.ctaPrimaryButton}
+              Start Creating Copy
             </Button>
             <Button variant="outline" size="lg" className="bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
-              {copy.ctaSecondaryButton}
+              View All Features
             </Button>
           </div>
         </CardContent>
