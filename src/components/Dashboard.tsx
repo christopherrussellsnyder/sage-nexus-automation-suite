@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +21,10 @@ import {
   Crown,
   BarChart3,
   Clock,
-  DollarSign
+  DollarSign,
+  Shield,
+  CheckCircle,
+  Star
 } from "lucide-react";
 import { useCopySettings } from '@/hooks/useCopySettings';
 
@@ -244,6 +246,184 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
               <p className="text-sm text-muted-foreground">
                 {copy.valueProposition3Description}
               </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Our Story Section */}
+      <Card className="bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center text-foreground">Our Story</CardTitle>
+        </CardHeader>
+        <CardContent className="prose max-w-none">
+          <div className="text-lg text-muted-foreground space-y-6">
+            <p>
+              Sage.ai was born from a simple observation: businesses were struggling with fragmented 
+              marketing, sales, and copywriting workflows that led to inefficiency and missed opportunities. 
+              Our founders, experienced entrepreneurs who had built successful campaigns across multiple 
+              industries, knew there had to be a smarter way.
+            </p>
+            <p>
+              After analyzing thousands of high-performing marketing campaigns, sales sequences, and 
+              converting copy across all industries, we discovered patterns in what made some businesses 
+              dramatically more successful than others. The key wasn't just having good tools—it was 
+              having intelligent systems that could learn from top performers and automatically apply 
+              those insights to your specific business needs.
+            </p>
+            <p>
+              That's when we decided to build Sage.ai: an AI-powered platform that doesn't just create 
+              content, but actually makes your marketing smarter. By continuously analyzing top-performing 
+              campaigns, copy, and sales strategies across all industries, Sage.ai ensures that every 
+              piece of content, every campaign, and every sales sequence is optimized for maximum results.
+            </p>
+            <p>
+              Today, Sage.ai powers thousands of businesses worldwide, from solo entrepreneurs to marketing 
+              agencies, helping them create better content, run more effective campaigns, and close more 
+              deals than ever before.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* What Drives Us Section */}
+      <div className="mb-16">
+        <h3 className="text-3xl font-bold text-center mb-8 text-foreground">What Drives Us</h3>
+        <div className="grid md:grid-cols-2 gap-8">
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <Brain className="h-6 w-6 text-primary" />
+                <CardTitle className="text-foreground">AI-First Approach</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-base text-muted-foreground">
+                Every feature is powered by advanced AI that learns from top-performing content across 
+                marketing, sales, and copywriting to deliver personalized, high-converting results for your business.
+              </CardDescription>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <Zap className="h-6 w-6 text-primary" />
+                <CardTitle className="text-foreground">Unified Platform</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-base text-muted-foreground">
+                No need for multiple tools. Everything you need for marketing automation, sales optimization, 
+                and copywriting is integrated into one seamless, intelligent platform.
+              </CardDescription>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <Target className="h-6 w-6 text-primary" />
+                <CardTitle className="text-foreground">Industry Expertise</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-base text-muted-foreground">
+                Our AI analyzes data from thousands of successful campaigns, sales sequences, and 
+                converting copy across all industries to provide proven strategies and templates.
+              </CardDescription>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <TrendingUp className="h-6 w-6 text-primary" />
+                <CardTitle className="text-foreground">Continuous Innovation</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <CardDescription className="text-base text-muted-foreground">
+                We constantly update our AI models and add new features based on the latest marketing 
+                trends, sales techniques, and high-converting copy patterns.
+              </CardDescription>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Advanced AI Technology Section */}
+      <Card className="mb-16 bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center text-foreground">Advanced AI Technology</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-lg text-muted-foreground space-y-6">
+            <p>
+              Sage.ai is built on cutting-edge artificial intelligence that goes far beyond simple 
+              automation. Our proprietary AI models analyze millions of data points from top-performing 
+              marketing campaigns, sales sequences, and converting copy across all industries to understand 
+              what makes content and strategies successful.
+            </p>
+            <div className="grid md:grid-cols-3 gap-6 mt-8">
+              <div className="text-center">
+                <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                  <Brain className="h-8 w-8 text-primary" />
+                </div>
+                <h4 className="font-semibold mb-2 text-foreground">Machine Learning</h4>
+                <p className="text-sm text-muted-foreground">
+                  Continuously learns from successful patterns across marketing, sales, and copywriting
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="bg-accent/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-accent/20">
+                  <Target className="h-8 w-8 text-accent" />
+                </div>
+                <h4 className="font-semibold mb-2 text-foreground">Predictive Analytics</h4>
+                <p className="text-sm text-muted-foreground">
+                  Predicts campaign performance and optimizes content strategies in real-time
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                  <Zap className="h-8 w-8 text-primary" />
+                </div>
+                <h4 className="font-semibold mb-2 text-foreground">Automation Engine</h4>
+                <p className="text-sm text-muted-foreground">
+                  Executes complex marketing and sales workflows without human intervention
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Security & Trust Section */}
+      <Card className="mb-16 bg-card border-border">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center text-foreground">Security & Trust</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-lg text-muted-foreground space-y-4">
+            <p>
+              Your business data and marketing strategies are precious, and we treat them that way. 
+              Sage.ai employs enterprise-grade security measures including end-to-end encryption, 
+              SOC 2 compliance, and regular security audits to ensure your campaigns, copy, and 
+              customer data are always protected.
+            </p>
+            <div className="flex items-center justify-center space-x-8 pt-6">
+              <Badge variant="outline" className="px-4 py-2 bg-card border-border">
+                <Shield className="h-4 w-4 mr-2 text-primary" />
+                SOC 2 Compliant
+              </Badge>
+              <Badge variant="outline" className="px-4 py-2 bg-card border-border">
+                <CheckCircle className="h-4 w-4 mr-2 text-primary" />
+                256-bit Encryption
+              </Badge>
+              <Badge variant="outline" className="px-4 py-2 bg-card border-border">
+                <Star className="h-4 w-4 mr-2 text-primary" />
+                99.9% Uptime
+              </Badge>
             </div>
           </div>
         </CardContent>
