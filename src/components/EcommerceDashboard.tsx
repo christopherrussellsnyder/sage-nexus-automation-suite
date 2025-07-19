@@ -18,8 +18,68 @@ import AITemplateGenerator from './ecommerce/AITemplateGenerator';
 import PerformanceMonitor from './ecommerce/PerformanceMonitor';
 import SEOOptimizer from './ecommerce/SEOOptimizer';
 
+interface AIGenerationOptions {
+  colorPalette?: string;
+  fontStyle?: string;
+  layoutStyle?: string;
+  businessType?: string;
+  regenerate?: boolean;
+}
+
+interface SEOData {
+  title: string;
+  description: string;
+  keywords: string[];
+  ogImage: string;
+  canonicalUrl: string;
+  structuredData: any;
+}
+
 const EcommerceDashboard = () => {
   const [activeTab, setActiveTab] = useState<'research' | 'templates' | 'performance' | 'seo'>('research');
+  
+  // AI Template Generator state
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  
+  // SEO Optimizer state
+  const [seoData, setSeoData] = useState<SEOData>({
+    title: "Your E-commerce Store - Premium Products Online",
+    description: "Discover premium products with fast shipping and excellent customer service. Shop now for the best deals online.",
+    keywords: ["ecommerce", "online store", "premium products", "fast shipping"],
+    ogImage: "",
+    canonicalUrl: "https://yourstore.com",
+    structuredData: {}
+  });
+
+  // AI Template Generator handlers
+  const handleGenerate = async (prompt: string, options: AIGenerationOptions) => {
+    setIsGenerating(true);
+    setGenerationProgress(0);
+    
+    // Simulate AI generation progress
+    const interval = setInterval(() => {
+      setGenerationProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsGenerating(false);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 200);
+  };
+
+  // Performance Monitor handlers
+  const handleOptimize = (optimizations: string[]) => {
+    console.log('Applying optimizations:', optimizations);
+    // Here you would implement the actual optimization logic
+  };
+
+  // SEO Optimizer handlers
+  const handleSEOUpdate = (newSeoData: SEOData) => {
+    setSeoData(newSeoData);
+  };
 
   return (
     <div className="space-y-6">
@@ -119,9 +179,26 @@ const EcommerceDashboard = () => {
 
       {/* Tab Content */}
       {activeTab === 'research' && <ProductResearcher />}
-      {activeTab === 'templates' && <AITemplateGenerator />}
-      {activeTab === 'performance' && <PerformanceMonitor />}
-      {activeTab === 'seo' && <SEOOptimizer />}
+      {activeTab === 'templates' && (
+        <AITemplateGenerator 
+          onGenerate={handleGenerate}
+          isGenerating={isGenerating}
+          progress={generationProgress}
+        />
+      )}
+      {activeTab === 'performance' && (
+        <PerformanceMonitor 
+          websiteUrl="https://yourstore.com"
+          onOptimize={handleOptimize}
+        />
+      )}
+      {activeTab === 'seo' && (
+        <SEOOptimizer 
+          seoData={seoData}
+          onUpdate={handleSEOUpdate}
+          websiteName="Your E-commerce Store"
+        />
+      )}
     </div>
   );
 };
