@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
+  ShoppingCart, 
   Users, 
   Phone, 
   BarChart3, 
@@ -18,6 +19,7 @@ import {
   PenTool
 } from "lucide-react";
 import Dashboard from "@/components/Dashboard";
+import EcommerceDashboard from "@/components/EcommerceDashboard";
 import AgencyDashboard from "@/components/AgencyDashboard";
 import SalesDashboard from "@/components/SalesDashboard";
 import IntelligenceDashboard from "@/components/IntelligenceDashboard";
@@ -25,13 +27,15 @@ import Footer from "@/components/Footer";
 import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'agency' | 'sales' | 'copywriting'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'intelligence' | 'ecommerce' | 'agency' | 'sales' | 'copywriting'>('overview');
   const copy = useCopySettings();
 
   const renderContent = () => {
     switch (activeSection) {
       case 'intelligence':
         return <IntelligenceDashboard />;
+      case 'ecommerce':
+        return <EcommerceDashboard />;
       case 'agency':
         return <AgencyDashboard />;
       case 'sales':
@@ -50,10 +54,10 @@ const Index = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
                 <Brain className="h-8 w-8 text-primary" />
-                <span className="text-xl font-bold">Sage.ai</span>
+                <span className="text-xl font-bold">{copy.brandName}</span>
               </div>
               <Badge variant="secondary" className="hidden sm:inline-flex">
-                AI-Powered Marketing
+                {copy.brandTagline}
               </Badge>
             </div>
             
@@ -77,13 +81,22 @@ const Index = () => {
                 <span className="hidden sm:inline">Intelligence</span>
               </Button>
               <Button
+                variant={activeSection === 'ecommerce' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setActiveSection('ecommerce')}
+                className="flex items-center space-x-2"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span className="hidden sm:inline">{copy.ecommerceTitle}</span>
+              </Button>
+              <Button
                 variant={activeSection === 'agency' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setActiveSection('agency')}
                 className="flex items-center space-x-2"
               >
                 <Users className="h-4 w-4" />
-                <span className="hidden sm:inline">Agency</span>
+                <span className="hidden sm:inline">{copy.agencyTitle}</span>
               </Button>
               <Button
                 variant={activeSection === 'sales' ? 'default' : 'ghost'}
@@ -92,7 +105,7 @@ const Index = () => {
                 className="flex items-center space-x-2"
               >
                 <Phone className="h-4 w-4" />
-                <span className="hidden sm:inline">Sales</span>
+                <span className="hidden sm:inline">{copy.salesTitle}</span>
               </Button>
             </div>
           </div>
