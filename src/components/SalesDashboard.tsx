@@ -38,10 +38,6 @@ const SalesDashboard = () => {
     console.log('Scheduling meeting with:', lead);
   };
 
-  const handleDeleteLead = (leadId: string) => {
-    setLeads(prev => prev.filter(lead => lead.id !== leadId));
-  };
-
   // Calculate metrics based on actual data - start from 0
   const activeProspects = leads.length;
   const dealsClosedThisMonth = 0; // Will be calculated from actual deals
@@ -161,7 +157,6 @@ const SalesDashboard = () => {
             leads={leads} 
             onNurtureLead={handleNurtureLead}
             onScheduleMeeting={handleScheduleMeeting}
-            onDeleteLead={handleDeleteLead}
           />
         </div>
       )}

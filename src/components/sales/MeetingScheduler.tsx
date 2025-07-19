@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,14 +24,11 @@ interface Meeting {
   notes: string;
   type: 'sales' | 'demo' | 'follow-up' | 'discovery' | 'closing';
   status: 'scheduled' | 'completed' | 'cancelled';
-  section: 'sales' | 'agency'; // Add section tracking
 }
 
 const MeetingScheduler = () => {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [isScheduling, setIsScheduling] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [newMeeting, setNewMeeting] = useState({
     title: '',
@@ -43,28 +40,6 @@ const MeetingScheduler = () => {
     type: 'sales'
   });
   const { toast } = useToast();
-
-  // Determine current section based on URL or context
-  const currentSection = window.location.pathname.includes('agency') ? 'agency' : 'sales';
-
-  // Load meetings from localStorage on component mount
-  useEffect(() => {
-    const savedMeetings = localStorage.getItem(`meetings_${currentSection}`);
-    if (savedMeetings) {
-      const parsedMeetings = JSON.parse(savedMeetings).map((meeting: any) => ({
-        ...meeting,
-        date: new Date(meeting.date)
-      }));
-      setMeetings(parsedMeetings);
-    }
-  }, [currentSection]);
-
-  // Save meetings to localStorage whenever meetings change
-  useEffect(() => {
-    if (meetings.length > 0) {
-      localStorage.setItem(`meetings_${currentSection}`, JSON.stringify(meetings));
-    }
-  }, [meetings, currentSection]);
 
   const timeSlots = [
     '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
@@ -111,15 +86,13 @@ const MeetingScheduler = () => {
       duration: newMeeting.duration,
       notes: newMeeting.notes,
       type: newMeeting.type as Meeting['type'],
-      status: 'scheduled',
-      section: currentSection
+      status: 'scheduled'
     };
 
-    const updatedMeetings = [...meetings, meeting].sort((a, b) => 
+    setMeetings([...meetings, meeting].sort((a, b) => 
       new Date(a.date.toDateString() + ' ' + a.time).getTime() - 
       new Date(b.date.toDateString() + ' ' + b.time).getTime()
-    );
-    setMeetings(updatedMeetings);
+    ));
 
     setNewMeeting({
       title: '',
@@ -139,70 +112,8 @@ const MeetingScheduler = () => {
     });
   };
 
-  const handleEditMeeting = (meeting: Meeting) => {
-    setEditingMeeting(meeting);
-    setSelectedDate(meeting.date);
-    setNewMeeting({
-      title: meeting.title,
-      contactName: meeting.contactName,
-      businessName: meeting.businessName,
-      time: meeting.time,
-      duration: meeting.duration,
-      notes: meeting.notes,
-      type: meeting.type
-    });
-    setIsEditing(true);
-  };
-
-  const handleUpdateMeeting = () => {
-    if (!editingMeeting || !selectedDate || !newMeeting.title || !newMeeting.contactName || !newMeeting.businessName || !newMeeting.time) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const updatedMeeting: Meeting = {
-      ...editingMeeting,
-      title: newMeeting.title,
-      contactName: newMeeting.contactName,
-      businessName: newMeeting.businessName,
-      date: selectedDate,
-      time: newMeeting.time,
-      duration: newMeeting.duration,
-      notes: newMeeting.notes,
-      type: newMeeting.type as Meeting['type']
-    };
-
-    const updatedMeetings = meetings.map(meeting => 
-      meeting.id === editingMeeting.id ? updatedMeeting : meeting
-    );
-    setMeetings(updatedMeetings);
-
-    setNewMeeting({
-      title: '',
-      contactName: '',
-      businessName: '',
-      time: '',
-      duration: '60',
-      notes: '',
-      type: 'sales'
-    });
-    setSelectedDate(undefined);
-    setIsEditing(false);
-    setEditingMeeting(null);
-
-    toast({
-      title: "Meeting Updated",
-      description: `Meeting with ${updatedMeeting.contactName} updated successfully`,
-    });
-  };
-
   const handleDeleteMeeting = (meetingId: string) => {
     setMeetings(meetings.filter(meeting => meeting.id !== meetingId));
-    localStorage.setItem(`meetings_${currentSection}`, JSON.stringify(meetings.filter(meeting => meeting.id !== meetingId)));
     toast({
       title: "Meeting Deleted",
       description: "Meeting has been removed from your calendar",
@@ -210,10 +121,9 @@ const MeetingScheduler = () => {
   };
 
   const handleUpdateMeetingStatus = (meetingId: string, status: Meeting['status']) => {
-    const updatedMeetings = meetings.map(meeting => 
+    setMeetings(meetings.map(meeting => 
       meeting.id === meetingId ? { ...meeting, status } : meeting
-    );
-    setMeetings(updatedMeetings);
+    ));
     toast({
       title: "Meeting Updated",
       description: `Meeting status changed to ${status}`,
@@ -255,7 +165,7 @@ const MeetingScheduler = () => {
                 <CalendarIcon className="h-5 w-5" />
                 <span>Meeting Scheduler</span>
               </CardTitle>
-              <CardDescription>Schedule and manage your {currentSection === 'sales' ? 'sales' : 'agency'} meetings</CardDescription>
+              <CardDescription>Schedule and manage your sales meetings</CardDescription>
             </div>
             <Dialog open={isScheduling} onOpenChange={setIsScheduling}>
               <DialogTrigger asChild>
@@ -375,9 +285,8 @@ const MeetingScheduler = () => {
                       }}
                       modifiersStyles={{
                         selected: {
-                          backgroundColor: 'hsl(142.1 76.2% 36.3%)',
-                          color: 'white',
-                          borderRadius: '50%'
+                          backgroundColor: 'hsl(var(--primary))',
+                          color: 'hsl(var(--primary-foreground))'
                         }
                       }}
                     />
@@ -436,13 +345,6 @@ const MeetingScheduler = () => {
                             <Button 
                               size="sm" 
                               variant="outline"
-                              onClick={() => handleEditMeeting(meeting)}
-                            >
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
                               onClick={() => handleUpdateMeetingStatus(meeting.id, 'completed')}
                             >
                               Complete
@@ -493,22 +395,13 @@ const MeetingScheduler = () => {
                             {format(meeting.date, 'MMM dd, yyyy')} at {meeting.time}
                           </p>
                         </div>
-                        <div className="flex space-x-1">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleEditMeeting(meeting)}
-                          >
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleDeleteMeeting(meeting.id)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleDeleteMeeting(meeting.id)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
                   ))
@@ -518,130 +411,6 @@ const MeetingScheduler = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Edit Meeting Dialog */}
-      <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Meeting</DialogTitle>
-            <DialogDescription>
-              Update meeting details
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="edit-title">Meeting Title *</Label>
-                <Input
-                  id="edit-title"
-                  value={newMeeting.title}
-                  onChange={(e) => setNewMeeting({ ...newMeeting, title: e.target.value })}
-                  placeholder="Sales Discovery Call"
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-contactName">Contact Name *</Label>
-                <Input
-                  id="edit-contactName"
-                  value={newMeeting.contactName}
-                  onChange={(e) => setNewMeeting({ ...newMeeting, contactName: e.target.value })}
-                  placeholder="John Smith"
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-businessName">Business Name *</Label>
-                <Input
-                  id="edit-businessName"
-                  value={newMeeting.businessName}
-                  onChange={(e) => setNewMeeting({ ...newMeeting, businessName: e.target.value })}
-                  placeholder="TechCorp Inc"
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-type">Meeting Type</Label>
-                <Select value={newMeeting.type} onValueChange={(value) => setNewMeeting({ ...newMeeting, type: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sales">Sales Call</SelectItem>
-                    <SelectItem value="demo">Product Demo</SelectItem>
-                    <SelectItem value="follow-up">Follow-up</SelectItem>
-                    <SelectItem value="discovery">Discovery Call</SelectItem>
-                    <SelectItem value="closing">Closing Call</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-time">Time *</Label>
-                  <Select value={newMeeting.time} onValueChange={(value) => setNewMeeting({ ...newMeeting, time: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select time" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {timeSlots.map((time) => (
-                        <SelectItem key={time} value={time}>
-                          {time}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="edit-duration">Duration (min)</Label>
-                  <Select value={newMeeting.duration} onValueChange={(value) => setNewMeeting({ ...newMeeting, duration: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {durations.map((duration) => (
-                        <SelectItem key={duration} value={duration}>
-                          {duration} min
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="edit-notes">Notes</Label>
-                <Textarea
-                  id="edit-notes"
-                  value={newMeeting.notes}
-                  onChange={(e) => setNewMeeting({ ...newMeeting, notes: e.target.value })}
-                  placeholder="Meeting agenda, preparation notes..."
-                  rows={3}
-                />
-              </div>
-            </div>
-            <div>
-              <Label>Select Date *</Label>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                className="rounded-md border"
-                modifiers={{
-                  selected: selectedDate
-                }}
-                modifiersStyles={{
-                  selected: {
-                    backgroundColor: 'hsl(142.1 76.2% 36.3%)',
-                    color: 'white',
-                    borderRadius: '50%'
-                  }
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex space-x-2">
-            <Button onClick={handleUpdateMeeting} className="flex-1">Update Meeting</Button>
-            <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

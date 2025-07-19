@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { UserPlus, Mail, Phone, MessageSquare, Trash2, Edit } from 'lucide-react';
+import { UserPlus, Mail, Phone, MessageSquare, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Lead {
@@ -25,7 +25,6 @@ interface Lead {
   score: number;
   status: 'hot' | 'warm' | 'cold';
   createdAt: string;
-  section: 'sales' | 'agency'; // Add section tracking
 }
 
 interface LeadManagementProps {
@@ -35,8 +34,6 @@ interface LeadManagementProps {
 const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isAddingLead, setIsAddingLead] = useState(false);
-  const [isEditingLead, setIsEditingLead] = useState(false);
-  const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [newLead, setNewLead] = useState({
     name: '',
     email: '',
@@ -48,23 +45,18 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
   });
   const { toast } = useToast();
 
-  // Determine current section based on URL or context
-  const currentSection = window.location.pathname.includes('agency') ? 'agency' : 'sales';
-
-  // Load leads from localStorage on component mount - section specific
+  // Load leads from localStorage on component mount
   useEffect(() => {
-    const savedLeads = localStorage.getItem(`leadManagement_${currentSection}`);
+    const savedLeads = localStorage.getItem('leadManagementLeads');
     if (savedLeads) {
       setLeads(JSON.parse(savedLeads));
     }
-  }, [currentSection]);
+  }, []);
 
-  // Save leads to localStorage whenever leads change - section specific
-  useEffect(() => {
-    if (leads.length >= 0) {
-      localStorage.setItem(`leadManagement_${currentSection}`, JSON.stringify(leads));
-    }
-  }, [leads, currentSection]);
+  // Save leads to localStorage whenever leads change
+  useEffect(()=> {
+    localStorage.setItem('leadManagementLeads', JSON.stringify(leads));
+  }, [leads]);
 
   const calculateLeadScore = (lead: any): { score: number; status: 'hot' | 'warm' | 'cold' } => {
     let score = 0;
@@ -123,8 +115,7 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
       ...newLead,
       score,
       status,
-      createdAt: new Date().toISOString(),
-      section: currentSection
+      createdAt: new Date().toISOString()
     };
 
     const updatedLeads = [...leads, lead];
@@ -148,69 +139,12 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
 
     toast({
       title: "Lead Added",
-      description: `${lead.name} has been added to ${currentSection === 'sales' ? 'Sales' : 'Agency'} with a ${status} score of ${score}`,
-    });
-  };
-
-  const handleEditLead = (lead: Lead) => {
-    setEditingLead(lead);
-    setNewLead({
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
-      company: lead.company,
-      jobTitle: lead.jobTitle,
-      source: lead.source,
-      notes: lead.notes
-    });
-    setIsEditingLead(true);
-  };
-
-  const handleUpdateLead = () => {
-    if (!editingLead || !newLead.name || !newLead.email || !newLead.company) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const { score, status } = calculateLeadScore(newLead);
-    
-    const updatedLead: Lead = {
-      ...editingLead,
-      ...newLead,
-      score,
-      status
-    };
-
-    const updatedLeads = leads.map(lead => 
-      lead.id === editingLead.id ? updatedLead : lead
-    );
-    setLeads(updatedLeads);
-
-    setNewLead({
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      jobTitle: '',
-      source: '',
-      notes: ''
-    });
-    setIsEditingLead(false);
-    setEditingLead(null);
-
-    toast({
-      title: "Lead Updated",
-      description: `${updatedLead.name} has been updated successfully`,
+      description: `${lead.name} has been added with a ${status} score of ${score} and synced to Lead Scoring`,
     });
   };
 
   const handleDeleteLead = (leadId: string) => {
-    const updatedLeads = leads.filter(lead => lead.id !== leadId);
-    setLeads(updatedLeads);
+    setLeads(leads.filter(lead => lead.id !== leadId));
     toast({
       title: "Lead Deleted",
       description: "Lead has been removed from your list",
@@ -246,8 +180,8 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Lead Management - {currentSection === 'sales' ? 'Sales' : 'Agency'}</CardTitle>
-              <CardDescription>Add and manage your {currentSection === 'sales' ? 'sales prospects' : 'agency leads'} with AI-powered scoring</CardDescription>
+              <CardTitle>Lead Management</CardTitle>
+              <CardDescription>Add and manage your incoming leads with AI-powered scoring. Leads automatically sync to Lead Scoring dashboard.</CardDescription>
             </div>
             <Dialog open={isAddingLead} onOpenChange={setIsAddingLead}>
               <DialogTrigger asChild>
@@ -260,7 +194,7 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
                 <DialogHeader>
                   <DialogTitle>Add New Lead</DialogTitle>
                   <DialogDescription>
-                    Add a new lead to {currentSection === 'sales' ? 'Sales' : 'Agency'} and get an automatic AI score
+                    Add a new lead and get an automatic AI score based on their profile
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
@@ -400,13 +334,6 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
                           <Button 
                             size="sm" 
                             variant="outline"
-                            onClick={() => handleEditLead(lead)}
-                          >
-                            <Edit className="h-3 w-3" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
                             onClick={() => handleEmailLead(lead)}
                           >
                             <Mail className="h-3 w-3" />
@@ -437,96 +364,6 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
           )}
         </CardContent>
       </Card>
-
-      {/* Edit Lead Dialog */}
-      <Dialog open={isEditingLead} onOpenChange={setIsEditingLead}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Lead</DialogTitle>
-            <DialogDescription>
-              Update lead information
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="edit-name">Name *</Label>
-              <Input
-                id="edit-name"
-                value={newLead.name}
-                onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
-                placeholder="John Smith"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-email">Email *</Label>
-              <Input
-                id="edit-email"
-                type="email"
-                value={newLead.email}
-                onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
-                placeholder="john@company.com"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-phone">Phone</Label>
-              <Input
-                id="edit-phone"
-                value={newLead.phone}
-                onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-company">Company *</Label>
-              <Input
-                id="edit-company"
-                value={newLead.company}
-                onChange={(e) => setNewLead({ ...newLead, company: e.target.value })}
-                placeholder="TechCorp Inc"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-jobTitle">Job Title</Label>
-              <Input
-                id="edit-jobTitle"
-                value={newLead.jobTitle}
-                onChange={(e) => setNewLead({ ...newLead, jobTitle: e.target.value })}
-                placeholder="Marketing Director"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-source">Lead Source</Label>
-              <Select value={newLead.source} onValueChange={(value) => setNewLead({ ...newLead, source: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select source" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="linkedin">LinkedIn</SelectItem>
-                  <SelectItem value="website">Website</SelectItem>
-                  <SelectItem value="referral">Referral</SelectItem>
-                  <SelectItem value="cold-outreach">Cold Outreach</SelectItem>
-                  <SelectItem value="event">Event</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="edit-notes">Notes</Label>
-              <Textarea
-                id="edit-notes"
-                value={newLead.notes}
-                onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
-                placeholder="Additional information about this lead..."
-                rows={3}
-              />
-            </div>
-            <div className="flex space-x-2">
-              <Button onClick={handleUpdateLead} className="flex-1">Update Lead</Button>
-              <Button variant="outline" onClick={() => setIsEditingLead(false)}>Cancel</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
