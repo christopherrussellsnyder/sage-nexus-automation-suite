@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,11 +24,18 @@ interface Meeting {
   notes: string;
   type: 'sales' | 'demo' | 'follow-up' | 'discovery' | 'closing';
   status: 'scheduled' | 'completed' | 'cancelled';
+  section: 'sales' | 'agency';
 }
 
-const MeetingScheduler = () => {
+interface MeetingSchedulerProps {
+  section?: 'sales' | 'agency';
+}
+
+const MeetingScheduler = ({ section = 'sales' }: MeetingSchedulerProps) => {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [isScheduling, setIsScheduling] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [newMeeting, setNewMeeting] = useState({
     title: '',
@@ -49,11 +56,29 @@ const MeetingScheduler = () => {
 
   const durations = ['30', '45', '60', '90', '120'];
 
-  const isTimeSlotAvailable = (date: Date, time: string) => {
+  // Load meetings from localStorage on mount
+  useEffect(() => {
+    const savedMeetings = localStorage.getItem(`meetings_${section}`);
+    if (savedMeetings) {
+      const parsed = JSON.parse(savedMeetings).map((meeting: any) => ({
+        ...meeting,
+        date: new Date(meeting.date)
+      }));
+      setMeetings(parsed);
+    }
+  }, [section]);
+
+  // Save meetings to localStorage whenever meetings change
+  useEffect(() => {
+    localStorage.setItem(`meetings_${section}`, JSON.stringify(meetings));
+  }, [meetings, section]);
+
+  const isTimeSlotAvailable = (date: Date, time: string, excludeId?: string) => {
     return !meetings.some(meeting => 
       meeting.date.toDateString() === date.toDateString() && 
       meeting.time === time &&
-      meeting.status === 'scheduled'
+      meeting.status === 'scheduled' &&
+      meeting.id !== excludeId
     );
   };
 
@@ -86,7 +111,8 @@ const MeetingScheduler = () => {
       duration: newMeeting.duration,
       notes: newMeeting.notes,
       type: newMeeting.type as Meeting['type'],
-      status: 'scheduled'
+      status: 'scheduled',
+      section
     };
 
     setMeetings([...meetings, meeting].sort((a, b) => 
@@ -110,6 +136,78 @@ const MeetingScheduler = () => {
       title: "Meeting Scheduled",
       description: `Meeting with ${meeting.contactName} scheduled for ${format(meeting.date, 'MMM dd, yyyy')} at ${meeting.time}`,
     });
+  };
+
+  const handleEditMeeting = () => {
+    if (!editingMeeting || !selectedDate || !newMeeting.title || !newMeeting.contactName || !newMeeting.businessName || !newMeeting.time) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!isTimeSlotAvailable(selectedDate, newMeeting.time, editingMeeting.id)) {
+      toast({
+        title: "Time Conflict",
+        description: "This time slot is already booked. Please choose another time.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const updatedMeeting: Meeting = {
+      ...editingMeeting,
+      title: newMeeting.title,
+      contactName: newMeeting.contactName,
+      businessName: newMeeting.businessName,
+      date: selectedDate,
+      time: newMeeting.time,
+      duration: newMeeting.duration,
+      notes: newMeeting.notes,
+      type: newMeeting.type as Meeting['type']
+    };
+
+    setMeetings(meetings.map(meeting => 
+      meeting.id === editingMeeting.id ? updatedMeeting : meeting
+    ).sort((a, b) => 
+      new Date(a.date.toDateString() + ' ' + a.time).getTime() - 
+      new Date(b.date.toDateString() + ' ' + b.time).getTime()
+    ));
+
+    setNewMeeting({
+      title: '',
+      contactName: '',
+      businessName: '',
+      time: '',
+      duration: '60',
+      notes: '',
+      type: 'sales'
+    });
+    setSelectedDate(undefined);
+    setEditingMeeting(null);
+    setIsEditing(false);
+
+    toast({
+      title: "Meeting Updated",
+      description: `Meeting with ${updatedMeeting.contactName} updated successfully`,
+    });
+  };
+
+  const openEditDialog = (meeting: Meeting) => {
+    setEditingMeeting(meeting);
+    setSelectedDate(meeting.date);
+    setNewMeeting({
+      title: meeting.title,
+      contactName: meeting.contactName,
+      businessName: meeting.businessName,
+      time: meeting.time,
+      duration: meeting.duration,
+      notes: meeting.notes,
+      type: meeting.type
+    });
+    setIsEditing(true);
   };
 
   const handleDeleteMeeting = (meetingId: string) => {
@@ -280,15 +378,6 @@ const MeetingScheduler = () => {
                       onSelect={setSelectedDate}
                       disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                       className="rounded-md border"
-                      modifiers={{
-                        selected: selectedDate
-                      }}
-                      modifiersStyles={{
-                        selected: {
-                          backgroundColor: 'hsl(var(--primary))',
-                          color: 'hsl(var(--primary-foreground))'
-                        }
-                      }}
                     />
                   </div>
                 </div>
@@ -345,6 +434,13 @@ const MeetingScheduler = () => {
                             <Button 
                               size="sm" 
                               variant="outline"
+                              onClick={() => openEditDialog(meeting)}
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
                               onClick={() => handleUpdateMeetingStatus(meeting.id, 'completed')}
                             >
                               Complete
@@ -395,13 +491,22 @@ const MeetingScheduler = () => {
                             {format(meeting.date, 'MMM dd, yyyy')} at {meeting.time}
                           </p>
                         </div>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleDeleteMeeting(meeting.id)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                        <div className="flex space-x-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openEditDialog(meeting)}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleDeleteMeeting(meeting.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -411,6 +516,124 @@ const MeetingScheduler = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Edit Meeting Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Meeting</DialogTitle>
+            <DialogDescription>
+              Update meeting details
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="edit-title">Meeting Title *</Label>
+                <Input
+                  id="edit-title"
+                  value={newMeeting.title}
+                  onChange={(e) => setNewMeeting({ ...newMeeting, title: e.target.value })}
+                  placeholder="Sales Discovery Call"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-contactName">Contact Name *</Label>
+                <Input
+                  id="edit-contactName"
+                  value={newMeeting.contactName}
+                  onChange={(e) => setNewMeeting({ ...newMeeting, contactName: e.target.value })}
+                  placeholder="John Smith"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-businessName">Business Name *</Label>
+                <Input
+                  id="edit-businessName"
+                  value={newMeeting.businessName}
+                  onChange={(e) => setNewMeeting({ ...newMeeting, businessName: e.target.value })}
+                  placeholder="TechCorp Inc"
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-type">Meeting Type</Label>
+                <Select value={newMeeting.type} onValueChange={(value) => setNewMeeting({ ...newMeeting, type: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sales">Sales Call</SelectItem>
+                    <SelectItem value="demo">Product Demo</SelectItem>
+                    <SelectItem value="follow-up">Follow-up</SelectItem>
+                    <SelectItem value="discovery">Discovery Call</SelectItem>
+                    <SelectItem value="closing">Closing Call</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-time">Time *</Label>
+                  <Select value={newMeeting.time} onValueChange={(value) => setNewMeeting({ ...newMeeting, time: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select time" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {timeSlots.map((time) => (
+                        <SelectItem 
+                          key={time} 
+                          value={time}
+                          disabled={selectedDate ? !isTimeSlotAvailable(selectedDate, time, editingMeeting?.id) : false}
+                        >
+                          {time} {selectedDate && !isTimeSlotAvailable(selectedDate, time, editingMeeting?.id) ? '(Booked)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="edit-duration">Duration (min)</Label>
+                  <Select value={newMeeting.duration} onValueChange={(value) => setNewMeeting({ ...newMeeting, duration: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {durations.map((duration) => (
+                        <SelectItem key={duration} value={duration}>
+                          {duration} min
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="edit-notes">Notes</Label>
+                <Textarea
+                  id="edit-notes"
+                  value={newMeeting.notes}
+                  onChange={(e) => setNewMeeting({ ...newMeeting, notes: e.target.value })}
+                  placeholder="Meeting agenda, preparation notes..."
+                  rows={3}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Select Date *</Label>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                className="rounded-md border"
+              />
+            </div>
+          </div>
+          <div className="flex space-x-2">
+            <Button onClick={handleEditMeeting} className="flex-1">Update Meeting</Button>
+            <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

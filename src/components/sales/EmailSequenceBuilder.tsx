@@ -1,442 +1,504 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Mail, Plus, Edit, Trash2, Clock, TrendingUp, Users, BarChart3 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Mail, Plus, Trash2, Edit, Eye, Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
+interface EmailSequence {
+  id: string; 
+  name: string;
+  type: 'cold-outreach' | 'follow-up' | 'lead-nurture' | 're-engagement' | 'onboarding';
+  status: 'active' | 'paused' | 'draft';
+  emails: EmailTemplate[];
+  createdAt: string;
+  section: 'sales' | 'agency';
+}
 
 interface EmailTemplate {
   id: string;
-  name: string;
-  type: 'welcome' | 'social-proof' | 'education' | 'connection' | 'objection' | 'offer' | 'final';
   subject: string;
   content: string;
-  timing: string;
-  conversionRate: number;
+  dayDelay: number;
 }
 
-interface EmailSequence {
-  id: string;
-  name: string;
-  type: 'universal' | 'abandoned-cart' | 'lead-nurture' | 're-engagement';
-  emails: EmailTemplate[];
-  status: 'draft' | 'active' | 'paused';
-  stats: {
-    sent: number;
-    opened: number;
-    clicked: number;
-    converted: number;
-  };
+interface EmailSequenceBuilderProps {
+  section?: 'sales' | 'agency';
 }
 
-const EmailSequenceBuilder = () => {
+const EmailSequenceBuilder = ({ section = 'sales' }: EmailSequenceBuilderProps) => {
   const [sequences, setSequences] = useState<EmailSequence[]>([]);
-  const [selectedSequence, setSelectedSequence] = useState<EmailSequence | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editingEmail, setEditingEmail] = useState<EmailTemplate | null>(null);
+  const [editingSequence, setEditingSequence] = useState<EmailSequence | null>(null);
+  const [previewSequence, setPreviewSequence] = useState<EmailSequence | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [newSequence, setNewSequence] = useState({
     name: '',
-    type: 'universal',
-    description: ''
+    type: 'cold-outreach' as const,
+    emails: [{ id: '1', subject: '', content: '', dayDelay: 0 }] as EmailTemplate[]
   });
   const { toast } = useToast();
 
+  // Load sequences from localStorage on mount - section specific
+  useEffect(() => {
+    const savedSequences = localStorage.getItem(`emailSequences_${section}`);
+    if (savedSequences) {
+      setSequences(JSON.parse(savedSequences));
+    }
+  }, [section]);
+
+  // Save sequences to localStorage whenever sequences change
+  useEffect(() => {
+    localStorage.setItem(`emailSequences_${section}`, JSON.stringify(sequences));
+  }, [sequences, section]);
+
   const sequenceTemplates = {
-    'universal': {
-      name: '7-Email Universal Framework',
-      description: 'High-converting sequence based on data-driven analysis',
+    'cold-outreach': {
+      name: 'Cold Outreach Campaign',
       emails: [
         {
-          name: 'Immediate Welcome',
-          type: 'welcome' as const,
-          subject: 'Welcome! Here\'s your [PROMISED ITEM] 🎁',
-          timing: '0-15 minutes',
-          conversionRate: 45.7,
-          content: `Thank you for joining us!
+          id: '1',
+          subject: 'Quick question about [Company Name]',
+          content: `Hi [First Name],
 
-Here's your promised content as mentioned: [CONTENT LINK]
+I noticed [Company Name] is doing some interesting work in [Industry]. I'm reaching out because we help companies like yours [specific benefit].
 
-Over the next few days, I'll be sharing:
-• Proven strategies that work
-• Real case studies and results
-• Actionable tips you can implement today
-
-Make sure to whitelist this email so you don't miss anything important.
+Would you be open to a brief 15-minute conversation to explore how we might help [Company Name] [achieve specific goal]?
 
 Best regards,
-[YOUR NAME]
-
-P.S. Hit reply and let me know what your biggest challenge is right now!`
+[Your Name]`,
+          dayDelay: 0
         },
         {
-          name: 'Social Proof Story',
-          type: 'social-proof' as const,
-          subject: 'How [Customer Name] got [Specific Result] in [Timeframe]',
-          timing: '24 hours',
-          conversionRate: 38.2,
-          content: `I want to share an incredible success story with you...
+          id: '2', 
+          subject: 'Following up on my previous email',
+          content: `Hi [First Name],
 
-[Customer Name] was struggling with [PROBLEM] just like you might be.
+I wanted to circle back on my previous email about helping [Company Name] with [specific challenge].
 
-Here's exactly what happened:
-• Started with: [INITIAL SITUATION]
-• Implemented: [SOLUTION/STRATEGY]
-• Result: [SPECIFIC OUTCOME] in just [TIMEFRAME]
+I understand you're busy, but I believe we could help you [specific benefit] in just [timeframe].
 
-The best part? [Customer Name] said: "[TESTIMONIAL QUOTE]"
-
-This could be you. The same strategy that worked for [Customer Name] is available to you too.
-
-[CTA: See More Success Stories]
-
-Talk soon,
-[YOUR NAME]`
-        },
-        {
-          name: 'Educational Authority',
-          type: 'education' as const,
-          subject: 'The #1 mistake [Target Audience] makes with [Topic]',
-          timing: '48 hours',
-          conversionRate: 42.1,
-          content: `Here's a shocking statistic: [RELEVANT STAT]
-
-Most [TARGET AUDIENCE] make this critical mistake: [MISTAKE]
-
-This costs them [CONSEQUENCE] and prevents them from [DESIRED OUTCOME].
-
-Here's what to do instead:
-
-1. [ACTIONABLE TIP 1]
-2. [ACTIONABLE TIP 2]  
-3. [ACTIONABLE TIP 3]
-
-Pro tip: [ADVANCED INSIGHT]
-
-This is just the beginning. There's so much more I want to share with you.
-
-[CTA: Get the Full Guide]
+Would Thursday or Friday work better for a quick call?
 
 Best,
-[YOUR NAME]`
+[Your Name]`,
+          dayDelay: 3
         },
         {
-          name: 'Personal Connection',
-          type: 'connection' as const,
-          subject: 'The story behind [Brand/Product] (personal)',
-          timing: '3 days',
-          conversionRate: 35.8,
-          content: `I want to share something personal with you...
+          id: '3',
+          subject: 'Last follow-up - [Specific Value Proposition]',
+          content: `Hi [First Name],
 
-[PERSONAL STORY/STRUGGLE]
+This will be my last follow-up. I don't want to be a pest, but I wanted to share one final thought.
 
-That's why I created [SOLUTION]. I knew there had to be a better way.
+Companies like [Similar Company] have seen [specific result] after working with us. If you ever want to explore how this could work for [Company Name], I'm here.
 
-My mission is simple: [YOUR MISSION]
+Feel free to reach out anytime.
 
-This isn't just business for me - it's personal.
-
-I'd love to connect with you on a deeper level:
-• Follow me on [SOCIAL PLATFORM]: [LINK]
-• Check out behind-the-scenes content: [LINK]
-
-Hit reply and tell me your story. I read every email.
-
-Cheering you on,
-[YOUR NAME]`
-        },
-        {
-          name: 'Objection Handler',
-          type: 'objection' as const,
-          subject: 'But what if [Common Objection]?',
-          timing: '5 days',
-          conversionRate: 39.4,
-          content: `I know what you might be thinking...
-
-"[COMMON OBJECTION]"
-
-I get it. I used to think the same thing.
-
-Let me address your concerns:
-
-Concern #1: [OBJECTION]
-Reality: [PROOF/EVIDENCE]
-
-Concern #2: [OBJECTION]  
-Reality: [PROOF/EVIDENCE]
-
-Concern #3: [OBJECTION]
-Reality: [PROOF/EVIDENCE]
-
-Plus, you're protected by our [GUARANTEE/RISK REVERSAL].
-
-Ready to see how this works? [CTA: Learn More]
-
-Your success partner,
-[YOUR NAME]`
-        },
-        {
-          name: 'Direct Offer',
-          type: 'offer' as const,
-          subject: 'Ready? Here\'s exactly how I can help you [Achieve Goal]',
-          timing: '7 days',
-          conversionRate: 18.6,
-          content: `After everything I've shared, you're probably wondering...
-
-"How can I get the same results?"
-
-Here's exactly how I can help you [ACHIEVE SPECIFIC GOAL]:
-
-[CLEAR OFFER DESCRIPTION]
-
-What you get:
-• [BENEFIT 1]
-• [BENEFIT 2]
-• [BENEFIT 3]
-• [BONUS ITEM]
-
-Normal price: [REGULAR PRICE]
-Your price today: [DISCOUNTED PRICE]
-
-This offer expires in 48 hours.
-
-[CTA: Get Started Now]
-
-Only [X] spots available.
-
-Ready to transform your [AREA]?
-
-[YOUR NAME]
-
-P.S. Remember, you're backed by our [GUARANTEE].`
-        },
-        {
-          name: 'Final Chance',
-          type: 'final' as const,
-          subject: 'Have you given up on [Their Goal]?',
-          timing: '10 days',
-          conversionRate: 15.2,
-          content: `I noticed you haven't taken action yet...
-
-Have you given up on [THEIR GOAL]?
-
-I hope not, because it's still 100% possible for you.
-
-Look, I know life gets busy. I know there are always obstacles.
-
-But here's the truth: [MOTIVATIONAL TRUTH]
-
-This is your last chance to join [PROGRAM/OFFER] at this price.
-
-After tonight, this opportunity disappears.
-
-[CTA: No, I Haven't Given Up]
-
-If you're not ready, no worries. Just hit reply and let me know what's holding you back.
-
-In your corner,
-[YOUR NAME]
-
-P.S. Your goals matter. Don't let them slip away.`
+Best,
+[Your Name]`,
+          dayDelay: 7
         }
       ]
     },
-    'abandoned-cart': {
-      name: 'Abandoned Cart Recovery (18.64% CR)',
-      description: 'Highest converting sequence for e-commerce',
+    'follow-up': {
+      name: 'Meeting Follow-up Sequence',
       emails: [
         {
-          name: 'Gentle Reminder',
-          type: 'welcome' as const,
-          subject: 'Oops! You left something behind...',
-          timing: '1 hour',
-          conversionRate: 8.2,
-          content: `Hi [NAME],
+          id: '1',
+          subject: 'Thank you for your time today',
+          content: `Hi [First Name],
 
-I noticed you left some items in your cart:
+Thank you for taking the time to speak with me today about [Company Name]'s [discussed topic].
 
-[CART ITEMS WITH IMAGES]
+As promised, I'm attaching [mentioned resource/proposal]. 
 
-Don't worry, we saved everything for you!
+Next steps:
+- [Action item 1]
+- [Action item 2]
 
-Complete your order in just one click: [COMPLETE ORDER BUTTON]
+I'll follow up next week to see how things are progressing.
 
-Questions? Just reply to this email.
+Best regards,
+[Your Name]`,
+          dayDelay: 0
+        },
+        {
+          id: '2',
+          subject: 'Checking in on our conversation',
+          content: `Hi [First Name],
+
+I wanted to follow up on our conversation last week about [discussed topic].
+
+Have you had a chance to review [sent material]? I'd love to hear your thoughts and answer any questions.
+
+Would you like to schedule a brief follow-up call this week?
 
 Best,
-[STORE NAME] Team`
+[Your Name]`,
+          dayDelay: 5
+        }
+      ]
+    },
+    'lead-nurture': {
+      name: 'Lead Nurture Sequence',
+      emails: [
+        {
+          id: '1',
+          subject: 'Welcome! Here\'s what you can expect',
+          content: `Hi [First Name],
+
+Welcome to our community! I'm excited to help you [achieve their goal].
+
+Over the next few weeks, I'll be sharing valuable insights about [relevant topic] that can help [Company Name] [specific benefit].
+
+Here's what you can expect:
+- Weekly industry insights
+- Case studies from similar companies
+- Actionable tips you can implement immediately
+
+Looking forward to supporting your success!
+
+Best,
+[Your Name]`,
+          dayDelay: 0
         },
         {
-          name: 'Social Proof',
-          type: 'social-proof' as const,
-          subject: 'Still thinking about [Product Name]?',
-          timing: '24 hours',
-          conversionRate: 6.4,
-          content: `Hi [NAME],
+          id: '2',
+          subject: 'Case Study: How [Similar Company] achieved [Result]',
+          content: `Hi [First Name],
 
-Still considering [PRODUCT NAME]?
+I wanted to share an interesting case study that might resonate with your situation at [Company Name].
 
-Here's what other customers say:
+[Similar Company] was facing [similar challenge] and was able to [achieve specific result] by [solution approach].
 
-⭐⭐⭐⭐⭐ "[REVIEW 1]" - [CUSTOMER NAME]
-⭐⭐⭐⭐⭐ "[REVIEW 2]" - [CUSTOMER NAME]
+The key factors in their success were:
+- [Factor 1]
+- [Factor 2]
+- [Factor 3]
 
-[PRODUCT BENEFITS]
+Would you like to discuss how a similar approach might work for [Company Name]?
 
-Your items are still waiting: [COMPLETE ORDER]
-
-[STORE NAME]`
+Best,
+[Your Name]`,
+          dayDelay: 7
         },
         {
-          name: 'Urgency + Discount',
-          type: 'offer' as const,
-          subject: 'Last chance: [Product] selling fast + 10% OFF',
-          timing: '48 hours',
-          conversionRate: 12.8,
-          content: `[NAME], time is running out!
+          id: '3',
+          subject: '5 quick wins for [Their Industry]',
+          content: `Hi [First Name],
 
-Your cart expires in 6 hours, and we're almost sold out of:
-[PRODUCT NAME] - Only [X] left!
+Here are 5 quick wins that companies in [Their Industry] are using to [achieve benefit]:
 
-But wait... I have something special for you:
+1. [Quick win 1]
+2. [Quick win 2]  
+3. [Quick win 3]
+4. [Quick win 4]
+5. [Quick win 5]
 
-Use code SAVE10 for 10% off your entire order!
+Which of these resonates most with your current priorities at [Company Name]?
 
-[COMPLETE ORDER WITH DISCOUNT]
+Happy to discuss how to implement any of these strategies.
 
-This offer expires tonight.
-
-Hurry!
-[STORE NAME]`
+Best,
+[Your Name]`,
+          dayDelay: 14
         },
         {
-          name: 'Final Attempt',
-          type: 'final' as const,
-          subject: 'We saved [Product] for you (last email)',
-          timing: '1 week',
-          conversionRate: 4.1,
-          content: `Hi [NAME],
+          id: '4',
+          subject: 'Ready to take the next step?',
+          content: `Hi [First Name],
 
-This is my last email about your abandoned cart.
+Over the past few weeks, I've shared insights about [relevant topics] that can help [Company Name] [achieve goals].
 
-We've saved [PRODUCT NAME] for you, but we can't hold it much longer.
+Many companies at this stage are ready to move from learning to implementation.
 
-If you're not interested, no problem! 
+If you're interested in exploring how we can help [Company Name] [specific outcome], I'd love to set up a brief strategy call.
 
-But maybe you'd like these similar items instead:
-[RECOMMENDED PRODUCTS]
+Are you free for a 20-minute conversation this week?
 
-Or simply reply and let us know how we can help.
+Best,
+[Your Name]`,
+          dayDelay: 21
+        }
+      ]
+    },
+    're-engagement': {
+      name: 'Re-engagement Campaign',
+      emails: [
+        {
+          id: '1',
+          subject: 'We miss you at [Company Name]',
+          content: `Hi [First Name],
 
-Thanks for considering us!
-[STORE NAME]`
+I noticed it's been a while since we last connected about [Company Name]'s [relevant area].
+
+A lot has changed in [industry/area] recently, and I thought you might be interested in some of the new developments that could impact [Company Name].
+
+Specifically:
+- [Recent development 1]
+- [Recent development 2]
+- [Recent development 3]
+
+Would you like to catch up on how these changes might affect your current strategy?
+
+Best,
+[Your Name]`,
+          dayDelay: 0
+        },
+        {
+          id: '2',
+          subject: 'New opportunities in [Their Industry]',
+          content: `Hi [First Name],
+
+I've been working with several companies in [Their Industry] lately and seeing some interesting trends that might interest you.
+
+Companies are now focusing on:
+- [Trend 1] - resulting in [benefit]
+- [Trend 2] - leading to [outcome]
+- [Trend 3] - creating [opportunity]
+
+Is [Company Name] exploring any of these areas? I'd love to share what's working for similar companies.
+
+Worth a quick call?
+
+Best,
+[Your Name]`,
+          dayDelay: 7
+        },
+        {
+          id: '3',
+          subject: 'Last attempt - but I have something special',
+          content: `Hi [First Name],
+
+I don't want to keep bothering you, but I came across something that made me think of [Company Name].
+
+[Specific insight/opportunity/resource] that could be particularly relevant given [their situation/challenge].
+
+If this isn't the right time, no worries at all. But if you're curious, I'm happy to share more details.
+
+Either way, I wish you and [Company Name] continued success.
+
+Best,
+[Your Name]`,
+          dayDelay: 14
+        }
+      ]
+    },
+    'onboarding': {
+      name: 'Client Onboarding Sequence',
+      emails: [
+        {
+          id: '1',
+          subject: 'Welcome aboard! Let\'s get started',
+          content: `Hi [First Name],
+
+Welcome to [Company Name]! We're thrilled to be working with you.
+
+To ensure a smooth start, here's what happens next:
+
+Week 1: [Activity 1]
+Week 2: [Activity 2]
+Week 3: [Activity 3]
+
+Your dedicated account manager is [Name] and they'll be in touch within 24 hours.
+
+Looking forward to achieving great results together!
+
+Best,
+[Your Name]`,
+          dayDelay: 0
+        },
+        {
+          id: '2',
+          subject: 'How are things going so far?',
+          content: `Hi [First Name],
+
+It's been a week since we started working together. How are things going so far?
+
+I wanted to check in and see if you have any questions or if there's anything we can do to improve your experience.
+
+Remember, we're here to help you succeed, so don't hesitate to reach out.
+
+Best,
+[Your Name]`,
+          dayDelay: 7
         }
       ]
     }
   };
 
-  const createSequence = () => {
-    if (!newSequence.name.trim()) {
+  const generateSequence = (type: string) => {
+    const template = sequenceTemplates[type as keyof typeof sequenceTemplates];
+    if (template) {
+      setNewSequence({
+        name: template.name,
+        type: type as any,
+        emails: template.emails
+      });
+    }
+  };
+
+  const handleCreateSequence = () => {
+    if (!newSequence.name || newSequence.emails.some(email => !email.subject || !email.content)) {
       toast({
         title: "Error",
-        description: "Please enter a sequence name",
+        description: "Please fill in sequence name and all email templates",
         variant: "destructive",
       });
       return;
     }
 
-    const template = sequenceTemplates[newSequence.type as keyof typeof sequenceTemplates];
-    
     const sequence: EmailSequence = {
       id: Date.now().toString(),
       name: newSequence.name,
-      type: newSequence.type as EmailSequence['type'],
-      emails: template.emails.map((email, index) => ({
-        id: `${Date.now()}-${index}`,
-        ...email
-      })),
+      type: newSequence.type,
       status: 'draft',
-      stats: {
-        sent: 0,
-        opened: 0,
-        clicked: 0,
-        converted: 0
-      }
+      emails: newSequence.emails,
+      createdAt: new Date().toISOString(),
+      section
     };
 
     setSequences([...sequences, sequence]);
-    setNewSequence({ name: '', type: 'universal', description: '' });
+    
+    setNewSequence({
+      name: '',
+      type: 'cold-outreach',
+      emails: [{ id: '1', subject: '', content: '', dayDelay: 0 }]
+    });
     setIsCreating(false);
 
     toast({
       title: "Sequence Created",
-      description: `${sequence.name} has been created with ${sequence.emails.length} emails`,
+      description: `${sequence.name} has been created successfully`,
     });
   };
 
-  const toggleSequenceStatus = (sequenceId: string) => {
+  const handleEditSequence = () => {
+    if (!editingSequence || !newSequence.name || newSequence.emails.some(email => !email.subject || !email.content)) {
+      toast({
+        title: "Error",
+        description: "Please fill in sequence name and all email templates",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const updatedSequence: EmailSequence = {
+      ...editingSequence,
+      name: newSequence.name,
+      type: newSequence.type,
+      emails: newSequence.emails
+    };
+
     setSequences(sequences.map(seq => 
-      seq.id === sequenceId 
-        ? { ...seq, status: seq.status === 'active' ? 'paused' : 'active' }
-        : seq
+      seq.id === editingSequence.id ? updatedSequence : seq
     ));
+
+    setNewSequence({
+      name: '',
+      type: 'cold-outreach',
+      emails: [{ id: '1', subject: '', content: '', dayDelay: 0 }]
+    });
+    setEditingSequence(null);
+    setIsEditing(false);
+
+    toast({
+      title: "Sequence Updated",
+      description: `${updatedSequence.name} has been updated successfully`,
+    });
   };
 
-  const deleteSequence = (sequenceId: string) => {
+  const openEditDialog = (sequence: EmailSequence) => {
+    setEditingSequence(sequence);
+    setNewSequence({
+      name: sequence.name,
+      type: sequence.type,
+      emails: [...sequence.emails]
+    });
+    setIsEditing(true);
+  };
+
+  const handleDeleteSequence = (sequenceId: string) => {
     setSequences(sequences.filter(seq => seq.id !== sequenceId));
-    if (selectedSequence?.id === sequenceId) {
-      setSelectedSequence(null);
-    }
     toast({
       title: "Sequence Deleted",
       description: "Email sequence has been removed",
     });
   };
 
-  const updateEmailContent = (emailId: string, updates: Partial<EmailTemplate>) => {
-    if (!selectedSequence) return;
-
-    const updatedSequence = {
-      ...selectedSequence,
-      emails: selectedSequence.emails.map(email =>
-        email.id === emailId ? { ...email, ...updates } : email
-      )
-    };
-
-    setSequences(sequences.map(seq =>
-      seq.id === selectedSequence.id ? updatedSequence : seq
+  const handleToggleStatus = (sequenceId: string) => {
+    setSequences(sequences.map(seq => 
+      seq.id === sequenceId 
+        ? { ...seq, status: seq.status === 'active' ? 'paused' : 'active' as const }
+        : seq
     ));
-    setSelectedSequence(updatedSequence);
-    
-    toast({
-      title: "Email Updated",
-      description: "Email content has been saved",
+  };
+
+  const addEmailTemplate = () => {
+    const newEmail: EmailTemplate = {
+      id: Date.now().toString(),
+      subject: '',
+      content: '',
+      dayDelay: 0
+    };
+    setNewSequence({
+      ...newSequence,
+      emails: [...newSequence.emails, newEmail]
     });
   };
 
-  const handleEditEmail = (email: EmailTemplate) => {
-    setEditingEmail(email);
-    setIsEditing(true);
+  const removeEmailTemplate = (emailId: string) => {
+    setNewSequence({
+      ...newSequence,
+      emails: newSequence.emails.filter(email => email.id !== emailId)
+    });
   };
 
-  const saveEmailEdits = () => {
-    if (!editingEmail) return;
-    
-    updateEmailContent(editingEmail.id, editingEmail);
-    setIsEditing(false);
-    setEditingEmail(null);
+  const updateEmailTemplate = (emailId: string, field: keyof EmailTemplate, value: string | number) => {
+    setNewSequence({
+      ...newSequence,
+      emails: newSequence.emails.map(email => 
+        email.id === emailId ? { ...email, [field]: value } : email
+      )
+    });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-500';
+      case 'paused': return 'bg-yellow-500';
+      case 'draft': return 'bg-gray-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const copySequence = (sequence: EmailSequence) => {
+    const copiedSequence: EmailSequence = {
+      ...sequence,
+      id: Date.now().toString(),
+      name: `${sequence.name} (Copy)`,
+      status: 'draft',
+      createdAt: new Date().toISOString()
+    };
+
+    setSequences([...sequences, copiedSequence]);
+    toast({
+      title: "Sequence Copied",
+      description: `${copiedSequence.name} has been created`,
+    });
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -445,9 +507,7 @@ Thanks for considering us!
                 <Mail className="h-5 w-5" />
                 <span>Email Sequence Builder</span>
               </CardTitle>
-              <CardDescription>
-                Create high-converting email sequences based on proven frameworks
-              </CardDescription>
+              <CardDescription>Create and manage automated email sequences for your campaigns</CardDescription>
             </div>
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
               <DialogTrigger asChild>
@@ -456,50 +516,113 @@ Thanks for considering us!
                   Create Sequence
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Create New Email Sequence</DialogTitle>
+                  <DialogTitle>Create Email Sequence</DialogTitle>
                   <DialogDescription>
-                    Choose a proven framework to start with
+                    Create a new automated email sequence
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="sequence-name">Sequence Name *</Label>
+                      <Input
+                        id="sequence-name"
+                        value={newSequence.name}
+                        onChange={(e) => setNewSequence({ ...newSequence, name: e.target.value })}
+                        placeholder="My Email Sequence"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="sequence-type">Sequence Type</Label>
+                      <Select 
+                        value={newSequence.type} 
+                        onValueChange={(value) => {
+                          setNewSequence({ 
+                            ...newSequence, 
+                            type: value as any 
+                          });
+                          generateSequence(value);
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cold-outreach">Cold Outreach</SelectItem>
+                          <SelectItem value="follow-up">Follow-up</SelectItem>
+                          <SelectItem value="lead-nurture">Lead Nurture</SelectItem>
+                          <SelectItem value="re-engagement">Re-engagement</SelectItem>
+                          <SelectItem value="onboarding">Onboarding</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   <div>
-                    <Label htmlFor="name">Sequence Name</Label>
-                    <Input
-                      id="name"
-                      value={newSequence.name}
-                      onChange={(e) => setNewSequence({ ...newSequence, name: e.target.value })}
-                      placeholder="Welcome Series"
-                    />
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">Email Templates</h3>
+                      <Button onClick={addEmailTemplate} size="sm">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Email
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      {newSequence.emails.map((email, index) => (
+                        <Card key={email.id}>
+                          <CardHeader className="pb-2">
+                            <div className="flex items-center justify-between">
+                              <CardTitle className="text-sm">Email {index + 1}</CardTitle>
+                              {newSequence.emails.length > 1 && (
+                                <Button 
+                                  onClick={() => removeEmailTemplate(email.id)}
+                                  size="sm" 
+                                  variant="outline"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-3">
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div>
+                                <Label>Subject Line *</Label>
+                                <Input
+                                  value={email.subject}
+                                  onChange={(e) => updateEmailTemplate(email.id, 'subject', e.target.value)}
+                                  placeholder="Email subject"
+                                />
+                              </div>
+                              <div>
+                                <Label>Day Delay</Label>
+                                <Input
+                                  type="number"
+                                  value={email.dayDelay}
+                                  onChange={(e) => updateEmailTemplate(email.id, 'dayDelay', parseInt(e.target.value) || 0)}
+                                  placeholder="0"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <Label>Email Content *</Label>
+                              <Textarea
+                                value={email.content}
+                                onChange={(e) => updateEmailTemplate(email.id, 'content', e.target.value)}
+                                placeholder="Email content..."
+                                rows={6}
+                              />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="type">Framework Type</Label>
-                    <Select value={newSequence.type} onValueChange={(value) => setNewSequence({ ...newSequence, type: value })}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="universal">7-Email Universal Framework</SelectItem>
-                        <SelectItem value="abandoned-cart">Abandoned Cart Recovery (18.64% CR)</SelectItem>
-                        <SelectItem value="lead-nurture">Lead Nurture Sequence</SelectItem>
-                        <SelectItem value="re-engagement">Re-engagement Campaign</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="p-4 bg-blue-50 rounded-lg">
-                    <h4 className="font-medium text-blue-900">
-                      {sequenceTemplates[newSequence.type as keyof typeof sequenceTemplates]?.name}
-                    </h4>
-                    <p className="text-sm text-blue-700 mt-1">
-                      {sequenceTemplates[newSequence.type as keyof typeof sequenceTemplates]?.description}
-                    </p>
-                    <p className="text-xs text-blue-600 mt-2">
-                      Includes {sequenceTemplates[newSequence.type as keyof typeof sequenceTemplates]?.emails.length} pre-written emails
-                    </p>
-                  </div>
+
                   <div className="flex space-x-2">
-                    <Button onClick={createSequence} className="flex-1">Create Sequence</Button>
+                    <Button onClick={handleCreateSequence} className="flex-1">Create Sequence</Button>
                     <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
                   </div>
                 </div>
@@ -507,214 +630,247 @@ Thanks for considering us!
             </Dialog>
           </div>
         </CardHeader>
-      </Card>
-
-      {/* Sequences List */}
-      {sequences.length === 0 ? (
-        <Card>
-          <CardContent className="text-center py-12">
-            <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No Email Sequences</h3>
-            <p className="text-muted-foreground mb-4">
-              Create your first high-converting email sequence using proven frameworks
-            </p>
-            <Button onClick={() => setIsCreating(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Your First Sequence
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Sequences List */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Your Sequences</h3>
-            {sequences.map((sequence) => (
-              <Card key={sequence.id} className="cursor-pointer hover:bg-muted/50 transition-colors">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="font-medium">{sequence.name}</h4>
-                      <p className="text-sm text-muted-foreground capitalize">{sequence.type.replace('-', ' ')} • {sequence.emails.length} emails</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant={sequence.status === 'active' ? 'default' : sequence.status === 'paused' ? 'secondary' : 'outline'}>
-                        {sequence.status}
-                      </Badge>
-                      <Button size="sm" variant="outline" onClick={() => setSelectedSequence(sequence)}>
-                        <Edit className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-4 gap-2 text-sm">
-                    <div className="text-center">
-                      <p className="font-medium">{sequence.stats.sent}</p>
-                      <p className="text-xs text-muted-foreground">Sent</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="font-medium">{sequence.stats.opened}</p>
-                      <p className="text-xs text-muted-foreground">Opened</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="font-medium">{sequence.stats.clicked}</p>
-                      <p className="text-xs text-muted-foreground">Clicked</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="font-medium">{sequence.stats.converted}</p>
-                      <p className="text-xs text-muted-foreground">Converted</p>
-                    </div>
-                  </div>
-                  <div className="flex space-x-2 mt-3">
-                    <Button 
-                      size="sm" 
-                      variant={sequence.status === 'active' ? 'secondary' : 'default'}
-                      onClick={() => toggleSequenceStatus(sequence.id)}
-                      className="flex-1"
-                    >
-                      {sequence.status === 'active' ? 'Pause' : 'Activate'}
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => deleteSequence(sequence.id)}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Sequence Editor */}
-          {selectedSequence && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">{selectedSequence.name}</h3>
-                <Button variant="outline" onClick={() => setSelectedSequence(null)}>
-                  Close Editor
-                </Button>
-              </div>
-              <Card>
-                <CardContent className="p-4">
-                  <Tabs defaultValue="emails">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="emails">Email Templates</TabsTrigger>
-                      <TabsTrigger value="performance">Performance</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="emails" className="space-y-4 mt-4">
-                      {selectedSequence.emails.map((email, index) => (
-                        <Card key={email.id}>
-                          <CardHeader className="pb-3">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <CardTitle className="text-base">Email {index + 1}: {email.name}</CardTitle>
-                                <CardDescription>
-                                  <Badge variant="outline" className="mr-2">{email.timing}</Badge>
-                                  <Badge variant="secondary">{email.conversionRate}% CR</Badge>
-                                </CardDescription>
-                              </div>
-                            </div>
-                          </CardHeader>
-                           <CardContent className="pt-0">
-                             <div className="space-y-3">
-                               <div>
-                                 <Label className="text-xs font-medium">Subject Line:</Label>
-                                 <p className="text-sm bg-gray-50 p-2 rounded">{email.subject}</p>
-                               </div>
-                               <div>
-                                 <Label className="text-xs font-medium">Content Preview:</Label>
-                                 <p className="text-sm text-muted-foreground bg-gray-50 p-3 rounded max-h-32 overflow-hidden">
-                                   {email.content.substring(0, 200)}...
-                                 </p>
-                               </div>
-                               <Button 
-                                 size="sm" 
-                                 variant="outline" 
-                                 onClick={() => handleEditEmail(email)}
-                                 className="mt-2"
-                               >
-                                 <Edit className="h-3 w-3 mr-1" />
-                                 Edit Content
-                               </Button>
-                             </div>
-                           </CardContent>
-                        </Card>
-                      ))}
-                    </TabsContent>
-                    <TabsContent value="performance" className="mt-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <Card>
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-2">
-                              <Users className="h-5 w-5 text-blue-500" />
-                              <div>
-                                <p className="text-2xl font-bold">{selectedSequence.stats.sent}</p>
-                                <p className="text-sm text-muted-foreground">Total Sent</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                        <Card>
-                          <CardContent className="p-4">
-                            <div className="flex items-center space-x-2">
-                              <TrendingUp className="h-5 w-5 text-green-500" />
-                              <div>
-                                <p className="text-2xl font-bold">
-                                  {selectedSequence.stats.sent > 0 
-                                    ? Math.round((selectedSequence.stats.converted / selectedSequence.stats.sent) * 100)
-                                    : 0}%
-                                </p>
-                                <p className="text-sm text-muted-foreground">Conversion Rate</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                </CardContent>
-              </Card>
+        <CardContent>
+          {sequences.length === 0 ? (
+            <div className="text-center py-8">
+              <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No sequences yet</h3>
+              <p className="text-muted-foreground">Create your first email sequence to start automating your outreach</p>
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Sequence Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Emails</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sequences.map((sequence) => (
+                    <TableRow key={sequence.id}>
+                      <TableCell>
+                        <div className="font-medium">{sequence.name}</div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="capitalize">
+                          {sequence.type.replace('-', ' ')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{sequence.emails.length} emails</span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`${getStatusColor(sequence.status)} text-white capitalize`}>
+                          {sequence.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(sequence.createdAt).toLocaleDateString()}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              setPreviewSequence(sequence);
+                              setIsPreviewOpen(true);
+                            }}
+                          >
+                            <Eye className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => openEditDialog(sequence)}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => copySequence(sequence)}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleToggleStatus(sequence.id)}
+                          >
+                            {sequence.status === 'active' ? 'Pause' : 'Activate'}
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleDeleteSequence(sequence.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           )}
-        </div>
-      )}
+        </CardContent>
+      </Card>
 
-      {/* Email Editor Dialog */}
+      {/* Edit Sequence Dialog */}
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Email: {editingEmail?.name}</DialogTitle>
+            <DialogTitle>Edit Email Sequence</DialogTitle>
             <DialogDescription>
-              Customize the email content and subject line
+              Update your email sequence
             </DialogDescription>
           </DialogHeader>
-          {editingEmail && (
-            <div className="space-y-4">
+          <div className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="editSubject">Subject Line</Label>
+                <Label htmlFor="edit-sequence-name">Sequence Name *</Label>
                 <Input
-                  id="editSubject"
-                  value={editingEmail.subject}
-                  onChange={(e) => setEditingEmail({ ...editingEmail, subject: e.target.value })}
-                  placeholder="Email subject line"
+                  id="edit-sequence-name"
+                  value={newSequence.name}
+                  onChange={(e) => setNewSequence({ ...newSequence, name: e.target.value })}
+                  placeholder="My Email Sequence"
                 />
               </div>
               <div>
-                <Label htmlFor="editContent">Email Content</Label>
-                <Textarea
-                  id="editContent"
-                  value={editingEmail.content}
-                  onChange={(e) => setEditingEmail({ ...editingEmail, content: e.target.value })}
-                  placeholder="Email content..."
-                  rows={15}
-                  className="font-mono text-sm"
-                />
+                <Label htmlFor="edit-sequence-type">Sequence Type</Label>
+                <Select 
+                  value={newSequence.type} 
+                  onValueChange={(value) => {
+                    setNewSequence({ 
+                      ...newSequence, 
+                      type: value as any 
+                    });
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cold-outreach">Cold Outreach</SelectItem>
+                    <SelectItem value="follow-up">Follow-up</SelectItem>
+                    <SelectItem value="lead-nurture">Lead Nurture</SelectItem>
+                    <SelectItem value="re-engagement">Re-engagement</SelectItem>
+                    <SelectItem value="onboarding">Onboarding</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="flex space-x-2">
-                <Button onClick={saveEmailEdits} className="flex-1">Save Changes</Button>
-                <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Email Templates</h3>
+                <Button onClick={addEmailTemplate} size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Email
+                </Button>
               </div>
+              
+              <div className="space-y-4">
+                {newSequence.emails.map((email, index) => (
+                  <Card key={email.id}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm">Email {index + 1}</CardTitle>
+                        {newSequence.emails.length > 1 && (
+                          <Button 
+                            onClick={() => removeEmailTemplate(email.id)}
+                            size="sm" 
+                            variant="outline"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Subject Line *</Label>
+                          <Input
+                            value={email.subject}
+                            onChange={(e) => updateEmailTemplate(email.id, 'subject', e.target.value)}
+                            placeholder="Email subject"
+                          />
+                        </div>
+                        <div>
+                          <Label>Day Delay</Label>
+                          <Input
+                            type="number"
+                            value={email.dayDelay}
+                            onChange={(e) => updateEmailTemplate(email.id, 'dayDelay', parseInt(e.target.value) || 0)}
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Email Content *</Label>
+                        <Textarea
+                          value={email.content}
+                          onChange={(e) => updateEmailTemplate(email.id, 'content', e.target.value)}
+                          placeholder="Email content..."
+                          rows={6}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex space-x-2">
+              <Button onClick={handleEditSequence} className="flex-1">Update Sequence</Button>
+              <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Preview Sequence Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Preview: {previewSequence?.name}</DialogTitle>
+            <DialogDescription>
+              Review your email sequence
+            </DialogDescription>
+          </DialogHeader>
+          {previewSequence && (
+            <div className="space-y-6">
+              {previewSequence.emails.map((email, index) => (
+                <Card key={email.id}>
+                  <CardHeader>
+                    <CardTitle className="text-sm">
+                      Email {index + 1} {email.dayDelay > 0 && `(Day ${email.dayDelay})`}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <Label className="text-xs uppercase tracking-wide text-muted-foreground">Subject</Label>
+                      <p className="font-medium">{email.subject}</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs uppercase tracking-wide text-muted-foreground">Content</Label>
+                      <div className="bg-muted p-4 rounded-md whitespace-pre-wrap text-sm">
+                        {email.content}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
         </DialogContent>

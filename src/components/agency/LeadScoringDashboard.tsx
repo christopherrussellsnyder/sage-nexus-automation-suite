@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { UserCheck, TrendingUp, Mail, Phone, MessageSquare, Calendar } from 'lucide-react';
+import { UserCheck, TrendingUp, Mail, Phone, MessageSquare, Calendar, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Lead {
@@ -25,15 +25,18 @@ interface Lead {
   source: string;
   engagementLevel: number;
   notes: string;
+  section: 'sales' | 'agency';
 }
 
 interface LeadScoringDashboardProps {
-  leads: Lead[];
+  leads?: Lead[];
   onNurtureLead: (lead: Lead) => void;
   onScheduleMeeting: (lead: Lead) => void;
+  section?: 'sales' | 'agency';
 }
 
-const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadScoringDashboardProps) => {
+const LeadScoringDashboard = ({ leads: propLeads, onNurtureLead, onScheduleMeeting, section = 'agency' }: LeadScoringDashboardProps) => {
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<'all' | 'hot' | 'warm' | 'cold'>('all');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [emailDialog, setEmailDialog] = useState(false);
@@ -42,11 +45,27 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
   const [meetingData, setMeetingData] = useState({ date: '', time: '', agenda: '' });
   const { toast } = useToast();
 
-  // Use actual leads data or empty array - no sample data
-  const leadsToShow = leads || [];
+  // Load leads from localStorage based on section
+  useEffect(() => {
+    const storageKey = section === 'sales' ? 'salesProspects' : 'leadManagementLeads';
+    const savedLeads = localStorage.getItem(storageKey);
+    
+    if (savedLeads) {
+      const parsedLeads = JSON.parse(savedLeads).map((lead: any) => ({
+        ...lead,
+        lastActivity: lead.lastActivity || 'Recently added',
+        engagementLevel: lead.engagementLevel || Math.floor(Math.random() * 100),
+        section
+      }));
+      setLeads(parsedLeads);
+    } else if (propLeads) {
+      setLeads(propLeads);
+    }
+  }, [propLeads, section]);
+
   const filteredLeads = selectedStatus === 'all' 
-    ? leadsToShow 
-    : leadsToShow.filter(lead => lead.status === selectedStatus);
+    ? leads 
+    : leads.filter(lead => lead.status === selectedStatus);
 
   const handleSendEmail = () => {
     if (!selectedLead || !emailData.subject || !emailData.message) {
@@ -93,6 +112,21 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
     });
   };
 
+  const handleDeleteLead = (leadId: string) => {
+    const updatedLeads = leads.filter(lead => lead.id !== leadId);
+    setLeads(updatedLeads);
+    
+    // Update localStorage
+    const storageKey = section === 'sales' ? 'salesProspects' : 'leadManagementLeads';
+    localStorage.setItem(storageKey, JSON.stringify(updatedLeads));
+    
+    const leadType = section === 'sales' ? 'Prospect' : 'Lead';
+    toast({
+      title: `${leadType} Deleted`,
+      description: `${leadType} has been removed from your scoring dashboard`,
+    });
+  };
+
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
     if (score >= 60) return 'text-yellow-600';
@@ -114,12 +148,17 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
 
   // Calculate metrics based on actual data
   const leadStats = {
-    total: leadsToShow.length,
-    hot: leadsToShow.filter(l => l.status === 'hot').length,
-    warm: leadsToShow.filter(l => l.status === 'warm').length,
-    cold: leadsToShow.filter(l => l.status === 'cold').length,
-    avgScore: leadsToShow.length > 0 ? Math.round(leadsToShow.reduce((sum, l) => sum + l.score, 0) / leadsToShow.length) : 0
+    total: leads.length,
+    hot: leads.filter(l => l.status === 'hot').length,
+    warm: leads.filter(l => l.status === 'warm').length,
+    cold: leads.filter(l => l.status === 'cold').length,
+    avgScore: leads.length > 0 ? Math.round(leads.reduce((sum, l) => sum + l.score, 0) / leads.length) : 0
   };
+
+  const sectionTitle = section === 'sales' ? 'Prospect Scoring Dashboard' : 'Lead Scoring Dashboard';
+  const sectionDescription = section === 'sales' 
+    ? 'AI-powered prospect scoring and nurturing recommendations'
+    : 'AI-powered lead scoring and nurturing recommendations';
 
   return (
     <div className="space-y-6">
@@ -129,7 +168,7 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
           <DialogHeader>
             <DialogTitle>Send Email to {selectedLead?.name}</DialogTitle>
             <DialogDescription>
-              Compose an email to nurture this lead
+              Compose an email to nurture this {section === 'sales' ? 'prospect' : 'lead'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -166,7 +205,7 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
           <DialogHeader>
             <DialogTitle>Schedule Meeting with {selectedLead?.name}</DialogTitle>
             <DialogDescription>
-              Set up a meeting with this lead
+              Set up a meeting with this {section === 'sales' ? 'prospect' : 'lead'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -214,7 +253,7 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
               <UserCheck className="h-5 w-5 text-blue-500" />
               <div>
                 <p className="text-2xl font-bold">{leadStats.total}</p>
-                <p className="text-sm text-muted-foreground">Total Leads</p>
+                <p className="text-sm text-muted-foreground">Total {section === 'sales' ? 'Prospects' : 'Leads'}</p>
               </div>
             </div>
           </CardContent>
@@ -225,7 +264,7 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
               <div className="w-3 h-3 rounded-full bg-red-500" />
               <div>
                 <p className="text-2xl font-bold">{leadStats.hot}</p>
-                <p className="text-sm text-muted-foreground">Hot Leads</p>
+                <p className="text-sm text-muted-foreground">Hot {section === 'sales' ? 'Prospects' : 'Leads'}</p>
               </div>
             </div>
           </CardContent>
@@ -236,7 +275,7 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
               <div className="w-3 h-3 rounded-full bg-yellow-500" />
               <div>
                 <p className="text-2xl font-bold">{leadStats.warm}</p>
-                <p className="text-sm text-muted-foreground">Warm Leads</p>
+                <p className="text-sm text-muted-foreground">Warm {section === 'sales' ? 'Prospects' : 'Leads'}</p>
               </div>
             </div>
           </CardContent>
@@ -247,7 +286,7 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
               <div className="w-3 h-3 rounded-full bg-blue-500" />
               <div>
                 <p className="text-2xl font-bold">{leadStats.cold}</p>
-                <p className="text-sm text-muted-foreground">Cold Leads</p>
+                <p className="text-sm text-muted-foreground">Cold {section === 'sales' ? 'Prospects' : 'Leads'}</p>
               </div>
             </div>
           </CardContent>
@@ -270,10 +309,20 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <UserCheck className="h-5 w-5" />
-            <span>Lead Scoring Dashboard</span>
+            <span>{sectionTitle}</span>
           </CardTitle>
           <CardDescription>
-            AI-powered lead scoring and nurturing recommendations
+            {sectionDescription}
+            <br />
+            <strong>Lead Scoring Explanation:</strong> Leads are scored based on multiple factors including:
+            <ul className="list-disc list-inside mt-2 text-sm">
+              <li>Company size (20 points for established companies)</li>
+              <li>Job title (25 points for decision-makers like CEO, CTO, VP, Director, Manager)</li>
+              <li>Professional email domain (20 points for business emails)</li>
+              <li>Lead source (LinkedIn: 25pts, Referral: 30pts, Website: 15pts, Event: 20pts, Cold outreach: 10pts)</li>
+              <li>Engagement level (10 points for detailed notes indicating interaction)</li>
+            </ul>
+            <strong>Status levels:</strong> Hot (80+ points), Warm (60-79 points), Cold (below 60 points)
           </CardDescription>
           <div className="flex space-x-2">
             {['all', 'hot', 'warm', 'cold'].map((status) => (
@@ -290,18 +339,18 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
           </div>
         </CardHeader>
         <CardContent>
-          {leadsToShow.length === 0 ? (
+          {leads.length === 0 ? (
             <div className="text-center py-8">
               <UserCheck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No leads yet</h3>
-              <p className="text-muted-foreground">Add leads to start tracking and scoring them</p>
+              <h3 className="text-lg font-semibold mb-2">No {section === 'sales' ? 'prospects' : 'leads'} yet</h3>
+              <p className="text-muted-foreground">Add {section === 'sales' ? 'prospects' : 'leads'} to start tracking and scoring them</p>
             </div>
           ) : (
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Lead</TableHead>
+                    <TableHead>{section === 'sales' ? 'Prospect' : 'Lead'}</TableHead>
                     <TableHead>Company</TableHead>
                     <TableHead>Score</TableHead>
                     <TableHead>Status</TableHead>
@@ -379,8 +428,12 @@ const LeadScoringDashboard = ({ leads, onNurtureLead, onScheduleMeeting }: LeadS
                           >
                             <Calendar className="h-3 w-3" />
                           </Button>
-                          <Button size="sm">
-                            <MessageSquare className="h-3 w-3" />
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleDeleteLead(lead.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       </TableCell>

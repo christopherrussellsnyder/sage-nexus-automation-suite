@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { UserPlus, Mail, Phone, MessageSquare, Trash2 } from 'lucide-react';
+import { UserPlus, Mail, Phone, MessageSquare, Trash2, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Lead {
@@ -25,15 +25,19 @@ interface Lead {
   score: number;
   status: 'hot' | 'warm' | 'cold';
   createdAt: string;
+  section: 'sales' | 'agency';
 }
 
 interface LeadManagementProps {
   onLeadAdded?: (lead: Lead) => void;
+  section?: 'sales' | 'agency';
 }
 
-const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
+const LeadManagement = ({ onLeadAdded, section = 'agency' }: LeadManagementProps) => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isAddingLead, setIsAddingLead] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingLead, setEditingLead] = useState<Lead | null>(null);
   const [newLead, setNewLead] = useState({
     name: '',
     email: '',
@@ -45,18 +49,20 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
   });
   const { toast } = useToast();
 
-  // Load leads from localStorage on component mount
+  // Load leads from localStorage on component mount - section specific
   useEffect(() => {
-    const savedLeads = localStorage.getItem('leadManagementLeads');
+    const storageKey = section === 'sales' ? 'salesProspects' : 'leadManagementLeads';
+    const savedLeads = localStorage.getItem(storageKey);
     if (savedLeads) {
       setLeads(JSON.parse(savedLeads));
     }
-  }, []);
+  }, [section]);
 
-  // Save leads to localStorage whenever leads change
-  useEffect(()=> {
-    localStorage.setItem('leadManagementLeads', JSON.stringify(leads));
-  }, [leads]);
+  // Save leads to localStorage whenever leads change - section specific
+  useEffect(() => {
+    const storageKey = section === 'sales' ? 'salesProspects' : 'leadManagementLeads';
+    localStorage.setItem(storageKey, JSON.stringify(leads));
+  }, [leads, section]);
 
   const calculateLeadScore = (lead: any): { score: number; status: 'hot' | 'warm' | 'cold' } => {
     let score = 0;
@@ -115,7 +121,8 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
       ...newLead,
       score,
       status,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      section
     };
 
     const updatedLeads = [...leads, lead];
@@ -137,17 +144,75 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
     });
     setIsAddingLead(false);
 
+    const leadType = section === 'sales' ? 'prospect' : 'lead';
     toast({
-      title: "Lead Added",
-      description: `${lead.name} has been added with a ${status} score of ${score} and synced to Lead Scoring`,
+      title: `${leadType.charAt(0).toUpperCase() + leadType.slice(1)} Added`,
+      description: `${lead.name} has been added with a ${status} score of ${score}`,
     });
+  };
+
+  const handleEditLead = () => {
+    if (!editingLead || !newLead.name || !newLead.email || !newLead.company) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { score, status } = calculateLeadScore(newLead);
+    
+    const updatedLead: Lead = {
+      ...editingLead,
+      ...newLead,
+      score,
+      status
+    };
+
+    setLeads(leads.map(lead => 
+      lead.id === editingLead.id ? updatedLead : lead
+    ));
+
+    setNewLead({
+      name: '',
+      email: '',
+      phone: '',
+      company: '',
+      jobTitle: '',
+      source: '',
+      notes: ''
+    });
+    setEditingLead(null);
+    setIsEditing(false);
+
+    const leadType = section === 'sales' ? 'prospect' : 'lead';
+    toast({
+      title: `${leadType.charAt(0).toUpperCase() + leadType.slice(1)} Updated`,
+      description: `${updatedLead.name} has been updated successfully`,
+    });
+  };
+
+  const openEditDialog = (lead: Lead) => {
+    setEditingLead(lead);
+    setNewLead({
+      name: lead.name,
+      email: lead.email,
+      phone: lead.phone,
+      company: lead.company,
+      jobTitle: lead.jobTitle,
+      source: lead.source,
+      notes: lead.notes
+    });
+    setIsEditing(true);
   };
 
   const handleDeleteLead = (leadId: string) => {
     setLeads(leads.filter(lead => lead.id !== leadId));
+    const leadType = section === 'sales' ? 'Prospect' : 'Lead';
     toast({
-      title: "Lead Deleted",
-      description: "Lead has been removed from your list",
+      title: `${leadType} Deleted`,
+      description: `${leadType} has been removed from your list`,
     });
   };
 
@@ -174,27 +239,37 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  const sectionTitle = section === 'sales' ? 'Prospect Management' : 'Lead Management';
+  const sectionDescription = section === 'sales' 
+    ? 'Add and manage your sales prospects with AI-powered scoring'
+    : 'Add and manage your incoming leads with AI-powered scoring. Leads automatically sync to Lead Scoring dashboard.';
+  const addButtonText = section === 'sales' ? 'Add Prospect' : 'Add Lead';
+  const dialogTitle = section === 'sales' ? 'Add New Prospect' : 'Add New Lead';
+  const dialogDescription = section === 'sales' 
+    ? 'Add a new prospect and get an automatic AI score based on their profile'
+    : 'Add a new lead and get an automatic AI score based on their profile';
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Lead Management</CardTitle>
-              <CardDescription>Add and manage your incoming leads with AI-powered scoring. Leads automatically sync to Lead Scoring dashboard.</CardDescription>
+              <CardTitle>{sectionTitle}</CardTitle>
+              <CardDescription>{sectionDescription}</CardDescription>
             </div>
             <Dialog open={isAddingLead} onOpenChange={setIsAddingLead}>
               <DialogTrigger asChild>
                 <Button>
                   <UserPlus className="h-4 w-4 mr-2" />
-                  Add Lead
+                  {addButtonText}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Add New Lead</DialogTitle>
+                  <DialogTitle>{dialogTitle}</DialogTitle>
                   <DialogDescription>
-                    Add a new lead and get an automatic AI score based on their profile
+                    {dialogDescription}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
@@ -271,7 +346,7 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
                     />
                   </div>
                   <div className="flex space-x-2">
-                    <Button onClick={handleAddLead} className="flex-1">Add Lead</Button>
+                    <Button onClick={handleAddLead} className="flex-1">{addButtonText}</Button>
                     <Button variant="outline" onClick={() => setIsAddingLead(false)}>Cancel</Button>
                   </div>
                 </div>
@@ -283,15 +358,15 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
           {leads.length === 0 ? (
             <div className="text-center py-8">
               <UserPlus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No leads yet</h3>
-              <p className="text-muted-foreground">Add your first lead to get started with AI-powered scoring</p>
+              <h3 className="text-lg font-semibold mb-2">{section === 'sales' ? 'No prospects yet' : 'No leads yet'}</h3>
+              <p className="text-muted-foreground">{section === 'sales' ? 'Add your first prospect to get started with AI-powered scoring' : 'Add your first lead to get started with AI-powered scoring'}</p>
             </div>
           ) : (
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Lead</TableHead>
+                    <TableHead>{section === 'sales' ? 'Prospect' : 'Lead'}</TableHead>
                     <TableHead>Company</TableHead>
                     <TableHead>Score</TableHead>
                     <TableHead>Status</TableHead>
@@ -334,6 +409,13 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
                           <Button 
                             size="sm" 
                             variant="outline"
+                            onClick={() => openEditDialog(lead)}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
                             onClick={() => handleEmailLead(lead)}
                           >
                             <Mail className="h-3 w-3" />
@@ -364,6 +446,96 @@ const LeadManagement = ({ onLeadAdded }: LeadManagementProps) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Lead Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit {section === 'sales' ? 'Prospect' : 'Lead'}</DialogTitle>
+            <DialogDescription>
+              Update {section === 'sales' ? 'prospect' : 'lead'} information
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-name">Name *</Label>
+              <Input
+                id="edit-name"
+                value={newLead.name}
+                onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
+                placeholder="John Smith"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-email">Email *</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={newLead.email}
+                onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
+                placeholder="john@company.com"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-phone">Phone</Label>
+              <Input
+                id="edit-phone"
+                value={newLead.phone}
+                onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
+                placeholder="+1 (555) 123-4567"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-company">Company *</Label>
+              <Input
+                id="edit-company"
+                value={newLead.company}
+                onChange={(e) => setNewLead({ ...newLead, company: e.target.value })}
+                placeholder="TechCorp Inc"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-jobTitle">Job Title</Label>
+              <Input
+                id="edit-jobTitle"
+                value={newLead.jobTitle}
+                onChange={(e) => setNewLead({ ...newLead, jobTitle: e.target.value })}
+                placeholder="Marketing Director"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-source">Lead Source</Label>
+              <Select value={newLead.source} onValueChange={(value) => setNewLead({ ...newLead, source: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select source" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="linkedin">LinkedIn</SelectItem>
+                  <SelectItem value="website">Website</SelectItem>
+                  <SelectItem value="referral">Referral</SelectItem>
+                  <SelectItem value="cold-outreach">Cold Outreach</SelectItem>
+                  <SelectItem value="event">Event</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-notes">Notes</Label>
+              <Textarea
+                id="edit-notes"
+                value={newLead.notes}
+                onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
+                placeholder="Additional information about this lead..."
+                rows={3}
+              />
+            </div>
+            <div className="flex space-x-2">
+              <Button onClick={handleEditLead} className="flex-1">Update {section === 'sales' ? 'Prospect' : 'Lead'}</Button>
+              <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

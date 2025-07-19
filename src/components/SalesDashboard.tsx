@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,12 +26,20 @@ const SalesDashboard = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'prospects' | 'deals' | 'sequences' | 'meetings'>('deals');
   const [leads, setLeads] = useState<any[]>([]);
 
+  // Load prospects from localStorage for sales section
+  useEffect(() => {
+    const savedProspects = localStorage.getItem('salesProspects');
+    if (savedProspects) {
+      setLeads(JSON.parse(savedProspects));
+    }
+  }, []);
+
   const handleLeadAdded = (lead: any) => {
     setLeads(prev => [...prev, lead]);
   };
 
   const handleNurtureLead = (lead: any) => {
-    console.log('Nurturing lead:', lead);
+    console.log('Nurturing prospect:', lead);
   };
 
   const handleScheduleMeeting = (lead: any) => {
@@ -80,7 +88,7 @@ const SalesDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Sales Operations</h2>
+          <h2 className="text-3xl font-bold">Sales Acceleration Hub</h2>
           <p className="text-muted-foreground">Intelligent prospect research and sales automation</p>
         </div>
         <div className="flex space-x-2">
@@ -146,17 +154,18 @@ const SalesDashboard = () => {
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'deals' && <DealsTracker />}
-      {activeTab === 'meetings' && <MeetingScheduler />}
-      {activeTab === 'sequences' && <EmailSequenceBuilder />}
+      {activeTab === 'deals' && <DealsTracker section="sales" />}
+      {activeTab === 'meetings' && <MeetingScheduler section="sales" />}
+      {activeTab === 'sequences' && <EmailSequenceBuilder section="sales" />}
       
       {activeTab === 'prospects' && (
         <div className="space-y-6">
-          <LeadManagement onLeadAdded={handleLeadAdded} />
+          <LeadManagement onLeadAdded={handleLeadAdded} section="sales" />
           <LeadScoringDashboard 
             leads={leads} 
             onNurtureLead={handleNurtureLead}
             onScheduleMeeting={handleScheduleMeeting}
+            section="sales"
           />
         </div>
       )}

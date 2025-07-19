@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,14 @@ const AgencyDashboard = () => {
   const [activeTab, setActiveTab] = useState<'leads' | 'scoring' | 'deals' | 'sequences' | 'meetings'>('leads');
   const [leads, setLeads] = useState<any[]>([]);
 
+  // Load leads from localStorage for agency section
+  useEffect(() => {
+    const savedLeads = localStorage.getItem('leadManagementLeads');
+    if (savedLeads) {
+      setLeads(JSON.parse(savedLeads));
+    }
+  }, []);
+
   const handleLeadAdded = (lead: any) => {
     setLeads(prev => [...prev, lead]);
   };
@@ -39,7 +47,7 @@ const AgencyDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Agency Suite</h2>
+          <h2 className="text-3xl font-bold">Agency Scale System</h2>
           <p className="text-muted-foreground">Comprehensive lead management and scoring</p>
         </div>
         <div className="flex space-x-2">
@@ -88,7 +96,7 @@ const AgencyDashboard = () => {
 
       {/* Tab Content */}
       {activeTab === 'leads' && (
-        <LeadManagement onLeadAdded={handleLeadAdded} />
+        <LeadManagement onLeadAdded={handleLeadAdded} section="agency" />
       )}
 
       {activeTab === 'scoring' && (
@@ -96,12 +104,13 @@ const AgencyDashboard = () => {
           leads={leads}
           onNurtureLead={handleNurtureLead}
           onScheduleMeeting={handleScheduleMeeting}
+          section="agency"
         />
       )}
 
-      {activeTab === 'deals' && <DealsTracker />}
-      {activeTab === 'sequences' && <EmailSequenceBuilder />}
-      {activeTab === 'meetings' && <MeetingScheduler />}
+      {activeTab === 'deals' && <DealsTracker section="agency" />}
+      {activeTab === 'sequences' && <EmailSequenceBuilder section="agency" />}
+      {activeTab === 'meetings' && <MeetingScheduler section="agency" />}
     </div>
   );
 };
