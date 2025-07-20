@@ -194,7 +194,145 @@ Generate realistic, market-validated product data using actual e-commerce metric
           'Expert endorsement strategy',
           'Problem-solution narrative',
           'Value-stacked bundle approach'
-        ]
+        ],
+        // NEW: Enhanced competitive analysis
+        competitiveAnalysis: {
+          topCompetitors: [
+            'CompetitorA - $2.1M monthly revenue, weak customer service',
+            'CompetitorB - $890K monthly revenue, limited product variants',
+            'CompetitorC - $1.4M monthly revenue, poor mobile experience'
+          ],
+          marketGaps: [
+            'Limited customer education content',
+            'Weak social media presence',
+            'No subscription model offerings',
+            'Poor mobile optimization'
+          ],
+          competitiveAdvantages: [
+            'Superior customer support infrastructure',
+            'Advanced mobile-first design',
+            'Comprehensive education resources',
+            'Flexible subscription options'
+          ]
+        },
+        // NEW: Social media content suggestions
+        socialMediaContent: {
+          platforms: {
+            tiktok: [
+              'Before/after transformation videos',
+              'Product unboxing with trending sounds',
+              'User-generated content compilation',
+              'Educational how-to tutorials'
+            ],
+            instagram: [
+              'Lifestyle integration carousel posts',
+              'Story highlights for product features',
+              'Influencer collaboration content',
+              'User testimonial reels'
+            ],
+            facebook: [
+              'Community building group content',
+              'Educational live streams',
+              'Customer success story posts',
+              'Product demonstration videos'
+            ]
+          },
+          contentThemes: [
+            'Problem-solution storytelling',
+            'Lifestyle transformation',
+            'Educational value content',
+            'Community building'
+          ]
+        },
+        // NEW: Risk assessment
+        riskAssessment: {
+          riskLevel: 'Low',
+          riskFactors: [
+            'Seasonal demand variations (15% impact)',
+            'Supply chain disruptions (10% impact)',
+            'Market saturation potential (20% impact)'
+          ],
+          mitigationStrategies: [
+            'Diversify supplier base across 3+ regions',
+            'Build 60-day inventory buffer',
+            'Develop complementary product line',
+            'Establish exclusive supplier agreements'
+          ],
+          legalConsiderations: [
+            'FDA compliance verified',
+            'Patent landscape clear',
+            'No trademark conflicts identified',
+            'Standard consumer protection applies'
+          ]
+        },
+        // NEW: Target audience analysis
+        targetAudience: {
+          demographics: {
+            primaryAge: '25-45',
+            secondaryAge: '35-55',
+            gender: '65% Female, 35% Male',
+            income: '$45K-$85K annually',
+            education: 'College-educated (70%)',
+            location: 'Urban/Suburban (85%)'
+          },
+          psychographics: {
+            interests: [
+              'Health and wellness',
+              'Productivity optimization',
+              'Technology adoption',
+              'Self-improvement'
+            ],
+            values: [
+              'Quality over quantity',
+              'Time efficiency',
+              'Health consciousness',
+              'Innovation adoption'
+            ],
+            behaviors: [
+              'Regular online shopping',
+              'Social media active',
+              'Reviews research-focused',
+              'Brand loyalty moderate'
+            ],
+            painPoints: [
+              'Time constraints',
+              'Information overload',
+              'Quality uncertainty',
+              'Value justification'
+            ]
+          },
+          buyingMotivation: [
+            'Problem-solving urgency (40%)',
+            'Quality improvement desire (30%)',
+            'Social proof influence (20%)',
+            'Convenience seeking (10%)'
+          ]
+        },
+        // NEW: Enhanced pricing recommendations
+        pricingStrategy: {
+          recommendedPrice: 89.99,
+          pricePoints: {
+            introductory: 69.99,
+            standard: 89.99,
+            premium: 119.99
+          },
+          bundleOptions: [
+            'Starter Bundle - $149.99 (35% margin boost)',
+            'Complete Kit - $199.99 (45% margin boost)',
+            'Professional Set - $279.99 (55% margin boost)'
+          ],
+          pricingTactics: [
+            'Psychological pricing with .99 endings',
+            'Limited-time launch discount strategy',
+            'Volume pricing for bulk orders',
+            'Subscription discount incentives'
+          ],
+          competitivePricing: {
+            belowCompetitor: 69.99,
+            matchCompetitor: 79.99,
+            premiumPosition: 99.99
+          }
+        }
       },
       {
         name: `AI-Optimized ${searchQuery} Solution 2`,
@@ -233,7 +371,145 @@ Generate realistic, market-validated product data using actual e-commerce metric
           'Cost-savings calculator approach',
           'Lifestyle transformation angle',
           'Social proof acceleration'
-        ]
+        ],
+        // NEW: Enhanced competitive analysis
+        competitiveAnalysis: {
+          topCompetitors: [
+            'HealthCorp - $1.5M monthly revenue, limited innovation',
+            'WellnessBrand - $750K monthly revenue, poor customer retention',
+            'FitSolution - $900K monthly revenue, weak brand positioning'
+          ],
+          marketGaps: [
+            'Lack of scientific backing',
+            'Poor user experience design',
+            'Limited customer support',
+            'No mobile app integration'
+          ],
+          competitiveAdvantages: [
+            'Scientific research foundation',
+            'Intuitive user interface',
+            '24/7 customer support',
+            'Integrated mobile ecosystem'
+          ]
+        },
+        // NEW: Social media content suggestions
+        socialMediaContent: {
+          platforms: {
+            tiktok: [
+              'Daily routine transformation videos',
+              'Science-backed benefit explanations',
+              'Customer testimonial compilations',
+              'Quick tip educational content'
+            ],
+            instagram: [
+              'Progress tracking carousel posts',
+              'Scientific infographic content',
+              'Behind-the-scenes research stories',
+              'Community challenge campaigns'
+            ],
+            facebook: [
+              'Health education article shares',
+              'Expert interview content',
+              'Community discussion posts',
+              'Research study breakdowns'
+            ]
+          },
+          contentThemes: [
+            'Science-backed health solutions',
+            'Daily wellness integration',
+            'Community support and motivation',
+            'Educational health content'
+          ]
+        },
+        // NEW: Risk assessment
+        riskAssessment: {
+          riskLevel: 'Medium',
+          riskFactors: [
+            'Regulatory changes in health sector (25% impact)',
+            'Scientific study contradictions (15% impact)',
+            'Emerging competitor threats (30% impact)'
+          ],
+          mitigationStrategies: [
+            'Continuous regulatory monitoring',
+            'Multiple scientific study backing',
+            'Patent application for key innovations',
+            'Strong brand community building'
+          ],
+          legalConsiderations: [
+            'Health claims compliance required',
+            'Consumer safety testing needed',
+            'Medical professional endorsements',
+            'Transparent ingredient disclosure'
+          ]
+        },
+        // NEW: Target audience analysis
+        targetAudience: {
+          demographics: {
+            primaryAge: '30-50',
+            secondaryAge: '25-35',
+            gender: '55% Female, 45% Male',
+            income: '$55K-$95K annually',
+            education: 'College-educated (80%)',
+            location: 'Urban professionals (75%)'
+          },
+          psychographics: {
+            interests: [
+              'Health optimization',
+              'Scientific research',
+              'Wellness trends',
+              'Performance enhancement'
+            ],
+            values: [
+              'Evidence-based decisions',
+              'Long-term health investment',
+              'Quality and safety',
+              'Professional credibility'
+            ],
+            behaviors: [
+              'Research-driven purchasing',
+              'Health app usage',
+              'Professional consultation seeking',
+              'Wellness community participation'
+            ],
+            painPoints: [
+              'Information credibility concerns',
+              'Time investment requirements',
+              'Cost-benefit uncertainty',
+              'Integration with existing routines'
+            ]
+          },
+          buyingMotivation: [
+            'Health improvement urgency (45%)',
+            'Scientific credibility (25%)',
+            'Professional recommendations (20%)',
+            'Community social proof (10%)'
+          ]
+        },
+        // NEW: Enhanced pricing recommendations
+        pricingStrategy: {
+          recommendedPrice: 34.95,
+          pricePoints: {
+            introductory: 24.95,
+            standard: 34.95,
+            premium: 49.95
+          },
+          bundleOptions: [
+            'Health Starter Pack - $89.99 (40% margin boost)',
+            'Wellness Complete Kit - $149.99 (50% margin boost)',
+            'Professional Health System - $229.99 (60% margin boost)'
+          ],
+          pricingTactics: [
+            'Health investment framing',
+            'Monthly cost comparison approach',
+            'Professional endorsement premium',
+            'Subscription health plan options'
+          ],
+          competitivePricing: {
+            belowCompetitor: 29.95,
+            matchCompetitor: 34.95,
+            premiumPosition: 44.95
+          }
+        }
       }
     ];
 
