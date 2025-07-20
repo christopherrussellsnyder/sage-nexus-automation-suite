@@ -34,35 +34,98 @@ serve(async (req) => {
       throw new Error('E-commerce API key not configured');
     }
 
-    // Create prompt for product research
-    const systemPrompt = `You are an expert e-commerce product researcher. Generate detailed product analysis with market validation, evergreen potential, profit margins, and winning marketing angles.`;
+    // Create comprehensive product research prompt with multi-platform analysis
+    const systemPrompt = `You are an expert e-commerce product research system that simulates a dedicated research team with comprehensive multi-platform monitoring capabilities. You replicate proven methodologies used by successful product research platforms.
+
+CORE RESEARCH METHODOLOGY:
+You systematically analyze data from multiple sources to identify winning dropshipping/ecommerce products:
+
+MULTI-PLATFORM DATA COLLECTION SIMULATION:
+
+1. Social Media Intelligence:
+- Facebook: Trending posts, viral product videos, high-engagement content patterns
+- Instagram: Trending hashtags, influencer product posts, viral content indicators  
+- TikTok: Viral product videos, trending sounds with products, engagement metrics
+- YouTube: Product reviews, unboxing videos, viral demonstrations
+
+2. Marketplace Analysis:
+- AliExpress: Best-selling trends, new launches, supplier quality metrics
+- Amazon: Best-seller rankings, review analysis, pricing strategies
+- eBay: Sold listings analysis, auction trends, demand indicators
+- Alibaba: Wholesale trends, supplier reliability, emerging products
+
+3. Competitor Intelligence:
+- Successful store monitoring and product tracking
+- Ad surveillance for trending products and marketing strategies
+- Pricing analysis and inventory monitoring
+- Website performance and customer engagement metrics
+
+ADVANCED SELECTION CRITERIA & VETTING:
+
+Mandatory Screening Requirements:
+- Profit Margin: Minimum 3x markup potential (buy $8-15, sell $30-50+)
+- Market Demand: Consistent search volume with trending indicators
+- Competition Level: Sweet spot - not oversaturated, sufficient demand
+- Shipping Feasibility: Optimal size/weight for dropshipping economics
+- Seasonal Stability: Year-round demand with sustainable trends
+- Problem-Solving Factor: Addresses real customer pain points
+- Social Proof: Strong engagement potential across platforms
+- Supplier Reliability: Vetted supplier ratings and shipping capabilities
+
+Quality Assessment Metrics:
+- Review sentiment analysis and rating requirements
+- Trend longevity vs fleeting fad assessment
+- Marketing viral potential and advertising viability
+- Target audience clarity and demographic insights
+- Risk assessment (legal, seasonal, market saturation)
+
+Generate realistic, market-validated product data using actual e-commerce metrics and proven product concepts. Format as structured JSON response.`;
 
     const userPrompt = `
-    Research and analyze products for the search query: "${searchQuery}"
+    Conduct comprehensive product research for: "${searchQuery}"
     
-    Please provide 4-6 validated products with the following details for each:
-    - Product name and description
-    - Price point and profit margin analysis
+    Apply your multi-platform research methodology to identify 4-6 thoroughly vetted products that have passed your advanced screening criteria.
+    
+    For each product, provide comprehensive analysis including:
+    
+    CORE METRICS:
+    - Product name and detailed description
+    - Supplier cost and retail price (3x+ markup potential)
     - Market validation status (Validated/Emerging/Risky)
-    - Market saturation level (Low/Medium/High)
-    - Evergreen score (1-10)
-    - Problem severity it solves (High/Medium/Low)
-    - Competitor count and analysis
+    - Market saturation assessment (Low/Medium/High)
+    - Evergreen stability score (1-10)
+    - Problem severity addressed (High/Medium/Low)
+    - Competition analysis and competitor count
     - Search volume and trend direction
-    - Shipping complexity
-    - Upsell potential
-    - 5 specific reasons why this product is recommended
-    - 5 winning marketing angles
-    - Expected metrics (conversion rate, ROAS, etc.)
+    - Shipping complexity evaluation
+    - Upsell/cross-sell potential
     
-    Focus on products that:
-    - Solve real problems with high severity
-    - Have strong evergreen potential (score 7+)
-    - Offer good profit margins (50%+)
-    - Have manageable competition
-    - Are suitable for dropshipping or e-commerce
+    ADVANCED INTELLIGENCE:
+    - Social media engagement potential across platforms
+    - Supplier reliability assessment and logistics data
+    - Target demographic analysis and customer personas
+    - Seasonal demand patterns and stability
+    - Marketing viral potential and advertising viability
+    - Revenue projections and growth potential
+    - Risk factors and mitigation strategies
+    - Competitive landscape and differentiation opportunities
     
-    Format as a structured response with detailed analysis.
+    ACTIONABLE INSIGHTS:
+    - 5 data-backed reasons for recommendation
+    - 5 proven marketing angles with platform-specific strategies
+    - Customer acquisition cost estimates
+    - Expected conversion rates and ROAS
+    - Scaling potential and market expansion opportunities
+    
+    Focus on products that meet ALL screening criteria:
+    - 3x+ profit margins with verified supplier data
+    - High problem severity with clear value proposition
+    - Evergreen potential (7+ stability score)
+    - Optimal competition levels (not oversaturated)
+    - Strong social media and viral marketing potential
+    - Year-round demand with growth trends
+    
+    Provide comprehensive market analysis with actionable business intelligence.
     `;
 
     // Call OpenAI API using the e-commerce specific key
