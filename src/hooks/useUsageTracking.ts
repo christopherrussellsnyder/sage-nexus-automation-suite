@@ -106,54 +106,114 @@ export const useUsageTracking = () => {
   };
 
   const incrementUsage = async (featureType: keyof UsageData): Promise<boolean> => {
-    try {
-      // Check localStorage for demo authentication first
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        const user = JSON.parse(userData);
-        if (user.isAuthenticated) {
-          // For demo mode, just increment in localStorage
-          const newUsage = { ...usage, [featureType]: usage[featureType] + 1 };
-          setUsage(newUsage);
-          localStorage.setItem('demo_usage', JSON.stringify(newUsage));
-          return true;
+    const startTime = Date.now();
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    const attemptIncrement = async (): Promise<boolean> => {
+      try {
+        // Check localStorage for demo authentication first
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          const user = JSON.parse(userData);
+          if (user.isAuthenticated) {
+            // For demo mode, just increment in localStorage
+            const newUsage = { ...usage, [featureType]: usage[featureType] + 1 };
+            setUsage(newUsage);
+            localStorage.setItem('demo_usage', JSON.stringify(newUsage));
+            console.log(`Demo usage incremented for ${featureType}: ${newUsage[featureType]}`);
+            return true;
+          }
         }
-      }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('User not authenticated');
 
-      if (!canUseFeature(featureType)) {
+        // Pre-check usage limits with enhanced validation
+        if (!canUseFeature(featureType)) {
+          toast({
+            title: "Usage Limit Reached",
+            description: `You've reached your limit of ${FREE_LIMIT} generations for ${featureType}. Upgrade to Premium for unlimited access.`,
+            variant: "destructive",
+          });
+          return false;
+        }
+
+        // Enhanced database operation with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        try {
+          const { error } = await supabase.rpc('increment_usage', {
+            _user_id: user.id,
+            _feature_type: featureType
+          });
+
+          clearTimeout(timeoutId);
+
+          if (error) {
+            console.error('Database increment error:', error);
+            throw new Error(`Failed to increment usage: ${error.message}`);
+          }
+
+          // Optimistically update local state
+          setUsage(prev => {
+            const newUsage = {
+              ...prev,
+              [featureType]: prev[featureType] + 1
+            };
+            console.log(`Usage incremented for ${featureType}: ${newUsage[featureType]}`);
+            return newUsage;
+          });
+
+          // Track performance
+          const duration = Date.now() - startTime;
+          console.log(`Usage increment completed in ${duration}ms for ${featureType}`);
+
+          return true;
+
+        } catch (dbError) {
+          clearTimeout(timeoutId);
+          throw dbError;
+        }
+
+      } catch (error) {
+        console.error(`Usage increment attempt ${retryCount + 1} failed:`, error);
+        
+        // Retry logic for recoverable errors
+        if (retryCount < maxRetries) {
+          const isRetryable = 
+            error.message?.includes('network') ||
+            error.message?.includes('timeout') ||
+            error.message?.includes('AbortError') ||
+            error.message?.includes('connection');
+          
+          if (isRetryable) {
+            retryCount++;
+            const delay = Math.min(1000 * Math.pow(2, retryCount - 1), 5000); // Exponential backoff, max 5s
+            console.log(`Retrying usage increment in ${delay}ms... (attempt ${retryCount}/${maxRetries})`);
+            
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return attemptIncrement();
+          }
+        }
+
+        // Enhanced error handling
+        const errorMessage = error.message?.includes('not authenticated') 
+          ? 'Please log in to continue using this feature.'
+          : 'Failed to track usage. Please try again.';
+
         toast({
-          title: "Usage Limit Reached",
-          description: `You've reached your limit of ${FREE_LIMIT} generations for ${featureType}. Upgrade to Premium for unlimited access.`,
+          title: "Error",
+          description: errorMessage,
           variant: "destructive",
         });
+
         return false;
       }
+    };
 
-      const { error } = await supabase.rpc('increment_usage', {
-        _user_id: user.id,
-        _feature_type: featureType
-      });
-
-      if (error) throw error;
-
-      setUsage(prev => ({
-        ...prev,
-        [featureType]: prev[featureType] + 1
-      }));
-
-      return true;
-    } catch (error) {
-      console.error('Error incrementing usage:', error);
-      toast({
-        title: "Error",
-        description: "Failed to track usage. Please try again.",
-        variant: "destructive",
-      });
-      return false;
-    }
+    return attemptIncrement();
   };
 
   const getRemainingUsage = (featureType: keyof UsageData): number => {
