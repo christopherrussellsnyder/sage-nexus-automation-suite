@@ -48,7 +48,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Main Platform Navigation */}
-      <nav className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="nav-glass sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -66,7 +66,7 @@ const Index = () => {
                 variant={activeSection === 'overview' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setActiveSection('overview')}
-                className="flex items-center space-x-2"
+                className={`flex items-center space-x-2 ${activeSection === 'overview' ? 'button-glow' : ''}`}
               >
                 <BarChart3 className="h-4 w-4" />
                 <span className="hidden sm:inline">Overview</span>
@@ -75,7 +75,7 @@ const Index = () => {
                 variant={activeSection === 'intelligence' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setActiveSection('intelligence')}
-                className="flex items-center space-x-2"
+                className={`flex items-center space-x-2 ${activeSection === 'intelligence' ? 'button-glow' : ''}`}
               >
                 <Brain className="h-4 w-4" />
                 <span className="hidden sm:inline">Intelligence</span>
@@ -84,7 +84,7 @@ const Index = () => {
                 variant={activeSection === 'ecommerce' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setActiveSection('ecommerce')}
-                className="flex items-center space-x-2"
+                className={`flex items-center space-x-2 ${activeSection === 'ecommerce' ? 'button-glow' : ''}`}
               >
                 <ShoppingCart className="h-4 w-4" />
                 <span className="hidden sm:inline">{copy.ecommerceTitle}</span>
@@ -93,7 +93,7 @@ const Index = () => {
                 variant={activeSection === 'agency' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setActiveSection('agency')}
-                className="flex items-center space-x-2"
+                className={`flex items-center space-x-2 ${activeSection === 'agency' ? 'button-glow' : ''}`}
               >
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">{copy.agencyTitle}</span>
@@ -102,7 +102,7 @@ const Index = () => {
                 variant={activeSection === 'sales' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setActiveSection('sales')}
-                className="flex items-center space-x-2"
+                className={`flex items-center space-x-2 ${activeSection === 'sales' ? 'button-glow' : ''}`}
               >
                 <Phone className="h-4 w-4" />
                 <span className="hidden sm:inline">{copy.salesTitle}</span>

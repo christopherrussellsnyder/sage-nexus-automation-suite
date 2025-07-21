@@ -37,10 +37,10 @@ const StatsGrid = () => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {stats.map((stat, index) => (
-        <Card key={index}>
+        <Card key={index} className="metric-card">
           <CardContent className="p-6 text-center">
-            <stat.icon className={`h-8 w-8 mx-auto mb-2 ${stat.color}`} />
-            <div className="text-2xl font-bold">{stat.value}</div>
+            <stat.icon className={`h-8 w-8 mx-auto mb-2 text-primary breathing`} />
+            <div className="text-2xl font-bold counter">{stat.value}</div>
             <div className="text-sm text-muted-foreground">{stat.title}</div>
             <div className="text-xs text-muted-foreground mt-1">{stat.description}</div>
           </CardContent>

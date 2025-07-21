@@ -92,7 +92,7 @@ const FeatureDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-gradient">
             Welcome back{user?.name ? `, ${user.name}` : ''}!
           </h1>
           <p className="text-xl text-muted-foreground mt-2">
@@ -100,11 +100,11 @@ const FeatureDashboard = () => {
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="button-glow">
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="button-glow">
             <HelpCircle className="h-4 w-4 mr-2" />
             Help
           </Button>
@@ -120,16 +120,16 @@ const FeatureDashboard = () => {
           return (
             <Card 
               key={feature.id}
-              className={`cursor-pointer transition-all duration-200 hover:shadow-lg border-2 ${
+              className={`card-hover cursor-pointer border-2 ${
                 isActive 
-                  ? 'border-blue-500 shadow-lg ring-2 ring-blue-500/20' 
-                  : 'border-transparent hover:border-gray-200'
+                  ? 'border-primary shadow-lg ring-2 ring-primary/20' 
+                  : 'border-transparent hover:border-border'
               }`}
               onClick={() => setActiveFeature(feature.id as any)}
             >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl ${feature.color} text-white shadow-lg`}>
+                  <div className={`p-3 rounded-xl ${feature.color} text-white shadow-lg breathing`}>
                     <Icon className="h-6 w-6" />
                   </div>
                   {feature.badge && (
@@ -152,11 +152,11 @@ const FeatureDashboard = () => {
                     <div className="flex items-center space-x-3 text-xs text-muted-foreground">
                       <div className="flex items-center space-x-1">
                         <Users className="h-3 w-3" />
-                        <span>{feature.stats.users}</span>
+                        <span className="counter">{feature.stats.users}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <BarChart3 className="h-3 w-3" />
-                        <span className="text-green-600">{feature.stats.growth}</span>
+                        <span className="counter">{feature.stats.growth}</span>
                       </div>
                     </div>
                     {isActive && (

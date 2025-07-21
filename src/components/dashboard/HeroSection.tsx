@@ -12,7 +12,7 @@ interface HeroSectionProps {
 const HeroSection = ({ isPremium, debugInfo, onDebug }: HeroSectionProps) => {
   return (
     <div className="text-center space-y-4">
-      <h1 className="text-4xl font-bold">Welcome to Your Copy Generation Suite</h1>
+      <h1 className="text-4xl font-bold text-gradient">Welcome to Your Copy Generation Suite</h1>
       <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
         Transform your business with AI-powered copy that analyzes top-performing content across all industries 
         to create personalized, high-converting templates for your specific needs.
@@ -26,7 +26,7 @@ const HeroSection = ({ isPremium, debugInfo, onDebug }: HeroSectionProps) => {
       
       {/* Debug Section - Remove this after fixing */}
       <div className="p-4 bg-yellow-50 border rounded-lg">
-        <Button onClick={onDebug} variant="outline" size="sm">
+        <Button onClick={onDebug} variant="outline" size="sm" className="button-glow">
           Debug Feature Data
         </Button>
         {debugInfo && (
