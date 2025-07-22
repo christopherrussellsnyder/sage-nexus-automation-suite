@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from 'react-router-dom';
 import { 
   ShoppingCart, 
   Users, 
@@ -34,6 +35,7 @@ interface DashboardProps {
 
 const Dashboard = ({ setActiveSection }: DashboardProps) => {
   const copy = useCopySettings();
+  const navigate = useNavigate();
 
   const features = [
     {
@@ -437,7 +439,7 @@ const Dashboard = ({ setActiveSection }: DashboardProps) => {
             {copy.ctaDescription}
           </p>
           <div className="flex justify-center space-x-4">
-            <Button variant="secondary" size="lg" onClick={() => setActiveSection('copywriting')} className="button-glow">
+            <Button variant="secondary" size="lg" onClick={() => navigate('/signup')} className="button-glow">
               <Crown className="h-4 w-4 mr-2" />
               {copy.ctaPrimaryButton}
             </Button>

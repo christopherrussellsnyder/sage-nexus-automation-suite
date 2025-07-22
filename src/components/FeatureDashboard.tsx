@@ -16,11 +16,11 @@ import {
 } from 'lucide-react';
 import EcommerceDashboard from './EcommerceDashboard';
 import SalesDashboard from './SalesDashboard';
-import CopywritingIntelligenceDashboard from './CopywritingIntelligenceDashboard';
+import AgencyDashboard from './AgencyDashboard';
 import IntelligenceDashboard from './IntelligenceDashboard';
 
 const FeatureDashboard = () => {
-  const [activeFeature, setActiveFeature] = useState<'intelligence' | 'ecommerce' | 'agency' | 'sales' | 'copywriting'>('intelligence');
+  const [activeFeature, setActiveFeature] = useState<'intelligence' | 'ecommerce' | 'agency' | 'sales'>('intelligence');
 
   const features = [
     {
@@ -30,7 +30,7 @@ const FeatureDashboard = () => {
       icon: Brain,
       color: 'bg-gradient-to-br from-purple-500 to-blue-600',
       badge: 'NEW',
-      stats: { users: '2.1K', growth: '+15%' }
+      stats: { users: 'Active', growth: 'Growing' }
     },
     {
       id: 'ecommerce',
@@ -39,7 +39,16 @@ const FeatureDashboard = () => {
       icon: ShoppingCart,
       color: 'bg-gradient-to-br from-blue-500 to-cyan-600',
       badge: 'PRO',
-      stats: { users: '1.8K', growth: '+23%' }
+      stats: { users: 'Active', growth: 'Growing' }
+    },
+    {
+      id: 'agency',
+      title: 'Agency Scale System',
+      description: 'Lead management, scoring and campaign automation',
+      icon: Users,
+      color: 'bg-gradient-to-br from-indigo-500 to-purple-600',
+      badge: 'HOT',
+      stats: { users: 'Active', growth: 'Growing' }
     },
     {
       id: 'sales',
@@ -47,17 +56,8 @@ const FeatureDashboard = () => {
       description: 'CRM, pipeline management, and automation',
       icon: TrendingUp,
       color: 'bg-gradient-to-br from-green-500 to-emerald-600',
-      badge: 'HOT',
-      stats: { users: '1.2K', growth: '+31%' }
-    },
-    {
-      id: 'copywriting',
-      title: 'AI Copywriting Intelligence',
-      description: 'AI-powered copywriting strategies and optimization',
-      icon: PenTool,
-      color: 'bg-gradient-to-br from-orange-500 to-red-600',
       badge: 'POPULAR',
-      stats: { users: '3.4K', growth: '+18%' }
+      stats: { users: 'Active', growth: 'Growing' }
     }
   ];
 
@@ -78,10 +78,10 @@ const FeatureDashboard = () => {
         return <IntelligenceDashboard />;
       case 'ecommerce':
         return <EcommerceDashboard />;
+      case 'agency':
+        return <AgencyDashboard />;
       case 'sales':
         return <SalesDashboard />;
-      case 'copywriting':
-        return <CopywritingIntelligenceDashboard />;
       default:
         return <IntelligenceDashboard />;
     }

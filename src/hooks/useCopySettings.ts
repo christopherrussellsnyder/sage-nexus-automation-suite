@@ -179,16 +179,16 @@ const defaultCopySettings: CopySettings = {
   
   // Quick Stats (Overview Page) - Updated for platform scope
   stat1Title: 'Business Growth',
-  stat1Value: '$2.4M+',
+  stat1Value: 'Growing',
   stat1Description: 'Revenue generated across all features',
   stat2Title: 'Average Improvement',
-  stat2Value: '340%',
+  stat2Value: 'Significant',
   stat2Description: 'Across all business functions',
   stat3Title: 'Active Businesses',
-  stat3Value: '15,000+',
+  stat3Value: 'Growing',
   stat3Description: 'Trust our AI platform',
   stat4Title: 'AI Tools Available',
-  stat4Value: '500+',
+  stat4Value: 'Expanding',
   stat4Description: 'Across all business areas',
   
   // Platform Features Section - Updated
@@ -203,9 +203,9 @@ const defaultCopySettings: CopySettings = {
   ecommerceFeature3: 'Conversion Optimization',
   ecommerceFeature4: 'Revenue Analytics',
   ecommerceStat1Key: 'stores built',
-  ecommerceStat1Value: '2,500+',
+  ecommerceStat1Value: 'Active',
   ecommerceStat2Key: 'avg revenue boost',
-  ecommerceStat2Value: '285%',
+  ecommerceStat2Value: 'High',
   
   agencyTitle: 'Agency Scale System',
   agencyDescription: 'Manage multiple clients and campaigns without the overwhelm',
@@ -214,9 +214,9 @@ const defaultCopySettings: CopySettings = {
   agencyFeature3: 'Automated Content Factory',
   agencyFeature4: 'Client Success Reports',
   agencyStat1Key: 'agencies served',
-  agencyStat1Value: '850+',
+  agencyStat1Value: 'Active',
   agencyStat2Key: 'client retention',
-  agencyStat2Value: '94%',
+  agencyStat2Value: 'High',
   
   salesTitle: 'Sales Acceleration Hub',
   salesDescription: 'Turn prospects into customers with precision targeting',
@@ -225,9 +225,9 @@ const defaultCopySettings: CopySettings = {
   salesFeature3: 'Meeting Intelligence',
   salesFeature4: 'Pipeline Optimization',
   salesStat1Key: 'deals closed',
-  salesStat1Value: '12,000+',
+  salesStat1Value: 'Active',
   salesStat2Key: 'close rate boost',
-  salesStat2Value: '156%',
+  salesStat2Value: 'High',
   
   copywritingTitle: 'Copy That Converts',
   copywritingDescription: 'Create high-converting copy based on proven psychological triggers',
@@ -236,9 +236,9 @@ const defaultCopySettings: CopySettings = {
   copywritingFeature3: 'Email Sequences',
   copywritingFeature4: 'Social Content',
   copywritingStat1Key: 'conversions generated',
-  copywritingStat1Value: '50M+',
+  copywritingStat1Value: 'Active',
   copywritingStat2Key: 'avg improvement',
-  copywritingStat2Value: '400%',
+  copywritingStat2Value: 'High',
   
   // Value Proposition Section - Updated for platform scope
   valuePropositionTitle: 'Why Sage.ai Dominates',

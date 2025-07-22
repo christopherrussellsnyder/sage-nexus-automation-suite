@@ -2,12 +2,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { Brain } from 'lucide-react';
 import FeatureDashboard from '@/components/FeatureDashboard';
+import Footer from '@/components/Footer';
+import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const copy = useCopySettings();
 
   useEffect(() => {
     checkAuth();
@@ -55,9 +59,26 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
+      <nav className="nav-glass sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Brain className="h-8 w-8 text-primary" />
+              <span className="text-xl font-bold">{copy.brandName}</span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Overview
+            </div>
+          </div>
+        </div>
+      </nav>
+
       <div className="container mx-auto px-4 py-8">
         <FeatureDashboard />
       </div>
+
+      <Footer />
     </div>
   );
 };
