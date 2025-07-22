@@ -454,8 +454,18 @@ const ProductResearcher = () => {
                             variant="outline"
                             onClick={() => handleViewProduct(product)}
                           >
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            Website
+                          </Button>
+                          
+                          <Button 
+                            size="sm" 
+                            variant="secondary"
+                            onClick={() => handleResearchProduct(product)}
+                            disabled={isResearching}
+                          >
                             <Eye className="h-4 w-4 mr-1" />
-                            View
+                            Research
                           </Button>
                           
                           {/* Enhanced Product Analysis Dialog */}
@@ -466,28 +476,121 @@ const ProductResearcher = () => {
                                 disabled={isResearching}
                               >
                                 <BarChart3 className="h-4 w-4 mr-1" />
-                                Deep Analysis
+                                Full Report
                               </Button>
                             </DialogTrigger>
                             <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                               <DialogHeader>
                                 <DialogTitle className="flex items-center space-x-2">
-                                  <BarChart3 className="h-5 w-5" />
-                                  <span>Comprehensive Product Analysis: {product.name}</span>
+                                  <Package className="h-5 w-5" />
+                                  <span>Product Research Report: {product.name}</span>
                                 </DialogTitle>
                                 <DialogDescription>
-                                  Complete market intelligence, competitive analysis, and strategic recommendations
+                                  Comprehensive analysis including competitive intelligence, social media strategy, risk assessment, target audience insights, and pricing recommendations
                                 </DialogDescription>
                               </DialogHeader>
 
                               <Tabs defaultValue="competitive" className="w-full">
-                                <TabsList className="grid w-full grid-cols-5">
-                                  <TabsTrigger value="competitive">Competitive Analysis</TabsTrigger>
+                                <TabsList className="grid w-full grid-cols-6">
+                                  <TabsTrigger value="overview">Overview</TabsTrigger>
+                                  <TabsTrigger value="competitive">Competitive</TabsTrigger>
                                   <TabsTrigger value="social">Social Media</TabsTrigger>
-                                  <TabsTrigger value="risk">Risk Assessment</TabsTrigger>
+                                  <TabsTrigger value="risk">Risk Analysis</TabsTrigger>
                                   <TabsTrigger value="audience">Target Audience</TabsTrigger>
                                   <TabsTrigger value="pricing">Pricing Strategy</TabsTrigger>
-                                </TabsList>
+                                 </TabsList>
+
+                                 {/* Product Overview Tab */}
+                                 <TabsContent value="overview" className="space-y-4">
+                                   <Card>
+                                     <CardHeader>
+                                       <CardTitle className="flex items-center space-x-2">
+                                         <Package className="h-5 w-5" />
+                                         <span>Product Overview & Specifications</span>
+                                       </CardTitle>
+                                     </CardHeader>
+                                     <CardContent className="space-y-4">
+                                       <div>
+                                         <h4 className="font-medium mb-2">Product Name:</h4>
+                                         <p className="text-lg font-semibold">{product.name}</p>
+                                       </div>
+                                       
+                                       <div>
+                                         <h4 className="font-medium mb-2">Description:</h4>
+                                         <p className="text-sm text-muted-foreground">{product.description}</p>
+                                       </div>
+                                       
+                                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                         <div className="p-3 bg-green-50 rounded-lg text-center">
+                                           <span className="text-sm font-medium">Price</span>
+                                           <div className="text-xl font-bold text-green-600">${product.price}</div>
+                                         </div>
+                                         <div className="p-3 bg-yellow-50 rounded-lg text-center">
+                                           <span className="text-sm font-medium">Rating</span>
+                                           <div className="flex items-center justify-center">
+                                             <Star className="h-4 w-4 text-yellow-500 fill-current mr-1" />
+                                             <span className="font-bold">{product.rating}</span>
+                                           </div>
+                                         </div>
+                                         <div className="p-3 bg-blue-50 rounded-lg text-center">
+                                           <span className="text-sm font-medium">Reviews</span>
+                                           <div className="font-bold">{product.reviews.toLocaleString()}</div>
+                                         </div>
+                                         <div className="p-3 bg-purple-50 rounded-lg text-center">
+                                           <span className="text-sm font-medium">Sales</span>
+                                           <div className="font-bold">{product.sales.toLocaleString()}</div>
+                                         </div>
+                                       </div>
+                                       
+                                       <div>
+                                         <h4 className="font-medium mb-3">Key Specifications:</h4>
+                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                           <div className="space-y-3">
+                                             <div className="flex justify-between">
+                                               <span className="font-medium">Category:</span> 
+                                               <Badge variant="secondary">{product.category}</Badge>
+                                             </div>
+                                             <div className="flex justify-between">
+                                               <span className="font-medium">Store:</span> 
+                                               <Badge variant="outline">{product.store}</Badge>
+                                             </div>
+                                             <div className="flex justify-between">
+                                               <span className="font-medium">Evergreen Score:</span> 
+                                               <Badge className="bg-green-100 text-green-800">{product.evergreenScore}/10</Badge>
+                                             </div>
+                                           </div>
+                                           <div className="space-y-3">
+                                             <div className="flex justify-between">
+                                               <span className="font-medium">Profit Margin:</span> 
+                                               <Badge className="bg-blue-100 text-blue-800">{product.profitMargin}%</Badge>
+                                             </div>
+                                             <div className="flex justify-between">
+                                               <span className="font-medium">Market Saturation:</span> 
+                                               <Badge className={getSaturationColor(product.marketSaturation)}>{product.marketSaturation}</Badge>
+                                             </div>
+                                             <div className="flex justify-between">
+                                               <span className="font-medium">Problem Severity:</span> 
+                                               <Badge className={
+                                                 product.problemSeverity === 'High' ? 'bg-red-100 text-red-800' :
+                                                 product.problemSeverity === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                                 'bg-green-100 text-green-800'
+                                               }>{product.problemSeverity}</Badge>
+                                             </div>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       
+                                       <div>
+                                         <h4 className="font-medium mb-2">Marketing Angles:</h4>
+                                         <div className="flex flex-wrap gap-2">
+                                           {product.winningAngles.map((angle, idx) => (
+                                             <Badge key={idx} variant="outline" className="text-xs">{angle}</Badge>
+                                           ))}
+                                         </div>
+                                       </div>
+                                     </CardContent>
+                                   </Card>
+                                 </TabsContent>
 
                                 {/* Competitive Analysis Tab */}
                                 <TabsContent value="competitive" className="space-y-4">
