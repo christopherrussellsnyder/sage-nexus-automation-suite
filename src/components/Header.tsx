@@ -48,37 +48,37 @@ const Header = ({ user }: HeaderProps) => {
               <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard?tab=ecommerce')}>E-commerce Domination</Button>
               <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard?tab=agency')}>Agency Scale System</Button>
               <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard?tab=sales')}>Sales Acceleration Hub</Button>
+              
+              {user && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center space-x-1">
+                      <PenTool className="h-4 w-4" />
+                      <span>{copy.copywritingToolsLabel}</span>
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem onClick={() => navigate('/website-copy')}>
+                      <Globe className="h-4 w-4 mr-2" />
+                      Website Copy
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/ad-copy')}>
+                      <Megaphone className="h-4 w-4 mr-2" />
+                      Ad Copy
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/email-sequences')}>
+                      <Mail className="h-4 w-4 mr-2" />
+                      Email Sequences
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/social-content')}>
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Social Content
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </>
-          )}
-          
-          {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-1">
-                  <PenTool className="h-4 w-4" />
-                  <span>{copy.copywritingToolsLabel}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => navigate('/website-copy')}>
-                  <Globe className="h-4 w-4 mr-2" />
-                  Website Copy
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/ad-copy')}>
-                  <Megaphone className="h-4 w-4 mr-2" />
-                  Ad Copy
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/email-sequences')}>
-                  <Mail className="h-4 w-4 mr-2" />
-                  Email Sequences
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/social-content')}>
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Social Content
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           )}
         </nav>
 

@@ -465,7 +465,7 @@ const ProductResearcher = () => {
                             disabled={isResearching}
                           >
                             <Eye className="h-4 w-4 mr-1" />
-                            Research
+                            Report
                           </Button>
                           
                           {/* Enhanced Product Analysis Dialog */}
