@@ -1,5 +1,5 @@
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Brain, User, LogOut, ChevronDown, PenTool, Globe, Megaphone, Mail, Share2 } from 'lucide-react';
 import {
@@ -18,6 +18,7 @@ interface HeaderProps {
 
 const Header = ({ user }: HeaderProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const copy = useCopySettings();
 
   const handleSignOut = async () => {
@@ -35,7 +36,7 @@ const Header = ({ user }: HeaderProps) => {
 
         <nav className="hidden md:flex items-center space-x-3">
           {/* Homepage header only shows Overview and Pricing */}
-          {window.location.pathname === '/' ? (
+          {location.pathname === '/' ? (
             <>
               <Button variant="ghost" size="sm" onClick={() => navigate('/')}>Overview</Button>
               <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>Pricing</Button>
@@ -111,7 +112,7 @@ const Header = ({ user }: HeaderProps) => {
                 {copy.signInLabel}
               </Button>
               <Button onClick={() => navigate('/signup')}>
-                {window.location.pathname === '/' ? 'Start My Transformation' : copy.getStartedLabel}
+                {location.pathname === '/' ? 'Start My Transformation' : copy.getStartedLabel}
               </Button>
             </>
           )}
