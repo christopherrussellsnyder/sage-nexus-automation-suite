@@ -35,7 +35,6 @@ const Header = ({ user }: HeaderProps) => {
         </div>
 
         <nav className="hidden md:flex items-center space-x-3">
-          {/* Homepage header only shows Overview and Pricing */}
           {location.pathname === '/' ? (
             <>
               <Button variant="ghost" size="sm" onClick={() => navigate('/')}>Overview</Button>
