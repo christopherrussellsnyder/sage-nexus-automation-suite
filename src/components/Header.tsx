@@ -1,7 +1,7 @@
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Brain, User, LogOut, ChevronDown, PenTool, Globe, Megaphone, Mail, Share2 } from 'lucide-react';
+import { Brain, User, LogOut, ChevronDown, PenTool, Globe, Megaphone, Mail, Share2, BarChart3, DollarSign } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,16 +30,21 @@ const Header = ({ user }: HeaderProps) => {
     <header className="border-b bg-white">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/')}>
-          <Brain className="h-8 w-8 text-blue-600" />
+          <Brain className="h-8 w-8 text-green-600" />
           <span className="text-2xl font-bold text-gray-900">{copy.brandName}</span>
         </div>
 
         <nav className="hidden md:flex items-center space-x-3">
           {location.pathname === '/' ? (
             <>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/')}>Overview</Button>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>Pricing</Button>
-              <Button size="sm" onClick={() => navigate('/signup')}>Start My Transformation</Button>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="flex items-center space-x-1">
+                <BarChart3 className="h-4 w-4" />
+                <span>Overview</span>
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')} className="flex items-center space-x-1">
+                <DollarSign className="h-4 w-4" />
+                <span>Pricing</span>
+              </Button>
             </>
           ) : (
             <>
@@ -107,14 +112,9 @@ const Header = ({ user }: HeaderProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <>
-              <Button variant="ghost" onClick={() => navigate('/login')}>
-                {copy.signInLabel}
-              </Button>
-              <Button onClick={() => navigate('/signup')}>
-                {location.pathname === '/' ? 'Start My Transformation' : copy.getStartedLabel}
-              </Button>
-            </>
+            <Button variant="ghost" onClick={() => navigate('/login')}>
+              {copy.signInLabel}
+            </Button>
           )}
         </div>
       </div>
