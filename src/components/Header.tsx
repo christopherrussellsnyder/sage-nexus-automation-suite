@@ -39,6 +39,7 @@ const Header = ({ user }: HeaderProps) => {
             <>
               <Button variant="ghost" size="sm" onClick={() => navigate('/')}>Overview</Button>
               <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>Pricing</Button>
+              <Button size="sm" onClick={() => navigate('/signup')}>Start My Transformation</Button>
             </>
           ) : (
             <>
