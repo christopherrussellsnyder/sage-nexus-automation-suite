@@ -24,6 +24,7 @@ import AgencyDashboard from "@/components/AgencyDashboard";
 import SalesDashboard from "@/components/SalesDashboard";
 import IntelligenceDashboard from "@/components/IntelligenceDashboard";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import { useCopySettings } from '@/hooks/useCopySettings';
 
 const Index = () => {
@@ -47,6 +48,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
+      <Header />
+      
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {renderContent()}
