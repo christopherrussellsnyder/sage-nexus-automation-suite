@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -26,53 +25,79 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
+    const { planType = 'monthly' } = await req.json();
+    logStep("Plan type received", { planType });
+
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
+    let user = null;
+    let userEmail = "guest@example.com"; // Default for guest checkout
     
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data } = await supabaseClient.auth.getUser(token);
+      user = data.user;
+      if (user?.email) {
+        userEmail = user.email;
+      }
+    }
     
-    logStep("User authenticated", { userId: user.id, email: user.email });
+    logStep("User info", { userId: user?.id, email: userEmail, isGuest: !user });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { 
       apiVersion: "2023-10-16" 
     });
 
     // Check for existing customer
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
       logStep("Found existing customer", { customerId });
     }
 
-    // Create checkout session for $30/month subscription
+    // Determine pricing based on plan type
+    const pricing = planType === 'yearly' ? {
+      amount: 25000, // $250.00 in cents
+      interval: 'year' as const,
+      description: 'Sage.ai Premium Plan (Yearly) - Save $110!'
+    } : {
+      amount: 3000, // $30.00 in cents
+      interval: 'month' as const,
+      description: 'Sage.ai Premium Plan (Monthly)'
+    };
+
+    logStep("Pricing determined", pricing);
+
+    // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      customer_email: customerId ? undefined : userEmail,
       line_items: [
         {
           price_data: {
             currency: "usd",
             product_data: { 
               name: "Sage.ai Premium Plan",
-              description: "Complete AI business automation suite with unlimited access to all features"
+              description: pricing.description
             },
-            unit_amount: 3000, // $30.00 in cents
-            recurring: { interval: "month" },
+            unit_amount: pricing.amount,
+            recurring: { interval: pricing.interval },
           },
           quantity: 1,
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/dashboard?success=true`,
+      success_url: `${req.headers.get("origin")}/dashboard?success=true&plan=${planType}`,
       cancel_url: `${req.headers.get("origin")}/pricing?canceled=true`,
       allow_promotion_codes: true,
+      metadata: {
+        user_id: user?.id || 'guest',
+        user_email: userEmail,
+        plan_type: planType
+      }
     });
 
-    logStep("Checkout session created", { sessionId: session.id });
+    logStep("Checkout session created", { sessionId: session.id, planType });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

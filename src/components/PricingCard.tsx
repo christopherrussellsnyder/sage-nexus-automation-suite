@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Check, Crown, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
@@ -16,21 +17,25 @@ interface PricingCardProps {
 const PricingCard = ({ plan, isCurrentPlan = false, userSubscription }: PricingCardProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState('monthly');
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (planType: 'monthly' | 'yearly' = 'monthly') => {
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in to subscribe to our premium plan.",
-          variant: "destructive",
+        // Redirect directly to checkout without authentication
+        const { data, error } = await supabase.functions.invoke('create-checkout', {
+          body: { planType },
         });
+
+        if (error) throw error;
+        window.open(data.url, '_blank');
         return;
       }
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { planType },
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -43,7 +48,7 @@ const PricingCard = ({ plan, isCurrentPlan = false, userSubscription }: PricingC
     } catch (error) {
       console.error('Subscription error:', error);
       toast({
-        title: "Subscription Error",
+        title: "Subscription Error", 
         description: "Failed to start subscription process. Please try again.",
         variant: "destructive",
       });
@@ -140,7 +145,20 @@ const PricingCard = ({ plan, isCurrentPlan = false, userSubscription }: PricingC
           Premium Plan
         </CardTitle>
         <CardDescription>Complete AI business automation suite with unlimited access</CardDescription>
-        <div className="text-3xl font-bold">$30<span className="text-lg font-normal text-muted-foreground">/month</span></div>
+        
+        <Tabs value={selectedPlan} onValueChange={setSelectedPlan} className="mt-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="monthly">Monthly</TabsTrigger>
+            <TabsTrigger value="yearly">Yearly</TabsTrigger>
+          </TabsList>
+          <TabsContent value="monthly" className="mt-4">
+            <div className="text-3xl font-bold">$30<span className="text-lg font-normal text-muted-foreground">/month</span></div>
+          </TabsContent>
+          <TabsContent value="yearly" className="mt-4">
+            <div className="text-3xl font-bold">$250<span className="text-lg font-normal text-muted-foreground">/year</span></div>
+            <div className="text-sm text-green-600 font-medium">Save $110 annually!</div>
+          </TabsContent>
+        </Tabs>
       </CardHeader>
       <CardContent>
         <div className="space-y-4 mb-6">
@@ -201,11 +219,11 @@ const PricingCard = ({ plan, isCurrentPlan = false, userSubscription }: PricingC
         ) : (
           <Button 
             className="w-full bg-primary hover:bg-primary/90" 
-            onClick={handleSubscribe}
+            onClick={() => handleSubscribe(selectedPlan as 'monthly' | 'yearly')}
             disabled={loading}
           >
             <Zap className="h-4 w-4 mr-2" />
-            {loading ? 'Processing...' : 'Upgrade to Premium'}
+            {loading ? 'Processing...' : `Upgrade to Premium ${selectedPlan === 'yearly' ? '(Yearly)' : '(Monthly)'}`}
           </Button>
         )}
       </CardContent>
