@@ -119,9 +119,9 @@ interface IndustryInsight {
 
 export class AIIntelligenceService {
   private static readonly CONFIG = {
-    MAX_RETRIES: 3,
-    RETRY_DELAY: 1000,
-    TIMEOUT: 60000,
+    MAX_RETRIES: 1,
+    RETRY_DELAY: 500,
+    TIMEOUT: 30000, // 30 seconds
     CACHE_TTL: 300000, // 5 minutes
   };
 

@@ -7,10 +7,10 @@ const corsHeaders = {
 
 // Enhanced configuration for maximum reliability
 const CONFIG = {
-  MAX_RETRIES: 3,
-  BASE_DELAY: 1000,
-  MAX_DELAY: 10000,
-  TIMEOUT: 30000,
+  MAX_RETRIES: 2,
+  BASE_DELAY: 500,
+  MAX_DELAY: 3000,
+  TIMEOUT: 15000, // 15 seconds per request
   CACHE_TTL: 300000, // 5 minutes
 };
 
