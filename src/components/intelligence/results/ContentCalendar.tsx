@@ -23,12 +23,13 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
       // If it's already an array of objects with day/content structure
       return content.map((item, index) => {
         if (typeof item === 'object' && item.day && item.content) {
+          const contentStr = String(item.content || '');
           return {
             day: item.day,
             platform: 'Multi-Platform',
             contentType: 'content',
-            hook: item.content.substring(0, 50) + (item.content.length > 50 ? '...' : ''),
-            body: item.content,
+            hook: contentStr.substring(0, 50) + (contentStr.length > 50 ? '...' : ''),
+            body: contentStr,
             cta: 'Learn More',
             visualSuggestion: 'Professional imagery recommended',
             expectedMetrics: {
@@ -40,12 +41,13 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
           };
         }
         // Handle string items in array
+        const itemStr = String(item || '');
         return {
           day: index + 1,
           platform: 'Multi-Platform',
           contentType: 'content',
-          hook: item.substring(0, 50) + (item.length > 50 ? '...' : ''),
-          body: item,
+          hook: itemStr.substring(0, 50) + (itemStr.length > 50 ? '...' : ''),
+          body: itemStr,
           cta: 'Learn More',
           visualSuggestion: 'Professional imagery recommended',
           expectedMetrics: {
@@ -63,7 +65,7 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
       return lines.map((line, index) => {
         const dayMatch = line.match(/Day (\d+):/);
         const day = dayMatch ? dayMatch[1] : index + 1;
-        const description = line.replace(/Day \d+:\s*/, '').trim();
+        const description = String(line.replace(/Day \d+:\s*/, '').trim() || '');
         
         return {
           day: day,
