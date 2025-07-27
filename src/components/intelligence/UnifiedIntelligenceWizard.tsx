@@ -263,36 +263,16 @@ const UnifiedIntelligenceWizard = ({
         businessType: businessType as 'ecommerce' | 'agency' | 'sales' | 'copywriting'
       };
 
-      // Add timeout to prevent indefinite loading
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timed out after 35 seconds')), 35000)
-      );
-      
-      const intelligencePromise = AIIntelligenceService.generateIntelligence(aiRequest);
-      const aiIntelligence = await Promise.race([intelligencePromise, timeoutPromise]);
+      const aiIntelligence = await AIIntelligenceService.generateIntelligence(aiRequest);
       
       console.log('AI intelligence generated successfully');
       onIntelligenceGenerated(aiIntelligence);
       
     } catch (error) {
       console.error('Error generating AI intelligence:', error);
-      
-      // Enhanced error handling to prevent page reloads
-      let errorMessage = 'Failed to generate intelligence report. ';
-      
-      if (error.message?.includes('timeout') || error.message?.includes('timed out')) {
-        errorMessage = 'The request took too long to complete. Please try again with simpler inputs or check your connection.';
-      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
-        errorMessage = 'Network connection issue. Please check your internet connection and try again.';
-      } else if (error.message?.includes('rate limit')) {
-        errorMessage = 'Too many requests. Please wait a moment and try again.';
-      } else {
-        errorMessage = error.message || 'Please check your inputs and try again.';
-      }
-      
       toast({
-        title: "Intelligence Generation Failed",
-        description: errorMessage,
+        title: "Error generating intelligence",
+        description: error.message || "Please check your API configuration and try again",
         variant: "destructive"
       });
     } finally {

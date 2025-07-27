@@ -7,10 +7,10 @@ const corsHeaders = {
 
 // Enhanced configuration for maximum reliability
 const CONFIG = {
-  MAX_RETRIES: 2,
-  BASE_DELAY: 500,
-  MAX_DELAY: 3000,
-  TIMEOUT: 15000, // 15 seconds per request
+  MAX_RETRIES: 3,
+  BASE_DELAY: 1000,
+  MAX_DELAY: 10000,
+  TIMEOUT: 30000,
   CACHE_TTL: 300000, // 5 minutes
 };
 
@@ -326,349 +326,135 @@ serve(async (req) => {
 });
 
 function createPrompt(formData: any, businessType: string, intelligenceMode: string): string {
-  return `You are an expert business intelligence consultant. Generate comprehensive, actionable business intelligence for ${formData.businessName} in the ${formData.industry} industry.
-
-BUSINESS CONTEXT:
-- Company: ${formData.businessName}
+  return `Generate comprehensive business intelligence for ${formData.businessName}.
+  
+Business Details:
 - Industry: ${formData.industry}
 - Target Audience: ${formData.targetAudience}
 - Product/Service: ${formData.productService}
 - Monthly Revenue: ${formData.monthlyRevenue}
 - Business Type: ${businessType}
-- Current Challenges: ${formData.currentChallenges || 'Not specified'}
+- Current Challenges: ${formData.currentChallenges || 'None specified'}
 
-CRITICAL REQUIREMENT: Respond ONLY with valid JSON. No explanations, no markdown, no code blocks. Just pure JSON.
-
-Generate a complete JSON response with ALL sections populated with realistic, specific data:
-
+Generate a detailed JSON response with the following structure:
 {
   "budgetStrategy": {
-    "totalBudget": "Specific dollar amount based on monthly revenue",
-    "allocation": {
-      "advertising": "percentage number",
-      "content": "percentage number", 
-      "tools": "percentage number",
-      "analytics": "percentage number"
-    },
-    "recommendations": [
-      "At least 3 specific budget recommendations",
-      "Include platform-specific suggestions",
-      "Add ROI optimization tips"
-    ]
+    "totalBudget": "$2000",
+    "allocation": {"advertising": 60, "content": 20, "tools": 20},
+    "recommendations": ["Focus on high-converting platforms", "Test different ad formats"]
   },
   "copywritingRecommendations": [
     {
       "type": "email",
-      "headline": "Compelling headline for email campaigns",
-      "content": "Full email copy example with personalization",
-      "cta": "Specific call to action"
-    },
-    {
-      "type": "ad",
-      "headline": "High-converting ad headline",
-      "content": "Complete ad copy with benefits",
-      "cta": "Action-driven CTA"
-    },
-    {
-      "type": "social",
-      "headline": "Social media post headline",
-      "content": "Engaging social media content",
-      "cta": "Social-specific CTA"
+      "headline": "Boost Your Sales Today",
+      "content": "Compelling email copy...",
+      "cta": "Get Started Now"
     }
   ],
   "platformRecommendations": [
     {
       "platform": "Facebook",
-      "priority": "High/Medium/Low",
-      "reasoning": "Detailed explanation why this platform works",
-      "budget": "Specific dollar amount",
-      "expectedROAS": "Expected return ratio"
-    },
-    {
-      "platform": "Google Ads",
-      "priority": "High/Medium/Low", 
-      "reasoning": "Detailed explanation for Google Ads",
-      "budget": "Specific dollar amount",
-      "expectedROAS": "Expected return ratio"
-    },
-    {
-      "platform": "LinkedIn",
-      "priority": "High/Medium/Low",
-      "reasoning": "Why LinkedIn works for this business",
-      "budget": "Specific dollar amount", 
-      "expectedROAS": "Expected return ratio"
+      "priority": "High",
+      "reasoning": "Large audience, good targeting",
+      "budget": "$800"
     }
   ],
   "monthlyPlan": [
-    Generate 30 days of content with this format for each day:
     {
       "day": 1,
-      "platform": "Specific platform",
-      "contentType": "video/image/text/story/carousel",
-      "title": "Specific content title",
-      "description": "Detailed content description",
-      "hashtags": ["relevant", "hashtags"],
-      "postingTime": "Optimal posting time"
+      "platform": "Facebook",
+      "contentType": "video",
+      "title": "Product Demo",
+      "description": "Show product benefits"
     }
   ],
   "metricOptimization": {
-    "conversionRate": {
-      "current": "Current percentage",
-      "target": "Target percentage", 
-      "strategy": "How to improve conversion rate"
-    },
-    "cpa": {
-      "current": "Current cost per acquisition",
-      "target": "Target cost per acquisition",
-      "strategy": "How to reduce CPA"
-    },
-    "roas": {
-      "current": "Current return on ad spend",
-      "target": "Target ROAS",
-      "strategy": "How to improve ROAS"
-    },
-    "ctr": {
-      "current": "Current click-through rate",
-      "target": "Target CTR",
-      "strategy": "How to improve CTR"
-    }
+    "conversionRate": {"current": "2%", "target": "4%"},
+    "cpa": {"current": "$50", "target": "$35"},
+    "roas": {"current": "3x", "target": "5x"}
   },
   "competitorInsights": [
     {
-      "competitor": "Actual competitor name in industry",
-      "strength": "Their main competitive advantage",
-      "weakness": "Their main weakness/gap",
-      "opportunity": "How to capitalize on their weakness",
-      "marketShare": "Estimated market share"
-    },
-    Include at least 3 competitors
+      "competitor": "Company ABC",
+      "strength": "Strong social media presence",
+      "opportunity": "Limited mobile optimization"
+    }
   ],
   "industryInsights": [
     {
-      "trend": "Specific industry trend",
-      "impact": "High/Medium/Low",
-      "timeframe": "When this trend peaks",
-      "action": "Specific action to take",
-      "opportunity": "Business opportunity from this trend"
-    },
-    Include at least 4 industry insights
-  ],
-  "actionPlans": [
-    {
-      "week": 1,
-      "focus": "Primary focus area",
-      "tasks": ["Specific task 1", "Specific task 2", "Specific task 3"],
-      "goals": ["Measurable goal 1", "Measurable goal 2"],
-      "budget": "Weekly budget allocation"
-    },
-    Include 4 weeks of action plans
+      "trend": "Video content growth",
+      "impact": "High",
+      "action": "Increase video production"
+    }
   ]
 }
 
-IMPORTANT: Ensure every array has multiple items, every object has all required fields, and all recommendations are specific to the ${formData.industry} industry and ${formData.targetAudience} audience. Make the data realistic and actionable.`;
+Make sure the response is valid JSON and includes realistic, actionable insights.`;
 }
 
 function createFallbackResponse(formData: any, businessType: string) {
   return {
     budgetStrategy: {
-      totalBudget: "$3500",
-      allocation: { 
-        advertising: 55, 
-        content: 25, 
-        tools: 15,
-        analytics: 5
-      },
+      totalBudget: "$2000",
+      allocation: { advertising: 60, content: 20, tools: 20 },
       recommendations: [
         "Focus budget on highest-converting platforms",
-        "Test small budgets across multiple channels initially", 
-        "Allocate 55% to advertising for maximum reach",
-        "Invest in content creation for long-term value",
-        "Reserve budget for analytics and optimization tools"
+        "Test small budgets across multiple channels initially",
+        "Allocate 60% to advertising for maximum reach"
       ]
     },
     copywritingRecommendations: [
       {
         type: "email",
         headline: `Transform Your ${formData.industry} Business Today`,
-        content: `Discover how ${formData.businessName} can help ${formData.targetAudience} achieve better results with our proven solutions. Join thousands of satisfied customers who have increased their success by 40% on average.`,
+        content: `Discover how ${formData.businessName} can help ${formData.targetAudience} achieve better results...`,
         cta: "Get Started Now"
       },
       {
         type: "ad",
         headline: `#1 ${formData.productService} Solution`,
-        content: `Join thousands of satisfied customers who trust ${formData.businessName} for their ${formData.industry} needs. See why we're rated #1 by industry experts.`,
+        content: `Join thousands of satisfied customers who trust ${formData.businessName}...`,
         cta: "Learn More"
-      },
-      {
-        type: "social",
-        headline: `Game-Changing ${formData.productService}`,
-        content: `Ready to revolutionize your ${formData.industry} business? Our ${formData.productService} helps ${formData.targetAudience} achieve remarkable results. Don't miss out!`,
-        cta: "Try Now"
       }
     ],
     platformRecommendations: [
       {
         platform: "Facebook",
         priority: "High",
-        reasoning: "Large audience reach and sophisticated targeting options for ${formData.targetAudience}",
-        budget: "$1200",
-        expectedROAS: "4.2x"
+        reasoning: "Large audience reach and sophisticated targeting options",
+        budget: "$800"
       },
       {
         platform: "Google Ads",
         priority: "High", 
-        reasoning: "High-intent search traffic with immediate results for ${formData.industry}",
-        budget: "$1000",
-        expectedROAS: "5.1x"
-      },
-      {
-        platform: "LinkedIn",
-        priority: "Medium",
-        reasoning: "Professional audience perfect for B2B ${formData.industry} targeting",
-        budget: "$600",
-        expectedROAS: "3.8x"
+        reasoning: "High-intent search traffic with immediate results",
+        budget: "$600"
       }
     ],
     monthlyPlan: Array.from({length: 30}, (_, i) => ({
       day: i + 1,
-      platform: ["Facebook", "Instagram", "Google", "TikTok", "LinkedIn"][i % 5],
-      contentType: ["video", "image", "text", "story", "carousel"][i % 5],
-      title: `Day ${i + 1}: ${formData.businessName} Content`,
-      description: `Engaging ${["video", "image", "text", "story", "carousel"][i % 5]} content for ${formData.targetAudience}`,
-      hashtags: [`#${formData.industry}`, `#${formData.businessName}`, "#business", "#growth"],
-      postingTime: ["9:00 AM", "12:00 PM", "3:00 PM", "6:00 PM", "8:00 PM"][i % 5]
+      platform: ["Facebook", "Instagram", "Google", "TikTok"][i % 4],
+      contentType: ["video", "image", "text", "story"][i % 4],
+      title: `Day ${i + 1} Content`,
+      description: `Engaging content for ${formData.targetAudience}`
     })),
     metricOptimization: {
-      conversionRate: { 
-        current: "2.1%", 
-        target: "3.8%",
-        strategy: "Optimize landing pages and improve call-to-action placement"
-      },
-      cpa: { 
-        current: "$45", 
-        target: "$32",
-        strategy: "Refine audience targeting and improve ad relevance scores"
-      },
-      roas: { 
-        current: "3.2x", 
-        target: "4.8x",
-        strategy: "Focus budget on highest-performing campaigns and audiences"
-      },
-      ctr: {
-        current: "2.4%",
-        target: "3.5%", 
-        strategy: "A/B test ad creatives and headlines for better engagement"
-      }
+      conversionRate: { current: "2.1%", target: "3.8%" },
+      cpa: { current: "$45", target: "$32" },
+      roas: { current: "3.2x", target: "4.8x" }
     },
     competitorInsights: [
       {
-        competitor: `Leading ${formData.industry} Company`,
-        strength: "Strong brand recognition and market presence",
-        weakness: "Limited personalization in customer experience",
-        opportunity: "Leverage personalized messaging to capture market share",
-        marketShare: "15-20%"
-      },
-      {
-        competitor: `${formData.industry} Innovator Inc`,
-        strength: "Advanced technology solutions",
-        weakness: "High pricing point",
-        opportunity: "Position as cost-effective alternative with similar features",
-        marketShare: "10-15%"
-      },
-      {
-        competitor: `Premium ${formData.industry} Solutions`,
-        strength: "Premium service quality",
-        weakness: "Limited accessibility for smaller businesses",
-        opportunity: "Target mid-market segment with accessible pricing",
-        marketShare: "8-12%"
+        competitor: "Industry Leader",
+        strength: "Strong brand recognition",
+        opportunity: "Limited personalization in messaging"
       }
     ],
     industryInsights: [
       {
-        trend: "Increased digital transformation in ${formData.industry}",
+        trend: "Increased focus on personalization",
         impact: "High",
-        timeframe: "Next 12-18 months",
-        action: "Develop digital-first solutions and marketing strategies",
-        opportunity: "Capture market share from traditional competitors"
-      },
-      {
-        trend: "Growing demand for personalized solutions",
-        impact: "High", 
-        timeframe: "Ongoing",
-        action: "Implement personalization in products and customer experience",
-        opportunity: "Premium pricing for customized offerings"
-      },
-      {
-        trend: "Sustainability focus in ${formData.industry}",
-        impact: "Medium",
-        timeframe: "Next 6-12 months",
-        action: "Highlight eco-friendly practices and sustainable solutions",
-        opportunity: "Attract environmentally conscious customers"
-      },
-      {
-        trend: "Mobile-first customer behavior",
-        impact: "High",
-        timeframe: "Immediate",
-        action: "Optimize all touchpoints for mobile experience",
-        opportunity: "Better customer acquisition and retention"
-      }
-    ],
-    actionPlans: [
-      {
-        week: 1,
-        focus: "Campaign Setup & Platform Optimization",
-        tasks: [
-          "Set up Facebook and Google Ads campaigns",
-          "Create initial ad creatives and copy variants",
-          "Install tracking pixels and conversion tracking"
-        ],
-        goals: [
-          "Launch campaigns with $500 daily budget",
-          "Achieve 2%+ CTR on initial campaigns"
-        ],
-        budget: "$3500"
-      },
-      {
-        week: 2,
-        focus: "Content Creation & Audience Testing",
-        tasks: [
-          "Develop video content for social platforms",
-          "A/B test different audience segments",
-          "Create email marketing sequences"
-        ],
-        goals: [
-          "Publish 10 pieces of content across platforms",
-          "Identify top 3 performing audience segments"
-        ],
-        budget: "$4000"
-      },
-      {
-        week: 3,
-        focus: "Optimization & Scaling",
-        tasks: [
-          "Scale winning campaigns and pause underperformers",
-          "Optimize landing pages based on conversion data",
-          "Launch retargeting campaigns"
-        ],
-        goals: [
-          "Improve ROAS to 4.0x or higher",
-          "Reduce CPA by 15% from baseline"
-        ],
-        budget: "$4500"
-      },
-      {
-        week: 4,
-        focus: "Analysis & Planning",
-        tasks: [
-          "Conduct comprehensive performance analysis",
-          "Plan next month's marketing strategy",
-          "Set up automated reporting dashboards"
-        ],
-        goals: [
-          "Achieve target KPIs across all platforms",
-          "Complete month 2 strategic planning"
-        ],
-        budget: "$5000"
+        action: "Implement dynamic content strategies"
       }
     ]
   };
