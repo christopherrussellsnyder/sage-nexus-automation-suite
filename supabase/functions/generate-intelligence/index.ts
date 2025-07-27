@@ -326,7 +326,7 @@ serve(async (req) => {
 });
 
 function createPrompt(formData: any, businessType: string, intelligenceMode: string): string {
-  return `Generate comprehensive business intelligence for ${formData.businessName}.
+  return `Generate comprehensive business intelligence for ${formData.businessName} in ${formData.industry} industry.
   
 Business Details:
 - Industry: ${formData.industry}
@@ -336,27 +336,59 @@ Business Details:
 - Business Type: ${businessType}
 - Current Challenges: ${formData.currentChallenges || 'None specified'}
 
-Generate a detailed JSON response with the following structure:
+You MUST generate a complete JSON response with ALL of the following sections. Do not omit any section:
+
 {
   "budgetStrategy": {
     "totalBudget": "$2000",
     "allocation": {"advertising": 60, "content": 20, "tools": 20},
-    "recommendations": ["Focus on high-converting platforms", "Test different ad formats"]
+    "recommendations": [
+      "Focus budget on highest-converting platforms",
+      "Allocate 60% to advertising for maximum reach",
+      "Test small budgets across multiple channels initially"
+    ]
   },
   "copywritingRecommendations": [
     {
       "type": "email",
-      "headline": "Boost Your Sales Today",
-      "content": "Compelling email copy...",
+      "headline": "Transform Your ${formData.industry} Business Today",
+      "content": "Compelling email copy that resonates with ${formData.targetAudience}...",
       "cta": "Get Started Now"
+    },
+    {
+      "type": "ad",
+      "headline": "#1 ${formData.productService} Solution",
+      "content": "Join thousands of satisfied customers...",
+      "cta": "Learn More"
+    },
+    {
+      "type": "social",
+      "headline": "Why ${formData.targetAudience} Choose Us",
+      "content": "Social media copy highlighting benefits...",
+      "cta": "Discover More"
     }
   ],
   "platformRecommendations": [
     {
       "platform": "Facebook",
       "priority": "High",
-      "reasoning": "Large audience, good targeting",
-      "budget": "$800"
+      "reasoning": "Large audience reach and sophisticated targeting",
+      "budget": "$800",
+      "expectedROI": "4.2x"
+    },
+    {
+      "platform": "Google Ads",
+      "priority": "High", 
+      "reasoning": "High-intent search traffic",
+      "budget": "$600",
+      "expectedROI": "3.8x"
+    },
+    {
+      "platform": "Instagram",
+      "priority": "Medium",
+      "reasoning": "Visual content performs well",
+      "budget": "$400",
+      "expectedROI": "3.2x"
     }
   ],
   "monthlyPlan": [
@@ -365,31 +397,115 @@ Generate a detailed JSON response with the following structure:
       "platform": "Facebook",
       "contentType": "video",
       "title": "Product Demo",
-      "description": "Show product benefits"
+      "description": "Show product benefits to ${formData.targetAudience}"
+    },
+    {
+      "day": 2,
+      "platform": "Instagram",
+      "contentType": "image",
+      "title": "Customer Success Story",
+      "description": "Feature satisfied customer testimonial"
+    },
+    {
+      "day": 3,
+      "platform": "Google",
+      "contentType": "text",
+      "title": "Educational Blog Post",
+      "description": "Industry insights and tips"
+    }
+  ],
+  "contentCalendar": [
+    {
+      "week": 1,
+      "theme": "Brand Awareness",
+      "content": [
+        {"day": 1, "type": "video", "title": "Company Introduction"},
+        {"day": 3, "type": "blog", "title": "Industry Trends"},
+        {"day": 5, "type": "infographic", "title": "Product Benefits"}
+      ]
     }
   ],
   "metricOptimization": {
-    "conversionRate": {"current": "2%", "target": "4%"},
-    "cpa": {"current": "$50", "target": "$35"},
-    "roas": {"current": "3x", "target": "5x"}
+    "conversionRate": {"current": "2.1%", "target": "3.8%", "strategy": "Optimize landing pages"},
+    "cpa": {"current": "$45", "target": "$32", "strategy": "Improve targeting"},
+    "roas": {"current": "3.2x", "target": "4.8x", "strategy": "Focus on high-converting campaigns"},
+    "clickThroughRate": {"current": "1.8%", "target": "2.5%", "strategy": "A/B test ad creatives"}
   },
   "competitorInsights": [
     {
-      "competitor": "Company ABC",
-      "strength": "Strong social media presence",
-      "opportunity": "Limited mobile optimization"
+      "competitor": "Industry Leader A",
+      "strength": "Strong brand recognition and social presence",
+      "opportunity": "Limited personalization in messaging",
+      "recommendation": "Leverage personalized marketing approach"
+    },
+    {
+      "competitor": "Industry Leader B", 
+      "strength": "Competitive pricing strategy",
+      "opportunity": "Weak customer service reputation",
+      "recommendation": "Emphasize superior customer support"
     }
   ],
   "industryInsights": [
     {
-      "trend": "Video content growth",
+      "trend": "Increased focus on personalization",
       "impact": "High",
-      "action": "Increase video production"
+      "action": "Implement dynamic content strategies",
+      "timeline": "Q1 2025"
+    },
+    {
+      "trend": "Video content dominance",
+      "impact": "High", 
+      "action": "Increase video production by 60%",
+      "timeline": "Immediate"
+    },
+    {
+      "trend": "AI-powered customer service",
+      "impact": "Medium",
+      "action": "Integrate chatbot solutions",
+      "timeline": "Q2 2025"
+    }
+  ],
+  "actionPlans": [
+    {
+      "week": 1,
+      "focus": "Setup & Foundation",
+      "tasks": [
+        "Set up tracking pixels",
+        "Create brand guidelines",
+        "Launch awareness campaigns"
+      ]
+    },
+    {
+      "week": 2,
+      "focus": "Content Creation",
+      "tasks": [
+        "Develop video content",
+        "Write blog articles",
+        "Design social media graphics"
+      ]
+    },
+    {
+      "week": 3,
+      "focus": "Campaign Optimization",
+      "tasks": [
+        "Analyze performance data",
+        "A/B test ad variations",
+        "Optimize targeting parameters"
+      ]
+    },
+    {
+      "week": 4,
+      "focus": "Scale & Expand",
+      "tasks": [
+        "Increase successful campaign budgets",
+        "Launch retargeting campaigns",
+        "Plan next month strategy"
+      ]
     }
   ]
 }
 
-Make sure the response is valid JSON and includes realistic, actionable insights.`;
+CRITICAL: You must include ALL sections above. Generate realistic, specific, and actionable content for the ${formData.industry} industry targeting ${formData.targetAudience}. Make all recommendations relevant to ${formData.productService}. Ensure the JSON is valid and complete.`;
 }
 
 function createFallbackResponse(formData: any, businessType: string) {
@@ -415,6 +531,12 @@ function createFallbackResponse(formData: any, businessType: string) {
         headline: `#1 ${formData.productService} Solution`,
         content: `Join thousands of satisfied customers who trust ${formData.businessName}...`,
         cta: "Learn More"
+      },
+      {
+        type: "social",
+        headline: `Why ${formData.targetAudience} Choose ${formData.businessName}`,
+        content: `Social media copy highlighting benefits of ${formData.productService}...`,
+        cta: "Discover More"
       }
     ],
     platformRecommendations: [
@@ -422,39 +544,145 @@ function createFallbackResponse(formData: any, businessType: string) {
         platform: "Facebook",
         priority: "High",
         reasoning: "Large audience reach and sophisticated targeting options",
-        budget: "$800"
+        budget: "$800",
+        expectedROI: "4.2x"
       },
       {
         platform: "Google Ads",
         priority: "High", 
         reasoning: "High-intent search traffic with immediate results",
-        budget: "$600"
+        budget: "$600",
+        expectedROI: "3.8x"
+      },
+      {
+        platform: "Instagram",
+        priority: "Medium",
+        reasoning: "Visual content performs well for engagement",
+        budget: "$400",
+        expectedROI: "3.2x"
       }
     ],
     monthlyPlan: Array.from({length: 30}, (_, i) => ({
       day: i + 1,
       platform: ["Facebook", "Instagram", "Google", "TikTok"][i % 4],
       contentType: ["video", "image", "text", "story"][i % 4],
-      title: `Day ${i + 1} Content`,
-      description: `Engaging content for ${formData.targetAudience}`
+      title: `Day ${i + 1} Content - ${formData.industry} Focus`,
+      description: `Engaging ${["video", "image", "text", "story"][i % 4]} content for ${formData.targetAudience}`
     })),
+    contentCalendar: [
+      {
+        week: 1,
+        theme: "Brand Awareness",
+        content: [
+          { day: 1, type: "video", title: "Company Introduction" },
+          { day: 3, type: "blog", title: `${formData.industry} Trends` },
+          { day: 5, type: "infographic", title: "Product Benefits" }
+        ]
+      },
+      {
+        week: 2,
+        theme: "Product Education",
+        content: [
+          { day: 8, type: "tutorial", title: "How to Use Our Service" },
+          { day: 10, type: "case-study", title: "Customer Success Story" },
+          { day: 12, type: "comparison", title: "Why Choose Us" }
+        ]
+      },
+      {
+        week: 3,
+        theme: "Social Proof",
+        content: [
+          { day: 15, type: "testimonial", title: "Customer Reviews" },
+          { day: 17, type: "behind-scenes", title: "Company Culture" },
+          { day: 19, type: "user-generated", title: "Customer Spotlights" }
+        ]
+      },
+      {
+        week: 4,
+        theme: "Conversion Focus",
+        content: [
+          { day: 22, type: "demo", title: "Product Demonstration" },
+          { day: 24, type: "offer", title: "Special Promotion" },
+          { day: 26, type: "urgency", title: "Limited Time Offer" }
+        ]
+      }
+    ],
     metricOptimization: {
-      conversionRate: { current: "2.1%", target: "3.8%" },
-      cpa: { current: "$45", target: "$32" },
-      roas: { current: "3.2x", target: "4.8x" }
+      conversionRate: { current: "2.1%", target: "3.8%", strategy: "Optimize landing pages and CTAs" },
+      cpa: { current: "$45", target: "$32", strategy: "Improve audience targeting" },
+      roas: { current: "3.2x", target: "4.8x", strategy: "Focus on high-converting campaigns" },
+      clickThroughRate: { current: "1.8%", target: "2.5%", strategy: "A/B test ad creatives" }
     },
     competitorInsights: [
       {
-        competitor: "Industry Leader",
-        strength: "Strong brand recognition",
-        opportunity: "Limited personalization in messaging"
+        competitor: "Industry Leader A",
+        strength: "Strong brand recognition and market presence",
+        opportunity: "Limited personalization in messaging",
+        recommendation: "Leverage personalized marketing approach"
+      },
+      {
+        competitor: "Industry Leader B",
+        strength: "Competitive pricing strategy",
+        opportunity: "Weak customer service reputation", 
+        recommendation: "Emphasize superior customer support"
       }
     ],
     industryInsights: [
       {
         trend: "Increased focus on personalization",
         impact: "High",
-        action: "Implement dynamic content strategies"
+        action: "Implement dynamic content strategies",
+        timeline: "Q1 2025"
+      },
+      {
+        trend: "Video content dominance",
+        impact: "High",
+        action: "Increase video production by 60%",
+        timeline: "Immediate"
+      },
+      {
+        trend: "AI-powered customer service",
+        impact: "Medium",
+        action: "Integrate chatbot solutions",
+        timeline: "Q2 2025"
+      }
+    ],
+    actionPlans: [
+      {
+        week: 1,
+        focus: "Setup & Foundation",
+        tasks: [
+          "Set up tracking pixels and analytics",
+          "Create comprehensive brand guidelines",
+          "Launch initial awareness campaigns"
+        ]
+      },
+      {
+        week: 2,
+        focus: "Content Creation",
+        tasks: [
+          "Develop video content library",
+          "Write educational blog articles",
+          "Design social media graphic templates"
+        ]
+      },
+      {
+        week: 3,
+        focus: "Campaign Optimization",
+        tasks: [
+          "Analyze performance data and metrics",
+          "A/B test ad variations and copy",
+          "Optimize targeting parameters"
+        ]
+      },
+      {
+        week: 4,
+        focus: "Scale & Expand",
+        tasks: [
+          "Increase successful campaign budgets",
+          "Launch retargeting campaigns",
+          "Plan next month strategy and goals"
+        ]
       }
     ]
   };
