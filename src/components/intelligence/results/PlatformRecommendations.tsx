@@ -33,7 +33,8 @@ const PlatformRecommendations = ({ data, businessType }: PlatformRecommendations
         source: platform.source || 'AI-Generated',
         reasoning: platform.reasoning || platform.description || 'AI-optimized platform recommendation',
         score: platform.score || (90 - (index * 5)),
-        budget: platform.budget || platform.budgetAllocation || `$${(800 - (index * 200))}`,
+        budget: platform.budget || platform.budgetAllocation || platform.budgetAmount || `$${(800 - (index * 200))}`,
+        budgetAmount: platform.budgetAmount || platform.budget || `$${(800 - (index * 200))}`,
         expectedROI: platform.expectedROI || `${(4.5 - (index * 0.3)).toFixed(1)}x`,
         budgetAllocation: platform.budgetPercentage || (40 - (index * 10)),
         expectedMetrics: {
@@ -153,15 +154,21 @@ const PlatformRecommendations = ({ data, businessType }: PlatformRecommendations
                         </div>
                         <div className="text-xs text-muted-foreground">AI Optimization Score</div>
                       </div>
-                    )}
-                    {platform.budgetAllocation && (
-                      <div className="text-right">
-                        <div className="text-lg font-semibold text-blue-600">
-                          {platform.budgetAllocation}%
-                        </div>
-                        <div className="text-xs text-muted-foreground">Budget</div>
-                      </div>
-                    )}
+                     )}
+                     <div className="text-right">
+                       <div className="text-lg font-semibold text-green-600">
+                         {platform.budgetAmount || platform.budget}
+                       </div>
+                       <div className="text-xs text-muted-foreground">Budget Amount</div>
+                     </div>
+                     {platform.budgetAllocation && (
+                       <div className="text-right">
+                         <div className="text-lg font-semibold text-blue-600">
+                           {platform.budgetAllocation}%
+                         </div>
+                         <div className="text-xs text-muted-foreground">Allocation</div>
+                       </div>
+                     )}
                   </div>
                 </div>
               </CardHeader>

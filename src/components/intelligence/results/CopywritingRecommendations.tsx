@@ -10,36 +10,31 @@ interface CopywritingRecommendationsProps {
 }
 
 const CopywritingRecommendations = ({ data, businessType }: CopywritingRecommendationsProps) => {
-  // Handle structured copywriting recommendations with headlines/subheadlines/CTAs
-  const copyRecommendations = data.copywritingRecommendations || {};
+  // Handle AI-generated copywriting recommendations structure
+  const copyRecommendations = data.copywritingRecommendations || [];
   
-  // Extract user and client recommendations
-  const userRecommendations = copyRecommendations.agencyClientAcquisition?.user || copyRecommendations.agency?.user || {};
-  const clientRecommendations = copyRecommendations.clientCampaignDelivery?.client || copyRecommendations.client?.client || {};
+  console.log('CopywritingRecommendations - Raw data:', copyRecommendations);
   
-  // Transform structured data into display format
-  const transformRecommendation = (rec: any, type: string) => {
-    if (!rec || Object.keys(rec).length === 0) return null;
-    
-    return {
-      copyType: type === 'user' ? 'Client Acquisition Copy' : 'Client Campaign Copy',
-      headline: rec.headline || '',
-      subHeadline: rec.subHeadline || '',
-      callToAction: rec.callToAction || '',
-      recommendations: [
-        rec.headline ? `Headline: "${rec.headline}"` : '',
-        rec.subHeadline ? `Sub-headline: "${rec.subHeadline}"` : '',
-        rec.callToAction ? `Call-to-Action: "${rec.callToAction}"` : ''
-      ].filter(Boolean),
-      emotionalTriggers: ['persuasion', 'trust', 'results'],
-      audience: type
-    };
-  };
+  // Transform AI array data into display format
+  const transformedRecommendations = Array.isArray(copyRecommendations) 
+    ? copyRecommendations.map((rec: any, index: number) => ({
+        copyType: rec.type || rec.copyType || `Copy Type ${index + 1}`,
+        headline: rec.headline || rec.title || '',
+        subHeadline: rec.subHeadline || rec.subtitle || '',
+        callToAction: rec.callToAction || rec.cta || '',
+        recommendations: rec.recommendations || [
+          rec.headline ? `Headline: "${rec.headline}"` : '',
+          rec.subHeadline ? `Sub-headline: "${rec.subHeadline}"` : '',
+          rec.callToAction ? `Call-to-Action: "${rec.callToAction}"` : '',
+          rec.description || ''
+        ].filter(Boolean),
+        emotionalTriggers: rec.emotionalTriggers || rec.triggers || ['persuasion', 'trust', 'results'],
+        audience: rec.audience || 'user',
+        priority: rec.priority || 'High'
+      }))
+    : [];
   
-  const userRec = transformRecommendation(userRecommendations, 'user');
-  const clientRec = transformRecommendation(clientRecommendations, 'client');
-  
-  const copyData = [userRec, clientRec].filter(Boolean);
+  const copyData = transformedRecommendations;
   
   return (
     <Card>

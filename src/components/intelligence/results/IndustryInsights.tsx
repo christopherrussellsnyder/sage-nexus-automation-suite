@@ -22,14 +22,19 @@ const IndustryInsights = ({ data, businessType }: IndustryInsightsProps) => {
   console.log('IndustryInsights - Full data:', data);
   console.log('IndustryInsights - Raw insights:', industryInsights);
   
-  // Transform the AI data into our expected format
-  const trends = Array.isArray(industryInsights) 
-    ? industryInsights.map((insight: any) => insight.trend || insight.description || insight.toString()).filter(Boolean)
+  // Transform the AI data into structured format with timeline indicators
+  const transformedInsights = Array.isArray(industryInsights) 
+    ? industryInsights.map((insight: any, index: number) => ({
+        trend: insight.trend || insight.description || insight.toString(),
+        opportunity: insight.action || insight.opportunity || insight.impact || '',
+        timeline: insight.timeline || insight.implementationDate || (index === 0 ? 'Q1 2025' : index === 1 ? 'Q2 2025' : 'Immediate'),
+        priority: insight.priority || (index === 0 ? 'High' : index === 1 ? 'Medium' : 'Low'),
+        impact: insight.impact || insight.expectedImpact || 'Significant market opportunity'
+      }))
     : [];
-      
-  const opportunities = Array.isArray(industryInsights) 
-    ? industryInsights.map((insight: any) => insight.action || insight.opportunity || insight.impact || '').filter(Boolean)
-    : [];
+  
+  const trends = transformedInsights.map(item => item.trend).filter(Boolean);
+  const opportunities = transformedInsights.map(item => item.opportunity).filter(Boolean);
 
   const hasData = trends.length > 0 || opportunities.length > 0;
 
@@ -80,7 +85,7 @@ const IndustryInsights = ({ data, businessType }: IndustryInsightsProps) => {
                 <h3 className="text-lg font-semibold text-blue-700">Industry Trends</h3>
               </div>
               <div className="space-y-3">
-                {trends.map((trend: string, index: number) => (
+                {transformedInsights.filter(item => item.trend).map((insight: any, index: number) => (
                   <Card key={index} className="border-l-4 border-l-blue-500">
                     <CardContent className="pt-4">
                       <div className="flex items-start space-x-3">
@@ -88,7 +93,22 @@ const IndustryInsights = ({ data, businessType }: IndustryInsightsProps) => {
                           <TrendingUp className="h-4 w-4 text-blue-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm text-gray-700">{trend}</p>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm text-gray-700">{insight.trend}</p>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="outline" className="text-xs">
+                                {insight.timeline}
+                              </Badge>
+                              <Badge variant={insight.priority === 'High' ? 'default' : 'secondary'} className="text-xs">
+                                {insight.priority}
+                              </Badge>
+                            </div>
+                          </div>
+                          {insight.impact && (
+                            <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                              Impact: {insight.impact}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -106,7 +126,7 @@ const IndustryInsights = ({ data, businessType }: IndustryInsightsProps) => {
                 <h3 className="text-lg font-semibold text-green-700">Market Opportunities</h3>
               </div>
               <div className="space-y-3">
-                {opportunities.map((opportunity: string, index: number) => (
+                {transformedInsights.filter(item => item.opportunity).map((insight: any, index: number) => (
                   <Card key={index} className="border-l-4 border-l-green-500">
                     <CardContent className="pt-4">
                       <div className="flex items-start space-x-3">
@@ -114,7 +134,22 @@ const IndustryInsights = ({ data, businessType }: IndustryInsightsProps) => {
                           <Lightbulb className="h-4 w-4 text-green-600" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm text-gray-700">{opportunity}</p>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm text-gray-700">{insight.opportunity}</p>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="outline" className="text-xs">
+                                {insight.timeline}
+                              </Badge>
+                              <Badge variant={insight.priority === 'High' ? 'default' : 'secondary'} className="text-xs">
+                                {insight.priority}
+                              </Badge>
+                            </div>
+                          </div>
+                          {insight.impact && (
+                            <p className="text-xs text-green-600 bg-green-50 p-2 rounded">
+                              Expected Impact: {insight.impact}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </CardContent>

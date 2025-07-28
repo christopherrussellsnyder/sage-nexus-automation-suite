@@ -23,12 +23,16 @@ const ActionPlans = ({ data, businessType }: ActionPlansProps) => {
   console.log('ActionPlans - Full data:', data);
   console.log('ActionPlans - Raw plans:', actionPlans);
   
-  // Transform AI data into our format - actionPlans should be an array of weekly plans
+  // Transform AI data into detailed weekly action plans
   const transformedPlans = Array.isArray(actionPlans) 
     ? actionPlans.map((plan: any, index: number) => ({
         week: plan.week || `Week ${index + 1}`,
         focus: plan.focus || plan.theme || plan.title || 'Business Growth',
-        tasks: Array.isArray(plan.tasks) ? plan.tasks : [plan.task || plan.action || plan.description || 'Complete weekly objectives']
+        tasks: Array.isArray(plan.tasks) ? plan.tasks : [plan.task || plan.action || plan.description || plan],
+        priority: plan.priority || (index === 0 ? 'High' : index === 1 ? 'Medium' : 'Low'),
+        timeline: plan.timeline || `Week ${index + 1}`,
+        details: plan.details || plan.description || '',
+        expectedOutcome: plan.expectedOutcome || plan.outcome || 'Improved business performance'
       }))
     : [];
 
@@ -171,11 +175,13 @@ const ActionPlanGrid = ({ plan, planType }: { plan: any[], planType: string }) =
 };
 
 const ActionPlanCard = ({ action, weekNumber }: { action: any, weekNumber: number }) => {
-  // Handle both string and object formats
-  const actionText = typeof action === 'string' ? action : action.action || action.description || action.task || 'No action specified';
-  const details = typeof action === 'object' ? action.details || action.description : null;
-  const timeline = typeof action === 'object' ? action.timeline || `Week ${weekNumber}` : `Week ${weekNumber}`;
-  const priority = typeof action === 'object' ? action.priority || 'Medium' : 'Medium';
+  // Handle comprehensive action plan data
+  const actionText = action.focus || action.title || action.action || action.description || 'Weekly objectives';
+  const tasks = Array.isArray(action.tasks) ? action.tasks : [action.task || action.action || 'Complete weekly objectives'];
+  const details = action.details || action.description || '';
+  const timeline = action.timeline || action.week || `Week ${weekNumber}`;
+  const priority = action.priority || 'Medium';
+  const expectedOutcome = action.expectedOutcome || action.outcome;
 
   const getPriorityColor = (priority: string) => {
     switch (priority.toLowerCase()) {
@@ -195,9 +201,22 @@ const ActionPlanCard = ({ action, weekNumber }: { action: any, weekNumber: numbe
               <div className="bg-blue-100 rounded-full p-2">
                 <CheckCircle className="h-4 w-4 text-blue-600" />
               </div>
-              <div>
+              <div className="flex-1">
                 <h4 className="font-semibold text-sm">{timeline}</h4>
-                <p className="text-sm text-gray-700">{actionText}</p>
+                <p className="text-sm text-gray-700 font-medium">{actionText}</p>
+                {tasks.length > 0 && (
+                  <div className="mt-2">
+                    <h5 className="text-xs font-medium text-muted-foreground mb-1">Action Items:</h5>
+                    <ul className="text-xs text-gray-600 space-y-1">
+                      {tasks.map((task: string, index: number) => (
+                        <li key={index} className="flex items-start">
+                          <span className="text-primary mr-1">•</span>
+                          {typeof task === 'string' ? task : (task as any)?.description || (task as any)?.action || 'Complete task'}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
             <Badge className={getPriorityColor(priority)}>
@@ -209,6 +228,15 @@ const ActionPlanCard = ({ action, weekNumber }: { action: any, weekNumber: numbe
             <div className="ml-11">
               <div className="bg-gray-50 p-3 rounded border">
                 <p className="text-xs text-gray-600">{details}</p>
+              </div>
+            </div>
+          )}
+
+          {expectedOutcome && (
+            <div className="ml-11">
+              <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                <h6 className="text-xs font-medium text-blue-700 mb-1">Expected Outcome:</h6>
+                <p className="text-xs text-blue-600">{expectedOutcome}</p>
               </div>
             </div>
           )}

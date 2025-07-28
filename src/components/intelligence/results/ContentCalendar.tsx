@@ -12,42 +12,49 @@ interface ContentCalendarProps {
 }
 
 const ContentCalendar = ({ data, businessType, variant = 'user', title }: ContentCalendarProps) => {
-  // Access content calendar from the correct structure
-  const monthlyPlan = data.monthlyPlan?.contentCalendar || data.contentCalendar || [];
-  const clientDeliveryPlan = data.clientDeliveryPlan?.contentCalendar || [];
-  const agencyGrowthPlan = data.agencyGrowthPlan?.contentCalendar || [];
+  // Access content calendar from the correct AI-generated structure
+  const monthlyPlan = data.monthlyPlan || data.contentCalendar || [];
+  const clientDeliveryPlan = data.clientDeliveryPlan || [];
+  const agencyGrowthPlan = data.agencyGrowthPlan || [];
   
-  // Transform data into structured format - handle both arrays and objects
+  // Transform AI-generated data into structured format with complete details
   const parseContentData = (content: any) => {
     if (Array.isArray(content)) {
-      // If it's already an array of objects with day/content structure
       return content.map((item, index) => {
-        if (typeof item === 'object' && item.day && item.content) {
-          const contentStr = String(item.content || '');
+        // Handle structured objects with complete data
+        if (typeof item === 'object' && item !== null) {
+          const contentStr = String(item.content || item.description || item.task || '');
           return {
-            day: item.day,
-            platform: 'Multi-Platform',
-            contentType: 'content',
-            hook: contentStr.substring(0, 50) + (contentStr.length > 50 ? '...' : ''),
-            body: contentStr,
-            cta: 'Learn More',
-            visualSuggestion: 'Professional imagery recommended',
+            day: item.day || index + 1,
+            platform: item.platform || 'Multi-Platform',
+            contentType: item.contentType || item.type || 'content',
+            hook: item.hook || item.title || contentStr.substring(0, 50) + (contentStr.length > 50 ? '...' : ''),
+            body: item.body || item.content || item.description || contentStr,
+            cta: item.cta || item.callToAction || 'Learn More',
+            visualSuggestion: item.visualSuggestion || 'Professional imagery recommended',
             expectedMetrics: {
-              reach: 1000 + (index * 200),
-              engagement: '3.5%',
-              conversions: 15 + index
+              reach: item.expectedMetrics?.reach || item.reach || (1000 + (index * 200)),
+              engagement: item.expectedMetrics?.engagement || item.engagement || '3.5%',
+              conversions: item.expectedMetrics?.conversions || item.conversions || (15 + index),
+              ctr: item.expectedMetrics?.ctr || item.ctr
             },
-            strategicReasoning: 'Designed to maximize engagement and drive conversions'
+            strategicReasoning: item.strategicReasoning || item.reasoning || 'AI-optimized for maximum engagement and conversions',
+            copywritingFocus: item.copywritingFocus || item.focus,
+            psychologicalTriggers: item.psychologicalTriggers || []
           };
         }
-        // Handle string items in array
+        // Handle string items
         const itemStr = String(item || '');
+        const dayMatch = itemStr.match(/Day (\d+):/);
+        const day = dayMatch ? parseInt(dayMatch[1]) : index + 1;
+        const description = itemStr.replace(/Day \d+:\s*/, '').trim();
+        
         return {
-          day: index + 1,
+          day: day,
           platform: 'Multi-Platform',
           contentType: 'content',
-          hook: itemStr.substring(0, 50) + (itemStr.length > 50 ? '...' : ''),
-          body: itemStr,
+          hook: description.substring(0, 50) + (description.length > 50 ? '...' : ''),
+          body: description,
           cta: 'Learn More',
           visualSuggestion: 'Professional imagery recommended',
           expectedMetrics: {
@@ -55,7 +62,7 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
             engagement: '3.5%',
             conversions: 15 + index
           },
-          strategicReasoning: 'Designed to maximize engagement and drive conversions'
+          strategicReasoning: 'AI-optimized for maximum engagement and conversions'
         };
       });
     }
@@ -64,7 +71,7 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
       const lines = content.split('\n').filter(line => line.trim());
       return lines.map((line, index) => {
         const dayMatch = line.match(/Day (\d+):/);
-        const day = dayMatch ? dayMatch[1] : index + 1;
+        const day = dayMatch ? parseInt(dayMatch[1]) : index + 1;
         const description = String(line.replace(/Day \d+:\s*/, '').trim() || '');
         
         return {
@@ -80,7 +87,7 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
             engagement: '3.5%',
             conversions: 15 + index
           },
-          strategicReasoning: 'Designed to maximize engagement and drive conversions'
+          strategicReasoning: 'AI-optimized for maximum engagement and conversions'
         };
       });
     }
