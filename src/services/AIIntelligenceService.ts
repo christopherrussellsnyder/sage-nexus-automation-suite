@@ -224,59 +224,27 @@ export class AIIntelligenceService {
       'monthlyPlan',
       'metricOptimization',
       'competitorInsights',
-      'copywritingRecommendations'
+      'copywritingRecommendations',
+      'contentCalendar',
+      'industryInsights', 
+      'actionPlans'
     ];
 
-    const missingSections = requiredSections.filter(section => !data[section]);
+    const missingSections = requiredSections.filter(section => !data[section] || 
+      (Array.isArray(data[section]) && data[section].length === 0));
     
     if (missingSections.length > 0) {
-      console.warn('Missing sections in AI response:', missingSections);
+      console.error('CRITICAL: AI response missing required sections:', missingSections);
+      console.error('This indicates the OpenAI API did not generate complete intelligence data');
       
-      // Fill in missing sections with default data
-      missingSections.forEach(section => {
-        switch (section) {
-          case 'budgetStrategy':
-            data[section] = {
-              recommendedStrategy: 'Balanced approach across multiple channels',
-              monthlyBudgetAllocation: { primaryPlatform: '50%', secondaryPlatform: '30%', testing: '20%' },
-              expectedROAS: '3.5x',
-              targetCPM: '$12'
-            };
-            break;
-          case 'platformRecommendations':
-            data[section] = [{
-              platform: 'Facebook',
-              priority: 1,
-              score: 85,
-              reasoning: 'High audience reach and targeting capabilities',
-              expectedMetrics: { roas: 3.5, cpm: 12, conversionRate: 2.5 },
-              budgetAllocation: 50
-            }];
-            break;
-          case 'monthlyPlan':
-            data[section] = Array.from({ length: 7 }, (_, i) => ({
-              day: i + 1,
-              platform: 'Facebook',
-              contentType: 'ad',
-              hook: `Day ${i + 1} marketing hook`,
-              body: 'Compelling content body',
-              cta: 'Learn More',
-              visualSuggestion: 'Professional imagery',
-              targetAudience: 'Primary target segment',
-              keyMessage: 'Core value proposition',
-              expectedMetrics: { reach: 10000, engagement: 500, cost: 50, conversions: 25 },
-              strategicReasoning: 'Strategic content placement'
-            }));
-            break;
-          default:
-            data[section] = [];
-        }
-      });
+      // Instead of filling with fallback data, throw an error to force API regeneration
+      throw new Error(`Intelligence API failed to generate complete data. Missing sections: ${missingSections.join(', ')}. Please check OpenAI API key and try again.`);
     }
 
     // Ensure required metadata exists
     data.generatedAt = data.generatedAt || new Date().toISOString();
     
+    console.log('✅ AI response validation passed - all required sections present');
     return data as AIGeneratedContent;
   }
 

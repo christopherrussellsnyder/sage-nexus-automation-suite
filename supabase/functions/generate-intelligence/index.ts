@@ -132,6 +132,8 @@ const makeOpenAIRequest = async (prompt: string, apiKey: string, attempt = 0): P
 };
 
 const parseAIResponse = (aiResponse: string, formData: any, businessType: string) => {
+  console.log('Raw AI Response:', aiResponse.substring(0, 200) + '...');
+  
   // Multiple parsing strategies for enhanced reliability
   const parsingStrategies = [
     // Strategy 1: Direct JSON parse
@@ -178,6 +180,23 @@ const parseAIResponse = (aiResponse: string, formData: any, businessType: string
       console.log(`Attempting parsing strategy ${i + 1}`);
       const result = parsingStrategies[i]();
       console.log(`Successfully parsed with strategy ${i + 1}`);
+      
+      // CRITICAL: Validate that ALL required sections are present in AI response
+      const requiredSections = [
+        'budgetStrategy', 'copywritingRecommendations', 'platformRecommendations',
+        'monthlyPlan', 'contentCalendar', 'industryInsights', 'actionPlans',
+        'metricOptimization', 'competitorInsights'
+      ];
+      
+      const missingSections = requiredSections.filter(section => !result[section] || 
+        (Array.isArray(result[section]) && result[section].length === 0));
+      
+      if (missingSections.length > 0) {
+        console.error('AI response missing required sections:', missingSections);
+        throw new Error(`AI response incomplete - missing: ${missingSections.join(', ')}`);
+      }
+      
+      console.log('AI response contains all required sections');
       return result;
     } catch (error) {
       console.log(`Parsing strategy ${i + 1} failed:`, error.message);
@@ -185,8 +204,10 @@ const parseAIResponse = (aiResponse: string, formData: any, businessType: string
     }
   }
   
-  console.log('All parsing strategies failed, using fallback response');
-  return createFallbackResponse(formData, businessType);
+  // If all parsing fails, throw error instead of using fallback
+  console.error('CRITICAL: AI response parsing completely failed');
+  console.error('Raw response that failed:', aiResponse);
+  throw new Error('Failed to parse AI response - API may not be generating proper intelligence data');
 };
 
 serve(async (req) => {
