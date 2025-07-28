@@ -17,27 +17,23 @@ interface ActionPlansProps {
 }
 
 const ActionPlans = ({ data, businessType }: ActionPlansProps) => {
-  const clientDeliveryPlan = data.clientDeliveryPlan || {};
-  const agencyGrowthPlan = data.agencyGrowthPlan || {};
+  // Access the correct AI-generated action plans data
+  const actionPlans = data.actionPlans || [];
   
-  const clientPlan = Array.isArray(clientDeliveryPlan.plan) 
-    ? clientDeliveryPlan.plan 
-    : clientDeliveryPlan['30DayPlan'] 
-      ? Array.isArray(clientDeliveryPlan['30DayPlan']) 
-        ? clientDeliveryPlan['30DayPlan']
-        : [clientDeliveryPlan['30DayPlan']]
-      : [];
-      
-  const agencyPlan = Array.isArray(agencyGrowthPlan.plan) 
-    ? agencyGrowthPlan.plan 
-    : agencyGrowthPlan['30DayPlan'] 
-      ? Array.isArray(agencyGrowthPlan['30DayPlan'])
-        ? agencyGrowthPlan['30DayPlan']
-        : [agencyGrowthPlan['30DayPlan']]
-      : [];
+  console.log('ActionPlans - Full data:', data);
+  console.log('ActionPlans - Raw plans:', actionPlans);
+  
+  // Transform AI data into our format - actionPlans should be an array of weekly plans
+  const transformedPlans = Array.isArray(actionPlans) 
+    ? actionPlans.map((plan: any, index: number) => ({
+        week: plan.week || `Week ${index + 1}`,
+        focus: plan.focus || plan.theme || plan.title || 'Business Growth',
+        tasks: Array.isArray(plan.tasks) ? plan.tasks : [plan.task || plan.action || plan.description || 'Complete weekly objectives']
+      }))
+    : [];
 
-  const showDualPlans = businessType === 'agency' && (clientPlan.length > 0 || agencyPlan.length > 0);
-  const hasAnyPlan = clientPlan.length > 0 || agencyPlan.length > 0;
+  const showDualPlans = false; // Simplify to single plan view for AI-generated data
+  const hasAnyPlan = transformedPlans.length > 0;
 
   if (!hasAnyPlan) {
     return (
@@ -91,16 +87,16 @@ const ActionPlans = ({ data, businessType }: ActionPlansProps) => {
             </TabsList>
             
             <TabsContent value="agency">
-              <ActionPlanGrid plan={agencyPlan} planType="Agency Growth" />
+              <ActionPlanGrid plan={transformedPlans} planType="Agency Growth" />
             </TabsContent>
             
             <TabsContent value="client">
-              <ActionPlanGrid plan={clientPlan} planType="Client Delivery" />
+              <ActionPlanGrid plan={transformedPlans} planType="Client Delivery" />
             </TabsContent>
           </Tabs>
         ) : (
           <ActionPlanGrid 
-            plan={clientPlan.length > 0 ? clientPlan : agencyPlan} 
+            plan={transformedPlans} 
             planType={businessType === 'sales' ? 'Sales Growth' : 'Business Growth'} 
           />
         )}

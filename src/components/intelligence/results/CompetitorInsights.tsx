@@ -20,38 +20,27 @@ interface CompetitorInsightsProps {
 }
 
 const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => {
-  // Access competitor insights from the correct structure
-  const competitorData = data.competitorInsights || {};
+  // Access the correct AI-generated competitor insights data
+  const competitorInsights = data.competitorInsights || [];
   
-  // Handle both agencies and clients insights
-  const agenciesAnalysis = competitorData.agencies?.analysis || '';
-  const clientsAnalysis = competitorData.clients?.analysis || '';
+  console.log('CompetitorInsights - Full data:', data);
+  console.log('CompetitorInsights - Raw insights:', competitorInsights);
   
-  // Transform analysis into structured format
-  const createCompetitorData = (analysis: string, type: string) => {
-    if (!analysis) return null;
-    
-    // Parse the analysis into structured data
-    const sentences = analysis.split('.').filter(s => s.trim());
-    
-    return {
-      competitor: `${type} Competitors`,
-      analysis: analysis,
-      strengths: sentences.slice(0, 2).map(s => s.trim() + '.'),
-      weaknesses: ['Limited personalization approach', 'Over-reliance on traditional methods'],
-      opportunities: ['Leverage emerging technologies', 'Focus on underserved market segments'],
-      strategicRecommendations: [
-        `Study ${type.toLowerCase()} competitor strategies and differentiate`,
-        'Implement best practices while maintaining unique value proposition',
-        'Monitor competitor activities for market gap opportunities'
-      ]
-    };
-  };
-
-  const agencyCompetitor = createCompetitorData(agenciesAnalysis, 'Agency');
-  const clientCompetitor = createCompetitorData(clientsAnalysis, 'Client');
-  
-  const competitorInsights = [agencyCompetitor, clientCompetitor].filter(Boolean);
+  // Transform AI data into our expected format
+  const processedInsights = Array.isArray(competitorInsights) 
+    ? competitorInsights.map((insight: any, index: number) => ({
+        competitor: insight.competitor || `Competitor ${index + 1}`,
+        analysis: insight.strength || insight.analysis || insight.description || 'AI-generated competitive analysis',
+        strengths: [insight.strength || 'Strong market position'],
+        weaknesses: [insight.opportunity || 'Limited digital presence'],
+        opportunities: [insight.recommendation || 'Market differentiation opportunity'],
+        strategicRecommendations: [
+          insight.recommendation || 'Leverage competitive gaps for market advantage',
+          'Monitor competitor strategies and adapt positioning',
+          'Focus on unique value proposition development'
+        ]
+      }))
+    : [];
   
   console.log('CompetitorInsights - Full data:', data);
   console.log('CompetitorInsights - Processed insights:', competitorInsights);
@@ -64,7 +53,7 @@ const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => 
     return value.split(/[.;,]\s*/).filter(item => item.trim().length > 0);
   };
 
-  if (competitorInsights.length === 0) {
+  if (processedInsights.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -98,12 +87,12 @@ const CompetitorInsights = ({ data, businessType }: CompetitorInsightsProps) => 
           <span>Competitive Intelligence</span>
         </CardTitle>
         <CardDescription>
-          Analysis of your competitive landscape and market opportunities ({competitorInsights.length} competitors analyzed)
+          Analysis of your competitive landscape and market opportunities ({processedInsights.length} competitors analyzed)
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {competitorInsights.map((competitor: any, index: number) => {
+          {processedInsights.map((competitor: any, index: number) => {
             // Convert strings to arrays for processing
             const strengths = ensureArray(competitor.strengths);
             const weaknesses = ensureArray(competitor.weaknesses);

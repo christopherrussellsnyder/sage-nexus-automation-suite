@@ -23,35 +23,30 @@ interface MetricOptimizationProps {
 }
 
 const MetricOptimization = ({ data, businessType }: MetricOptimizationProps) => {
-  // Access metric optimization from the correct structure
-  const metricData = data.metricOptimization || {};
+  // Access the correct AI-generated metric optimization data
+  const metricOptimization = data.metricOptimization || {};
   
-  // Handle both agency and client metrics
-  const agencyMetrics = metricData.agencyGrowth?.metrics || [];
-  const clientMetrics = metricData.clientResults?.metrics || [];
+  console.log('MetricOptimization - Full data:', data);
+  console.log('MetricOptimization - Raw metrics:', metricOptimization);
   
-  // Transform metrics into structured format
-  const parseMetrics = (metricsArray: string[], source: string) => {
-    if (!Array.isArray(metricsArray)) return [];
-    
-    return metricsArray.map((metric: string, index: number) => ({
-      metric: metric,
-      source: source,
-      currentBenchmark: source === 'Agency Growth' ? '2.8%' : '3.2%',
-      targetBenchmark: source === 'Agency Growth' ? '4.5%' : '5.2%',
+  // Transform AI data - metricOptimization contains objects with current/target/strategy
+  const allMetrics = Object.keys(metricOptimization).map((key, index) => {
+    const metric = metricOptimization[key];
+    return {
+      metric: key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()), // Convert camelCase to title
+      source: 'AI-Generated',
+      currentBenchmark: metric.current || '0%',
+      targetBenchmark: metric.target || '0%',
       timeline: '3 months',
+      strategy: metric.strategy || 'AI-optimized improvement strategy',
       expectedROI: `${20 + (index * 5)}% improvement expected`,
       improvementStrategies: [
-        `Optimize ${metric.toLowerCase()} through A/B testing`,
-        `Implement advanced tracking and analytics`,
-        `Focus on high-converting audience segments`
+        metric.strategy || `Optimize ${key} through AI-driven analysis`,
+        'Implement data-driven tracking and monitoring',
+        'Focus on high-performing segments and campaigns'
       ]
-    }));
-  };
-
-  const agencyMetricsData = parseMetrics(agencyMetrics, 'Agency Growth');
-  const clientMetricsData = parseMetrics(clientMetrics, 'Client Results');
-  const allMetrics = [...agencyMetricsData, ...clientMetricsData];
+    };
+  });
   
   console.log('MetricOptimization - Full data:', data);
   console.log('MetricOptimization - Combined metrics:', allMetrics);

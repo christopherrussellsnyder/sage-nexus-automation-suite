@@ -19,42 +19,30 @@ interface PlatformRecommendationsProps {
 }
 
 const PlatformRecommendations = ({ data, businessType }: PlatformRecommendationsProps) => {
-  // Access platform recommendations from the correct structure
-  const platformData = data.platformRecommendations || {};
+  // Access platform recommendations from the correct structure - use the actual AI-generated data
+  const platformRecommendations = data.platformRecommendations || [];
   
-  // Handle both agency and client recommendations - fix data structure mapping
-  const agencyPlatforms = platformData.agencyGrowth || [];
-  const clientPlatforms = platformData.clientDelivery || [];
-  
-  // Combine all platforms into a single array
-  const allPlatforms = [
-    ...agencyPlatforms.map((platform: string, index: number) => ({
-      platform,
-      priority: index + 1,
-      source: 'Agency Growth',
-      reasoning: `Recommended for agency growth and business development`,
-      score: 85 - (index * 5), // Simulated score
-      budgetAllocation: index === 0 ? 40 : index === 1 ? 30 : 20,
-      expectedMetrics: {
-        roas: index === 0 ? '4.5' : index === 1 ? '3.8' : '3.2',
-        cpm: index === 0 ? '$12' : index === 1 ? '$15' : '$18',
-        conversionRate: index === 0 ? '3.5' : index === 1 ? '2.8' : '2.2'
-      }
-    })),
-    ...clientPlatforms.map((platform: string, index: number) => ({
-      platform,
-      priority: index + agencyPlatforms.length + 1,
-      source: 'Client Delivery',
-      reasoning: `Optimal for client service delivery and results`,
-      score: 80 - (index * 5),
-      budgetAllocation: index === 0 ? 35 : index === 1 ? 25 : 15,
-      expectedMetrics: {
-        roas: index === 0 ? '4.2' : index === 1 ? '3.5' : '2.9',
-        cpm: index === 0 ? '$14' : index === 1 ? '$17' : '$20',
-        conversionRate: index === 0 ? '3.2' : index === 1 ? '2.5' : '2.0'
-      }
-    }))
-  ];
+  console.log('PlatformRecommendations - Full data:', data);
+  console.log('PlatformRecommendations - Platform data:', platformRecommendations);
+
+  // Transform AI data into our display format
+  const allPlatforms = Array.isArray(platformRecommendations) 
+    ? platformRecommendations.map((platform: any, index: number) => ({
+        platform: platform.platform || `Platform ${index + 1}`,
+        priority: platform.priority || index + 1,
+        source: platform.source || 'AI-Generated',
+        reasoning: platform.reasoning || platform.description || 'AI-optimized platform recommendation',
+        score: platform.score || (90 - (index * 5)),
+        budget: platform.budget || platform.budgetAllocation || `$${(800 - (index * 200))}`,
+        expectedROI: platform.expectedROI || `${(4.5 - (index * 0.3)).toFixed(1)}x`,
+        budgetAllocation: platform.budgetPercentage || (40 - (index * 10)),
+        expectedMetrics: {
+          roas: platform.expectedROI || `${(4.5 - (index * 0.3)).toFixed(1)}`,
+          cpm: platform.cpm || `$${12 + (index * 3)}`,
+          conversionRate: platform.conversionRate || `${(3.5 - (index * 0.3)).toFixed(1)}`
+        }
+      }))
+    : [];
   
   console.log('PlatformRecommendations - Full data:', data);
   console.log('PlatformRecommendations - Combined platforms:', allPlatforms);

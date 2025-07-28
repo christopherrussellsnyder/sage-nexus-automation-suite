@@ -16,19 +16,20 @@ interface IndustryInsightsProps {
 }
 
 const IndustryInsights = ({ data, businessType }: IndustryInsightsProps) => {
-  const industryInsights = data.industryInsights || {};
+  // Access the correct AI-generated industry insights data
+  const industryInsights = data.industryInsights || [];
   
-  const trends = Array.isArray(industryInsights.trends) 
-    ? industryInsights.trends 
-    : industryInsights.trends 
-      ? [industryInsights.trends] 
-      : [];
+  console.log('IndustryInsights - Full data:', data);
+  console.log('IndustryInsights - Raw insights:', industryInsights);
+  
+  // Transform the AI data into our expected format
+  const trends = Array.isArray(industryInsights) 
+    ? industryInsights.map((insight: any) => insight.trend || insight.description || insight.toString()).filter(Boolean)
+    : [];
       
-  const opportunities = Array.isArray(industryInsights.opportunities) 
-    ? industryInsights.opportunities 
-    : industryInsights.opportunities 
-      ? [industryInsights.opportunities] 
-      : [];
+  const opportunities = Array.isArray(industryInsights) 
+    ? industryInsights.map((insight: any) => insight.action || insight.opportunity || insight.impact || '').filter(Boolean)
+    : [];
 
   const hasData = trends.length > 0 || opportunities.length > 0;
 
