@@ -270,9 +270,29 @@ const UnifiedIntelligenceWizard = ({
       
     } catch (error) {
       console.error('Error generating AI intelligence:', error);
+      
+      let errorMessage = "An unexpected error occurred while generating intelligence.";
+      let errorTitle = "Error generating intelligence";
+      
+      if (error.message?.includes('timeout')) {
+        errorTitle = "Request Timeout";
+        errorMessage = "Intelligence generation is taking longer than expected. Please try again with a simpler business description or check your internet connection.";
+      } else if (error.message?.includes('API key')) {
+        errorTitle = "API Configuration Error";
+        errorMessage = "OpenAI API key is not configured properly. Please contact support.";
+      } else if (error.message?.includes('Missing required')) {
+        errorTitle = "Incomplete Information";
+        errorMessage = "Please fill in all required fields before generating intelligence.";
+      } else if (error.message?.includes('validation')) {
+        errorTitle = "Validation Error";
+        errorMessage = "Some of the provided information is invalid. Please review and try again.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
-        title: "Error generating intelligence",
-        description: error.message || "Please check your API configuration and try again",
+        title: errorTitle,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
