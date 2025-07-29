@@ -15,22 +15,18 @@ const CopywritingRecommendations = ({ data, businessType }: CopywritingRecommend
   
   console.log('CopywritingRecommendations - Raw data:', copyRecommendations);
   
-  // Transform AI array data into display format
+  // Transform AI array data into comprehensive display format
   const transformedRecommendations = Array.isArray(copyRecommendations) 
     ? copyRecommendations.map((rec: any, index: number) => ({
-        copyType: rec.type || rec.copyType || `Copy Type ${index + 1}`,
+        type: rec.type || rec.copyType || `Copy Type ${index + 1}`,
         headline: rec.headline || rec.title || '',
-        subHeadline: rec.subHeadline || rec.subtitle || '',
-        callToAction: rec.callToAction || rec.cta || '',
-        recommendations: rec.recommendations || [
-          rec.headline ? `Headline: "${rec.headline}"` : '',
-          rec.subHeadline ? `Sub-headline: "${rec.subHeadline}"` : '',
-          rec.callToAction ? `Call-to-Action: "${rec.callToAction}"` : '',
-          rec.description || ''
-        ].filter(Boolean),
+        content: rec.content || rec.body || rec.description || '',
+        cta: rec.cta || rec.callToAction || 'Learn More',
+        platform: rec.platform || 'Multi-Platform',
+        priority: rec.priority || 'High',
+        reasoning: rec.reasoning || rec.strategicReasoning || 'AI-optimized for maximum engagement',
         emotionalTriggers: rec.emotionalTriggers || rec.triggers || ['persuasion', 'trust', 'results'],
-        audience: rec.audience || 'user',
-        priority: rec.priority || 'High'
+        audience: rec.audience || 'user'
       }))
     : [];
   
@@ -48,80 +44,68 @@ const CopywritingRecommendations = ({ data, businessType }: CopywritingRecommend
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {businessType === 'agency' || businessType === 'copywriting' ? (
-          <Tabs defaultValue="user" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="user">
-                <Users className="h-4 w-4 mr-2" />
-                For Your Business
-              </TabsTrigger>
-              <TabsTrigger value="client">
-                <Target className="h-4 w-4 mr-2" />
-                For Your Clients
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="user" className="space-y-4">
-              <h4 className="font-semibold">Copy for Client Acquisition</h4>
-              <div className="space-y-4">
-                {copyData.filter((item: any) => item.audience === 'user' || !item.audience).map((recommendation: any, index: number) => (
-                  <CopyRecommendationCard key={`user-${index}`} recommendation={recommendation} />
-                ))}
-                {copyData.length === 0 && (
-                  <DefaultCopyRecommendations businessType={businessType} audience="user" />
-                )}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="client" className="space-y-4">
-              <h4 className="font-semibold">Copy for Client Campaigns</h4>
-              <div className="space-y-4">
-                {copyData.filter((item: any) => item.audience === 'client').map((recommendation: any, index: number) => (
-                  <CopyRecommendationCard key={`client-${index}`} recommendation={recommendation} />
-                ))}
-                {copyData.filter((item: any) => item.audience === 'client').length === 0 && (
-                  <DefaultCopyRecommendations businessType={businessType} audience="client" />
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
-        ) : (
-          <div className="space-y-4">
-            {copyData.map((recommendation: any, index: number) => (
-              <CopyRecommendationCard key={index} recommendation={recommendation} />
-            ))}
-            {copyData.length === 0 && (
-              <DefaultCopyRecommendations businessType={businessType} audience="user" />
-            )}
-          </div>
-        )}
+        <div className="space-y-4">
+          {copyData.map((recommendation: any, index: number) => (
+            <EnhancedCopyRecommendationCard key={index} recommendation={recommendation} />
+          ))}
+          {copyData.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Copywriting recommendations will be generated based on your business information.</p>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
 };
 
-const CopyRecommendationCard = ({ recommendation }: { recommendation: any }) => (
-  <div className="border rounded-lg p-4 space-y-3">
-    <div className="flex justify-between items-start">
-      <h5 className="font-medium">{recommendation.copyType || recommendation.title}</h5>
-      <Badge variant="outline">{recommendation.priority || 'High'}</Badge>
+const EnhancedCopyRecommendationCard = ({ recommendation }: { recommendation: any }) => (
+  <div className="border rounded-lg p-4 space-y-4">
+    <div className="flex items-center justify-between">
+      <Badge variant="outline" className="capitalize">
+        {recommendation.type || 'general'}
+      </Badge>
+      {recommendation.priority && (
+        <Badge variant={recommendation.priority === 'high' ? 'default' : 'secondary'}>
+          {recommendation.priority} Priority
+        </Badge>
+      )}
     </div>
     
-    {recommendation.recommendations && (
-      <div className="space-y-2">
-        <h6 className="text-sm font-medium text-muted-foreground">Recommendations:</h6>
-        <ul className="text-sm space-y-1">
-          {recommendation.recommendations.map((rec: string, i: number) => (
-            <li key={i} className="flex items-start">
-              <span className="text-primary mr-2">•</span>
-              {rec}
-            </li>
-          ))}
-        </ul>
+    <div className="space-y-3">
+      <div>
+        <h5 className="font-medium text-sm text-muted-foreground mb-1">Headline:</h5>
+        <h4 className="font-semibold text-lg">{recommendation.headline}</h4>
+      </div>
+      
+      <div>
+        <h5 className="font-medium text-sm text-muted-foreground mb-1">Content:</h5>
+        <p className="text-sm leading-relaxed">{recommendation.content}</p>
+      </div>
+      
+      <div>
+        <h5 className="font-medium text-sm text-muted-foreground mb-1">Call to Action:</h5>
+        <Badge variant="secondary" className="font-medium">{recommendation.cta}</Badge>
+      </div>
+    </div>
+    
+    {recommendation.platform && (
+      <div className="pt-2 border-t">
+        <span className="text-xs text-muted-foreground">
+          Optimized for {recommendation.platform}
+        </span>
       </div>
     )}
     
-    {recommendation.emotionalTriggers && (
+    {recommendation.reasoning && (
+      <div className="bg-muted/50 p-3 rounded text-xs">
+        <h6 className="font-medium mb-1">Strategic Reasoning:</h6>
+        <p>{recommendation.reasoning}</p>
+      </div>
+    )}
+    
+    {recommendation.emotionalTriggers && recommendation.emotionalTriggers.length > 0 && (
       <div className="space-y-2">
         <h6 className="text-sm font-medium text-muted-foreground">Emotional Triggers:</h6>
         <div className="flex flex-wrap gap-1">
@@ -133,25 +117,6 @@ const CopyRecommendationCard = ({ recommendation }: { recommendation: any }) => 
         </div>
       </div>
     )}
-    
-    {recommendation.examples && recommendation.examples.length > 0 && (
-      <div className="space-y-2">
-        <h6 className="text-sm font-medium text-muted-foreground">Examples:</h6>
-        {recommendation.examples.map((example: any, i: number) => (
-          <div key={i} className="bg-muted/50 p-3 rounded text-xs space-y-2">
-            <div>
-              <span className="font-medium">Before:</span> {example.before}
-            </div>
-            <div>
-              <span className="font-medium">After:</span> {example.after}
-            </div>
-            <div className="text-muted-foreground">
-              <span className="font-medium">Improvement:</span> {example.improvement}
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
   </div>
 );
 
@@ -161,7 +126,7 @@ const DefaultCopyRecommendations = ({ businessType, audience }: { businessType: 
   return (
     <div className="space-y-4">
       {recommendations.map((rec, index) => (
-        <CopyRecommendationCard key={index} recommendation={rec} />
+        <EnhancedCopyRecommendationCard key={index} recommendation={rec} />
       ))}
     </div>
   );

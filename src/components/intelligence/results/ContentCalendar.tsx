@@ -17,6 +17,87 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
   const clientDeliveryPlan = data.clientDeliveryPlan || [];
   const agencyGrowthPlan = data.agencyGrowthPlan || [];
   
+  // Generate 30-day content calendar from API data
+  const generate30DayCalendar = (monthlyPlan: any[], contentCalendar: any[]) => {
+    const calendar = [];
+    
+    // Use monthlyPlan as primary source
+    if (Array.isArray(monthlyPlan) && monthlyPlan.length > 0) {
+      monthlyPlan.forEach((item, index) => {
+        calendar.push({
+          day: item.day || index + 1,
+          platform: item.platform || 'Multi-Platform',
+          contentType: item.contentType || item.type || 'content',
+          hook: item.title || item.hook || (item.description ? item.description.substring(0, 50) + '...' : 'Engaging content hook'),
+          body: item.description || item.content || item.body || 'AI-optimized content designed for maximum engagement',
+          cta: item.cta || item.callToAction || 'Learn More',
+          visualSuggestion: item.visualSuggestion || 'Professional imagery recommended',
+          expectedMetrics: {
+            reach: item.expectedMetrics?.reach || (1000 + (index * 200)),
+            engagement: item.expectedMetrics?.engagement || '3.5%',
+            conversions: item.expectedMetrics?.conversions || (15 + index),
+            ctr: item.expectedMetrics?.ctr
+          },
+          strategicReasoning: item.strategicReasoning || 'AI-optimized for maximum engagement and conversions'
+        });
+      });
+    }
+    
+    // Add contentCalendar data for additional days
+    if (Array.isArray(contentCalendar)) {
+      contentCalendar.forEach((weekData) => {
+        if (weekData.content && Array.isArray(weekData.content)) {
+          weekData.content.forEach((item: any) => {
+            const dayOffset = calendar.length;
+            calendar.push({
+              day: item.day || (dayOffset + 1),
+              platform: 'Multi-Platform',
+              contentType: item.type || 'content',
+              hook: item.title || 'Engaging content piece',
+              body: item.description || item.content || 'Strategic content designed for your audience',
+              cta: 'Learn More',
+              visualSuggestion: 'Professional imagery recommended',
+              expectedMetrics: {
+                reach: 1000 + (dayOffset * 200),
+                engagement: '3.5%',
+                conversions: 15 + dayOffset
+              },
+              strategicReasoning: `Week ${weekData.week} focus: ${weekData.theme || 'Brand Awareness'}`
+            });
+          });
+        }
+      });
+    }
+    
+    // Fill remaining days up to 30 if needed
+    const contentTypes = ['video', 'image', 'blog', 'infographic', 'carousel', 'story'];
+    const platforms = ['Facebook', 'Instagram', 'LinkedIn', 'Twitter', 'YouTube'];
+    
+    while (calendar.length < 30) {
+      const day = calendar.length + 1;
+      const contentType = contentTypes[day % contentTypes.length];
+      const platform = platforms[day % platforms.length];
+      
+      calendar.push({
+        day: day,
+        platform: platform,
+        contentType: contentType,
+        hook: `Day ${day}: ${contentType} content strategy`,
+        body: `Strategic ${contentType} content designed to drive engagement and conversions on ${platform}`,
+        cta: 'Learn More',
+        visualSuggestion: `${contentType === 'video' ? 'High-quality video production' : 'Professional imagery'} recommended`,
+        expectedMetrics: {
+          reach: 1000 + (day * 150),
+          engagement: `${3 + (day % 3)}%`,
+          conversions: 10 + day
+        },
+        strategicReasoning: `AI-optimized ${contentType} content for ${platform} audience engagement`
+      });
+    }
+    
+    return calendar;
+  };
+
   // Transform AI-generated data into structured format with complete details
   const parseContentData = (content: any) => {
     if (Array.isArray(content)) {
@@ -94,7 +175,8 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
     return [];
   };
 
-  const parsedMonthlyPlan = parseContentData(monthlyPlan);
+  // Generate complete 30-day calendar
+  const full30DayCalendar = generate30DayCalendar(monthlyPlan, data.contentCalendar || []);
   const parsedClientPlan = parseContentData(clientDeliveryPlan);
   const parsedAgencyPlan = parseContentData(agencyGrowthPlan);
   
@@ -126,15 +208,15 @@ const ContentCalendar = ({ data, businessType, variant = 'user', title }: Conten
             </TabsList>
             
             <TabsContent value="agency">
-              <ContentCalendarGrid content={parsedAgencyPlan.length > 0 ? parsedAgencyPlan : parsedMonthlyPlan} />
+              <ContentCalendarGrid content={parsedAgencyPlan.length > 0 ? parsedAgencyPlan : full30DayCalendar} />
             </TabsContent>
             
             <TabsContent value="client">
-              <ContentCalendarGrid content={parsedClientPlan} />
+              <ContentCalendarGrid content={parsedClientPlan.length > 0 ? parsedClientPlan : full30DayCalendar} />
             </TabsContent>
           </Tabs>
         ) : (
-          <ContentCalendarGrid content={parsedMonthlyPlan} />
+          <ContentCalendarGrid content={full30DayCalendar} />
         )}
       </CardContent>
     </Card>

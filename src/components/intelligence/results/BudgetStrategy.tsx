@@ -49,23 +49,68 @@ const BudgetStrategy = ({ data, businessType }: BudgetStrategyProps) => {
         <Separator />
 
         {/* Budget Allocation */}
-        {(primaryBudget.monthlyBudgetAllocation || primaryBudget.budgetAllocation) && (
-          <div className="space-y-3">
+        {(budgetData.allocation || primaryBudget.monthlyBudgetAllocation || primaryBudget.budgetAllocation) && (
+          <div className="space-y-4">
             <h4 className="font-semibold flex items-center">
               <PieChart className="h-4 w-4 mr-2" />
-              Monthly Budget Allocation
+              Budget Allocation {budgetData.totalBudget && `(${budgetData.totalBudget})`}
             </h4>
-            <div className="grid gap-3">
-              {Object.entries(primaryBudget.monthlyBudgetAllocation || primaryBudget.budgetAllocation || {}).map(([key, value]) => (
-                <div key={key} className="flex justify-between items-center">
-                  <span className="text-sm capitalize">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                  </span>
-                  <Badge variant="outline">{value as string}</Badge>
-                </div>
-              ))}
-            </div>
+            
+            {/* Visual Budget Allocation */}
+            {budgetData.allocation && (
+              <div className="space-y-3">
+                {Object.entries(budgetData.allocation).map(([category, percentage]) => {
+                  const amount = budgetData.totalBudget ? 
+                    parseInt(budgetData.totalBudget.replace(/[^\d]/g, '')) * (percentage as number) / 100 : 0;
+                  return (
+                    <div key={category} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="capitalize font-medium">{category}</span>
+                        <span>{String(percentage)}% (${amount})</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div 
+                          className="bg-primary h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            
+            {/* Fallback for other allocation formats */}
+            {!budgetData.allocation && (primaryBudget.monthlyBudgetAllocation || primaryBudget.budgetAllocation) && (
+              <div className="grid gap-3">
+                {Object.entries(primaryBudget.monthlyBudgetAllocation || primaryBudget.budgetAllocation || {}).map(([key, value]) => (
+                  <div key={key} className="flex justify-between items-center">
+                    <span className="text-sm capitalize">
+                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                    </span>
+                    <Badge variant="outline">{value as string}</Badge>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+        )}
+
+        {/* Budget Recommendations */}
+        {budgetData.recommendations && Array.isArray(budgetData.recommendations) && (
+          <>
+            <Separator />
+            <div className="space-y-3">
+              <h4 className="font-semibold">Budget Recommendations</h4>
+              <div className="space-y-2">
+                {budgetData.recommendations.map((recommendation: string, index: number) => (
+                  <div key={index} className="bg-muted/50 p-3 rounded-lg">
+                    <p className="text-sm">{recommendation}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
         )}
 
         <Separator />
