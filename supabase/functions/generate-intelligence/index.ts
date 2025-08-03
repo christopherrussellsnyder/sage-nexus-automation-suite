@@ -61,13 +61,16 @@ const makeOpenAIRequest = async (prompt: string, apiKey: string, attempt = 0): P
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-2025-04-14', // Use the latest flagship model for highest quality
         messages: [
-          { role: 'system', content: 'You are an expert business intelligence AI. Always respond with valid JSON containing business insights.' },
+          { 
+            role: 'system', 
+            content: `You are an elite business intelligence AI with access to the latest market data and industry insights. You conduct thorough analysis using advanced research methodologies and generate actionable, data-driven intelligence reports. Your expertise spans marketing strategy, competitive analysis, content planning, and business optimization across all industries and business types. Always respond with comprehensive, detailed, and highly specific JSON containing professional-grade business intelligence.` 
+          },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.7,
-        max_tokens: 4000
+        temperature: 0.8, // Higher creativity for more unique insights
+        max_tokens: 8000 // Double the tokens for more comprehensive responses
       }),
       signal: controller.signal
     });
@@ -347,186 +350,276 @@ serve(async (req) => {
 });
 
 function createPrompt(formData: any, businessType: string, intelligenceMode: string): string {
-  return `Generate comprehensive business intelligence for ${formData.businessName} in ${formData.industry} industry.
+  const currentDate = new Date().toISOString().split('T')[0];
   
-Business Details:
-- Industry: ${formData.industry}
-- Target Audience: ${formData.targetAudience}
-- Product/Service: ${formData.productService}
-- Monthly Revenue: ${formData.monthlyRevenue}
-- Business Type: ${businessType}
-- Current Challenges: ${formData.currentChallenges || 'None specified'}
+  return `As an elite business intelligence consultant with deep expertise in ${formData.industry} industry, conduct a comprehensive strategic analysis for ${formData.businessName}. Your analysis must be data-driven, industry-specific, and highly actionable.
 
-You MUST generate a complete JSON response with ALL of the following sections. Do not omit any section:
+## BUSINESS INTELLIGENCE BRIEF
+**Company:** ${formData.businessName}
+**Industry:** ${formData.industry}  
+**Target Market:** ${formData.targetAudience}
+**Product/Service:** ${formData.productService}
+**Revenue Scale:** ${formData.monthlyRevenue}/month
+**Business Model:** ${businessType}
+**Key Challenges:** ${formData.currentChallenges || 'Not specified'}
+**Analysis Date:** ${currentDate}
+
+## RESEARCH METHODOLOGY
+Apply advanced business intelligence research including:
+- Industry trend analysis and competitive positioning
+- Target audience behavioral insights and psychographics
+- Platform performance data and ROI optimization strategies
+- Content strategy frameworks based on conversion psychology
+- Budget allocation models using historical performance data
+- Predictive analytics for growth opportunities
+
+## MANDATORY OUTPUT STRUCTURE
+Generate a complete JSON response containing ALL sections below. Each section must be professionally researched, industry-specific, and immediately actionable:
 
 {
   "budgetStrategy": {
     "totalBudget": "$2000",
-    "allocation": {"advertising": 60, "content": 20, "tools": 20},
+    "allocation": {
+      "advertising": 60,
+      "content": 20, 
+      "tools": 20
+    },
     "recommendations": [
-      "Focus budget on highest-converting platforms",
-      "Allocate 60% to advertising for maximum reach",
-      "Test small budgets across multiple channels initially"
-    ]
+      "Data-driven budget allocation strategy #1 specific to ${formData.industry}",
+      "ROI optimization approach #2 targeting ${formData.targetAudience}",  
+      "Risk management strategy #3 for ${formData.productService} business"
+    ],
+    "reasoning": "Detailed explanation of budget allocation based on ${formData.industry} industry benchmarks and ${formData.targetAudience} behavior patterns"
   },
   "copywritingRecommendations": [
     {
       "type": "email",
-      "headline": "Transform Your ${formData.industry} Business Today",
-      "content": "Compelling email copy that resonates with ${formData.targetAudience}...",
-      "cta": "Get Started Now"
+      "headline": "Compelling, psychology-driven email subject line for ${formData.targetAudience}",
+      "content": "Complete 3-4 sentence email copy that addresses specific pain points of ${formData.targetAudience} and positions ${formData.productService} as the ideal solution. Include emotional triggers and urgency elements specific to ${formData.industry}.",
+      "cta": "Action-oriented CTA that converts",
+      "strategicReasoning": "Explanation of psychological triggers used and why this approach works for ${formData.targetAudience}"
     },
     {
       "type": "ad",
-      "headline": "#1 ${formData.productService} Solution",
-      "content": "Join thousands of satisfied customers...",
-      "cta": "Learn More"
+      "headline": "High-converting ad headline that speaks directly to ${formData.targetAudience} desires",
+      "content": "Complete Facebook/Google ad copy (3-4 sentences) that showcases unique value proposition of ${formData.productService}. Include social proof elements and address objections common in ${formData.industry}.",
+      "cta": "Conversion-optimized CTA",
+      "strategicReasoning": "Why this messaging strategy outperforms competitors in ${formData.industry}"
     },
     {
       "type": "social",
-      "headline": "Why ${formData.targetAudience} Choose Us",
-      "content": "Social media copy highlighting benefits...",
-      "cta": "Discover More"
+      "headline": "Viral-potential social media hook for ${formData.targetAudience}",
+      "content": "Engaging social media copy (2-3 sentences) that drives engagement and shares. Optimized for algorithm performance and includes trending elements relevant to ${formData.industry}.",
+      "cta": "Engagement-driving CTA",
+      "strategicReasoning": "Platform-specific optimization strategy and engagement psychology"
     }
   ],
   "platformRecommendations": [
     {
-      "platform": "Facebook",
-      "priority": "High",
-      "reasoning": "Large audience reach and sophisticated targeting",
-      "budget": "$800",
-      "expectedROI": "4.2x"
+      "platform": "Primary platform recommendation based on ${formData.targetAudience} data",
+      "priority": "Priority level with justification",
+      "reasoning": "Comprehensive analysis of why this platform delivers best ROI for ${formData.industry} businesses targeting ${formData.targetAudience}",
+      "budget": "Specific dollar amount with breakdown",
+      "expectedROI": "Realistic ROI based on industry benchmarks",
+      "audienceSize": "Estimated reachable audience size",
+      "competitiveAdvantage": "How to outperform competitors on this platform"
     },
     {
-      "platform": "Google Ads",
-      "priority": "High", 
-      "reasoning": "High-intent search traffic",
-      "budget": "$600",
-      "expectedROI": "3.8x"
+      "platform": "Secondary platform with growth potential",
+      "priority": "Priority level with justification", 
+      "reasoning": "Strategic rationale for secondary platform selection",
+      "budget": "Allocated budget amount",
+      "expectedROI": "Expected return on investment",
+      "audienceSize": "Platform-specific audience potential",
+      "competitiveAdvantage": "Unique positioning strategy"
     },
     {
-      "platform": "Instagram",
-      "priority": "Medium",
-      "reasoning": "Visual content performs well",
-      "budget": "$400",
-      "expectedROI": "3.2x"
+      "platform": "Tertiary platform for testing/expansion",
+      "priority": "Priority level with justification",
+      "reasoning": "Long-term strategic value and testing approach",
+      "budget": "Test budget allocation",
+      "expectedROI": "Conservative ROI expectations",
+      "audienceSize": "Available audience metrics",
+      "competitiveAdvantage": "Differentiation strategy"
     }
   ],
   "monthlyPlan": [
+    Generate exactly 30 detailed daily content plans, each with:
     {
-      "day": 1,
-      "platform": "Facebook",
-      "contentType": "video",
-      "title": "Product Demo",
-      "description": "Show product benefits to ${formData.targetAudience}"
-    },
-    {
-      "day": 2,
-      "platform": "Instagram",
-      "contentType": "image",
-      "title": "Customer Success Story",
-      "description": "Feature satisfied customer testimonial"
-    },
-    {
-      "day": 3,
-      "platform": "Google",
-      "contentType": "text",
-      "title": "Educational Blog Post",
-      "description": "Industry insights and tips"
+      "day": 1-30,
+      "platform": "Platform optimized for content type and day",
+      "contentType": "Specific content format (video, carousel, story, reel, blog, infographic, etc.)",
+      "title": "Compelling, specific title that drives engagement for ${formData.targetAudience}",
+      "description": "Detailed 2-3 sentence description of content including key messaging, visual elements, and strategic purpose",
+      "hashtags": "5-10 industry-relevant hashtags",
+      "postTime": "Optimal posting time based on audience behavior",
+      "expectedEngagement": "Projected engagement metrics",
+      "strategicGoal": "How this content supports overall business objectives"
     }
   ],
   "contentCalendar": [
+    Generate 4 weeks of strategic content themes:
     {
       "week": 1,
-      "theme": "Brand Awareness",
+      "theme": "Strategic theme aligned with customer journey stage",
+      "objective": "Specific business objective for this week",
       "content": [
-        {"day": 1, "type": "video", "title": "Company Introduction"},
-        {"day": 3, "type": "blog", "title": "Industry Trends"},
-        {"day": 5, "type": "infographic", "title": "Product Benefits"}
+        {"day": 1, "type": "content type", "title": "Specific engaging title", "platform": "optimal platform", "kpi": "success metric"},
+        {"day": 3, "type": "content type", "title": "Specific engaging title", "platform": "optimal platform", "kpi": "success metric"},
+        {"day": 5, "type": "content type", "title": "Specific engaging title", "platform": "optimal platform", "kpi": "success metric"},
+        {"day": 7, "type": "content type", "title": "Specific engaging title", "platform": "optimal platform", "kpi": "success metric"}
       ]
     }
+    // Repeat for weeks 2, 3, and 4 with progressive themes
   ],
   "metricOptimization": {
-    "conversionRate": {"current": "2.1%", "target": "3.8%", "strategy": "Optimize landing pages"},
-    "cpa": {"current": "$45", "target": "$32", "strategy": "Improve targeting"},
-    "roas": {"current": "3.2x", "target": "4.8x", "strategy": "Focus on high-converting campaigns"},
-    "clickThroughRate": {"current": "1.8%", "target": "2.5%", "strategy": "A/B test ad creatives"}
+    "conversionRate": {
+      "current": "Industry-realistic current rate",
+      "target": "Achievable target based on ${formData.industry} benchmarks", 
+      "strategy": "Specific 3-step optimization strategy",
+      "timeline": "Implementation timeline",
+      "expectedImpact": "Quantified improvement projection"
+    },
+    "cpa": {
+      "current": "Current cost per acquisition estimate",
+      "target": "Optimized target CPA",
+      "strategy": "Detailed cost reduction strategy",
+      "timeline": "Optimization timeline", 
+      "expectedImpact": "Cost savings projection"
+    },
+    "roas": {
+      "current": "Current return on ad spend",
+      "target": "Achievable ROAS target",
+      "strategy": "ROI improvement methodology",
+      "timeline": "Implementation schedule",
+      "expectedImpact": "Revenue increase projection"
+    },
+    "clickThroughRate": {
+      "current": "Industry-standard baseline CTR",
+      "target": "Optimized CTR goal",
+      "strategy": "Click optimization strategy",
+      "timeline": "Testing and implementation plan",
+      "expectedImpact": "Traffic increase estimate"
+    }
   },
   "competitorInsights": [
     {
-      "competitor": "Industry Leader A",
-      "strength": "Strong brand recognition and social presence",
-      "opportunity": "Limited personalization in messaging",
-      "recommendation": "Leverage personalized marketing approach"
+      "competitor": "Specific major competitor in ${formData.industry}",
+      "marketPosition": "Their current market positioning",
+      "strength": "Their primary competitive advantage",
+      "opportunity": "Specific gap or weakness to exploit",
+      "recommendation": "Detailed strategy to gain competitive advantage",
+      "marketShare": "Estimated market share percentage",
+      "pricingStrategy": "Their pricing approach",
+      "differentiationOpportunity": "How ${formData.businessName} can differentiate"
     },
     {
-      "competitor": "Industry Leader B", 
-      "strength": "Competitive pricing strategy",
-      "opportunity": "Weak customer service reputation",
-      "recommendation": "Emphasize superior customer support"
+      "competitor": "Second key competitor analysis",
+      "marketPosition": "Their positioning strategy",
+      "strength": "What they do well",
+      "opportunity": "Exploitable weakness",
+      "recommendation": "Competitive response strategy",
+      "marketShare": "Market presence estimate",
+      "pricingStrategy": "Pricing model analysis",
+      "differentiationOpportunity": "Unique positioning angle"
     }
   ],
   "industryInsights": [
     {
-      "trend": "Increased focus on personalization",
-      "impact": "High",
-      "action": "Implement dynamic content strategies",
-      "timeline": "Q1 2025"
+      "trend": "Major industry trend #1 impacting ${formData.industry}",
+      "impact": "Quantified business impact level (High/Medium/Low)",
+      "action": "Specific actionable response strategy",
+      "timeline": "Implementation timeline (Q1 2025, Q2 2025, Immediate, etc.)",
+      "investmentRequired": "Estimated resource investment",
+      "competitiveAdvantage": "How leveraging this trend creates advantage",
+      "riskLevel": "Implementation risk assessment"
     },
     {
-      "trend": "Video content dominance",
-      "impact": "High", 
-      "action": "Increase video production by 60%",
-      "timeline": "Immediate"
+      "trend": "Emerging opportunity #2 for ${formData.targetAudience}",
+      "impact": "Business impact assessment",
+      "action": "Strategic implementation plan",
+      "timeline": "Execution timeline",
+      "investmentRequired": "Required investment estimate",
+      "competitiveAdvantage": "Market positioning benefit",
+      "riskLevel": "Risk evaluation"
     },
     {
-      "trend": "AI-powered customer service",
-      "impact": "Medium",
-      "action": "Integrate chatbot solutions",
-      "timeline": "Q2 2025"
+      "trend": "Technology/market shift #3 affecting ${formData.productService}",
+      "impact": "Impact on business model",
+      "action": "Adaptation strategy",
+      "timeline": "Response timeline",
+      "investmentRequired": "Investment requirements",
+      "competitiveAdvantage": "Strategic advantage potential",
+      "riskLevel": "Associated risks"
     }
   ],
   "actionPlans": [
     {
       "week": 1,
-      "focus": "Setup & Foundation",
+      "focus": "Strategic foundation and setup for ${formData.businessName}",
+      "objective": "Specific measurable goal for week 1",
       "tasks": [
-        "Set up tracking pixels",
-        "Create brand guidelines",
-        "Launch awareness campaigns"
-      ]
+        "Detailed specific task #1 with clear deliverable",
+        "Detailed specific task #2 with timeline and responsibility",
+        "Detailed specific task #3 with success metrics"
+      ],
+      "budget": "Week 1 budget allocation",
+      "expectedOutcomes": "Projected results and KPIs",
+      "riskMitigation": "Potential risks and mitigation strategies"
     },
     {
       "week": 2,
-      "focus": "Content Creation",
+      "focus": "Content creation and audience engagement for ${formData.targetAudience}",
+      "objective": "Week 2 measurable objective",
       "tasks": [
-        "Develop video content",
-        "Write blog articles",
-        "Design social media graphics"
-      ]
+        "Specific content creation task with details",
+        "Audience engagement initiative with metrics",
+        "Platform optimization task with KPIs"
+      ],
+      "budget": "Week 2 budget breakdown",
+      "expectedOutcomes": "Success metrics and projections",
+      "riskMitigation": "Risk management approaches"
     },
     {
       "week": 3,
-      "focus": "Campaign Optimization",
+      "focus": "Campaign optimization and performance enhancement",
+      "objective": "Week 3 performance goals",
       "tasks": [
-        "Analyze performance data",
-        "A/B test ad variations",
-        "Optimize targeting parameters"
-      ]
+        "Data analysis and optimization task",
+        "A/B testing implementation with specifics",
+        "Performance tuning with target metrics"
+      ],
+      "budget": "Week 3 investment allocation",
+      "expectedOutcomes": "Optimization results projection",
+      "riskMitigation": "Performance risk management"
     },
     {
       "week": 4,
-      "focus": "Scale & Expand",
+      "focus": "Scaling successful initiatives and future planning",
+      "objective": "Week 4 scaling objectives",
       "tasks": [
-        "Increase successful campaign budgets",
-        "Launch retargeting campaigns",
-        "Plan next month strategy"
-      ]
+        "Scaling strategy implementation",
+        "Future planning and strategy development",
+        "Performance review and next phase preparation"
+      ],
+      "budget": "Week 4 scaling budget",
+      "expectedOutcomes": "Scaling success metrics",
+      "riskMitigation": "Scaling risk management"
     }
   ]
 }
 
-CRITICAL: You must include ALL sections above. Generate realistic, specific, and actionable content for the ${formData.industry} industry targeting ${formData.targetAudience}. Make all recommendations relevant to ${formData.productService}. Ensure the JSON is valid and complete.`;
+## CRITICAL REQUIREMENTS:
+1. Every recommendation must be specific to ${formData.industry} industry and ${formData.targetAudience}
+2. All content must be immediately actionable with clear implementation steps
+3. Budget allocations must reflect realistic ${formData.industry} market conditions
+4. Competitor insights must reference actual market dynamics in ${formData.industry}
+5. Timeline recommendations must align with ${formData.businessName} business model
+6. All metrics must be industry-benchmarked and achievable
+7. Generate exactly 30 unique, detailed daily content plans in monthlyPlan
+8. Ensure all JSON formatting is valid and complete
+
+Generate professional-grade intelligence that provides genuine competitive advantage for ${formData.businessName} in the ${formData.industry} market.`;
 }
 
 function createFallbackResponse(formData: any, businessType: string) {
