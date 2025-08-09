@@ -222,12 +222,28 @@ serve(async (req) => {
     
     let requestData;
     try {
-      requestData = await req.json();
-      console.log(`[${requestId}] Successfully parsed request data for business:`, requestData?.formData?.businessName);
+      const rawBody = await req.text();
+      console.log(`[${requestId}] Raw request body length:`, rawBody?.length || 0);
+      
+      if (!rawBody || rawBody.trim() === '') {
+        console.error(`[${requestId}] Empty request body received`);
+        return new Response(JSON.stringify({ 
+          error: 'Empty request body - please ensure data is being sent correctly',
+          requestId,
+          timestamp: new Date().toISOString()
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      requestData = JSON.parse(rawBody);
+      console.log(`[${requestId}] Successfully parsed request data for business:`, requestData?.formData?.businessName || 'Unknown');
     } catch (error) {
-      console.error(`[${requestId}] Invalid JSON in request:`, error);
+      console.error(`[${requestId}] JSON parsing error:`, error.message);
+      console.error(`[${requestId}] Raw body sample:`, await req.text().catch(() => 'Could not read body again'));
       return new Response(JSON.stringify({ 
-        error: 'Invalid request format - malformed JSON',
+        error: 'Invalid JSON format in request body',
         requestId,
         timestamp: new Date().toISOString(),
         details: error.message

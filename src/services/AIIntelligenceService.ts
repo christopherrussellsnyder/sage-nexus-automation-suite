@@ -177,16 +177,23 @@ export class AIIntelligenceService {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.CONFIG.TIMEOUT);
         
+        // Ensure the request is properly serialized
+        const requestBody = {
+          formData: request.formData,
+          intelligenceMode: request.intelligenceMode,
+          businessType: request.businessType
+        };
+
+        console.log('Sending request with business:', requestBody.formData.businessName);
+        
         const { data, error } = await supabase.functions.invoke('generate-intelligence', {
-          body: request,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          body: requestBody
         });
 
         clearTimeout(timeoutId);
 
         if (error) {
+          console.error('Supabase function error:', error);
           throw new Error(error.message || 'Edge function error');
         }
 
@@ -194,6 +201,7 @@ export class AIIntelligenceService {
           throw new Error('No data received from intelligence generation');
         }
 
+        console.log('✅ Intelligence generation successful');
         return data;
         
       } catch (error) {
