@@ -8,10 +8,10 @@ const corsHeaders = {
 
 // Enhanced configuration for maximum reliability
 const CONFIG = {
-  MAX_RETRIES: 2, // Reduced retries to prevent infinite loops
-  BASE_DELAY: 1000,
-  MAX_DELAY: 5000,
-  TIMEOUT: 25000, // 25 seconds to leave buffer for response processing
+  MAX_RETRIES: 3, // Increased retries
+  BASE_DELAY: 2000, // Increased base delay
+  MAX_DELAY: 10000, // Increased max delay
+  TIMEOUT: 50000, // Increased to 50 seconds for complex prompts
   CACHE_TTL: 300000,
 };
 
@@ -70,8 +70,9 @@ const makeOpenAIRequest = async (prompt: string, apiKey: string, attempt = 0): P
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.3, // Lower temperature for more consistent JSON
-        max_tokens: 3000 // Further reduced to ensure faster responses
+        temperature: 0.2, // Even lower temperature for more consistent JSON
+        max_tokens: 2000, // Reduced to ensure faster responses
+        stream: false // Ensure non-streaming response
       }),
       signal: controller.signal
     });
@@ -333,21 +334,17 @@ serve(async (req) => {
 });
 
 function createPrompt(formData: any, businessType: string, intelligenceMode: string): string {
-  const currentDate = new Date().toISOString().split('T')[0];
-  
-  return `Generate a comprehensive business intelligence JSON for ${formData.businessName} in the ${formData.industry} industry. 
+  // Simplified prompt to reduce processing time and ensure faster responses
+  return `Generate business intelligence JSON for ${formData.businessName} (${formData.industry}).
 
-CRITICAL: Respond ONLY with valid JSON. No markdown, no explanations, no code blocks. Start with { and end with }.
+CRITICAL: Return ONLY valid JSON. No markdown. Start with { end with }.
 
-Business Details:
-- Company: ${formData.businessName}
-- Industry: ${formData.industry}
-- Target: ${formData.targetAudience}
-- Service: ${formData.productService}
-- Revenue: ${formData.monthlyRevenue}/month
-- Type: ${businessType}
+Company: ${formData.businessName}
+Industry: ${formData.industry}  
+Target: ${formData.targetAudience}
+Service: ${formData.productService}
 
-Generate this exact JSON structure:
+Return this simplified JSON structure:
 
 {
   "budgetStrategy": {
@@ -358,67 +355,46 @@ Generate this exact JSON structure:
       "tools": 20
     },
     "recommendations": [
-      "Specific budget recommendation 1 for ${formData.industry}",
-      "Specific budget recommendation 2 for ${formData.targetAudience}",
-      "Specific budget recommendation 3 for ${formData.productService}"
-    ],
-    "reasoning": "Industry-specific budget reasoning for ${formData.businessName}"
+      "Focus advertising budget on ${formData.industry} specific channels",
+      "Invest in content creation for ${formData.targetAudience}",
+      "Allocate budget for automation tools"
+    ]
   },
   "copywritingRecommendations": [
     {
       "type": "email",
-      "headline": "Compelling email subject for ${formData.targetAudience}",
-      "content": "Complete email copy addressing ${formData.targetAudience} pain points for ${formData.productService}",
-      "cta": "Action-oriented CTA",
-      "strategicReasoning": "Why this works for ${formData.industry} businesses"
+      "headline": "Email subject for ${formData.targetAudience}",
+      "content": "Email copy for ${formData.productService}",
+      "cta": "Get Started Now"
     },
     {
       "type": "ad",
-      "headline": "High-converting ad headline for ${formData.targetAudience}",
-      "content": "Complete ad copy showcasing ${formData.productService} unique value",
-      "cta": "Conversion-optimized CTA",
-      "strategicReasoning": "Industry-specific ad strategy explanation"
-    },
-    {
-      "type": "social",
-      "headline": "Engaging social media hook for ${formData.targetAudience}",
-      "content": "Social media copy driving engagement for ${formData.industry}",
-      "cta": "Engagement CTA",
-      "strategicReasoning": "Social platform optimization strategy"
+      "headline": "Ad headline for ${formData.targetAudience}",
+      "content": "Ad copy showcasing ${formData.productService}",
+      "cta": "Learn More"
     }
   ],
   "platformRecommendations": [
     {
       "platform": "LinkedIn",
       "priority": "High",
-      "reasoning": "Platform strategy for ${formData.targetAudience} in ${formData.industry}",
+      "reasoning": "Best for ${formData.industry} B2B targeting",
       "budget": "$800",
-      "expectedROI": "4.2x",
-      "audienceSize": "2M+ targetable users",
-      "competitiveAdvantage": "Specific advantage strategy"
+      "expectedROI": "4x"
     },
     {
       "platform": "Facebook",
-      "priority": "Medium",
-      "reasoning": "Secondary platform strategy",
+      "priority": "Medium", 
+      "reasoning": "Good reach for ${formData.targetAudience}",
       "budget": "$600",
-      "expectedROI": "3.5x",
-      "audienceSize": "1.5M+ users",
-      "competitiveAdvantage": "Facebook-specific strategy"
+      "expectedROI": "3x"
     }
   ],
   "monthlyPlan": [
-    ${Array.from({length: 30}, (_, i) => `{
-      "day": ${i + 1},
-      "platform": "${['LinkedIn', 'Facebook', 'Instagram', 'Twitter'][i % 4]}",
-      "contentType": "${['post', 'video', 'carousel', 'story'][i % 4]}",
-      "title": "Day ${i + 1}: ${formData.industry} content for ${formData.targetAudience}",
-      "description": "Specific content description for ${formData.productService} targeting ${formData.targetAudience}",
-      "hashtags": "#${formData.industry.replace(/\s+/g, '')} #Business #Growth",
-      "postTime": "${['09:00', '12:00', '15:00', '18:00'][i % 4]} AM",
-      "expectedEngagement": "${Math.floor(Math.random() * 50) + 20}+ interactions",
-      "strategicGoal": "Day ${i + 1} business objective"
-    }`).join(',\n    ')}
+    {"day": 1, "platform": "LinkedIn", "contentType": "post", "title": "Week 1 content"},
+    {"day": 8, "platform": "Facebook", "contentType": "video", "title": "Week 2 content"},
+    {"day": 15, "platform": "Instagram", "contentType": "carousel", "title": "Week 3 content"},
+    {"day": 22, "platform": "Twitter", "contentType": "thread", "title": "Week 4 content"}
   ],
   "contentCalendar": [
     {
