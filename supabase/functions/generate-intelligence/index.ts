@@ -8,10 +8,10 @@ const corsHeaders = {
 
 // Enhanced configuration for maximum reliability
 const CONFIG = {
-  MAX_RETRIES: 3, // Reduced retries to prevent infinite loops
-  BASE_DELAY: 2000,
-  MAX_DELAY: 10000,
-  TIMEOUT: 60000, // Reduced to 60 seconds to prevent hanging
+  MAX_RETRIES: 2, // Reduced retries to prevent infinite loops
+  BASE_DELAY: 1000,
+  MAX_DELAY: 5000,
+  TIMEOUT: 25000, // 25 seconds to leave buffer for response processing
   CACHE_TTL: 300000,
 };
 
@@ -66,12 +66,12 @@ const makeOpenAIRequest = async (prompt: string, apiKey: string, attempt = 0): P
         messages: [
           { 
             role: 'system', 
-            content: `You are a business intelligence AI. Generate a comprehensive JSON response with business insights. CRITICAL: Your response must be valid JSON only - no markdown, no code blocks, no extra text. Start with { and end with }.` 
+            content: `You are a business intelligence AI. Generate a comprehensive JSON response with business insights. CRITICAL: Your response must be valid JSON only - no markdown, no code blocks, no extra text. Start with { and end with }. Keep responses concise but complete.` 
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.7,
-        max_tokens: 4000 // Reduced to prevent truncation
+        temperature: 0.3, // Lower temperature for more consistent JSON
+        max_tokens: 3000 // Further reduced to ensure faster responses
       }),
       signal: controller.signal
     });
@@ -133,51 +133,44 @@ const makeOpenAIRequest = async (prompt: string, apiKey: string, attempt = 0): P
 
 const parseAIResponse = (aiResponse: string, formData: any, businessType: string) => {
   console.log('Raw AI Response length:', aiResponse.length);
-  console.log('Raw AI Response preview:', aiResponse.substring(0, 500) + '...');
   
-  // Clean the response first
+  // Clean the response aggressively
   let cleanedResponse = aiResponse.trim();
   
-  // Remove markdown code blocks if present
+  // Remove all markdown formatting
   cleanedResponse = cleanedResponse.replace(/```json\s*\n?/gi, '').replace(/```\s*$/gi, '').trim();
+  cleanedResponse = cleanedResponse.replace(/^[^{]*{/, '{').replace(/}[^}]*$/, '}');
   
-  // Remove any leading/trailing non-JSON content
+  // Extract JSON between first { and last }
   const jsonStart = cleanedResponse.indexOf('{');
   const jsonEnd = cleanedResponse.lastIndexOf('}');
   
-  if (jsonStart === -1 || jsonEnd === -1 || jsonStart >= jsonEnd) {
-    console.error('No valid JSON structure found in response');
-    throw new Error('AI response does not contain valid JSON structure');
+  if (jsonStart === -1 || jsonEnd === -1) {
+    console.error('No JSON structure found');
+    return createFallbackResponse(formData, businessType);
   }
   
   cleanedResponse = cleanedResponse.substring(jsonStart, jsonEnd + 1);
   
+  // Fix common JSON issues
+  cleanedResponse = cleanedResponse
+    .replace(/,\s*}/g, '}')  // Remove trailing commas
+    .replace(/,\s*]/g, ']')  // Remove trailing commas in arrays
+    .replace(/\n/g, ' ')     // Remove newlines
+    .replace(/\t/g, ' ')     // Remove tabs
+    .replace(/\s+/g, ' ');   // Normalize whitespace
+  
   try {
-    console.log('Attempting to parse cleaned JSON...');
     const result = JSON.parse(cleanedResponse);
     console.log('Successfully parsed JSON response');
     
-    // Validate required sections
-    const requiredSections = [
-      'budgetStrategy', 'copywritingRecommendations', 'platformRecommendations',
-      'monthlyPlan', 'contentCalendar', 'industryInsights', 'actionPlans',
-      'metricOptimization', 'competitorInsights'
-    ];
+    // Fill any missing sections with fallback data
+    const fallback = createFallbackResponse(formData, businessType);
+    const completeResult = { ...fallback, ...result };
     
-    const missingSections = requiredSections.filter(section => !result[section]);
-    
-    if (missingSections.length > 0) {
-      console.error('AI response missing sections:', missingSections);
-      // Instead of throwing error, fill missing sections with fallback data
-      return createCompleteResponse(result, formData, businessType, missingSections);
-    }
-    
-    return result;
+    return completeResult;
   } catch (error) {
-    console.error('JSON parsing failed:', error.message);
-    console.error('Cleaned response that failed:', cleanedResponse.substring(0, 1000) + '...');
-    
-    // Create fallback response instead of failing
+    console.error('JSON parsing failed completely, using fallback:', error.message);
     return createFallbackResponse(formData, businessType);
   }
 };

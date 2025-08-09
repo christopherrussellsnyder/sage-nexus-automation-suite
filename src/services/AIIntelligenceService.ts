@@ -119,9 +119,9 @@ interface IndustryInsight {
 
 export class AIIntelligenceService {
   private static readonly CONFIG = {
-    MAX_RETRIES: 4,
-    RETRY_DELAY: 2000,
-    TIMEOUT: 120000, // 2 minutes to allow for edge function processing
+    MAX_RETRIES: 3,
+    RETRY_DELAY: 1000,
+    TIMEOUT: 30000, // 30 seconds to match edge function timeout
     CACHE_TTL: 300000, // 5 minutes
   };
 
@@ -178,7 +178,10 @@ export class AIIntelligenceService {
         const timeoutId = setTimeout(() => controller.abort(), this.CONFIG.TIMEOUT);
         
         const { data, error } = await supabase.functions.invoke('generate-intelligence', {
-          body: request
+          body: request,
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
 
         clearTimeout(timeoutId);
