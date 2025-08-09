@@ -178,7 +178,7 @@ export class AIIntelligenceService {
         const timeoutId = setTimeout(() => controller.abort(), this.CONFIG.TIMEOUT);
         
         const { data, error } = await supabase.functions.invoke('generate-intelligence', {
-          body: JSON.stringify(request),
+          body: request,
           headers: {
             'Content-Type': 'application/json'
           }

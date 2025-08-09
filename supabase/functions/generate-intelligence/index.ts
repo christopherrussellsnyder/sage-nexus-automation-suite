@@ -222,20 +222,12 @@ serve(async (req) => {
     
     let requestData;
     try {
-      const rawBody = await req.text();
-      console.log(`[${requestId}] Raw request body length:`, rawBody.length);
-      
-      if (!rawBody || rawBody.trim() === '') {
-        throw new Error('Empty request body');
-      }
-      
-      requestData = JSON.parse(rawBody);
-      console.log(`[${requestId}] Successfully parsed request data`);
+      requestData = await req.json();
+      console.log(`[${requestId}] Successfully parsed request data for business:`, requestData?.formData?.businessName);
     } catch (error) {
       console.error(`[${requestId}] Invalid JSON in request:`, error);
-      console.error(`[${requestId}] Request body was:`, await req.text().catch(() => 'Could not read body'));
       return new Response(JSON.stringify({ 
-        error: 'Invalid request format - please check your request body',
+        error: 'Invalid request format - malformed JSON',
         requestId,
         timestamp: new Date().toISOString(),
         details: error.message
