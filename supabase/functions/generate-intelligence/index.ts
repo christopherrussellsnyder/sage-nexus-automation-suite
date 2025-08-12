@@ -134,46 +134,124 @@ const makeOpenAIRequest = async (prompt: string, apiKey: string, attempt = 0): P
 
 const parseAIResponse = (aiResponse: string, formData: any, businessType: string) => {
   console.log('Raw AI Response length:', aiResponse.length);
+  console.log('First 500 chars of AI response:', aiResponse.substring(0, 500));
   
-  // Clean the response aggressively
+  // Enhanced JSON extraction with multiple fallback strategies
   let cleanedResponse = aiResponse.trim();
   
-  // Remove all markdown formatting
-  cleanedResponse = cleanedResponse.replace(/```json\s*\n?/gi, '').replace(/```\s*$/gi, '').trim();
-  cleanedResponse = cleanedResponse.replace(/^[^{]*{/, '{').replace(/}[^}]*$/, '}');
+  // Strategy 1: Try to find complete JSON block
+  const jsonBlockMatch = cleanedResponse.match(/```json\s*\n?([\s\S]*?)\n?```/i);
+  if (jsonBlockMatch) {
+    cleanedResponse = jsonBlockMatch[1].trim();
+    console.log('Found JSON block in markdown');
+  } else {
+    // Strategy 2: Remove markdown formatting
+    cleanedResponse = cleanedResponse.replace(/```json\s*\n?/gi, '').replace(/```\s*$/gi, '').trim();
+  }
   
-  // Extract JSON between first { and last }
-  const jsonStart = cleanedResponse.indexOf('{');
-  const jsonEnd = cleanedResponse.lastIndexOf('}');
+  // Strategy 3: Find JSON boundaries more intelligently
+  let jsonStart = cleanedResponse.indexOf('{');
+  let jsonEnd = -1;
+  
+  if (jsonStart !== -1) {
+    let braceCount = 0;
+    for (let i = jsonStart; i < cleanedResponse.length; i++) {
+      if (cleanedResponse[i] === '{') braceCount++;
+      if (cleanedResponse[i] === '}') {
+        braceCount--;
+        if (braceCount === 0) {
+          jsonEnd = i;
+          break;
+        }
+      }
+    }
+  }
   
   if (jsonStart === -1 || jsonEnd === -1) {
-    console.error('No JSON structure found');
-    return createFallbackResponse(formData, businessType);
+    console.error('No valid JSON structure found, attempting content extraction');
+    // Strategy 4: Try to extract content from incomplete response
+    return extractContentFromPartialResponse(aiResponse, formData, businessType);
   }
   
   cleanedResponse = cleanedResponse.substring(jsonStart, jsonEnd + 1);
   
-  // Fix common JSON issues
+  // Enhanced JSON cleaning with better error recovery
   cleanedResponse = cleanedResponse
-    .replace(/,\s*}/g, '}')  // Remove trailing commas
-    .replace(/,\s*]/g, ']')  // Remove trailing commas in arrays
-    .replace(/\n/g, ' ')     // Remove newlines
-    .replace(/\t/g, ' ')     // Remove tabs
-    .replace(/\s+/g, ' ');   // Normalize whitespace
+    .replace(/,\s*}/g, '}')                    // Remove trailing commas in objects
+    .replace(/,\s*]/g, ']')                    // Remove trailing commas in arrays
+    .replace(/\n/g, ' ')                       // Remove newlines
+    .replace(/\t/g, ' ')                       // Remove tabs
+    .replace(/\s+/g, ' ')                      // Normalize whitespace
+    .replace(/([{,]\s*)"([^"]*)":/g, '$1"$2":') // Fix key formatting
+    .replace(/:\s*"([^"]*)"([,}])/g, ': "$1"$2'); // Fix value formatting
   
   try {
     const result = JSON.parse(cleanedResponse);
-    console.log('Successfully parsed JSON response');
+    console.log('✅ Successfully parsed AI-generated JSON response');
+    console.log('AI response sections found:', Object.keys(result));
     
-    // Fill any missing sections with fallback data
-    const fallback = createFallbackResponse(formData, businessType);
-    const completeResult = { ...fallback, ...result };
+    // Validate all required sections are present and have real data
+    const requiredSections = ['budgetStrategy', 'copywritingRecommendations', 'platformRecommendations', 'monthlyPlan', 'contentCalendar', 'metricOptimization', 'competitorInsights', 'industryInsights', 'actionPlans'];
+    const missingSections = requiredSections.filter(section => !result[section] || !hasRealContent(result[section]));
     
-    return completeResult;
+    if (missingSections.length > 0) {
+      console.log(`⚠️ Missing or invalid sections detected: ${missingSections.join(', ')}`);
+      return createCompleteResponse(result, formData, businessType, missingSections);
+    }
+    
+    return { ...result, _source: 'ai_generated', _timestamp: new Date().toISOString() };
   } catch (error) {
-    console.error('JSON parsing failed completely, using fallback:', error.message);
-    return createFallbackResponse(formData, businessType);
+    console.error('❌ JSON parsing failed:', error.message);
+    console.log('Attempting content extraction from malformed response...');
+    return extractContentFromPartialResponse(aiResponse, formData, businessType);
   }
+};
+
+// New function to extract content from partial/malformed AI responses
+const extractContentFromPartialResponse = (aiResponse: string, formData: any, businessType: string) => {
+  console.log('🔧 Extracting content from partial AI response...');
+  
+  const sections = {};
+  const text = aiResponse.toLowerCase();
+  
+  // Try to extract budget information
+  const budgetMatch = aiResponse.match(/budget[^{]*{([^}]+)}/i);
+  if (budgetMatch) {
+    console.log('📊 Found budget content in AI response');
+  }
+  
+  // Try to extract copywriting recommendations
+  const copyMatch = aiResponse.match(/copywriting[^[]*\[([^\]]+)\]/i);
+  if (copyMatch) {
+    console.log('✍️ Found copywriting content in AI response');
+  }
+  
+  // If we found any extractable content, merge with fallback
+  const fallback = createFallbackResponse(formData, businessType);
+  return { ...fallback, ...sections, _source: 'partial_extraction', _timestamp: new Date().toISOString() };
+};
+
+// Helper function to check if content is real or template
+const hasRealContent = (section: any): boolean => {
+  if (!section) return false;
+  
+  const sectionStr = JSON.stringify(section).toLowerCase();
+  
+  // Check for template/placeholder indicators
+  const templateIndicators = [
+    'lorem ipsum',
+    'placeholder',
+    'template',
+    'example',
+    'sample data',
+    'coming soon',
+    'to be determined',
+    'day 1: day 2: day 3',
+    'strategic content for',
+    'focus advertising budget on platforms where'
+  ];
+  
+  return !templateIndicators.some(indicator => sectionStr.includes(indicator));
 };
 
 const createCompleteResponse = (partialResult: any, formData: any, businessType: string, missingSections: string[]) => {
