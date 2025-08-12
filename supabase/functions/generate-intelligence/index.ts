@@ -412,67 +412,144 @@ serve(async (req) => {
 });
 
 function createPrompt(formData: any, businessType: string, intelligenceMode: string): string {
-  // Simplified prompt to reduce processing time and ensure faster responses
-  return `Generate business intelligence JSON for ${formData.businessName} (${formData.industry}).
+  // Enhanced prompt for comprehensive AI intelligence generation
+  return `You are a business intelligence expert. Generate a comprehensive marketing intelligence report for ${formData.businessName}.
 
-CRITICAL: Return ONLY valid JSON. No markdown. Start with { end with }.
+CRITICAL REQUIREMENTS:
+- Return ONLY valid JSON (no markdown, no explanations)
+- Use specific, actionable data (never generic templates)
+- Base ALL recommendations on the business details provided
+- Include real metrics, specific strategies, and detailed insights
 
+BUSINESS CONTEXT:
 Company: ${formData.businessName}
-Industry: ${formData.industry}  
-Target: ${formData.targetAudience}
-Service: ${formData.productService}
+Industry: ${formData.industry}
+Target Audience: ${formData.targetAudience}
+Product/Service: ${formData.productService}
+Goals: ${formData.goals || 'Growth and market expansion'}
+Current Challenges: ${formData.challenges || 'Market competition and customer acquisition'}
+Budget Range: ${formData.budget || '$1000-5000/month'}
 
-Return this simplified JSON structure:
+Generate this complete intelligence report structure with specific, detailed data:
 
 {
   "budgetStrategy": {
-    "totalBudget": "$2000",
+    "totalBudget": "Generate realistic budget based on ${formData.budget || '$2000-3000'}",
     "allocation": {
-      "advertising": 60,
-      "content": 20,
-      "tools": 20
+      "advertising": "Calculate % based on ${formData.industry} best practices",
+      "content": "Determine % for ${formData.targetAudience} content needs",
+      "tools": "Allocate % for ${formData.productService} specific tools",
+      "research": "Budget for competitor analysis in ${formData.industry}"
+    },
+    "monthlyBreakdown": {
+      "month1": "Initial setup and testing budget",
+      "month2": "Scaling based on performance data",
+      "month3": "Full campaign optimization budget"
     },
     "recommendations": [
-      "Focus advertising budget on ${formData.industry} specific channels",
-      "Invest in content creation for ${formData.targetAudience}",
-      "Allocate budget for automation tools"
-    ]
+      "Specific recommendation for ${formData.businessName} advertising in ${formData.industry}",
+      "Content strategy budget for reaching ${formData.targetAudience}",
+      "Tool recommendations for ${formData.productService} optimization",
+      "ROI tracking and analytics budget allocation"
+    ],
+    "expectedROI": "Calculate realistic ROI for ${formData.industry}",
+    "riskMitigation": "Budget protection strategies for ${formData.businessName}"
   },
   "copywritingRecommendations": [
     {
       "type": "email",
-      "headline": "Email subject for ${formData.targetAudience}",
-      "content": "Email copy for ${formData.productService}",
-      "cta": "Get Started Now"
+      "headline": "Create compelling email subject for ${formData.targetAudience} interested in ${formData.productService}",
+      "content": "Write persuasive email content addressing ${formData.targetAudience} pain points and how ${formData.productService} solves them",
+      "cta": "Generate action-oriented CTA for ${formData.businessName}",
+      "audience": "${formData.targetAudience}",
+      "painPoints": "Identify specific pain points for ${formData.targetAudience} in ${formData.industry}",
+      "benefits": "List key benefits of ${formData.productService}",
+      "urgency": "Create urgency without being pushy",
+      "personalization": "Personalization strategies for ${formData.businessName}"
     },
     {
-      "type": "ad",
-      "headline": "Ad headline for ${formData.targetAudience}",
-      "content": "Ad copy showcasing ${formData.productService}",
-      "cta": "Learn More"
+      "type": "advertisement",
+      "headline": "Write attention-grabbing ad headline for ${formData.targetAudience}",
+      "content": "Create ad copy that highlights ${formData.productService} unique value proposition",
+      "cta": "Design conversion-focused CTA",
+      "platform": "Optimize for best platform for ${formData.industry}",
+      "targeting": "Targeting keywords for ${formData.targetAudience}",
+      "emotion": "Emotional triggers for ${formData.industry} audience",
+      "competitiveEdge": "Differentiate from competitors in ${formData.industry}"
+    },
+    {
+      "type": "social",
+      "headline": "Social media post headline for ${formData.businessName}",
+      "content": "Engaging social content showcasing ${formData.productService}",
+      "cta": "Social-optimized call to action",
+      "hashtags": "Relevant hashtags for ${formData.industry} and ${formData.targetAudience}",
+      "engagement": "Engagement strategies for social platforms",
+      "visualConcept": "Visual content ideas for ${formData.productService}",
+      "postingTimes": "Optimal posting times for ${formData.targetAudience}"
+    },
+    {
+      "type": "website",
+      "headline": "Homepage headline for ${formData.businessName}",
+      "content": "Website copy that converts ${formData.targetAudience}",
+      "cta": "Primary conversion CTA for website",
+      "seo": "SEO-optimized content for ${formData.industry}",
+      "trustSignals": "Trust-building elements for ${formData.productService}",
+      "valueProposition": "Clear value proposition for ${formData.targetAudience}",
+      "conversionPath": "User journey optimization for ${formData.businessName}"
     }
   ],
   "platformRecommendations": [
     {
-      "platform": "LinkedIn",
-      "priority": "High",
-      "reasoning": "Best for ${formData.industry} B2B targeting",
-      "budget": "$800",
-      "expectedROI": "4x"
+      "platform": "Determine best platform for ${formData.industry} and ${formData.targetAudience}",
+      "priority": "Rank based on ${formData.targetAudience} behavior and ${formData.industry} standards",
+      "reasoning": "Specific reason why this platform works for ${formData.businessName} targeting ${formData.targetAudience}",
+      "budget": "Calculate optimal budget allocation for this platform",
+      "expectedROI": "Realistic ROI based on ${formData.industry} benchmarks",
+      "audienceSize": "Estimated reach for ${formData.targetAudience} on this platform",
+      "contentStrategy": "Platform-specific content strategy for ${formData.productService}",
+      "competitiveAnalysis": "How competitors in ${formData.industry} use this platform",
+      "timeline": "Implementation timeline for ${formData.businessName}",
+      "metrics": "Key metrics to track for ${formData.productService} campaigns"
     },
     {
-      "platform": "Facebook",
-      "priority": "Medium", 
-      "reasoning": "Good reach for ${formData.targetAudience}",
-      "budget": "$600",
-      "expectedROI": "3x"
+      "platform": "Second best platform for ${formData.targetAudience}",
+      "priority": "Rank appropriately for ${formData.businessName}",
+      "reasoning": "Why this platform is valuable for ${formData.industry}",
+      "budget": "Budget recommendation based on platform performance",
+      "expectedROI": "Realistic ROI expectations for ${formData.targetAudience}",
+      "audienceSize": "Target audience size on this platform",
+      "contentStrategy": "Content approach for ${formData.productService}",
+      "competitiveAnalysis": "Competitor presence and opportunities",
+      "timeline": "Launch timeline for ${formData.businessName}",
+      "metrics": "Success metrics for ${formData.industry}"
+    },
+    {
+      "platform": "Third platform recommendation",
+      "priority": "Appropriate priority level",
+      "reasoning": "Strategic value for ${formData.businessName}",
+      "budget": "Budget allocation for testing",
+      "expectedROI": "Conservative ROI estimate",
+      "audienceSize": "Niche audience potential",
+      "contentStrategy": "Testing strategy for ${formData.productService}",
+      "competitiveAnalysis": "Competitive landscape analysis",
+      "timeline": "Testing and evaluation timeline",
+      "metrics": "Test metrics and KPIs"
     }
   ],
   "monthlyPlan": [
-    {"day": 1, "platform": "LinkedIn", "contentType": "post", "title": "Week 1 content"},
-    {"day": 8, "platform": "Facebook", "contentType": "video", "title": "Week 2 content"},
-    {"day": 15, "platform": "Instagram", "contentType": "carousel", "title": "Week 3 content"},
-    {"day": 22, "platform": "Twitter", "contentType": "thread", "title": "Week 4 content"}
+    {"day": 1, "platform": "Best platform for ${formData.targetAudience}", "contentType": "Optimal content type for ${formData.productService}", "title": "Specific day 1 content for ${formData.businessName}", "objective": "Day 1 marketing objective", "metrics": "Success metrics for day 1"},
+    {"day": 3, "platform": "Platform 2", "contentType": "Content type 2", "title": "Day 3 content specific to ${formData.industry}", "objective": "Day 3 objective", "metrics": "Day 3 KPIs"},
+    {"day": 5, "platform": "Platform 3", "contentType": "Content type 3", "title": "Day 5 content for ${formData.targetAudience}", "objective": "Day 5 goal", "metrics": "Day 5 measurements"},
+    {"day": 7, "platform": "Best performing platform", "contentType": "High-engagement content", "title": "Week 1 recap for ${formData.businessName}", "objective": "Week 1 summary", "metrics": "Week 1 performance"},
+    {"day": 10, "platform": "Platform for ${formData.targetAudience}", "contentType": "Educational content", "title": "Day 10 educational content about ${formData.productService}", "objective": "Education objective", "metrics": "Engagement metrics"},
+    {"day": 12, "platform": "Second platform", "contentType": "Promotional content", "title": "Day 12 promotion for ${formData.businessName}", "objective": "Promotional goal", "metrics": "Conversion metrics"},
+    {"day": 15, "platform": "Visual platform", "contentType": "Visual content", "title": "Mid-month visual content for ${formData.productService}", "objective": "Visual engagement", "metrics": "Visual metrics"},
+    {"day": 17, "platform": "Professional platform", "contentType": "Thought leadership", "title": "Day 17 thought leadership in ${formData.industry}", "objective": "Authority building", "metrics": "Authority metrics"},
+    {"day": 20, "platform": "Community platform", "contentType": "Community content", "title": "Day 20 community engagement for ${formData.targetAudience}", "objective": "Community building", "metrics": "Community metrics"},
+    {"day": 22, "platform": "Primary platform", "contentType": "Success story", "title": "Day 22 success story for ${formData.businessName}", "objective": "Social proof", "metrics": "Credibility metrics"},
+    {"day": 25, "platform": "Conversion platform", "contentType": "Call to action", "title": "Day 25 CTA for ${formData.productService}", "objective": "Drive conversions", "metrics": "Conversion rate"},
+    {"day": 28, "platform": "Review platform", "contentType": "Month review", "title": "Month-end review for ${formData.businessName}", "objective": "Performance review", "metrics": "Monthly KPIs"},
+    {"day": 30, "platform": "Planning platform", "contentType": "Next month preview", "title": "Next month strategy for ${formData.targetAudience}", "objective": "Future planning", "metrics": "Planning metrics"}
   ],
   "contentCalendar": [
     {
