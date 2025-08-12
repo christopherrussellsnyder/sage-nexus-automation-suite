@@ -13,6 +13,8 @@ const CONFIG = {
   MAX_DELAY: 10000, // Increased max delay
   TIMEOUT: 50000, // Increased to 50 seconds for complex prompts
   CACHE_TTL: 300000,
+  REPAIR_ATTEMPTS: 2,
+  REPAIR_DELAY: 1500,
 };
 
 // In-memory cache for responses
@@ -278,6 +280,60 @@ const createCompleteResponse = (partialResult: any, formData: any, businessType:
   return completeResult;
 };
 
+// Build a repair prompt to fix missing sections and enforce specificity
+function buildRepairPrompt(partial: any, missing: string[], formData: any, businessType: string, intelligenceMode: string): string {
+  return `You previously generated a JSON intelligence report for ${formData.businessName} but it is incomplete or contains generic content.
+
+CRITICAL TASK:
+- Return ONLY valid JSON with ALL 9 required sections fully populated and specific to the business.
+- Replace any generic or templated phrasing with concrete, business-specific details.
+- Do NOT include markdown, comments, or explanations. JSON only.
+
+BUSINESS CONTEXT:
+Company: ${formData.businessName}
+Industry: ${formData.industry}
+Target Audience: ${formData.targetAudience}
+Product/Service: ${formData.productService}
+
+MISSING OR INVALID SECTIONS TO FIX: ${missing.join(', ')}
+
+CURRENT PARTIAL JSON (repair and complete this):
+${JSON.stringify(partial)}
+`;
+}
+
+// Attempt to repair a partial AI response up to N times
+async function attemptRepair(partialData: any, formData: any, businessType: string, intelligenceMode: string, apiKey: string) {
+  const missing = partialData._missing || [];
+  for (let attempt = 0; attempt < CONFIG.REPAIR_ATTEMPTS; attempt++) {
+    console.log(`🔁 Repair attempt ${attempt + 1}/${CONFIG.REPAIR_ATTEMPTS} for sections: ${missing.join(', ')}`);
+    const repairPrompt = buildRepairPrompt(partialData, missing, formData, businessType, intelligenceMode);
+    const apiResp = await makeOpenAIRequest(repairPrompt, apiKey);
+    const aiText = apiResp.choices[0].message.content;
+    const repaired = parseAIResponse(aiText, formData, businessType);
+
+    if (!repaired._missing || repaired._missing.length === 0) {
+      // Merge provenance: mark newly added sections as ai_repair
+      const final = { ...repaired };
+      final._provenance = final._provenance || {};
+      const requiredSections = ['budgetStrategy','copywritingRecommendations','platformRecommendations','monthlyPlan','contentCalendar','metricOptimization','competitorInsights','industryInsights','actionPlans'];
+      requiredSections.forEach(section => {
+        if (!partialData._provenance?.[section] && final[section]) {
+          final._provenance[section] = { source: 'ai_repair', method: 'repair_fill' };
+        }
+      });
+      final._source = 'ai_generated_repaired';
+      return final;
+    }
+
+    console.log('Repair did not complete all sections, retrying...');
+    await sleep(CONFIG.REPAIR_DELAY);
+    // Prepare for next attempt with the best-so-far structure
+    partialData = repaired;
+  }
+  return null;
+}
+
 serve(async (req) => {
   const requestId = crypto.randomUUID();
   const startTime = Date.now();
@@ -376,7 +432,23 @@ serve(async (req) => {
     
     console.log(`[${requestId}] Received AI response, parsing...`);
     
-    const intelligenceData = parseAIResponse(aiResponse, sanitizedFormData, businessType);
+    let intelligenceData = parseAIResponse(aiResponse, sanitizedFormData, businessType);
+
+    // If partial or missing sections, attempt repair
+    if (intelligenceData._missing && intelligenceData._missing.length > 0) {
+      console.log(`[${requestId}] Detected missing sections: ${intelligenceData._missing.join(', ')}`);
+      console.log(`[${requestId}] Attempting automated repair to complete all sections...`);
+      const repaired = await attemptRepair(intelligenceData, sanitizedFormData, businessType, intelligenceMode, OPENAI_API_KEY);
+      if (!repaired) {
+        const errMsg = `AI failed to produce complete intelligence data after repair attempts. Missing: ${intelligenceData._missing.join(', ')}`;
+        console.error(`[${requestId}] ${errMsg}`);
+        return new Response(JSON.stringify({ error: errMsg, requestId }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      intelligenceData = repaired;
+    }
 
     // Add metadata
     intelligenceData.generatedAt = new Date().toISOString();
