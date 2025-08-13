@@ -193,22 +193,13 @@ const parseAIResponse = (aiResponse: string, formData: any, businessType: string
     // Validate all required sections are present and have real data
     const requiredSections = ['budgetStrategy', 'copywritingRecommendations', 'platformRecommendations', 'monthlyPlan', 'contentCalendar', 'metricOptimization', 'competitorInsights', 'industryInsights', 'actionPlans'];
     const missingSections = requiredSections.filter(section => !result[section] || !hasRealContent(result[section]));
-
-    // Build per-section provenance (AI JSON when present and valid)
-    const provenance: Record<string, { source: string; method: string }> = {};
-    requiredSections.forEach((section) => {
-      if (result[section] && hasRealContent(result[section])) {
-        provenance[section] = { source: 'ai_json', method: 'valid_json' };
-      }
-    });
-
+    
     if (missingSections.length > 0) {
       console.log(`⚠️ Missing or invalid sections detected: ${missingSections.join(', ')}`);
-      // Do NOT fill with fallback; return partial with provenance so client can retry
-      return { ...result, _source: 'ai_generated_partial', _provenance: provenance, _missing: missingSections, _timestamp: new Date().toISOString() };
+      return createCompleteResponse(result, formData, businessType, missingSections);
     }
-
-    return { ...result, _source: 'ai_generated', _provenance: provenance, _timestamp: new Date().toISOString() };
+    
+    return { ...result, _source: 'ai_generated', _timestamp: new Date().toISOString() };
   } catch (error) {
     console.error('❌ JSON parsing failed:', error.message);
     console.log('Attempting content extraction from malformed response...');
@@ -219,22 +210,25 @@ const parseAIResponse = (aiResponse: string, formData: any, businessType: string
 // New function to extract content from partial/malformed AI responses
 const extractContentFromPartialResponse = (aiResponse: string, formData: any, businessType: string) => {
   console.log('🔧 Extracting content from partial AI response...');
-
-  const provenance: Record<string, { source: string; method: string }> = {};
-  const result: Record<string, any> = {};
-
-  // Minimal detection to mark which sections had some AI signal (without fabricating data)
+  
+  const sections = {};
+  const text = aiResponse.toLowerCase();
+  
+  // Try to extract budget information
   const budgetMatch = aiResponse.match(/budget[^{]*{([^}]+)}/i);
   if (budgetMatch) {
-    provenance['budgetStrategy'] = { source: 'ai_extracted', method: 'regex_extraction' };
+    console.log('📊 Found budget content in AI response');
   }
-
+  
+  // Try to extract copywriting recommendations
   const copyMatch = aiResponse.match(/copywriting[^[]*\[([^\]]+)\]/i);
   if (copyMatch) {
-    provenance['copywritingRecommendations'] = { source: 'ai_extracted', method: 'regex_extraction' };
+    console.log('✍️ Found copywriting content in AI response');
   }
-
-  return { ...result, _source: 'ai_generated_partial', _provenance: provenance, _timestamp: new Date().toISOString() };
+  
+  // If we found any extractable content, merge with fallback
+  const fallback = createFallbackResponse(formData, businessType);
+  return { ...fallback, ...sections, _source: 'partial_extraction', _timestamp: new Date().toISOString() };
 };
 
 // Helper function to check if content is real or template

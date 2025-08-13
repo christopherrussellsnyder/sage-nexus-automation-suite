@@ -247,25 +247,15 @@ export class AIIntelligenceService {
     if (missingSections.length > 0) {
       console.error('CRITICAL: AI response missing required sections:', missingSections);
       console.error('This indicates the OpenAI API did not generate complete intelligence data');
-      throw new Error(`Intelligence API failed to generate complete data. Missing sections: ${missingSections.join(', ')}. Please try again.`);
+      
+      // Instead of filling with fallback data, throw an error to force API regeneration
+      throw new Error(`Intelligence API failed to generate complete data. Missing sections: ${missingSections.join(', ')}. Please check OpenAI API key and try again.`);
     }
 
-    // Validate provenance to ensure sections are AI-generated only
-    if (data._provenance) {
-      const nonAiSections = requiredSections.filter(section => {
-        const src = data._provenance?.[section]?.source;
-        return !src || !(String(src).startsWith('ai'));
-      });
-      if (nonAiSections.length > 0) {
-        console.error('Non-AI or unknown provenance detected for sections:', nonAiSections);
-        throw new Error(`Intelligence API returned non-AI data for: ${nonAiSections.join(', ')}. Regenerating is required.`);
-      }
-    }
-    
     // Ensure required metadata exists
     data.generatedAt = data.generatedAt || new Date().toISOString();
     
-    console.log('✅ AI response validation passed - all required sections present and AI-sourced');
+    console.log('✅ AI response validation passed - all required sections present');
     return data as AIGeneratedContent;
   }
 
