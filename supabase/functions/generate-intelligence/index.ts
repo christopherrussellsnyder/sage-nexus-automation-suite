@@ -412,14 +412,15 @@ serve(async (req) => {
 });
 
 function createPrompt(formData: any, businessType: string, intelligenceMode: string): string {
-  // Enhanced prompt for comprehensive AI intelligence generation
-  return `You are a business intelligence expert. Generate a comprehensive marketing intelligence report for ${formData.businessName}.
+  // Enhanced comprehensive marketing intelligence generation
+  return `You are an expert marketing strategist and business intelligence analyst. Generate a comprehensive marketing intelligence report for ${formData.businessName}.
 
 CRITICAL REQUIREMENTS:
-- Return ONLY valid JSON (no markdown, no explanations)
+- Return ONLY valid JSON (no markdown, no explanations)  
 - Use specific, actionable data (never generic templates)
 - Base ALL recommendations on the business details provided
 - Include real metrics, specific strategies, and detailed insights
+- Apply all enhanced marketing intelligence criteria below
 
 BUSINESS CONTEXT:
 Company: ${formData.businessName}
@@ -429,6 +430,119 @@ Product/Service: ${formData.productService}
 Goals: ${formData.goals || 'Growth and market expansion'}
 Current Challenges: ${formData.challenges || 'Market competition and customer acquisition'}
 Budget Range: ${formData.budget || '$1000-5000/month'}
+
+ENHANCED MARKETING INTELLIGENCE CRITERIA & DATA TO IMPLEMENT:
+
+ADVERTISEMENT GENERATION PRINCIPLES:
+- Focus on providing value and solutions rather than directly selling products
+- Use the art of selling without customers knowing they're being sold to
+- Include compelling testimonials showing real solutions and results
+- Create no-brainer offers with clear value propositions
+- For e-commerce: recommend order bundles, quantity discounts, and product page bumps
+- Find winning angles based on business type and niche to beat competitors
+- Look for competitive advantages in pricing, marketing angles, discounts, or unique offers
+- Don't reinvent marketing - take proven winning ads and add unique twists
+- Provide recommendations for copy, visuals, AND audio elements of advertisements
+- Take data from proven winning ads (body, hook, CTA, visuals, ad type) and add unique business-specific twists
+
+EMAIL SEQUENCE OPTIMIZATION:
+- Sell the solution and outcomes, not just the product features
+- Focus on problem-solving and transformation stories
+- Include testimonials showcasing specific solutions provided to customers
+- Avoid making customers feel like they're being taken advantage of
+- Build trust through value-first messaging
+- Emphasize selling the solution the service provides rather than the product itself
+
+PRODUCT RESEARCH CRITERIA (E-commerce specific):
+- Prioritize evergreen products with validated markets over trendy items
+- Avoid products with significant trend dip-offs
+- Evaluate products based on:
+  * Does it solve a painful problem?
+  * High profit margin potential?
+  * Upsell opportunities available?
+  * Easy to ship and fulfill?
+- Include specific reasoning for why each product is recommended
+- Focus on products with long-term viability and improvement potential
+- Look for products that are new but have very high potential for being evergreen long-term
+
+WEBSITE COPY STRATEGY DIFFERENCES:
+- E-commerce: Value-based content focused on solutions and problems solved, provide maximum value about the product and solutions it solves
+- Agency: Sales sequence approach targeting specific problems the agency solves, designed as a sales sequence around the solution
+- Emphasize benefits and transformations over features for both
+
+PERFORMANCE METRICS INTEGRATION & BENCHMARKS:
+
+PRIMARY CONVERSION METRICS TARGETS:
+- Trial Sign-ups: 2-5% visitor conversion, 15-25% trial-to-paid
+- Lead Quality: 5-15% email capture rate
+- Session Duration: 2-5 minutes target
+- Bounce Rate: <40% target
+- Conversion Rate: 2-5% landing page CVR
+
+AD COPY OPTIMIZATION TARGETS:
+- Facebook/Instagram CTR: 1-2% (good), 2%+ (excellent)
+- Google Search CTR: 3-5% (good), 5%+ (excellent)
+- Google Display CTR: 0.5-1% (good), 1%+ (excellent)
+- LinkedIn CTR: 0.5-1% (good), 1%+ (excellent)
+- TikTok/Snapchat CTR: 1-3% (good), 3%+ (excellent)
+- Cost Per Acquisition: <$20-50 for SaaS trial sign-ups
+- ROAS: 3:1 minimum, 4-6:1 ideal
+- Cost Per Click ranges by platform
+- Relevance/Quality Scores: 6-10+ targets
+
+EMAIL MARKETING BENCHMARKS:
+- Open Rate: 22-25% for SaaS/marketing tools (good), 25%+ (excellent)
+- Click-Through Rate: 3-5% (good), 5%+ (excellent)
+- Welcome Series: 50-60% open rate for first email
+- Conversion Rate: 1-3% for promotional emails
+- Newsletter CTR: 2-4%
+- Email Attribution: 15-25% of total revenue
+- Unsubscribe Rate: <0.5% per email
+
+SOCIAL MEDIA ENGAGEMENT TARGETS:
+- Instagram: 1-3% (good), 3-6% (excellent), 6%+ (viral potential)
+- Facebook: 0.5-1% (good), 1-2% (excellent)
+- LinkedIn: 2-4% (good), 4-8% (excellent)
+- TikTok: 5-9% (good), 9-16% (excellent)
+- Twitter: 0.5-1% (good), 1-3% (excellent)
+- YouTube: 3-5% (good), 5-10% (excellent)
+- Video Completion: 50%+ target
+- Story Completion: 70%+ target
+
+WINNING ANGLES RESEARCH CRITERIA:
+- Find winning angles based on business type and niche to beat competitors
+- Look for competitive advantages in pricing strategies
+- Identify unique marketing angles competitors aren't using
+- Find specific discount strategies that work for the industry
+- Create unique offers that differentiate from competition
+- Maximize results through competitive positioning
+
+METRICS FEEDBACK INTEGRATION:
+When website copy, ad copy, email marketing, or social media content is lacking in specific metrics, provide optimization recommendations using the benchmark data above. Give specific feedback on best course of action for improvement.
+
+${intelligenceMode === 'copywriting' ? `
+COPYWRITING-FOCUSED ANALYSIS:
+Focus primarily on copywriting strategies, content creation, and messaging optimization.
+Include detailed copy recommendations for different channels and audiences.
+Integrate email sequence best practices and persuasive copywriting frameworks.
+Apply all copywriting-specific metrics and benchmarks above.
+` : ''}
+
+${intelligenceMode === 'marketing' ? `
+MARKETING-FOCUSED ANALYSIS:
+Focus on marketing channels, campaigns, and growth strategies.
+Emphasize platform recommendations and promotional tactics.
+Include winning angle research and competitive positioning strategies.
+Apply all marketing and advertising metrics above.
+` : ''}
+
+${intelligenceMode === 'competitor' ? `
+COMPETITOR-FOCUSED ANALYSIS:
+Emphasize competitive analysis, market positioning, and differentiation strategies.
+Provide detailed insights on outperforming competitors.
+Focus on unique value propositions and market gap opportunities.
+Include winning angles and competitive advantages.
+` : ''}
 
 Generate this complete intelligence report structure with specific, detailed data:
 
