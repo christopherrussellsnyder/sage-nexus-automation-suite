@@ -412,15 +412,16 @@ serve(async (req) => {
 });
 
 function createPrompt(formData: any, businessType: string, intelligenceMode: string): string {
-  // Enhanced comprehensive marketing intelligence generation
-  return `You are an expert marketing strategist and business intelligence analyst. Generate a comprehensive marketing intelligence report for ${formData.businessName}.
+  // Elite marketing intelligence generation with advanced psychological frameworks and proven methodologies
+  return `You are an elite marketing strategist and business intelligence expert with access to cutting-edge industry data, psychological frameworks, and proven methodologies from top performers like Amazon, HubSpot, Gary Halbert, Eugene Schwartz, and other industry leaders. Generate comprehensive, actionable marketing intelligence using advanced criteria and benchmarks.
 
 CRITICAL REQUIREMENTS:
 - Return ONLY valid JSON (no markdown, no explanations)  
 - Use specific, actionable data (never generic templates)
 - Base ALL recommendations on the business details provided
 - Include real metrics, specific strategies, and detailed insights
-- Apply all enhanced marketing intelligence criteria below
+- Apply all elite marketing intelligence criteria and psychological frameworks below
+- Use proven methodologies and industry benchmarks for maximum effectiveness
 
 BUSINESS CONTEXT:
 Company: ${formData.businessName}
@@ -430,6 +431,49 @@ Product/Service: ${formData.productService}
 Goals: ${formData.goals || 'Growth and market expansion'}
 Current Challenges: ${formData.challenges || 'Market competition and customer acquisition'}
 Budget Range: ${formData.budget || '$1000-5000/month'}
+
+ELITE MARKETING INTELLIGENCE CRITERIA & ADVANCED FRAMEWORKS:
+
+E-COMMERCE INTELLIGENCE MODULE:
+- Conversion Rate Benchmarks: Fashion/Apparel (2.8-4.2%), Electronics (2.1-3.8%), Health/Beauty (3.2-5.1%), Home/Garden (2.5-4.0%), Food/Beverage (3.8-6.2%)
+- Amazon Psychology Framework: Social proof stacking (reviews + "frequently bought together" + bestseller badges), urgency psychology ("Only X left" creates scarcity-driven decisions), cognitive load reduction (one-click purchasing), trust signals (Prime badge, free returns, delivery guarantees)
+- Shopify Plus Success Patterns: 69.57% cart abandonment with elite stores recovering 15-20%, post-purchase upsells convert 10-30% vs 2-3% pre-purchase, mobile optimization (79% mobile time vs 21% desktop)
+- Elite Disruption Strategies: Try-before-buy reduces purchase anxiety 67%, brand storytelling increases LTV 3.2x, AR technology increases conversion 64%, humor in copy increases engagement 83%
+- Performance Targets: AOV increases 15-25% through bundles, 3:1 CLV to CAC ratio minimum, 25-30% email revenue attribution, 35-40% return customer rate
+
+AGENCY MASTERY MODULE:
+- Lead Conversion Benchmarks: B2B Services (15-25% lead-to-meeting), SaaS/Technology (5-15% trial-to-paid), Professional Services (20-35% proposal-to-close), E-commerce Agency (25-40% audit-to-retainer)
+- HubSpot Inbound Methodology: 70% buyers consume 3+ pieces before sales engagement, multi-touch attribution increases close rates 208%, 5-12 touchpoints optimal for B2B conversion
+- Neil Patel Authority Building: SEO dominance creates 5.66x higher brand trust, free tool strategy drives 40% qualified leads, video increases landing page conversions 86%
+- Advanced Lead Qualification (BANT 2.0): Budget authority weighted 35%, authority identification 30%, need severity 25%, timeline urgency 10%
+- Challenger Sale Methodology: Insight-led conversations for 74% higher win rates, solution agnostic discovery, consensus building (average 6.8 stakeholders)
+- Performance Targets: 2-5% MQL rate from website traffic, 25-35% MQL-to-SQL conversion, 15-25% opportunity-to-close, 20-40% YoY deal size growth
+
+COPYWRITING EXCELLENCE MODULE:
+- Gary Halbert Psychology Principles: Market sophistication awareness (5 levels determine approach), emotional state management (lead with emotion, justify with logic), curiosity gap creation drives 78% higher click rates
+- Eugene Schwartz Breakthrough Framework: Mass desire identification (tap existing wants vs creating new), awareness stage matching, emotional triggers drive 95% purchasing decisions
+- Russell Brunson Perfect Webinar: Origin story creates 234% higher connection, value stacking increases perceived worth 400-800%, scarcity/urgency increases conversions 67%
+- Digital Marketer Customer Journey: Awareness stage (interrupt patterns with contrarian viewpoints), evaluation stage (social proof trumps features 72%), purchase stage (risk reversal eliminates 89% objections)
+- Email Performance Benchmarks: B2B 21.33% open rates, 2.62% CTR, top performers achieve 25-50% monthly list growth, elite generate $40+ per email sent
+- A/B Testing Psychology: Personalization increases opens 26%, action words increase clicks 121%, reviews in emails boost CTR 42%
+
+SALES PSYCHOLOGY & CONVERSION MODULE:
+- Salesforce Excellence Model: Consultative selling increases close rates 56%, pipeline management improves accuracy 89%, 60+ touches required for complex B2B
+- Challenger Customer Research: Commercial teaching increases win rates 74%, insight delivery challenges assumptions, solution differentiation focuses on unique capabilities
+- Neuro-Linguistic Programming: Mirroring builds rapport in 4-7 minutes, language patterns guide prospect thinking, anchoring creates positive associations
+- Cialdini's Influence Principles: Reciprocity creates 2.7x higher conversion, case studies increase trust 89%, authority positioning improves close rates 43%, scarcity increases urgency 71%
+- Performance Benchmarks: <5 minute response increases conversion 900%, 80% sales require 5+ follow-ups, 25-35 minute discovery calls optimal, top performers achieve 35-50% proposal-to-close
+
+PSYCHOLOGICAL TRIGGERS & BEHAVIORAL ECONOMICS:
+- Cognitive Biases: Loss aversion drives 65% faster decisions, anchoring bias (first price influences all subsequent), social proof influences 92% purchases, authority increases trust 78%
+- Behavioral Economics Applications: Decoy effect increases premium sales 84%, endowment effect (free trials increase conversion 67%), paradox of choice (3 options optimal vs 10+ overwhelming)
+- Advanced Personalization: Behavioral triggers predict with 89% accuracy, geographic personalization increases engagement 45%, temporal optimization affects open rates 23%
+- AI-Driven Optimization: Predictive analytics anticipate needs, dynamic pricing increases profit 15-25%, personalized recommendations drive 35% more revenue
+
+ENHANCED PERFORMANCE METRICS FRAMEWORK:
+- Micro-Conversion Tracking: 70%+ scroll depth indicates high engagement, 2-3 minutes minimum time on page, each form field reduces conversion 11%
+- Customer Journey Analytics: Multi-touch attribution credit, CAC tracking by channel/campaign, LTV prediction using historical data, early churn identification
+- Competitive Intelligence: Market share analysis, pricing intelligence monitoring, content gap identification, social listening for brand sentiment
 
 ENHANCED MARKETING INTELLIGENCE CRITERIA & DATA TO IMPLEMENT:
 
