@@ -1,4 +1,1 @@
 project_id = "qtckfvprvpxbbteinxve"
-
-[functions.generate-intelligence]
-verify_jwt = false

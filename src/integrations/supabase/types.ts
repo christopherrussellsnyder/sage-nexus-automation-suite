@@ -7,203 +7,20 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
   public: {
     Tables: {
-      generated_copy: {
-        Row: {
-          business_description: string | null
-          business_name: string | null
-          copy_type: string
-          created_at: string
-          generated_content: string | null
-          id: string
-          target_audience: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          business_description?: string | null
-          business_name?: string | null
-          copy_type: string
-          created_at?: string
-          generated_content?: string | null
-          id?: string
-          target_audience?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          business_description?: string | null
-          business_name?: string | null
-          copy_type?: string
-          created_at?: string
-          generated_content?: string | null
-          id?: string
-          target_audience?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          created_at: string
-          email: string | null
-          first_name: string | null
-          goal: string | null
-          id: string
-          last_name: string | null
-          referral_source: string | null
-          updated_at: string
-          user_id: string
-          work_type: string | null
-        }
-        Insert: {
-          created_at?: string
-          email?: string | null
-          first_name?: string | null
-          goal?: string | null
-          id?: string
-          last_name?: string | null
-          referral_source?: string | null
-          updated_at?: string
-          user_id: string
-          work_type?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string | null
-          first_name?: string | null
-          goal?: string | null
-          id?: string
-          last_name?: string | null
-          referral_source?: string | null
-          updated_at?: string
-          user_id?: string
-          work_type?: string | null
-        }
-        Relationships: []
-      }
-      saved_templates: {
-        Row: {
-          business_info: Json | null
-          created_at: string
-          feature_type: string
-          id: string
-          is_favorite: boolean | null
-          template_data: Json
-          template_name: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          business_info?: Json | null
-          created_at?: string
-          feature_type: string
-          id?: string
-          is_favorite?: boolean | null
-          template_data: Json
-          template_name: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          business_info?: Json | null
-          created_at?: string
-          feature_type?: string
-          id?: string
-          is_favorite?: boolean | null
-          template_data?: Json
-          template_name?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_subscriptions: {
-        Row: {
-          created_at: string
-          id: string
-          subscription_end_date: string | null
-          subscription_start_date: string | null
-          subscription_status: string
-          subscription_type: string
-          trial_end_date: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          subscription_end_date?: string | null
-          subscription_start_date?: string | null
-          subscription_status?: string
-          subscription_type?: string
-          trial_end_date?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          subscription_end_date?: string | null
-          subscription_start_date?: string | null
-          subscription_status?: string
-          subscription_type?: string
-          trial_end_date?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_usage: {
-        Row: {
-          created_at: string
-          feature_type: string
-          id: string
-          last_used_at: string | null
-          updated_at: string
-          usage_count: number
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          feature_type: string
-          id?: string
-          last_used_at?: string | null
-          updated_at?: string
-          usage_count?: number
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          feature_type?: string
-          id?: string
-          last_used_at?: string | null
-          updated_at?: string
-          usage_count?: number
-          user_id?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      can_use_feature: {
-        Args: { _user_id: string; _feature_type: string }
-        Returns: boolean
-      }
-      increment_usage: {
-        Args: { _user_id: string; _feature_type: string }
-        Returns: undefined
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
