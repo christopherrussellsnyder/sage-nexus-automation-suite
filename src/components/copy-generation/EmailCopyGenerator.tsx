@@ -7,8 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { useUsageTracking } from "@/hooks/useUsageTracking";
-import { useTemplateManager } from "@/hooks/useTemplateManager";
+// Usage tracking and template manager hooks removed - database not configured
 import { Mail, Save, RefreshCw, Download } from "lucide-react";
 import UsageTracker from "../UsageTracker";
 
@@ -49,11 +48,12 @@ const EmailCopyGenerator = () => {
   const [loading, setLoading] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState<number | null>(null);
   
-  const { incrementUsage, canUseFeature, subscription } = useUsageTracking();
-  const { saveTemplate } = useTemplateManager();
+  // Usage tracking disabled
+  const canUseFeature = () => true;
+  const incrementUsage = async () => true;
 
   const generateEmailTemplates = async () => {
-    if (!canUseFeature('email') || !selectedEmailType) return;
+    if (!canUseFeature() || !selectedEmailType) return;
     
     setLoading(true);
     
@@ -235,7 +235,7 @@ const EmailCopyGenerator = () => {
         generatedTemplates = [];
     }
     
-    await incrementUsage('email');
+    await incrementUsage();
     setTemplates(generatedTemplates);
     setLoading(false);
   };
@@ -322,7 +322,7 @@ const EmailCopyGenerator = () => {
               <Button 
                 onClick={generateEmailTemplates} 
                 className="w-full" 
-                disabled={loading || !canUseFeature('email') || !selectedEmailType}
+                disabled={loading || !canUseFeature() || !selectedEmailType}
                 size="lg"
               >
                 {loading ? (

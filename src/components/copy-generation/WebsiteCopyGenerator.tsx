@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { useUsageTracking } from "@/hooks/useUsageTracking";
+// Usage tracking hook removed - database not configured
 import { Globe, Save, RefreshCw, Download } from "lucide-react";
 
 interface WebsiteSection {
@@ -34,10 +34,12 @@ const WebsiteCopyGenerator = () => {
   const [sections, setSections] = useState<WebsiteSection[]>([]);
   const [loading, setLoading] = useState(false);
   
-  const { incrementUsage, canUseFeature } = useUsageTracking();
+  // Usage tracking disabled
+  const canUseFeature = () => true;
+  const incrementUsage = async () => true;
 
   const generateWebsiteCopy = async () => {
-    if (!canUseFeature('website')) return;
+    if (!canUseFeature()) return;
     
     setLoading(true);
     
@@ -78,7 +80,7 @@ const WebsiteCopyGenerator = () => {
       }
     ];
     
-    await incrementUsage('website');
+    await incrementUsage();
     setSections(generatedSections);
     setLoading(false);
   };
@@ -163,7 +165,7 @@ const WebsiteCopyGenerator = () => {
               <Button 
                 onClick={generateWebsiteCopy} 
                 className="w-full" 
-                disabled={loading || !canUseFeature('website')}
+                disabled={loading || !canUseFeature()}
                 size="lg"
               >
                 {loading ? (
